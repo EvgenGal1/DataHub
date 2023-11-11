@@ -1,3 +1,6 @@
+Музыкальная платформа на NextJS и NestJS
+По видео Ulbi TV YT https://www.youtube.com/watch?v=A0CfYSVzAZI
+
 BackEnd
 1. Проект-ие БД
 2. RestAPI > NestJS
