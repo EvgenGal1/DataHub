@@ -31,4 +31,7 @@ export class TrackEntity {
   @OneToMany(() => CommentEntity, (comment: CommentEntity) => comment.track)
   // типиз.данн. (возвращ.список FileEntity)
   comments: CommentEntity[];
+
+  // @Prop({type: [{type: ...Shema.ObjId, ref: 'Comment'}]})
+  // commments: Comment[]
 }

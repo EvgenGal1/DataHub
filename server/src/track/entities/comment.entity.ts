@@ -32,6 +32,9 @@ export class CommentEntity {
   // @OneToOne(() => TrackEntity, (track: TrackEntity) => track.id)
   track: TrackEntity;
 
+  // @Prop({type: [{type: ...Shema.ObjId, ref: 'Track'}]})
+  // track: Track
+
   // @Column()
   // name: string;
 
