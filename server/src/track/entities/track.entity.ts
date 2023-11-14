@@ -27,11 +27,11 @@ export class TrackEntity {
   @Column()
   audio: string;
 
+  // @OneToMany(() => CommentEntity, (comment: CommentEntity) => comment.track)
+  // comments: CommentEntity[];
+
   // связь табл. 1го ко Мн. У Одного(трека) Мн.данн.(коммент). 1ый аргум.аноним.fn (табл.обращения - CommentEntity), 2ый парам.получ.данн.и обратн.связь
   @OneToMany(() => CommentEntity, (comment: CommentEntity) => comment.track)
-  // типиз.данн. (возвращ.список FileEntity)
+  // типиз.данн. (возвращ.масс. comments)
   comments: CommentEntity[];
-
-  // @Prop({type: [{type: ...Shema.ObjId, ref: 'Comment'}]})
-  // commments: Comment[]
 }

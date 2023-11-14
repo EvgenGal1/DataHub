@@ -2,7 +2,7 @@ import {
   Entity,
   PrimaryGeneratedColumn,
   Column,
-  OneToOne,
+  // OneToOne,
   ManyToOne,
 } from 'typeorm';
 import { TrackEntity } from './track.entity';
@@ -27,23 +27,7 @@ export class CommentEntity {
   text: string;
 
   // связь табл. Мн.к 1му. У Мн.данн.(коментов) Одна привязка (Один трек)
+  // каждый комментарий принадлежит только одному треку
   @ManyToOne(() => TrackEntity, (track: TrackEntity) => track.comments)
-  // связка табл. 1к1му. У 1го коммент Одни привязка(трек)
-  // @OneToOne(() => TrackEntity, (track: TrackEntity) => track.id)
   track: TrackEntity;
-
-  // @Prop({type: [{type: ...Shema.ObjId, ref: 'Track'}]})
-  // track: Track
-
-  // @Column()
-  // name: string;
-
-  // @Column()
-  // author: string;
-
-  // @Column()
-  // picture: string;
-
-  // @Column()
-  // tracks: string;
 }
