@@ -1,39 +1,70 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */ // ^^ от ошб. - Св-во объяв., но знач.не прочитано.
 import { Injectable } from '@nestjs/common';
-import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
+import { ObjectId, Repository } from 'typeorm';
 
 import { CreateTrackDto } from './dto/create-track.dto';
 import { UpdateTrackDto } from './dto/update-track.dto';
 import { TrackEntity } from './entities/track.entity';
+import { CommentEntity } from './entities/comment.entity';
 
 @Injectable()
 export class TrackService {
-  // ч/з внедрение зависимостей, добав.доп.repository TrackEntity. Указав так repositorий, получ.возм.внутри этого кл.UsersService раб.с табл.users
+  // ч/з внедр.завис. + TrackEntity,CommentEntity > раб.ч/з this с табл.track,comment
   constructor(
     @InjectRepository(TrackEntity)
-    private repository: Repository<TrackEntity>,
+    @InjectRepository(CommentEntity)
+    private trackEntity: Repository<TrackEntity>, // private repository: Repository<CommentEntity>
   ) {}
 
-  create(createTrackDto: CreateTrackDto) {
-    return 'Это действие добавляет новый трек';
+  // СОЗД. трек. Req - CreateTrackDto, Res - TrackEntity в `Обещание`
+  async create(createTrackDto: CreateTrackDto): Promise<TrackEntity> {
+    // в res dto, `слушает`
+    return this.trackEntity.save({ ...createTrackDto, listens: 0 });
   }
 
-  findAll() {
-    // return `Это действие возвращает все треки`;
-    return this.repository.find();
+  // ВСЕ треки. Req - "", Res - масс.TrackEntity в `Обещание`
+  async findAll(): Promise<TrackEntity[]> {
+    return this.trackEntity.find();
   }
 
-  findOne(id: number) {
-    // return `Это действие возвращает трек с id #${id}`;
-    return this.repository.findOneBy({ id });
+  // ОДИН трек.
+  async findOne(id: number /* ObjectId */): Promise<TrackEntity> {
+    // ! ошб. id:ObjectId <> findOneBy(id) - Тип "ObjectId" не может быть назначен для типа "FindOptionsWhere<TrackEntity> | Find...<>[] | number | FindOperator<number>"
+    return this.trackEntity.findOneBy({ id });
   }
 
-  update(id: number, updateTrackDto: UpdateTrackDto) {
-    return `Это действие обновляет трек с id #${id}`;
+  async update(
+    id: number,
+    updateTrackDto: UpdateTrackDto,
+  ) /* : Promise<TrackEntity> */ {
+    // return this.trackEntity.update({ id, updateTrackDto });
   }
 
-  remove(id: number) {
-    return `Это действие удаляет трек с id #${id}`;
+  async delete(id: number /* ObjectId */) /* : Promise<ObjectId> */ {
+    // ! ошб. :Promise<ObjectId> <> return - В типе "UpdateResult" отсутствуют следующие свойства из типа "ObjectId": _bsontype, id, toHexString, toJSON и еще 3.
+    // softDelete - запись > удал.; delete - удал.
+    return this.trackEntity.softDelete(id);
   }
+
+  // async search(query: string): Promise<Track[]> {
+  //     const tracks = await this.trackModel.find({
+  //         name: {$regex: new RegExp(query, 'i')}
+  //     })
+  //     return tracks;
+  // }
+
+  //   async addComment(dto: CreateCommentDto): Promise<Comment> {
+  //     const track = await this.trackModel.findById(dto.trackId);
+  //     const comment = await this.commentModel.create({...dto})
+  //     track.comments.push(comment._id)
+  //     await track.save();
+  //     return comment;
+  // }
+
+  // async listen(id: ObjectId) {
+  //     const track = await this.trackModel.findById(id);
+  //     track.listens += 1
+  //     track.save()
+  // }
 }

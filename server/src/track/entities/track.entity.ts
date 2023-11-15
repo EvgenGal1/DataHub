@@ -20,13 +20,13 @@ export class TrackEntity {
   @Column()
   artist: string;
 
-  @Column()
-  test: string;
+  @Column({ default: '-' })
+  text: string;
 
-  @Column()
+  @Column({ default: 0 })
   listens: number;
 
-  @Column()
+  @Column({ default: '_' })
   picture: string;
 
   @Column()
