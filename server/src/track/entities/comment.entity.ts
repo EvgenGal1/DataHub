@@ -9,6 +9,7 @@ import {
 import { TrackEntity } from './track.entity';
 import { UserEntity } from 'src/users/entities/user.entity';
 
+// ^^ обдумать созд.отд. CommetModule (комм.,лайк,кол-во кажд.)
 @Entity('comment')
 export class CommentEntity {
   @PrimaryGeneratedColumn()

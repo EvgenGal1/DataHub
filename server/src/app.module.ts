@@ -12,6 +12,7 @@ import { CommentEntity } from './track/entities/comment.entity';
 import { AppController, AppController2 } from './app.controller';
 import { AppService } from './app.service';
 
+// Комп.Прилож
 @Module({
   imports: [
     // подкл.модуль для счит.перем.из.env
@@ -24,7 +25,7 @@ import { AppService } from './app.service';
       database: process.env.DB_NAME,
       username: process.env.DB_USER,
       password: process.env.DB_PASSWORD,
-      // указ.сущн. для авто.синхронз.измен. ч/з TypeOrmModule
+      // указ.`сущности` для авто.синхронз.измен. ч/з TypeOrmModule
       entities: [UserEntity, TrackEntity, CommentEntity],
       synchronize: true,
     }),

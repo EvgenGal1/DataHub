@@ -7,8 +7,12 @@ import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
 
 @Module({
-  // в import ч/з TypeOrmModule.`для функции` подкл.UserEntity для раб.с табл.users
-  imports: [TypeOrmModule.forFeature([UserEntity]), TrackModule],
+  imports: [
+    // ч/з TypeOrmModule.`для функции` подкл.UserEntity для раб.с табл.users
+    TypeOrmModule.forFeature([UserEntity]),
+    // подкл.использ.modulи
+    TrackModule,
+  ],
   providers: [UsersService],
   controllers: [UsersController],
   // export UsersService для видимости вне modulя (напр.в AuthService)
