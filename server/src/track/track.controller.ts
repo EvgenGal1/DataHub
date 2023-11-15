@@ -12,6 +12,10 @@ import { CreateTrackDto } from './dto/create-track.dto';
 import { UpdateTrackDto } from './dto/update-track.dto';
 
 @Controller('/tracks')
+// групп.мтд.cntrl tracks > swagger
+// @ApiTags('tracks')
+// сообщ.о защищены req jwt Токеном > swagger
+// @ApiBearerAuth()
 export class TrackController {
   constructor(private readonly trackService: TrackService) {}
 

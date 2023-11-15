@@ -1,4 +1,4 @@
-// ^ разрещ.данн.req front > dack. Отдел.кл.с опис.ожид.св-в
+// ^ `Объект передачи данных` разрещ.req front > dack. Отдел.кл.с опис.ожид.св-в/полей
 // import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateUserDto {

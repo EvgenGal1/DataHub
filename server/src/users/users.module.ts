@@ -15,7 +15,7 @@ import { UsersService } from './users.service';
   ],
   providers: [UsersService],
   controllers: [UsersController],
-  // export UsersService для видимости вне modulя (напр.в AuthService)
+  // exp. UsersService для видимости вне modulя (напр.в AuthService)
   exports: [UsersService],
 })
 export class UsersModule {}
