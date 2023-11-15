@@ -1,11 +1,16 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToOne,
+  ManyToMany,
+} from 'typeorm';
 
+import { UserEntity } from 'src/users/entities/user.entity';
 import { CommentEntity } from './comment.entity';
 
-// декоратор для соед.с БД
 @Entity('track')
 export class TrackEntity {
-  // декоратор для авто.генер.id
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -27,11 +32,11 @@ export class TrackEntity {
   @Column()
   audio: string;
 
-  // @OneToMany(() => CommentEntity, (comment: CommentEntity) => comment.track)
-  // comments: CommentEntity[];
+  // связь табл. Мн.к 1му. У Мн.треков Один польз.
+  @ManyToOne(() => UserEntity, (user: UserEntity) => user.tracks)
+  user: UserEntity;
 
-  // связь табл. 1го ко Мн. У Одного(трека) Мн.данн.(коммент). 1ый аргум.аноним.fn (табл.обращения - CommentEntity), 2ый парам.получ.данн.и обратн.связь
-  @OneToMany(() => CommentEntity, (comment: CommentEntity) => comment.track)
-  // типиз.данн. (возвращ.масс. comments)
+  // связь табл. Мн.ко Мн. У Мн.треков Мн.комм.
+  @ManyToMany(() => CommentEntity, (comment: CommentEntity) => comment.track)
   comments: CommentEntity[];
 }

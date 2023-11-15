@@ -2,12 +2,15 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
-// import { AppController, AppController2 } from './app.controller';
-// import { AppService } from './app.service';
+// import { AuthModule } from './auth/auth.module';
+import { UsersModule } from './users/users.module';
+import { UserEntity } from './users/entities/user.entity';
 import { TrackModule } from './track/track.module';
 import { TrackEntity } from './track/entities/track.entity';
 import { CommentEntity } from './track/entities/comment.entity';
 // import { AlbumModule } from './album/album.module';
+import { AppController, AppController2 } from './app.controller';
+import { AppService } from './app.service';
 
 @Module({
   imports: [
@@ -22,14 +25,16 @@ import { CommentEntity } from './track/entities/comment.entity';
       username: process.env.DB_USER,
       password: process.env.DB_PASSWORD,
       // указ.сущн. для авто.синхронз.измен. ч/з TypeOrmModule
-      entities: [TrackEntity, CommentEntity],
+      entities: [UserEntity, TrackEntity, CommentEntity],
       synchronize: true,
     }),
     // подкл.использ.modulи
+    // AuthModule,
+    UsersModule,
     TrackModule,
     // AlbumModule,
   ],
-  // controllers: [AppController, AppController2],
-  // providers: [AppService],
+  controllers: [AppController, AppController2],
+  providers: [AppService],
 })
 export class AppModule {}

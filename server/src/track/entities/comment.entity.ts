@@ -5,29 +5,26 @@ import {
   // OneToOne,
   ManyToOne,
 } from 'typeorm';
-import { TrackEntity } from './track.entity';
 
-// декоратор для соед.с БД
+import { TrackEntity } from './track.entity';
+import { UserEntity } from 'src/users/entities/user.entity';
+
 @Entity('comment')
 export class CommentEntity {
-  // декоратор для авто.генер.id
   @PrimaryGeneratedColumn()
   id: number;
-
-  // @Column()
-  // track_id: string;
 
   @Column()
   author: string;
 
   @Column()
-  username: string;
-
-  @Column()
   text: string;
 
-  // связь табл. Мн.к 1му. У Мн.данн.(коментов) Одна привязка (Один трек)
-  // каждый комментарий принадлежит только одному треку
+  // связь табл. Мн.к 1му. У Мн.комм. Один польз.
+  @ManyToOne(() => UserEntity, (user: UserEntity) => user.comments)
+  user: UserEntity;
+
+  // связь табл. Мн.к 1му. У Мн.комм. Один трек
   @ManyToOne(() => TrackEntity, (track: TrackEntity) => track.comments)
   track: TrackEntity;
 }
