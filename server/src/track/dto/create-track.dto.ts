@@ -1,11 +1,23 @@
+// ^ `Объект передачи данных` разрещ.req front > dack. Отдел.кл.с опис.ожид.св-в/полей
+import { ApiProperty } from '@nestjs/swagger';
+
 export class CreateTrackDto {
-  // доп.декор для поним.swagger какие есть св-ва. Можно указ.знач.по умолч. в {default:''}
-  // @ApiProperty({
-  // default: 'Тест Тестович',
-  // })
+  // декор.swagger > св-в с возм.указ. default
+  @ApiProperty({
+    default: 'Название 1',
+  })
   name: string;
+
+  @ApiProperty({
+    default: 'Артист 1',
+  })
   artist: string;
+
+  @ApiProperty({
+    default: 'Текст 1',
+  })
   text: string;
+
   // ф.перед.отд.
   // audio: string;
   // userid: number;

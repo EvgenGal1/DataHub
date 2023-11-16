@@ -9,6 +9,7 @@ import {
   // Query,
 } from '@nestjs/common';
 import { ObjectId } from 'typeorm';
+import { /* ApiBearerAuth, */ ApiTags } from '@nestjs/swagger';
 
 import { TrackService } from './track.service';
 import { CreateTrackDto } from './dto/create-track.dto';
@@ -17,7 +18,7 @@ import { UpdateTrackDto } from './dto/update-track.dto';
 
 @Controller('/tracks')
 // групп.мтд.cntrl tracks > swagger
-// @ApiTags('tracks')
+@ApiTags('tracks')
 // сообщ.о защищены req jwt Токеном > swagger
 // @ApiBearerAuth()
 export class TrackController {

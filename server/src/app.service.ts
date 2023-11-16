@@ -4,10 +4,10 @@ import { Injectable } from '@nestjs/common';
 @Injectable()
 export class AppService {
   getUsers(): string {
-    return 'get All Users';
+    return 'Главная Страница';
   }
 
   getUsers2(): string {
-    return 'get All Users 2';
+    return 'Страгица /Api';
   }
 }

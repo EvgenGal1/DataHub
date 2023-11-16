@@ -20,7 +20,7 @@ export class TrackEntity {
   @Column()
   artist: string;
 
-  @Column({ default: '-' })
+  @Column({ default: '-', length: 500 })
   text: string;
 
   @Column({ default: 0 })

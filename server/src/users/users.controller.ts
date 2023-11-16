@@ -8,15 +8,16 @@ import {
   Param,
   Delete,
 } from '@nestjs/common';
+import { /* ApiBearerAuth, */ ApiTags } from '@nestjs/swagger';
 
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 
 @Controller('users')
-// // спец.тег swagger ч/з декоратор ApiTags для групп.мтд.cntrl users
-// @ApiTags('users')
-// // оборач.чтоб swagger знал что req на files защищены jwt Токеном
+// спец.тег swagger ч/з декоратор ApiTags для групп.мтд.cntrl users
+@ApiTags('users')
+// оборач.чтоб swagger знал что req на files защищены jwt Токеном
 // @ApiBearerAuth()
 export class UsersController {
   // ч/з внедр.завис. + UserEntity > раб.ч/з this с табл.users

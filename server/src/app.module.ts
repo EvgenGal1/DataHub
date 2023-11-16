@@ -27,6 +27,7 @@ import { AppService } from './app.service';
       password: process.env.DB_PASSWORD,
       // указ.`сущности` для авто.синхронз.измен. ч/з TypeOrmModule
       entities: [UserEntity, TrackEntity, CommentEntity],
+      // ^^ ТОЛЬКО DEV
       synchronize: true,
     }),
     // подкл.использ.modulи
