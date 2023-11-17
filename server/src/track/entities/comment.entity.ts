@@ -9,16 +9,14 @@ import {
 import { TrackEntity } from './track.entity';
 import { UserEntity } from 'src/users/entities/user.entity';
 
-// ^^ обдумать созд.отд. CommetModule (комм.,лайк,кол-во кажд.)
+// ^^ обдумать созд.отд. CommetModule (коммент.,лайк,кол-во кажд.)
 @Entity('comment')
 export class CommentEntity {
+  // id, текст коммент, id.user, id.track
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
-  author: string;
-
-  @Column()
+  @Column({ default: 'коммент #' })
   text: string;
 
   // связь табл. Мн.к 1му. У Мн.комм. Один польз.

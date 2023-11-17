@@ -12,30 +12,30 @@ export class UsersService {
   // ч/з внедр.завис. + UserEntity > раб.ч/з this с табл.users
   constructor(
     @InjectRepository(UserEntity)
-    private repository: Repository<UserEntity>,
+    private userRepository: Repository<UserEntity>,
   ) {}
 
   // СОЗД
   async create(createUserDto: CreateUserDto) {
-    return this.repository.save(createUserDto);
+    return this.userRepository.save(createUserDto);
   }
 
   async findAll() {
-    return this.repository.find(); // findAndCount
+    return this.userRepository.find(); // findAndCount
   }
 
   async findOne(id: number) {
-    return this.repository.findOneBy({ id });
+    return this.userRepository.findOneBy({ id });
   }
 
   // получ.user по email
   async findByEmail(email: string) {
-    return this.repository.findOneBy({ email });
+    return this.userRepository.findOneBy({ email });
   }
 
   // получ.user по id
   async findById(id: number) {
-    return this.repository.findOneBy({ id });
+    return this.userRepository.findOneBy({ id });
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars

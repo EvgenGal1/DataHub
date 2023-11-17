@@ -1,3 +1,4 @@
+// ^ `Сущность`.взаимод.с БД (стркт.табл./измен.данн.в табл.User)
 import {
   Entity,
   PrimaryGeneratedColumn,

@@ -3,19 +3,13 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateTrackDto {
   // декор.swagger > св-в с возм.указ. default
-  @ApiProperty({
-    default: 'Название 1',
-  })
+  @ApiProperty({ default: 'Название трк.#' })
   name: string;
 
-  @ApiProperty({
-    default: 'Артист 1',
-  })
+  @ApiProperty({ default: 'Артист #' })
   artist: string;
 
-  @ApiProperty({
-    default: 'Текст 1',
-  })
+  @ApiProperty({ default: 'Текст #' })
   text: string;
 
   // ф.перед.отд.

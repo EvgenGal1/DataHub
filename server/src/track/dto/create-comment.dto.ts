@@ -1,7 +1,13 @@
-import { ObjectId } from 'typeorm';
+// import { ObjectId } from 'typeorm';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateCommentDto {
-  username: string;
+  @ApiProperty({ default: 'Название #' })
   text: string;
-  trackId: ObjectId;
+
+  @ApiProperty({ default: 111 })
+  trackId: number; // ObjectId;
+
+  @ApiProperty({ default: 111 })
+  userId: number; // ObjectId;
 }

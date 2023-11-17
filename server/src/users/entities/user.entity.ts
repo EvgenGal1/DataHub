@@ -14,7 +14,7 @@ import { CommentEntity } from 'src/track/entities/comment.entity';
 // декоратор для соед.с БД
 @Entity('users')
 export class UserEntity {
-  // декоратор для авто.генер.id
+  // декоратор для авто.генер.id, eml, psw, имя пользователя, роль доступов, подтвржд.почты, ссылк.активации
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -28,7 +28,6 @@ export class UserEntity {
   @Column()
   fullname: string;
 
-  // роль
   @Column({ default: 'USER' })
   role: string;
 
