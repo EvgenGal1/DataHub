@@ -14,6 +14,7 @@ import { /* ApiBearerAuth, */ ApiTags } from '@nestjs/swagger';
 import { TrackService } from './track.service';
 import { CreateTrackDto } from './dto/create-track.dto';
 import { UpdateTrackDto } from './dto/update-track.dto';
+import { CreateCommentDto } from './dto/create-comment.dto';
 // import { CreateCommentDto } from './dto/create-comment.dto';
 
 @Controller('/tracks')
@@ -62,10 +63,10 @@ export class TrackController {
   //   return this.trackService.search(query);
   // }
 
-  // @Post('/comment')
-  // addComment(@Body() dto: CreateCommentDto) {
-  //   return this.trackService.addComment(dto);
-  // }
+  @Post('/comment')
+  addComment(@Body() dto: CreateCommentDto) {
+    return this.trackService.addComment(dto);
+  }
 
   // @Post('/listen/:id')
   // listen(@Param('id') id: ObjectId) {
