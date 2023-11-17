@@ -8,7 +8,8 @@ import { UserEntity } from './users/entities/user.entity';
 import { TrackModule } from './track/track.module';
 import { TrackEntity } from './track/entities/track.entity';
 import { CommentEntity } from './track/entities/comment.entity';
-// import { AlbumModule } from './album/album.module';
+import { AlbumModule } from './album/album.module';
+import { AlbumEntity } from './album/entities/album.entity';
 import { AppController, AppController2 } from './app.controller';
 import { AppService } from './app.service';
 
@@ -26,7 +27,7 @@ import { AppService } from './app.service';
       username: process.env.DB_USER,
       password: process.env.DB_PASSWORD,
       // указ.`сущности` для авто.синхронз.измен. ч/з TypeOrmModule
-      entities: [UserEntity, TrackEntity, CommentEntity],
+      entities: [UserEntity, TrackEntity, CommentEntity, AlbumEntity],
       // ^^ ТОЛЬКО DEV
       synchronize: true,
     }),
@@ -34,7 +35,7 @@ import { AppService } from './app.service';
     // AuthModule,
     UsersModule,
     TrackModule,
-    // AlbumModule,
+    AlbumModule,
   ],
   controllers: [AppController, AppController2],
   providers: [AppService],

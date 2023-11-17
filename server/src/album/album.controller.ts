@@ -1,9 +1,24 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
+// import { ObjectId } from 'typeorm';
+import { /* ApiBearerAuth, */ ApiTags } from '@nestjs/swagger';
+
 import { AlbumService } from './album.service';
 import { CreateAlbumDto } from './dto/create-album.dto';
 import { UpdateAlbumDto } from './dto/update-album.dto';
 
 @Controller('album')
+// групп.мтд.cntrl tracks > swagger
+@ApiTags('album')
+// сообщ.о защищены req jwt Токеном > swagger
+// @ApiBearerAuth()
 export class AlbumController {
   constructor(private readonly albumService: AlbumService) {}
 

@@ -8,16 +8,18 @@ import {
 
 import { UserEntity } from 'src/users/entities/user.entity';
 import { CommentEntity } from './comment.entity';
+import { AlbumEntity } from 'src/album/entities/album.entity';
 
 @Entity('track')
 export class TrackEntity {
+  // id, назв.трека, имя артиста, текст трека, кол-во прослушиваний, ссылк.изо обложки трека, ссылк.аудио, связь с.польз., масс.комментов
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
+  @Column({ default: 'назв.трека #' })
   name: string;
 
-  @Column()
+  @Column({ default: 'Аффтор' })
   artist: string;
 
   @Column({ default: '-', length: 500 })
@@ -26,10 +28,10 @@ export class TrackEntity {
   @Column({ default: 0 })
   listens: number;
 
-  @Column({ default: '_' })
+  @Column({ default: '_#_' })
   picture: string;
 
-  @Column()
+  @Column({ default: 'mpt3/wav' })
   audio: string;
 
   // связь табл. Мн.к 1му. У Мн.треков Один польз.
@@ -39,4 +41,9 @@ export class TrackEntity {
   // связь табл. Мн.ко Мн. У Мн.треков Мн.комм.
   @ManyToMany(() => CommentEntity, (comment: CommentEntity) => comment.track)
   comments: CommentEntity[];
+
+  // ^^ дораб.до ManyToMany (у альбоиа много треков, трек может быть в разн.альбомах)
+  // связь табл. Мн.к 1му. У Мн.треков Один альбом.
+  @ManyToOne(() => AlbumEntity, (album: AlbumEntity) => album.tracks)
+  album: AlbumEntity;
 }
