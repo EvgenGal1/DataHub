@@ -2,7 +2,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateCommentDto {
-  @ApiProperty({ default: 'Название #' })
+  @ApiProperty({ default: 'коммент #' })
   text: string;
 
   @ApiProperty({ default: 111 })

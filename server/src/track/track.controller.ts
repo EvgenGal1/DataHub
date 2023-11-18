@@ -9,7 +9,10 @@ import {
   // Query,
 } from '@nestjs/common';
 import { ObjectId } from 'typeorm';
-import { /* ApiBearerAuth, */ ApiTags } from '@nestjs/swagger';
+import {
+  /* ApiBearerAuth, */ ApiCreatedResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 
 import { TrackService } from './track.service';
 import { CreateTrackDto } from './dto/create-track.dto';
@@ -25,7 +28,10 @@ import { CreateCommentDto } from './dto/create-comment.dto';
 export class TrackController {
   constructor(private readonly trackService: TrackService) {}
 
-  @Post()
+  @Post('create')
+  @ApiCreatedResponse({
+    description: 'Описание create.',
+  })
   //   @UseInterceptors(FileFieldsInterceptor([
   //     { name: 'picture', maxCount: 1 },
   //     { name: 'audio', maxCount: 1 },
@@ -64,8 +70,8 @@ export class TrackController {
   // }
 
   @Post('/comment')
-  addComment(@Body() dto: CreateCommentDto) {
-    return this.trackService.addComment(dto);
+  addComment(@Body() createCommentDto: CreateCommentDto) {
+    return this.trackService.addComment(createCommentDto);
   }
 
   // @Post('/listen/:id')

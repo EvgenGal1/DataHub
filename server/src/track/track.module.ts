@@ -3,6 +3,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { TrackEntity } from './entities/track.entity';
 import { CommentEntity } from './entities/comment.entity';
+import { UserEntity } from 'src/users/entities/user.entity';
 import { AlbumEntity } from 'src/album/entities/album.entity';
 import { TrackController } from './track.controller';
 import { TrackService } from './track.service';
@@ -11,6 +12,7 @@ import { TrackService } from './track.service';
   imports: [
     TypeOrmModule.forFeature([TrackEntity]),
     TypeOrmModule.forFeature([CommentEntity]),
+    TypeOrmModule.forFeature([UserEntity]),
     TypeOrmModule.forFeature([AlbumEntity]),
   ],
   exports: [TypeOrmModule.forFeature([CommentEntity])],
