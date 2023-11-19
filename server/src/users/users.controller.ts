@@ -43,6 +43,7 @@ export class UsersController {
     return this.usersService.findAll();
   }
 
+  // ОДИН трек.
   @Get(':id')
   @ApiOperation({ summary: 'Получить ч/з findOne' })
   @ApiCreatedResponse({ description: 'Описание findOne' })

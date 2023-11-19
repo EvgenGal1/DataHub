@@ -25,6 +25,7 @@
     "@nestjs/core": "^10.0.0",
     "@nestjs/mapped-types": "*",
     "@nestjs/platform-express": "^10.0.0",
+    "@nestjs/swagger": "^7.1.16",
     "@nestjs/typeorm": "^10.0.0",
     "pg": "^8.11.3",
     "reflect-metadata": "^0.1.13",

@@ -24,15 +24,16 @@ export class UsersService {
     return this.userRepository.find(); // findAndCount
   }
 
+  // ОДИН трек.
   async findOne(id: number) {
     return this.userRepository.findOneBy({ id });
   }
-
+  // ! не отраж.в swgg
   // получ.user по email
   async findByEmail(email: string) {
     return this.userRepository.findOneBy({ email });
   }
-
+  // ! не отраж.в swgg
   // получ.user по id
   async findById(id: number) {
     return this.userRepository.findOneBy({ id });
