@@ -1,3 +1,4 @@
+import { ObjectId } from 'typeorm';
 import {
   Controller,
   Get,
@@ -6,9 +7,14 @@ import {
   Patch,
   Param,
   Delete,
+  UseInterceptors,
+  UploadedFiles,
+  ParseFilePipe,
+  MaxFileSizeValidator,
+  FileTypeValidator,
   // Query,
 } from '@nestjs/common';
-import { ObjectId } from 'typeorm';
+import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import {
   ApiTags,
   /* ApiBearerAuth, */
@@ -29,19 +35,41 @@ import { CreateCommentDto } from './dto/create-comment.dto';
 export class TrackController {
   constructor(private readonly trackService: TrackService) {}
 
+  // создать/добавить один трек
   @Post()
+  // swagger описание мтд.
   @ApiOperation({ summary: 'Добавить Трек' })
-  //   @UseInterceptors(FileFieldsInterceptor([
-  //     { name: 'picture', maxCount: 1 },
-  //     { name: 'audio', maxCount: 1 },
-  // ]))
-  create(/* @UploadedFiles() files, */ @Body() createTrackDto: CreateTrackDto) {
+  // свой перехватчик
+  @UseInterceptors(
+    // name - стр.содер.имя из HTML форм с файлом, maxCount - макс.кло-во ф.; FileFieldsInterceptor(наск.разн.ф.) | FilesInterceptor(масс.ф.) | FileInterceptor (1 ф.)
+    FileFieldsInterceptor([
+      { name: 'picture', maxCount: 1 },
+      { name: 'audio', maxCount: 1 },
+    ]),
+  )
+  create(
+    @UploadedFiles(
+      // `Разобрать Тип Файла`(встроенная проверка/валид.файла) | можн.созд.отд.ф.настр. | ParseFilePipeBuilder спец.кл.состав./созд.валид.
+      new ParseFilePipe({
+        validators: [
+          // валид.разм.в bite. Здесь макс.3 Mb
+          new MaxFileSizeValidator({ maxSize: 1024 * 1024 * 3 }),
+          // валид.тип файлов
+          new FileTypeValidator({ fileType: 'image/jpeg' }),
+        ],
+      }),
+    )
+    files: Express.Multer.File,
+    // /* из док.настр. */ files: { avatar?: Express.Multer.File[], background?: Express.Multer.File[] },
+    @Body() createTrackDto: CreateTrackDto,
+  ) {
     // const {picture, audio} = files
     return this.trackService.create(
       createTrackDto /* , picture[0], audio[0] */,
     );
   }
 
+  // получить все треки
   @Get()
   @ApiOperation({ summary: 'Получить все' })
   findAll(/* @Query('count') count: number, @Query('offset') offset: number */) {

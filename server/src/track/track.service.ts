@@ -51,7 +51,7 @@ export class TrackService {
 
   // СОЗД. трек. Req - CreateTrackDto, Res - TrackEntity в `Обещание`
   async create(createTrackDto: CreateTrackDto): Promise<TrackEntity> {
-    // fn по возвр.наименьшего id
+    // fn по возвр.наименьшего свободного id
     const smallestFreeId = await this.getSmallestAvailableId('track');
 
     return this.trackRepository.save({
@@ -107,7 +107,7 @@ export class TrackService {
       where: { id: createCommentDto.userId },
     });
 
-    // fn по возвр.наименьшего id
+    // fn по возвр.наименьшего свободного id
     const smallestFreeId = await this.getSmallestAvailableId('comment');
 
     // созд.коммент по id track
@@ -121,6 +121,7 @@ export class TrackService {
     });
 
     // добав.в track в масс.comments 1ин comment
+    // ! В track есть связка с comment ч/з  comments, но сам парам.comments не заполняется и не отражается. Должен ли заполн./отраж.
     track.comments.push(comment);
 
     // запись в БД и возврат коммент
