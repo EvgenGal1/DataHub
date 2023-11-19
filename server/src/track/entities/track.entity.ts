@@ -1,11 +1,5 @@
 // ^ `Сущность`.взаимод.с БД (стркт.табл./измен.данн.в табл.User)
-import {
-  Entity,
-  PrimaryGeneratedColumn,
-  Column,
-  ManyToOne,
-  ManyToMany,
-} from 'typeorm';
+import { Entity, Column, ManyToOne, ManyToMany, PrimaryColumn } from 'typeorm';
 
 import { UserEntity } from 'src/users/entities/user.entity';
 import { CommentEntity } from './comment.entity';
@@ -14,7 +8,8 @@ import { AlbumEntity } from 'src/album/entities/album.entity';
 @Entity('track')
 export class TrackEntity {
   // id, назв.трека, имя артиста, текст трека, кол-во прослушиваний, ссылк.изо обложки трека, ссылк.аудио, связь с.польз., масс.комментов
-  @PrimaryGeneratedColumn()
+  // @PrimaryGeneratedColumn() // коммит чтоб указ.свободный id ч/з fn getSmallestAvailableId
+  @PrimaryColumn()
   id: number;
 
   @Column({ default: 'назв.трека #' })

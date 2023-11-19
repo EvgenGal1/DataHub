@@ -1,10 +1,4 @@
-import {
-  Entity,
-  PrimaryGeneratedColumn,
-  Column,
-  // OneToOne,
-  ManyToOne,
-} from 'typeorm';
+import { Entity, Column, ManyToOne, PrimaryColumn } from 'typeorm';
 
 import { TrackEntity } from './track.entity';
 import { UserEntity } from 'src/users/entities/user.entity';
@@ -13,7 +7,8 @@ import { UserEntity } from 'src/users/entities/user.entity';
 @Entity('comment')
 export class CommentEntity {
   // id, текст коммент, id.user, id.track
-  @PrimaryGeneratedColumn()
+  // @PrimaryGeneratedColumn() // коммит чтоб указ.свободный id ч/з fn getSmallestAvailableId
+  @PrimaryColumn()
   id: number;
 
   @Column({ default: 'коммент #' })
