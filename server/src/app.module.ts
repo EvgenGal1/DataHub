@@ -17,15 +17,20 @@ import { AppService } from './app.service';
 @Module({
   imports: [
     // подкл.модуль для счит.перем.из.env
-    ConfigModule.forRoot(),
+    ConfigModule.forRoot({
+      // путь к ф.конфиг. (по умолч.ищет в корне .env)
+      envFilePath: '.env',
+      // повысить производитюдоступа к перем.в process.env.
+      cache: true,
+    }),
     // подкл.к БД ч/з перем.process.env
     TypeOrmModule.forRoot({
       type: 'postgres',
-      host: process.env.DB_HOST,
-      port: Number(process.env.DB_PORT) || 5432,
-      database: process.env.DB_NAME,
-      username: process.env.DB_USER,
-      password: process.env.DB_PASSWORD,
+      host: process.env.POSTGRES_HOST,
+      port: Number(process.env.POSTGRESS_PORT) || 5432,
+      database: process.env.POSTGRES_DB,
+      username: process.env.POSTGRES_USER,
+      password: process.env.POSTGRESS_PASSWORD,
       // указ.`сущности` для авто.синхронз.измен. ч/з TypeOrmModule
       entities: [UserEntity, TrackEntity, CommentEntity, AlbumEntity],
       // ^^ ТОЛЬКО DEV
