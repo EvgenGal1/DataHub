@@ -5,7 +5,7 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 async function bootstrap() {
   try {
     // PORT Запуска
-    const PORT = process.env.PORT || 5791;
+    const PORT = process.env.PORT /* DB_PORT // ! не раб. порт 5125 */ || 5791;
     // modul входа
     const app = await NestFactory.create(AppModule /* , { cors: false } */);
     // в 2х местах откл. cors
@@ -13,19 +13,22 @@ async function bootstrap() {
 
     // настр.док.swagger(swg)
     const config = new DocumentBuilder()
-      .setTitle('Музыкальная платформа')
-      // .setDescription('Описание API Облачного хранилища')
-      .setVersion('1.0')
-      // настр.для использ.jwt.Токен в swagger
+      .setTitle('Музыкальная Платформа')
+      .setDescription('Описание API Музыкальной платформы')
+      .setVersion('1.0') // настр.для использ.jwt.Токен в swagger
       .addBearerAuth()
+      .addServer('http://localhost:5791') // Указ.URL Своёго сервера
       // .addTag('app')
       .build();
     // созд.док.swg(экземп.прилож., объ.парам., специф.доступа(3ий не обязат.парам.))
     const document = SwaggerModule.createDocument(app, config);
     // настр.путей swg. Путь устан.swg, Экземп.прилож., Объ.док.
     SwaggerModule.setup('swagger', app, document, {
-      // настр.для использ.jwt.Токен в swagger
-      swaggerOptions: { persisAuthorization: true },
+      customSiteTitle: 'Музыкальная Платформа', // Название страницы Swagger
+      swaggerOptions: {
+        // настр.для использ.jwt.Токен в swagger
+        persisAuthorization: true,
+      },
     });
 
     // прослуш.PORT и fn()callback с cg на Запуск
