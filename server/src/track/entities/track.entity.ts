@@ -1,9 +1,17 @@
 // ^ `Сущность`.взаимод.с БД (стркт.табл./измен.данн.в табл.User)
-import { Entity, Column, ManyToOne, ManyToMany, PrimaryColumn } from 'typeorm';
+import {
+  Entity,
+  Column,
+  ManyToOne,
+  ManyToMany,
+  PrimaryColumn,
+  OneToOne,
+} from 'typeorm';
 
 import { UserEntity } from 'src/users/entities/user.entity';
 import { CommentEntity } from './comment.entity';
 import { AlbumEntity } from 'src/album/entities/album.entity';
+import { FileEntity } from 'src/files/entities/file.entity';
 
 @Entity('track')
 export class TrackEntity {
@@ -30,6 +38,15 @@ export class TrackEntity {
   @Column({ default: 'mpt3/wav' })
   audio: string;
 
+  // у трека один файл с target.album
+  @OneToOne(() => FileEntity, (file: FileEntity) => file.track)
+  file: FileEntity;
+
+  // связь табл. Мн.к 1му. У Мн.треков Один альбом.
+  @ManyToOne(() => AlbumEntity, (album: AlbumEntity) => album.tracks)
+  album: AlbumEntity;
+  // ^^ дораб.до ManyToMany (у альбоиа много треков, трек может быть в разн.альбомах)
+
   // связь табл. Мн.к 1му. У Мн.треков Один польз.
   @ManyToOne(() => UserEntity, (user: UserEntity) => user.tracks)
   user: UserEntity;
@@ -37,9 +54,4 @@ export class TrackEntity {
   // связь табл. Мн.ко Мн. У Мн.треков Мн.комм.
   @ManyToMany(() => CommentEntity, (comment: CommentEntity) => comment.track)
   comments: CommentEntity[];
-
-  // ^^ дораб.до ManyToMany (у альбоиа много треков, трек может быть в разн.альбомах)
-  // связь табл. Мн.к 1му. У Мн.треков Один альбом.
-  @ManyToOne(() => AlbumEntity, (album: AlbumEntity) => album.tracks)
-  album: AlbumEntity;
 }

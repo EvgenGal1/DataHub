@@ -10,6 +10,8 @@ import {
 
 import { TrackEntity } from '../../track/entities/track.entity';
 import { CommentEntity } from 'src/track/entities/comment.entity';
+import { FileEntity } from 'src/files/entities/file.entity';
+import { AlbumEntity } from 'src/album/entities/album.entity';
 
 // декоратор для соед.с БД
 @Entity('users')
@@ -43,6 +45,16 @@ export class UserEntity {
   @OneToMany(() => TrackEntity, (track: TrackEntity) => track.user)
   //  возвращ.масс.треков
   tracks: TrackEntity[];
+
+  // связь табл. 1го ко Мн. У польз.Мн.альбомов
+  @OneToMany(() => AlbumEntity, (album: AlbumEntity) => album.user)
+  // возвращ.масс.альбомов
+  albums: AlbumEntity[];
+
+  // связь табл. 1го ко Мн. У польз.Мн.файлов
+  @OneToMany(() => FileEntity, (file: FileEntity) => file.user)
+  // возвращ.масс.файлов
+  files: FileEntity[];
 
   // связь табл. Мн.ко Мн. У польз.Мн.комм.ко Мн.трекам
   @ManyToMany(() => CommentEntity)
