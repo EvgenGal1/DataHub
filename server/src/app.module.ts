@@ -10,8 +10,10 @@ import { TrackEntity } from './track/entities/track.entity';
 import { CommentEntity } from './track/entities/comment.entity';
 import { AlbumModule } from './album/album.module';
 import { AlbumEntity } from './album/entities/album.entity';
-import { AppController, AppController2 } from './app.controller';
-import { AppService } from './app.service';
+// import { AppController, AppController2 } from './app.controller';
+// import { AppService } from './app.service';
+import { FilesModule } from './files/files.module';
+import { FileEntity } from './files/entities/file.entity';
 
 // Комп.Прилож
 @Module({
@@ -32,7 +34,13 @@ import { AppService } from './app.service';
       username: process.env.POSTGRES_USER,
       password: process.env.POSTGRESS_PASSWORD,
       // указ.`сущности` для авто.синхронз.измен. ч/з TypeOrmModule
-      entities: [UserEntity, TrackEntity, CommentEntity, AlbumEntity],
+      entities: [
+        UserEntity,
+        TrackEntity,
+        CommentEntity,
+        AlbumEntity,
+        FileEntity,
+      ],
       // ^^ ТОЛЬКО DEV
       synchronize: true,
     }),
@@ -41,8 +49,7 @@ import { AppService } from './app.service';
     UsersModule,
     TrackModule,
     AlbumModule,
+    FilesModule,
   ],
-  controllers: [AppController, AppController2],
-  providers: [AppService],
 })
 export class AppModule {}
