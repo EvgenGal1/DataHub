@@ -38,6 +38,15 @@ export class TrackEntity {
   @Column({ default: 'mpt3/wav' })
   audio: string;
 
+  // ^^ добав.: стиль, продолжительность
+  // Стиль Трека
+  @Column({ default: 'Rock' })
+  style: string;
+
+  // продолжительность
+  @Column({ default: 180 })
+  duration: number;
+
   // у трека один файл с target.album
   @OneToOne(() => FileEntity, (file: FileEntity) => file.track)
   file: FileEntity;
