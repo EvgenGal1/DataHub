@@ -1,6 +1,3 @@
-import { AlbumEntity } from 'src/album/entities/album.entity';
-import { TrackEntity } from 'src/track/entities/track.entity';
-import { UserEntity } from 'src/users/entities/user.entity';
 import {
   Column,
   DeleteDateColumn,
@@ -9,6 +6,10 @@ import {
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+
+import { AlbumEntity } from 'src/album/entities/album.entity';
+import { TrackEntity } from 'src/track/entities/track.entity';
+import { UserEntity } from 'src/users/entities/user.entity';
 
 // типизация Query парам.ч/з enum. Filter ф.по фото и trash`мусор`
 export enum FileType {

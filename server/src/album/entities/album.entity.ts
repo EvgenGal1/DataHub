@@ -17,18 +17,25 @@ export class AlbumEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
+  // Назв.Альбома
   @Column({ default: 'Название альбома' })
   album: string;
 
+  // Автор
   @Column({ default: 'Автор альбома 1' })
   author: string;
 
+  // обложка
   @Column({ default: '_#_' })
   picture: string;
 
   // год выпуска
   @Column({ default: '199_' })
   year: string;
+
+  // общ.стиль Треков
+  @Column({ default: '199_' })
+  style: string;
 
   // ^^ завести методы для:
   // стили музыки (загр.все стили track; чтоб стили из track для данн.alb подружались ч/з конкатенацию (слэш, тчк.запят.))

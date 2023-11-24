@@ -14,6 +14,8 @@ import { AlbumEntity } from './album/entities/album.entity';
 // import { AppService } from './app.service';
 import { FilesModule } from './files/files.module';
 import { FileEntity } from './files/entities/file.entity';
+import { RolesModule } from './roles/roles.module';
+import { RoleEntity } from './roles/entities/role.entity';
 
 // Комп.Прилож
 @Module({
@@ -40,6 +42,7 @@ import { FileEntity } from './files/entities/file.entity';
         CommentEntity,
         AlbumEntity,
         FileEntity,
+        RoleEntity,
       ],
       // ^^ ТОЛЬКО DEV
       synchronize: true,
@@ -50,6 +53,7 @@ import { FileEntity } from './files/entities/file.entity';
     TrackModule,
     AlbumModule,
     FilesModule,
+    RolesModule,
   ],
 })
 export class AppModule {}
