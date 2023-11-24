@@ -10,6 +10,7 @@ import {
   JoinTable,
   BeforeInsert,
   BeforeUpdate,
+  PrimaryGeneratedColumn,
 } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 
@@ -20,7 +21,7 @@ import { CommentEntity } from 'src/track/entities/comment.entity';
 import { AlbumEntity } from 'src/album/entities/album.entity';
 import { UserRolesEntity } from 'src/roles/entities/user-roles.entity';
 
-// ~~ настр.под колонки из доков > https://orkhan.gitbook.io/typeorm/docs/entities
+// ~~ настр.под @Column из доков > https://orkhan.gitbook.io/typeorm/docs/entities
 export enum UserRole { // TS`перечисление`
   ADMIN = 'admin',
   USER = 'user',
@@ -34,7 +35,11 @@ export type UserRoleType = 'admin' | 'user' | 'editor' | 'ghost'; // Arr`пер�
 export class UserEntity {
   // декоратор для авто.генер.id, eml, psw, имя пользователя, роль доступов, подтвржд.почты, ссылк.активации
   @ApiProperty({ example: '1', description: 'Уникальный идентификатор' })
-  @PrimaryColumn({ type: 'integer', unique: true })
+  @PrimaryColumn({
+    // @PrimaryGeneratedColumn({
+    type: 'integer',
+    unique: true,
+  })
   id: number;
 
   @ApiProperty({ example: 'user@mail.ru', description: 'Почтовый адрес' })
@@ -66,7 +71,7 @@ export class UserEntity {
   // ссылка активации ч/з почту
   // @Column({ default: '---' })
   // link: string;
-  // ссылка активации ч/з почту
+  // подтвержд./ссылка актив.ч/з почту по ссылке
   @ApiProperty({
     example: 'qdfvg.reth6k-fe3b',
     description: 'Ссылка активации акка ч/з Почту',
@@ -77,8 +82,8 @@ export class UserEntity {
   })
   activatedLink: string;
 
-  // связь табл. Мн.ко Мн ч/з доп.табл.UserRolesEntity. У Мн.Польз.Мн.Ролей.
-  // ~~ настр.под колонки из доков
+  // связь табл. Мн.ко Мн. У Мн.Польз.Мн.Ролей.
+  // ~~ настр.под @Column из доков
   // @Column({
   // type: 'enum', // TS`перечисление`
   // enum: UserRole,
@@ -89,12 +94,16 @@ export class UserEntity {
   // })
   // role /* s */ : UserRole[]; // TS`перечисление`
   // role /* s */ : UserRoleType[]; // Arr`перечисление`
-  // связка ч/з доп.табл.UserRolesEntity
-  @ManyToMany(() => RoleEntity, () => UserRolesEntity) // ? как корректнее UsRolEnt или (role) => role.users
-  @JoinTable({ name: 'user_roles' })
-  roles: RoleEntity[];
+  // ~~ связка ч/з доп.табл.UserRolesEntity
+  // @ManyToMany(() => RoleEntity, () => UserRolesEntity) // ? как корректнее UsRolEnt или (role) => role.users
+  // /* перезд в RoleEntity */ @JoinTable({ name: 'user_roles' })
+  // roles: RoleEntity[];
+  // ~~ связка ч/з доп.табл.UserRolesEntity + доп.св-ва
+  @OneToMany(() => UserRolesEntity, (userRolesEntity) => userRolesEntity.userId)
+  userRolesEntityUsr: UserRolesEntity[];
 
-  // ~~ доп.настр.подтягивания Роли в users. Скорее только для @Column ----------------------------------------------------------------------------------
+  // Доп.настр.подтяг.Роли в users от условий ----------------------------------------------------------------------------------
+  // ~~ скорее только > настр.под @Column из доков.
   // @BeforeInsert()
   // @BeforeUpdate()
   // updateRoles() {

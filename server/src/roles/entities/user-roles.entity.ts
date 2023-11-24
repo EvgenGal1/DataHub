@@ -1,4 +1,11 @@
-import { Column, Entity, ManyToOne, PrimaryColumn } from 'typeorm';
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import {
+  Column,
+  Entity,
+  ManyToOne,
+  PrimaryColumn,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 import { UserEntity } from '../../users/entities/user.entity';
 import { RoleEntity } from './role.entity';
@@ -6,6 +13,7 @@ import { RoleEntity } from './role.entity';
 @Entity('user_roles')
 export class UserRolesEntity {
   @PrimaryColumn({
+    // @PrimaryGeneratedColumn({
     type: 'integer',
     unique: true,
   })
@@ -17,9 +25,16 @@ export class UserRolesEntity {
   @Column({ nullable: true })
   level: number;
 
-  @ManyToOne(() => UserEntity, (user) => user.roles)
-  userId: UserEntity;
+  @ManyToOne(() => UserEntity, (user) => user.userRolesEntityUsr /* roles */)
+  user /* userId */ : UserEntity;
 
-  @ManyToOne(() => RoleEntity, (role) => role.role)
-  roleId: RoleEntity;
+  @ManyToOne(() => RoleEntity, (role) => role.userRolesEntityRol /* role */)
+  role /* roleId */ : RoleEntity;
+
+  // ~~ связка ч/з доп.табл.UserRolesEntity + доп.св-ва
+  @Column()
+  userId: number;
+
+  @Column()
+  roleId: number;
 }

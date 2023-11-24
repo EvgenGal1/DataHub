@@ -5,17 +5,16 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 // import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { UserEntity } from './users/entities/user.entity';
-import { TrackModule } from './track/track.module';
-import { TrackEntity } from './track/entities/track.entity';
-import { CommentEntity } from './track/entities/comment.entity';
-import { AlbumModule } from './album/album.module';
-import { AlbumEntity } from './album/entities/album.entity';
-// import { AppController, AppController2 } from './app.controller';
-// import { AppService } from './app.service';
-import { FilesModule } from './files/files.module';
-import { FileEntity } from './files/entities/file.entity';
 import { RolesModule } from './roles/roles.module';
 import { RoleEntity } from './roles/entities/role.entity';
+import { UserRolesEntity } from './roles/entities/user-roles.entity';
+import { FilesModule } from './files/files.module';
+import { FileEntity } from './files/entities/file.entity';
+import { TrackModule } from './track/track.module';
+import { TrackEntity } from './track/entities/track.entity';
+import { AlbumModule } from './album/album.module';
+import { AlbumEntity } from './album/entities/album.entity';
+import { CommentEntity } from './track/entities/comment.entity';
 
 // Комп.Прилож
 @Module({
@@ -38,11 +37,12 @@ import { RoleEntity } from './roles/entities/role.entity';
       // указ.`сущности` для авто.синхронз.измен. ч/з TypeOrmModule
       entities: [
         UserEntity,
-        TrackEntity,
-        CommentEntity,
-        AlbumEntity,
-        FileEntity,
         RoleEntity,
+        UserRolesEntity,
+        FileEntity,
+        TrackEntity,
+        AlbumEntity,
+        CommentEntity,
       ],
       // ^^ ТОЛЬКО DEV
       synchronize: true,
@@ -50,10 +50,10 @@ import { RoleEntity } from './roles/entities/role.entity';
     // подкл.использ.modulи
     // AuthModule,
     UsersModule,
+    RolesModule,
+    FilesModule,
     TrackModule,
     AlbumModule,
-    FilesModule,
-    RolesModule,
   ],
 })
 export class AppModule {}

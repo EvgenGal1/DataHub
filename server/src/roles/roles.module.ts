@@ -1,20 +1,18 @@
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Module } from '@nestjs/common';
 
-import { RolesService } from './roles.service';
-import { RolesController } from './roles.controller';
-import { RoleEntity } from './entities/role.entity';
 import { UserEntity } from 'src/users/entities/user.entity';
+import { RoleEntity } from './entities/role.entity';
+import { UserRolesEntity } from './entities/user-roles.entity';
+import { RolesController } from './roles.controller';
+import { RolesService } from './roles.service';
 
 @Module({
+  imports: [
+    TypeOrmModule.forFeature([UserEntity, RoleEntity, UserRolesEntity]),
+  ],
   controllers: [RolesController],
   providers: [RolesService],
-  imports: [
-    TypeOrmModule.forFeature([
-      RoleEntity,
-      UserEntity /* , UserRoles // нужна ли отд.табл.связи */,
-    ]),
-  ],
   exports: [RolesService],
 })
 export class RolesModule {}

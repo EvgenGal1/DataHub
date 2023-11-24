@@ -4,8 +4,10 @@ import {
   ColumnType,
   DeleteDateColumn,
   Entity,
+  JoinTable,
   ManyToMany,
   ManyToOne,
+  OneToMany,
   OneToOne,
   PrimaryColumn,
   PrimaryGeneratedColumn,
@@ -13,8 +15,6 @@ import {
 import { ApiProperty } from '@nestjs/swagger';
 
 import { UserEntity } from 'src/users/entities/user.entity';
-import { AlbumEntity } from 'src/album/entities/album.entity';
-import { TrackEntity } from 'src/track/entities/track.entity';
 import { UserRolesEntity } from './user-roles.entity';
 
 interface RoleCreationAttrs {
@@ -26,27 +26,34 @@ interface RoleCreationAttrs {
 export class RoleEntity /* extends Model<Role, RoleCreationAttrs> */ {
   @ApiProperty({ example: '1', description: 'Уникальный идентификатор' })
   @PrimaryColumn({
+    // @PrimaryGeneratedColumn({
     type: 'integer',
-    unique: true,
+    // unique: true,
   })
   id: number;
 
   @ApiProperty({ example: 'USER', description: 'Уникальное Значение роли ' })
   @Column({
-    type: 'text',
-    nullable: false,
-    unique: true,
+    // type: 'text',
+    nullable: true, //false,
+    // unique: true,
   })
   role: string;
 
   @ApiProperty({ example: 'Администратор', description: 'Описание роли' })
   @Column({
     type: 'text',
-    nullable: true, // Разрешить NULL
+    // nullable: true, // Разрешить NULL
   })
   description: string;
 
-  // связка ч/з отд.доп.табл.UserRolesEntity
-  @ManyToMany(() => UserEntity, () => UserRolesEntity) // ? как корректнее UsRolEnt или (user) => user.roles)
-  users: UserEntity[];
+  // связь табл. Мн.ко Мн. У Мн.Ролей.Мн.Польз.
+  // ~~ связка ч/з отд.доп.табл.UserRolesEntity
+  // @ManyToMany(() => UserEntity, () => UserRolesEntity) // ? как корректнее UsRolEnt или (user) => user.roles)
+  // @JoinTable({ name: 'user_roles' })
+  // users: UserEntity[];
+  // ~~ связка ч/з доп.табл.UserRolesEntity + доп.св-ва
+  @OneToMany(() => UserRolesEntity, (userRolesEntity) => userRolesEntity.roleId)
+  // @JoinTable({ name: 'user_roles' })
+  userRolesEntityRol: UserRolesEntity[];
 }
