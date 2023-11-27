@@ -97,3 +97,6 @@ webpack*
 
 # врем.откл.
 **/auth/*
+**/admin/*
+**/validators/*
+**/reactions/*

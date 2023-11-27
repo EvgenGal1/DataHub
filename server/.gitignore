@@ -1,6 +1,9 @@
 # compiled output
-/dist
-/node_modules
+dist/
+**/node_modules
+/.pnp
+.pnp.js
+.yarn/install-state.gz
 
 # Logs
 logs
@@ -32,4 +35,4 @@ lerna-debug.log*
 !.vscode/settings.json
 !.vscode/tasks.json
 !.vscode/launch.json
-!.vscode/extensions.json
+!.vscode/extensions.json 
