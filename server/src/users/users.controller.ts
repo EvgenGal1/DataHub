@@ -1,4 +1,3 @@
-// обраб.req/res
 import {
   Controller,
   Get,
@@ -11,36 +10,51 @@ import {
 import {
   /* ApiBearerAuth, */ ApiCreatedResponse,
   ApiOperation,
+  ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
 
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { UserEntity } from './entities/user.entity';
 
 @Controller('users')
 // спец.тег swagger ч/з декоратор ApiTags для групп.мтд.cntrl users
-@ApiTags('users')
+@ApiTags('Пользователи/users')
 // оборач.чтоб swagger знал что req на files защищены jwt Токеном
 // @ApiBearerAuth()
 export class UsersController {
   // ч/з внедр.завис. + UserEntity > раб.ч/з this с табл.users
-  constructor(private readonly usersService: UsersService) {}
+  constructor(private usersService: UsersService) {}
 
   @Post()
-  @ApiOperation({ summary: 'Добавить Пользователя' })
-  @ApiCreatedResponse({ description: 'Добавить Пользователя' })
+  @ApiOperation({ summary: 'Создание Пользователя' })
+  // декор.res.swagger: ApiResponse, ApiOkResponse, ApiCreatedResponse, ApiNotFoundResponse
+  @ApiResponse({
+    status: 201,
+    type: UserEntity,
+    description: 'Ответ о создании Пользователя',
+  })
   // получ.объ из запроса ч/з @Body
   create(@Body() createUserDto: CreateUserDto) {
+    console.log('createUserDto : ' + createUserDto);
+    console.log(createUserDto);
     // объ передаём в мтд.create в users.serv
     return this.usersService.create(createUserDto);
   }
 
   @Get()
-  @ApiOperation({ summary: 'Получить всех' })
-  @ApiCreatedResponse({ description: 'Получить всех' })
-  findAll() {
-    return this.usersService.findAll();
+  @ApiOperation({ summary: 'Получить всех Пользователей' })
+  @ApiResponse({
+    description: 'Получить всех',
+    status: 200,
+    type: [UserEntity],
+  })
+  // @Roles('ADMIN')
+  // @UseGuards(RolesGuard)
+  findAll(/* @Query('usersIds') userIds?: string */) {
+    return this.usersService.findAllUsers(/* userIds */);
   }
 
   // ОДИН трек.
@@ -74,4 +88,44 @@ export class UsersController {
   remove(@Param('id') id: string) {
     return this.usersService.remove(+id);
   }
+
+  // ^^ Расшир.мтд. ----------------------------------------------------------------------------
+  // @ApiOperation({ summary: 'Выдать роль' })
+  // @ApiResponse({ status: 200 })
+  // @Roles('ADMIN')
+  // @UseGuards(RolesGuard)
+  // @Post('/role')
+  // addRole(@Body() dto: AddRoleDto) {
+  //   return this.usersService.addRole(dto);
+  // }
+
+  // @ApiOperation({ summary: 'Забанить пользователя' })
+  // @ApiResponse({ status: 200 })
+  // @Roles('ADMIN')
+  // @UseGuards(RolesGuard)
+  // @Post('/ban')
+  // ban(@Body() dto: BanUserDto) {
+  //   return this.usersService.ban(dto);
+  // }
+
+  // ~~ связь с конкретными ролями
+  // @Post()
+  // async createUserWithRoles(
+  //   @Body('username') username: string,
+  //   @Body('roles') roles: string[],
+  // ) {
+  //   const newUser = await this.usersService.createUserWithRoles(
+  //     username,
+  //     roles,
+  //   );
+  //   return newUser;
+  // }
+  //  ----------------------------------------------------------------------------------
+  // ~~ Для получения пользователя (user), его роли (role) и уровня (level) из таблиц users, roles и user_roles
+  // @Post('/userId')
+  // async getUserRoleAndLevel(@Query('userId') userId: number) {
+  //   console.log('userId : ' + userId);
+  //   const user = await this.usersService.getUserRoleAndLevel(userId);
+  //   return user;
+  // }
 }

@@ -10,6 +10,9 @@ import { RolesService } from './roles.service';
 @Module({
   imports: [
     TypeOrmModule.forFeature([UserEntity, RoleEntity, UserRolesEntity]),
+    // подкл.использ.modulи
+    // TrackModule,
+    // RolesModule,
   ],
   controllers: [RolesController],
   providers: [RolesService],
