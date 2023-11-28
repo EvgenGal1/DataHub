@@ -1,59 +1,32 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-import {
-  Column,
-  ColumnType,
-  DeleteDateColumn,
-  Entity,
-  JoinTable,
-  ManyToMany,
-  ManyToOne,
-  OneToMany,
-  OneToOne,
-  PrimaryColumn,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { Column, Entity, ManyToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 
 import { UserEntity } from 'src/users/entities/user.entity';
-import { UserRolesEntity } from './user-roles.entity';
 
-interface RoleCreationAttrs {
-  value: string;
-  description: string;
-}
-
-@Entity({ name: 'roles' /* , createdAt: false, updatedAt: false */ })
-export class RoleEntity /* extends Model<Role, RoleCreationAttrs> */ {
+@Entity({ name: 'roles' })
+export class RoleEntity {
   @ApiProperty({ example: '1', description: 'Уникальный идентификатор' })
-  @PrimaryColumn({
-    // @PrimaryGeneratedColumn({
-    type: 'integer',
-    // unique: true,
-  })
+  @PrimaryGeneratedColumn()
+  // @PrimaryColumn({type: 'integer',unique: true,})
   id: number;
 
-  @ApiProperty({ example: 'USER', description: 'Уникальное Значение роли ' })
-  @Column({
-    // type: 'text',
-    nullable: true, //false,
-    // unique: true,
-  })
-  role: string;
+  // Роль
+  @Column({ type: 'varchar', unique: true, nullable: false })
+  value: string;
 
-  @ApiProperty({ example: 'Администратор', description: 'Описание роли' })
-  @Column({
-    type: 'text',
-    // nullable: true, // Разрешить NULL
+  // Описание Роли
+  @ApiProperty({
+    example: 'Администратор',
+    default: 'Описание роли',
+    description: 'Описание роли',
   })
+  @Column({ type: 'text', default: 'Описание роли', nullable: false })
   description: string;
 
-  // связь табл. Мн.ко Мн. У Мн.Ролей.Мн.Польз.
-  // ~~ связка ч/з отд.доп.табл.UserRolesEntity
-  // @ManyToMany(() => UserEntity, () => UserRolesEntity) // ? как корректнее UsRolEnt или (user) => user.roles)
-  // @JoinTable({ name: 'user_roles' })
-  // users: UserEntity[];
-  // ~~ связка ч/з доп.табл.UserRolesEntity + доп.св-ва
-  @OneToMany(() => UserRolesEntity, (userRolesEntity) => userRolesEntity.roleId)
-  // @JoinTable({ name: 'user_roles' })
-  userRolesEntityRol: UserRolesEntity[];
+  // ^^ связки Мн.>Мн. у users/userId и roles/roleId
+  @ManyToMany(() => UserEntity, (user) => user.roles, {
+    onDelete: 'NO ACTION',
+    onUpdate: 'NO ACTION',
+  })
+  users?: UserEntity[];
 }

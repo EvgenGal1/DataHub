@@ -1,7 +1,7 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import {
   Column,
   Entity,
+  JoinColumn,
   ManyToOne,
   PrimaryColumn,
   PrimaryGeneratedColumn,
@@ -12,29 +12,40 @@ import { RoleEntity } from './role.entity';
 
 @Entity('user_roles')
 export class UserRolesEntity {
-  @PrimaryColumn({
-    // @PrimaryGeneratedColumn({
-    type: 'integer',
-    unique: true,
-  })
+  @PrimaryGeneratedColumn()
+  // @PrimaryColumn({type: 'integer',unique: true,})
   id: number;
 
   // уровень Роли (напр.: роль Miloman ур.1 при загр.1 изо, ур.2 > 5 изо и т.д.)
-  // ~~ дописать > https://orkhan.gitbook.io/typeorm/docs/many-to-many-relations
-  // @ApiProperty({ example: 1, description: 'Уровень Роли' })
-  @Column({ nullable: true })
+  @Column({ default: 1, nullable: true })
   level: number;
 
-  @ManyToOne(() => UserEntity, (user) => user.userRolesEntityUsr /* roles */)
-  user /* userId */ : UserEntity;
-
-  @ManyToOne(() => RoleEntity, (role) => role.userRolesEntityRol /* role */)
-  role /* roleId */ : RoleEntity;
-
-  // ~~ связка ч/з доп.табл.UserRolesEntity + доп.св-ва
-  @Column()
+  // ^^ связки Мн.>Мн. у users/userId и roles/roleId
+  @PrimaryColumn({ name: 'userId' })
   userId: number;
 
-  @Column()
+  @PrimaryColumn({ name: 'roleId' })
   roleId: number;
+
+  @ManyToOne(() => UserEntity, (user) => user.roles, {
+    onDelete: 'NO ACTION',
+    onUpdate: 'NO ACTION',
+  })
+  @JoinColumn([{ name: 'userId', referencedColumnName: 'id' }])
+  users: UserEntity[];
+
+  @ManyToOne(() => RoleEntity, (role) => role.users, {
+    onDelete: 'NO ACTION',
+    onUpdate: 'NO ACTION',
+  })
+  @JoinColumn([{ name: 'roleId', referencedColumnName: 'id' }])
+  roles: RoleEntity[];
+
+  // ~~ доп.столб.в users.roles
+  // Теперь, при создании или обновлении связей UserRolesEntity, столбец roles в сущности UserEntity будет автоматически заполнен массивом ролей.
+  // @BeforeInsert()
+  // @BeforeUpdate()
+  // updateRolesArray() {
+  //   this.user.roles = this.user.userRoles.map((userRole) => userRole.role.role);
+  // }
 }
