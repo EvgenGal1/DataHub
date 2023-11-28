@@ -14,7 +14,6 @@ import { TrackModule } from './track/track.module';
 import { TrackEntity } from './track/entities/track.entity';
 import { AlbumModule } from './album/album.module';
 import { AlbumEntity } from './album/entities/album.entity';
-// import { CommentEntity } from './track/entities/comment.entity';
 import { ReactionsModule } from './reactions/reactions.module';
 import { ReactionEntity } from './reactions/entities/reaction.entity';
 
@@ -44,7 +43,6 @@ import { ReactionEntity } from './reactions/entities/reaction.entity';
         FileEntity,
         TrackEntity,
         AlbumEntity,
-        // CommentEntity,
         ReactionEntity,
       ],
       // ^^ ТОЛЬКО DEV

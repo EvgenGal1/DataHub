@@ -14,7 +14,6 @@ import { RoleEntity } from 'src/roles/entities/role.entity';
 import { FileEntity } from 'src/files/entities/file.entity';
 import { TrackEntity } from '../../track/entities/track.entity';
 import { AlbumEntity } from 'src/album/entities/album.entity';
-// import { CommentEntity } from './comment.entity';
 import { ReactionEntity } from 'src/reactions/entities/reaction.entity';
 
 // декоратор для соед.с БД
@@ -77,10 +76,10 @@ export class UserEntity {
   @OneToMany(() => FileEntity, (file: FileEntity) => file.user)
   files: FileEntity[];
 
-  // ? мб. связь табл. Мн.ко Мн. У польз.Мн.комм.ко Мн.трекам @ManyToMany(() => CommentEntity)
+  // ? мб. связь табл. Мн.ко Мн. У польз.Мн.реакций.ко Мн.трекам @ManyToMany(() => ReactionEntity)
   // связь табл. 1го ко Мн. У польз.Мн.комм
   @OneToMany(() => ReactionEntity, (file: ReactionEntity) => file.text)
-  comments: ReactionEntity[];
+  reactions: ReactionEntity[];
 
   // ^ доп.табл.>будущее
   // @ApiProperty({ example: 'true', description: 'Забанен или нет' })

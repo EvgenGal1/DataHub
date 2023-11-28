@@ -3,21 +3,22 @@ import {
   Entity,
   Column,
   ManyToOne,
-  ManyToMany,
-  PrimaryColumn,
   OneToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
 } from 'typeorm';
 
+import { AbstractEntity } from 'src/model/abstract.entity';
 import { UserEntity } from 'src/users/entities/user.entity';
-import { CommentEntity } from './comment.entity';
+import { ReactionEntity } from 'src/reactions/entities/reaction.entity';
 import { AlbumEntity } from 'src/album/entities/album.entity';
 import { FileEntity } from 'src/files/entities/file.entity';
 
 @Entity('track')
-export class TrackEntity {
-  // id, назв.трека, имя артиста, текст трека, кол-во прослушиваний, ссылк.изо обложки трека, ссылк.аудио, связь с.польз., масс.комментов
-  // @PrimaryGeneratedColumn() // коммит чтоб указ.свободный id ч/з fn getSmallestAvailableId
-  @PrimaryColumn()
+export class TrackEntity extends AbstractEntity {
+  // id, назв.трека, имя артиста, текст трека, кол-во прослушиваний, ссылк.изо обложки трека, ссылк.аудио, связь с.польз., масс.реакций
+  @PrimaryGeneratedColumn() // коммит чтоб указ.свободный id ч/з fn getSmallestAvailableId
+  // @PrimaryColumn()
   id: number;
 
   @Column({ default: 'назв.трека #' })
@@ -40,7 +41,7 @@ export class TrackEntity {
 
   // ^^ добав.: стиль, продолжительность
   // Стиль Трека
-  @Column({ default: 'Rock' })
+  @Column({ default: 'Other' })
   style: string;
 
   // продолжительность
@@ -54,13 +55,13 @@ export class TrackEntity {
   // связь табл. Мн.к 1му. У Мн.треков Один альбом.
   @ManyToOne(() => AlbumEntity, (album: AlbumEntity) => album.tracks)
   album: AlbumEntity;
-  // ^^ дораб.до ManyToMany (у альбоиа много треков, трек может быть в разн.альбомах)
+  // ?? дораб.до ManyToMany (у альбоиа много треков, трек может быть в разн.альбомах)
 
   // связь табл. Мн.к 1му. У Мн.треков Один польз.
   @ManyToOne(() => UserEntity, (user: UserEntity) => user.tracks)
   user: UserEntity;
 
-  // связь табл. Мн.ко Мн. У Мн.треков Мн.комм.
-  @ManyToMany(() => CommentEntity, (comment: CommentEntity) => comment.track)
-  comments: CommentEntity[];
+  // связь табл. 1го ко Мн. У трека Мн.реакций.
+  @OneToMany(() => ReactionEntity, (reaction: ReactionEntity) => reaction.track)
+  reactions: ReactionEntity[];
 }

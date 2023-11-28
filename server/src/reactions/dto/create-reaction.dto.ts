@@ -1,13 +1,12 @@
-// import { ObjectId } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 
-export class CreateCommentDto {
+export class CreateReactionDto {
   @ApiProperty({ default: 'коммент #' })
   text: string;
 
   @ApiProperty({ default: 111 })
-  trackId: number; // ObjectId;
+  trackId: number;
 
   @ApiProperty({ default: 111 })
-  userId: number; // ObjectId;
+  userId: number;
 }

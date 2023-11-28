@@ -30,7 +30,7 @@ export class UsersService {
     // опред.репозитор.
     if (tableName === 'user') customRepository = this.userRepository;
     // else if (tableName === 'track') customRepository = this.trackRepository;
-    // else if (tableName === 'comment') customRepository = this.commentRepository;
+    // else if (tableName === 'reaction') customRepository = this.reactionRepository;
     // обраб.ошб.е/и табл.нет
     if (!customRepository) throw new Error('Неверное название таблицы');
     // состав.req к табл.tableName по id и по порядку возрастания
