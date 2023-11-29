@@ -4,14 +4,19 @@ import {
   Post,
   Body,
   Param,
-  // Patch,
-  // Delete,
+  Patch,
+  Delete,
 } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import {
+  ApiOperation,
+  ApiTags,
+  // , ApiResponse
+} from '@nestjs/swagger';
 
 import { CreateRoleDto } from './dto/create-role.dto';
-// import { UpdateRoleDto } from './dto/update-role.dto';
+import { UpdateRoleDto } from './dto/update-role.dto';
 import { RolesService } from './roles.service';
+// import { RoleEntity } from './entities/role.entity';
 
 @Controller('roles')
 @ApiTags('roles')
@@ -19,32 +24,42 @@ export class RolesController {
   constructor(private readonly rolesService: RolesService) {}
 
   @Post()
-  create(@Body() createRoleDto: CreateRoleDto) {
+  @ApiOperation({ summary: 'Создание Роли' })
+  // @ApiResponse({
+  //   status: 201,
+  //   type: RoleEntity,
+  //   description: 'Ответ о создании Роли',
+  // })
+  createRole(@Body() createRoleDto: CreateRoleDto) {
     return this.rolesService.createRole(createRoleDto);
   }
 
   @Get('/:value')
-  getByValue(@Param('value') value: string) {
-    return this.rolesService.getRoleByValue(value);
+  @ApiOperation({ summary: 'Получить Роль по ID <> Значению' })
+  findRoleByValue(@Param('value') value: string) {
+    return this.rolesService.findRoleByValue(value);
   }
 
-  // @Get()
-  // findAll() {
-  //   return this.rolesService.findAll();
-  // }
+  @Get()
+  @ApiOperation({ summary: 'Получить Все Роли' })
+  findAllRole() {
+    return this.rolesService.findAllRoles();
+  }
 
-  // @Get(':id')
-  // findOne(@Param('id') id: string) {
-  //   return this.rolesService.findOne(+id);
-  // }
+  @Patch(':id')
+  @ApiOperation({ summary: 'Обновить Роль' })
+  updateRole(@Param('id') id: string, @Body() updateRoleDto: UpdateRoleDto) {
+    return this.rolesService.updateRole(+id, updateRoleDto);
+  }
 
-  // @Patch(':id')
-  // update(@Param('id') id: string, @Body() updateRoleDto: UpdateRoleDto) {
-  //   return this.rolesService.update(+id, updateRoleDto);
-  // }
-
+  @Delete(':id')
+  @ApiOperation({ summary: 'Удалить Роль' })
+  removeRole(@Param('id') id: string) {
+    return this.rolesService.removeRole(+id);
+  }
   // @Delete(':id')
-  // remove(@Param('id') id: string) {
-  //   return this.rolesService.remove(+id);
+  // @ApiOperation({ summary: 'Востановить Роль' })
+  // restoreRole(@Param('id') id: string) {
+  //   return this.rolesService.restoreRole(+id);
   // }
 }

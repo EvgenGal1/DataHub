@@ -7,12 +7,14 @@ import {
   Param,
   Delete,
 } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 
 import { CreateReactionDto } from './dto/create-reaction.dto';
 import { UpdateReactionDto } from './dto/update-reaction.dto';
 import { ReactionsService } from './reactions.service';
 
 @Controller('reactions')
+@ApiTags('Реакции')
 export class ReactionsController {
   constructor(private readonly reactionsService: ReactionsService) {}
 

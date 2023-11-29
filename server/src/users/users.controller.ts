@@ -8,20 +8,20 @@ import {
   Delete,
 } from '@nestjs/common';
 import {
-  /* ApiBearerAuth, */ ApiCreatedResponse,
   ApiOperation,
-  ApiResponse,
   ApiTags,
+  // ApiBearerAuth,
+  // ApiResponse,
 } from '@nestjs/swagger';
 
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { UserEntity } from './entities/user.entity';
+// import { UserEntity } from './entities/user.entity';
 
 @Controller('users')
 // спец.тег swagger ч/з декоратор ApiTags для групп.мтд.cntrl users
-@ApiTags('Пользователи/users')
+@ApiTags('Пользователи')
 // оборач.чтоб swagger знал что req на files защищены jwt Токеном
 // @ApiBearerAuth()
 export class UsersController {
@@ -31,62 +31,55 @@ export class UsersController {
   @Post()
   @ApiOperation({ summary: 'Создание Пользователя' })
   // декор.res.swagger: ApiResponse, ApiOkResponse, ApiCreatedResponse, ApiNotFoundResponse
-  @ApiResponse({
-    status: 201,
-    type: UserEntity,
-    description: 'Ответ о создании Пользователя',
-  })
+  // @ApiResponse({
+  //   status: 201,
+  //   type: UserEntity,
+  //   description: 'Ответ о создании Пользователя',
+  // })
   // получ.объ из запроса ч/з @Body
-  create(@Body() createUserDto: CreateUserDto) {
-    console.log('createUserDto : ' + createUserDto);
-    console.log(createUserDto);
+  createUser(@Body() createUserDto: CreateUserDto) {
     // объ передаём в мтд.create в users.serv
-    return this.usersService.create(createUserDto);
+    return this.usersService.createUser(createUserDto);
   }
 
   @Get()
   @ApiOperation({ summary: 'Получить всех Пользователей' })
-  @ApiResponse({
-    description: 'Получить всех',
-    status: 200,
-    type: [UserEntity],
-  })
   // @Roles('ADMIN')
   // @UseGuards(RolesGuard)
-  findAll(/* @Query('usersIds') userIds?: string */) {
-    return this.usersService.findAllUsers(/* userIds */);
+  findAllUsers() {
+    return this.usersService.findAllUsers();
   }
 
   // ОДИН трек.
   @Get(':id')
   @ApiOperation({ summary: 'Получить ч/з findOne' })
-  @ApiCreatedResponse({ description: 'Описание findOne' })
-  findOne(@Param('id') id: string) {
-    return this.usersService.findOne(+id);
+  // @ApiCreatedResponse({ description: 'Описание findOne' })
+  findOneUser(@Param('id') id: string) {
+    return this.usersService.findOneUser(+id);
   }
   // ! не отраж.в swgg
   @Get(':id')
   @ApiOperation({ summary: 'Получить ч/з findByEmail' })
-  findByEmail(@Param('email') email: string) {
-    return this.usersService.findByEmail(email);
+  findByEmailUser(@Param('email') email: string) {
+    return this.usersService.findByEmailUser(email);
   }
   // ! не отраж.в swgg
   @Get(':id')
   @ApiOperation({ summary: 'Получить ч/з findById' })
-  findById(@Param('id') id: string) {
-    return this.usersService.findById(+id);
+  findByIdUser(@Param('id') id: string) {
+    return this.usersService.findByIdUser(+id);
   }
 
   @Patch(':id')
   @ApiOperation({ summary: 'Обновление Пользователя' })
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.usersService.update(+id, updateUserDto);
+  updateUser(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
+    return this.usersService.updateUser(+id, updateUserDto);
   }
 
   @Delete(':id')
   @ApiOperation({ summary: 'Удаление Пользователя' })
-  remove(@Param('id') id: string) {
-    return this.usersService.remove(+id);
+  removeUser(@Param('id') id: string) {
+    return this.usersService.removeUser(+id);
   }
 
   // ^^ Расшир.мтд. ----------------------------------------------------------------------------

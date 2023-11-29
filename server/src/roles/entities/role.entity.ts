@@ -1,4 +1,11 @@
-import { Column, Entity, ManyToMany, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  DeleteDateColumn,
+  Entity,
+  ManyToMany,
+  PrimaryColumn,
+} from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 
 import { UserEntity } from 'src/users/entities/user.entity';
@@ -6,8 +13,7 @@ import { UserEntity } from 'src/users/entities/user.entity';
 @Entity({ name: 'roles' })
 export class RoleEntity {
   @ApiProperty({ example: '1', description: 'Уникальный идентификатор' })
-  @PrimaryGeneratedColumn()
-  // @PrimaryColumn({type: 'integer',unique: true,})
+  @PrimaryColumn({ type: 'integer', unique: true })
   id: number;
 
   // Роль
@@ -29,4 +35,10 @@ export class RoleEntity {
     onUpdate: 'NO ACTION',
   })
   users?: UserEntity[];
+
+  @CreateDateColumn()
+  startDate?: Date;
+
+  @DeleteDateColumn()
+  deletedAt?: Date;
 }

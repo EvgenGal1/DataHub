@@ -53,24 +53,30 @@ export class UsersService {
   }
 
   // СОЗД User + Role + связь
-  async create(createUserDto: CreateUserDto) {
+  async createUser(createUserDto: CreateUserDto) {
     // fn по возвр.наименьшего свободного id
     const smallestFreeId = await this.getSmallestAvailableId('user');
-    // сохр.user
+    // созд.объ.user
     const user = this.userRepository.create({
       ...createUserDto,
       id: smallestFreeId,
     });
     // получ.id Роли USER
-    const role = await this.roleService.getRoleByValue('USER');
+    const role = await this.roleService.findRoleByValue('USER');
     // запись Роли к User и сохр.связи в БД
     user.roles = [role];
+    // сохр.объ.>БД
     await this.userRepository.save(user);
-
+    // возвр.user
     return user;
   }
 
-  async findAllUsers(/* usersIds?: string */): Promise<UserEntity[]> {
+  async findAllUsers(): Promise<UserEntity[]> {
+    return await this.userRepository.find();
+  }
+
+  // ! переделать под получ roles tracks user_roles в завис.от парам. и пр.
+  async findUserByValue(value: string) {
     // fn для неск.id
     // if (usersIds) {
     //   const splitUserIds = usersIds.split(',');
@@ -84,6 +90,8 @@ export class UsersService {
     // return this.userRepository.find();
 
     // мтд.напрямую
+
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const users = await this.userRepository.find({
       relations: ['roles' /* 'tracks' */ /* 'user_roles' */],
     });
@@ -96,30 +104,45 @@ export class UsersService {
     //   .leftJoinAndSelect('role.user_roles', 'level')
     //   .getMany();
 
-    return users;
+    const whereCondition: any = {};
+    // условия res. num|str
+    if (
+      typeof value === 'number' ||
+      (typeof value === 'string' && !isNaN(parseFloat(value)))
+    ) {
+      whereCondition.id = value;
+    } else {
+      whereCondition.value = value;
+    }
+
+    const role = await this.roleRepository.findOne({ where: whereCondition });
+    if (!role) throw new Error('Такой Роли нет');
+    console.log('role : ' + role);
+    console.log(role);
+    return role;
   }
 
   // ОДИН user
-  async findOne(id: number) {
+  async findOneUser(id: number) {
     return this.userRepository.findOneBy({ id });
   }
   // ! не отраж.в swgg
   // получ.user по email
-  async findByEmail(email: string) {
+  async findByEmailUser(email: string) {
     return this.userRepository.findOneBy({ email });
   }
   // ! не отраж.в swgg
   // получ.user по id
-  async findById(id: number) {
+  async findByIdUser(id: number) {
     return this.userRepository.findOneBy({ id });
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  async update(id: number, updateUserDto: UpdateUserDto) {
+  async updateUser(id: number, updateUserDto: UpdateUserDto) {
     return `Это действие обновляет пользователя с #${id}`;
   }
 
-  async remove(id: number) {
+  async removeUser(id: number) {
     return `Это действие удаляет пользователя с #${id}`;
   }
 
