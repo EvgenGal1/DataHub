@@ -50,24 +50,18 @@ export class UsersController {
     return this.usersService.findAllUsers();
   }
 
-  // ОДИН трек.
+  // ОДИН user.по id
   @Get(':id')
-  @ApiOperation({ summary: 'Получить ч/з findOne' })
+  @ApiOperation({ summary: 'Получить по ID' })
   // @ApiCreatedResponse({ description: 'Описание findOne' })
   findOneUser(@Param('id') id: string) {
     return this.usersService.findOneUser(+id);
   }
-  // ! не отраж.в swgg
-  @Get(':id')
-  @ApiOperation({ summary: 'Получить ч/з findByEmail' })
-  findByEmailUser(@Param('email') email: string) {
-    return this.usersService.findByEmailUser(email);
-  }
-  // ! не отраж.в swgg
-  @Get(':id')
-  @ApiOperation({ summary: 'Получить ч/з findById' })
-  findByIdUser(@Param('id') id: string) {
-    return this.usersService.findByIdUser(+id);
+  // ОДИН user.по параметрам
+  @Get('param/:param')
+  @ApiOperation({ summary: 'Получить Usera по ID <> Значению' })
+  findUserByValue(@Param('param') param: string) {
+    return this.usersService.findUserByParam(param);
   }
 
   @Patch(':id')
@@ -81,6 +75,11 @@ export class UsersController {
   removeUser(@Param('id') id: string) {
     return this.usersService.removeUser(+id);
   }
+  // @Delete(':id')
+  // @ApiOperation({ summary: 'Востановить Пользователя' })
+  // restoreUser(@Param('id') id: string) {
+  //   return this.usersService.restoreUser(+id);
+  // }
 
   // ^^ Расшир.мтд. ----------------------------------------------------------------------------
   // @ApiOperation({ summary: 'Выдать роль' })

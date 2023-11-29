@@ -34,16 +34,16 @@ export class RolesController {
     return this.rolesService.createRole(createRoleDto);
   }
 
+  @Get()
+  @ApiOperation({ summary: 'Получить Все Роли' })
+  findAllRoles() {
+    return this.rolesService.findAllRoles();
+  }
+
   @Get('/:value')
   @ApiOperation({ summary: 'Получить Роль по ID <> Значению' })
   findRoleByValue(@Param('value') value: string) {
     return this.rolesService.findRoleByValue(value);
-  }
-
-  @Get()
-  @ApiOperation({ summary: 'Получить Все Роли' })
-  findAllRole() {
-    return this.rolesService.findAllRoles();
   }
 
   @Patch(':id')

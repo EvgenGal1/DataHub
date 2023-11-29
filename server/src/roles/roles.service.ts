@@ -54,9 +54,13 @@ export class RolesService {
     return await this.roleRepository.save(role);
   }
 
+  async findAllRoles() {
+    return await this.roleRepository.find();
+  }
+
   async findRoleByValue(value: string) {
     const whereCondition: any = {};
-    // условия res. num|str
+    // условия res. id/num|value/str
     if (
       typeof value === 'number' ||
       (typeof value === 'string' && !isNaN(parseFloat(value)))
@@ -65,16 +69,10 @@ export class RolesService {
     } else {
       whereCondition.value = value;
     }
-
+    // объ.res, обраб.ошб., res по значени.
     const role = await this.roleRepository.findOne({ where: whereCondition });
     if (!role) throw new Error('Такой Роли нет');
-    console.log('role : ' + role);
-    console.log(role);
     return role;
-  }
-
-  async findAllRoles() {
-    return await this.roleRepository.find();
   }
 
   async updateRole(id: number, updateRoleDto: UpdateRoleDto) {

@@ -75,8 +75,14 @@ export class UsersService {
     return await this.userRepository.find();
   }
 
+  // ОДИН user
+  async findOneUser(id: number) {
+    const user = await this.userRepository.findOneBy({ id });
+    if (!user) throw new Error('Пользователь не найден');
+    return user;
+  }
   // ! переделать под получ roles tracks user_roles в завис.от парам. и пр.
-  async findUserByValue(value: string) {
+  async findUserByParam(param: string) {
     // fn для неск.id
     // if (usersIds) {
     //   const splitUserIds = usersIds.split(',');
@@ -90,7 +96,6 @@ export class UsersService {
     // return this.userRepository.find();
 
     // мтд.напрямую
-
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const users = await this.userRepository.find({
       relations: ['roles' /* 'tracks' */ /* 'user_roles' */],
@@ -105,46 +110,34 @@ export class UsersService {
     //   .getMany();
 
     const whereCondition: any = {};
-    // условия res. num|str
-    if (
-      typeof value === 'number' ||
-      (typeof value === 'string' && !isNaN(parseFloat(value)))
-    ) {
-      whereCondition.id = value;
-    } else {
-      whereCondition.value = value;
+    // условия res. id/num|eml/@|fullname/str
+    if (!isNaN(Number(param))) {
+      whereCondition.id = param;
+    } else if (param.includes('@')) {
+      whereCondition.email = param;
+    } else if (!param.includes('@') && typeof param === 'string') {
+      whereCondition.fullname = param;
     }
-
-    const role = await this.roleRepository.findOne({ where: whereCondition });
-    if (!role) throw new Error('Такой Роли нет');
-    console.log('role : ' + role);
-    console.log(role);
-    return role;
+    // объ.res, обраб.ошб., res по значени.
+    const user = await this.userRepository.findOne({ where: whereCondition });
+    if (!user) throw new Error('Такого Пользователя нет');
+    return user;
   }
 
-  // ОДИН user
-  async findOneUser(id: number) {
-    return this.userRepository.findOneBy({ id });
-  }
-  // ! не отраж.в swgg
-  // получ.user по email
-  async findByEmailUser(email: string) {
-    return this.userRepository.findOneBy({ email });
-  }
-  // ! не отраж.в swgg
-  // получ.user по id
-  async findByIdUser(id: number) {
-    return this.userRepository.findOneBy({ id });
-  }
-
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async updateUser(id: number, updateUserDto: UpdateUserDto) {
-    return `Это действие обновляет пользователя с #${id}`;
+    const user = await this.userRepository.findOneBy({ id });
+    if (!user) throw new Error('Пользователь не найдена');
+    user.fullname = updateUserDto.fullname;
+    user.email = updateUserDto.email;
+    return this.userRepository.save(user);
   }
 
   async removeUser(id: number) {
-    return `Это действие удаляет пользователя с #${id}`;
+    return await this.userRepository.softDelete(id);
   }
+  // async restoreUser(id: number) {
+  //   return await this.userRepository.restore(id);
+  // }
 
   // ^^ Расшир.мтд. ----------------------------------------------------------------------------
   // ~~ получить level из user_roles

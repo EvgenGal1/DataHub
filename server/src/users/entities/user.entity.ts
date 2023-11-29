@@ -7,6 +7,8 @@ import {
   ManyToMany,
   PrimaryColumn,
   JoinTable,
+  CreateDateColumn,
+  DeleteDateColumn,
 } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 
@@ -80,6 +82,12 @@ export class UserEntity {
   // связь табл. 1го ко Мн. У польз.Мн.комм
   @OneToMany(() => ReactionEntity, (file: ReactionEntity) => file.text)
   reactions: ReactionEntity[];
+
+  @CreateDateColumn()
+  startDate?: Date;
+
+  @DeleteDateColumn()
+  deletedAt?: Date;
 
   // ^ доп.табл.>будущее
   // @ApiProperty({ example: 'true', description: 'Забанен или нет' })
