@@ -17,6 +17,7 @@ import {
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { AddingRolesToUsersDto } from 'src/roles/dto/add-roles-to-users.dto';
 // import { UserEntity } from './entities/user.entity';
 
 @Controller('users')
@@ -25,7 +26,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 // оборач.чтоб swagger знал что req на files защищены jwt Токеном
 // @ApiBearerAuth()
 export class UsersController {
-  // ч/з внедр.завис. + UserEntity > раб.ч/з this с табл.users
+  // ч/з внедр.завис. + UsersService > раб.ч/з this с serv.users
   constructor(private usersService: UsersService) {}
 
   @Post()
@@ -59,7 +60,7 @@ export class UsersController {
   }
   // ОДИН user.по параметрам
   @Get('param/:param')
-  @ApiOperation({ summary: 'Получить Usera по ID <> Значению' })
+  @ApiOperation({ summary: 'Получить Usera по ID <> Email <> FullName' })
   findUserByValue(@Param('param') param: string) {
     return this.usersService.findUserByParam(param);
   }
@@ -80,6 +81,18 @@ export class UsersController {
   // restoreUser(@Param('id') id: string) {
   //   return this.usersService.restoreUser(+id);
   // }
+
+  // ^^ мтд.> ADMIN ----------------------------------------------------------------------------------
+  // добавить неск.Ролей к неск.Пользователям
+  @Post('admin/addRolesToUsers')
+  @ApiOperation({ summary: 'Добавить Роли к Пользователям' })
+  async createUserRoles(
+    @Body() addingRolesToUsersDto: AddingRolesToUsersDto,
+  ): Promise<void> {
+    console.log('addingRolesToUsersDto : ' + addingRolesToUsersDto);
+    console.log(addingRolesToUsersDto);
+    // await this.usersService.addingRolesToUsers(addingRolesToUsersDto);
+  }
 
   // ^^ Расшир.мтд. ----------------------------------------------------------------------------
   // @ApiOperation({ summary: 'Выдать роль' })

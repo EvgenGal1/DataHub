@@ -1,7 +1,7 @@
 // логика(бизнес,)
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { /* In, */ Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -9,7 +9,7 @@ import { UserEntity } from './entities/user.entity';
 import { RoleEntity } from 'src/roles/entities/role.entity';
 import { RolesService } from 'src/roles/roles.service';
 import { UserRolesEntity } from 'src/roles/entities/user-roles.entity';
-// import { AddingRolesToUsersDto } from 'src/roles/dto/add-roles-to-users.dto';
+import { AddingRolesToUsersDto } from 'src/roles/dto/add-roles-to-users.dto';
 
 @Injectable()
 export class UsersService {
@@ -75,12 +75,13 @@ export class UsersService {
     return await this.userRepository.find();
   }
 
-  // ОДИН user
+  // ОДИН user.по id
   async findOneUser(id: number) {
     const user = await this.userRepository.findOneBy({ id });
     if (!user) throw new Error('Пользователь не найден');
     return user;
   }
+  // ОДИН user.по параметрам
   // ! переделать под получ roles tracks user_roles в завис.от парам. и пр.
   async findUserByParam(param: string) {
     // fn для неск.id
@@ -138,6 +139,39 @@ export class UsersService {
   // async restoreUser(id: number) {
   //   return await this.userRepository.restore(id);
   // }
+
+  // ^^ мтд.> ADMIN ----------------------------------------------------------------------------------
+  // добавить неск.Ролей к неск.Пользователям
+  async addingRolesToUsers(
+    addingRolesToUsersDto: AddingRolesToUsersDto,
+  ): Promise<void> {
+    const { userIds, roleIds } = addingRolesToUsersDto;
+    // проверки и приведение к общ.типу
+    const userIdss: string | string[] = userIds.includes(',')
+      ? userIds.split(',')
+      : userIds;
+    const roleIdss: string | string[] = roleIds.includes(',')
+      ? roleIds.split(',')
+      : roleIds;
+    // получ.данн. User и Role
+    const users = await this.userRepository.findBy({ id: In([...userIdss]) });
+    const roles = await this.roleRepository.findBy({ id: In([...roleIdss]) });
+    // Проверка существования пользователей и ролей
+    if (users.length !== userIdss.length || roles.length !== roleIdss.length)
+      throw new Error(
+        'Одного или нескольких пользователей или ролей не существует.',
+      );
+
+    // Создание связей между Пользователями и Ролями
+    for (const user of users) {
+      for (const role of roles) {
+        const userRoles = new UserRolesEntity();
+        userRoles.userId = user.id;
+        userRoles.roleId = role.id;
+        await this.userRolesRepository.save(userRoles);
+      }
+    }
+  }
 
   // ^^ Расшир.мтд. ----------------------------------------------------------------------------
   // ~~ получить level из user_roles
