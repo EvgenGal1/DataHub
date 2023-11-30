@@ -8,12 +8,17 @@ import {
   Delete,
   Query,
 } from '@nestjs/common';
-// import { ObjectId } from 'typeorm';
-import { /* ApiBearerAuth, */ ApiOperation, ApiTags } from '@nestjs/swagger';
+import {
+  /* ApiBearerAuth, */ ApiOperation,
+  ApiQuery,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 
 import { AlbumService } from './album.service';
 import { CreateAlbumDto } from './dto/create-album.dto';
 import { UpdateAlbumDto } from './dto/update-album.dto';
+import { AlbumEntity } from './entities/album.entity';
 
 @Controller('/albums')
 // групп.мтд.cntrl tracks > swagger
@@ -26,38 +31,38 @@ export class AlbumController {
   // ^^ МТД.CRUD
   @Post()
   @ApiOperation({ summary: 'Создать Альбом' })
-  create(@Body() createAlbumDto: CreateAlbumDto) {
-    return this.albumsService.create(createAlbumDto);
+  createAlbum(@Body() createAlbumDto: CreateAlbumDto) {
+    return this.albumsService.createAlbum(createAlbumDto);
   }
 
   @Get()
   @ApiOperation({ summary: 'Получить Все Альбомы' })
-  findAll() {
-    return this.albumsService.findAll();
+  findAllAlbum() {
+    return this.albumsService.findAllAlbums();
   }
 
   @Get(':id')
   @ApiOperation({ summary: 'Получить Альбом' })
-  findOne(@Param('id') id: string) {
-    return this.albumsService.findOne(+id);
+  findOneAlbum(@Param('id') id: string) {
+    return this.albumsService.findOneAlbum(+id);
   }
 
   @Patch(':id')
   @ApiOperation({ summary: 'Обновить Альбом' })
-  update(@Param('id') id: string, @Body() updateAlbumDto: UpdateAlbumDto) {
-    return this.albumsService.update(+id, updateAlbumDto);
+  updateAlbum(@Param('id') id: string, @Body() updateAlbumDto: UpdateAlbumDto) {
+    return this.albumsService.updateAlbum(+id, updateAlbumDto);
   }
 
   @Delete(':id')
   @ApiOperation({ summary: 'Удалить Альбом/ы' })
-  remove(@Param('id') id: string) {
-    return this.albumsService.remove(+id);
+  removeAlbum(@Param('id') id: string) {
+    return this.albumsService.removeAlbum(+id);
   }
 
   // ^^ ДОП.МТД.
-  // поиск по исполнителю
+  // поиск по исполнителю // ~ верн. возвращ.один альбом
   // ! не раб. @Get('/:author') | '/author' | 'author' > отраб.мтд.@Get(':id')findOne
-  @Get('/album/:author_Name')
+  @Get('/author_Name/:Name')
   @ApiOperation({ summary: 'Поиск Альбома по Автору' })
   searchByAuthor(
     /* @Param // возвращ.всё */ @Query('author') authorName: string,
@@ -66,9 +71,49 @@ export class AlbumController {
   }
 
   // поиск по назв.альбома
-  @Get('/album/:album_Name')
+  @Get('/album_Name/:Name')
   @ApiOperation({ summary: 'Поиск Альбома по Названию' })
   searchByAlbumName(@Query('album') albumName: string) {
     return this.albumsService.searchByAlbumName(albumName);
+  }
+
+  // кол-во по Альбому
+  @Get('/album/:track-count')
+  @ApiOperation({ summary: 'Получить количество по Альбому' })
+  @ApiQuery({
+    name: 'searchBy',
+    enum: ['название', 'id', 'стиль', 'год выпуска', 'общая длительность'],
+  })
+  async getTrackCount(
+    @Query('searchBy') searchBy: string,
+    @Query('value') value: string,
+  ): Promise<number> {
+    switch (searchBy) {
+      case 'название':
+        return this.albumsService.getTrackCountByAlbumName(value);
+      case 'id':
+        return this.albumsService.getTrackCountByAlbumId(Number(value));
+      // Добавьте обработку других вариантов поиска по своим требованиям
+      default:
+        throw new Error('Неверный вариант поиска');
+    }
+  }
+
+  // по параметрам Альбома. Универс.
+  @Get('/album/:track-params')
+  @ApiOperation({ summary: 'Получить Альбомы по параметрам' })
+  @ApiQuery({
+    name: 'field',
+    enum: ['author', 'album', 'picture', 'year', 'style', 'id'],
+  })
+  @ApiQuery({ name: 'value', required: true })
+  @ApiResponse({ status: 200, type: AlbumEntity })
+  async getAlbumByParams(
+    @Query('field') field: string,
+    @Query('value') value: string,
+  ) /* : Promise<Album> */ {
+    const props = {};
+    props[field] = value;
+    return this.albumsService.getAlbumByProps(props);
   }
 }

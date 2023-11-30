@@ -8,10 +8,11 @@ import { UserEntity } from 'src/users/entities/user.entity';
 import { AlbumEntity } from 'src/album/entities/album.entity';
 import { FileEntity } from 'src/files/entities/file.entity';
 import { ReactionEntity } from 'src/reactions/entities/reaction.entity';
+import { FilesService } from 'src/files/files.service';
 
 @Module({
   controllers: [TrackController],
-  providers: [TrackService],
+  providers: [TrackService, FilesService],
   imports: [
     TypeOrmModule.forFeature([
       TrackEntity,

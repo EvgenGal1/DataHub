@@ -59,7 +59,7 @@ export class FilesController {
       },
     },
   })
-  create(
+  createFile(
     // вытяг.ф.из запроса
     @UploadedFile(
       // валид.разм.в bite. Здесь макс.3 Mb
@@ -72,30 +72,30 @@ export class FilesController {
   ) {
     // return file;
     // использ.мтд.из serv. Пердача file ч/з Multer и userId ч/з UserId
-    return this.filesService.create(file, userId);
+    return this.filesService.createFile(file, userId);
   }
 
   // мтд.для получ.всех ф.списком.масс. Обращ.к files, возвращ.масс.всех ф. При получ.запроса обращ.к serv берём мтд.findAll который обращ.к БД, резулт.данн.fn вернёт в ответ на данн.запрос
   @Get()
   @ApiOperation({ summary: 'Получить Все файлы' })
   // возвращ.ф.опред.user и с опред.типом(декор.Query)
-  findAll(@UserId() userId: number, @Query('type') fileType: FileType) {
-    return this.filesService.findAll(userId, fileType);
+  findAllFiles(@UserId() userId: number, @Query('type') fileType: FileType) {
+    return this.filesService.findAllFiles(userId, fileType);
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.filesService.findOne(+id);
+  findOneFile(@Param('id') id: string) {
+    return this.filesService.findOneFile(+id);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateFileDto: UpdateFileDto) {
-    return this.filesService.update(+id, updateFileDto);
+  updateFile(@Param('id') id: string, @Body() updateFileDto: UpdateFileDto) {
+    return this.filesService.updateFile(+id, updateFileDto);
   }
 
   @Delete(':id')
-  remove(@UserId() userId: number, @Query('ids') ids: string) {
+  removeFile(@UserId() userId: number, @Query('ids') ids: string) {
     // передача ф.id ч/з запят.> удал. file?ids=1,2,4,
-    return this.filesService.remove(userId, ids);
+    return this.filesService.removeFile(userId, ids);
   }
 }
