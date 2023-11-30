@@ -1,6 +1,8 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import * as express from 'express';
+import { join } from 'path';
 
 async function bootstrap() {
   try {
@@ -10,6 +12,8 @@ async function bootstrap() {
     const app = await NestFactory.create(AppModule, { cors: false });
     // в 2х местах откл. cors
     app.enableCors({ credentials: true, origin: true });
+    // MW для путей файлов в uploads
+    app.use('/static', express.static(join(__dirname, '..', 'uploads')));
 
     // настр.док.swagger(swg)
     const config = new DocumentBuilder()

@@ -1,5 +1,6 @@
 import {
   Column,
+  CreateDateColumn,
   DeleteDateColumn,
   Entity,
   ManyToOne,
@@ -30,9 +31,6 @@ export class FileEntity {
   @Column()
   originalname: string;
 
-  @Column()
-  size: number;
-
   // тип (разн.req/res)
   @Column()
   mimetype: string;
@@ -40,6 +38,9 @@ export class FileEntity {
   // цель (image/file/album)
   @Column()
   target: string;
+
+  @Column()
+  size: number;
 
   // у файла с target.album один трек
   @OneToOne(() => TrackEntity, (track) => track.file)
@@ -52,6 +53,9 @@ export class FileEntity {
   // связь табл. Мн.к 1му. У Мн.файлов Один польз.
   @ManyToOne(() => UserEntity, (user: UserEntity) => user.files)
   user: UserEntity;
+
+  @CreateDateColumn()
+  startDate?: Date;
 
   // декоратор поментки удаления (без удаления)
   @DeleteDateColumn()
