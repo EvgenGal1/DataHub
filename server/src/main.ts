@@ -7,9 +7,9 @@ async function bootstrap() {
     // PORT Запуска
     const PORT = process.env.PORT || 5000;
     // modul входа
-    const app = await NestFactory.create(AppModule /* , { cors: false } */);
+    const app = await NestFactory.create(AppModule, { cors: false });
     // в 2х местах откл. cors
-    // app.enableCors({ credentials: true, origin: true });
+    app.enableCors({ credentials: true, origin: true });
 
     // настр.док.swagger(swg)
     const config = new DocumentBuilder()
