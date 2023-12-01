@@ -1,19 +1,36 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import * as express from 'express';
-import { join } from 'path';
+import * as cors from 'cors';
+// import { ValidationPipe } from '@nestjs/common';
+// import * as express from 'express';
+// import { join } from 'path';
 
 async function bootstrap() {
   try {
     // PORT Запуска
     const PORT = process.env.PORT || 5000;
     // modul входа
-    const app = await NestFactory.create(AppModule, { cors: false });
+    const app = await NestFactory.create(AppModule /* , { cors: false } */);
     // в 2х местах откл. cors
-    app.enableCors({ credentials: true, origin: true });
+    // app.enableCors(/* { credentials: true, origin: true } */);
+    //  ----------------------------------------------------------------------------------
+    // 1. Включаем глобальные фильтры и валидацию данных
+    // app.useGlobalFilters(new AllExceptionsFilter());
+    // app.useGlobalPipes(new ValidationPipe());
+
+    // 2. Включаем CORS с настройками
+    app.use(
+      cors({
+        // origin: '*', // Измените на нужный URL вашего фронтенда
+        methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
+        allowedHeaders: ['Content-Type', 'Authorization'],
+      }),
+    );
+    //  ----------------------------------------------------------------------------------
+
     // MW для путей файлов в uploads
-    app.use('/static', express.static(join(__dirname, '..', 'uploads')));
+    // app.use('/static', express.static(join(__dirname, '..', 'uploads')));
 
     // настр.док.swagger(swg)
     const config = new DocumentBuilder()
