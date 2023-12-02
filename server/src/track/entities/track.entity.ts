@@ -5,7 +5,7 @@ import {
   ManyToOne,
   OneToOne,
   OneToMany,
-  PrimaryGeneratedColumn,
+  PrimaryColumn,
 } from 'typeorm';
 
 import { AbstractEntity } from 'src/model/abstract.entity';
@@ -17,8 +17,8 @@ import { FileEntity } from 'src/files/entities/file.entity';
 @Entity('track')
 export class TrackEntity extends AbstractEntity {
   // id, назв.трека, имя артиста, текст трека, кол-во прослушиваний, ссылк.изо обложки трека, ссылк.аудио, связь с.польз., масс.реакций
-  @PrimaryGeneratedColumn() // коммит чтоб указ.свободный id ч/з fn getSmallestAvailableId
-  // @PrimaryColumn()
+  // @PrimaryGeneratedColumn() // коммит чтоб указ.свободный id ч/з fn getSmallestAvailableId
+  @PrimaryColumn()
   id: number;
 
   @Column({ default: 'назв.трека #' })

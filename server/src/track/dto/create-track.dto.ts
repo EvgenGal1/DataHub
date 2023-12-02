@@ -12,6 +12,9 @@ export class CreateTrackDto {
   @ApiProperty({ default: 'Текст #' })
   text: string;
 
+  @ApiProperty({ default: 'Other #' })
+  style: string;
+
   // добав. userId и albumId
 
   // ф.перед.отд.
