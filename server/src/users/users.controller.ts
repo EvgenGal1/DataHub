@@ -6,18 +6,27 @@ import {
   Patch,
   Param,
   Delete,
+  UploadedFile,
+  UseInterceptors,
+  Res,
 } from '@nestjs/common';
 import {
+  ApiBody,
+  ApiConsumes,
   ApiOperation,
   ApiTags,
   // ApiBearerAuth,
   // ApiResponse,
 } from '@nestjs/swagger';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { diskStorage } from 'multer';
+import { extname } from 'path';
 
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { AddingRolesToUsersDto } from 'src/roles/dto/add-roles-to-users.dto';
+import { UserId } from 'src/decorators/user-id.decorator';
 // import { UserEntity } from './entities/user.entity';
 
 @Controller('users')
@@ -27,7 +36,12 @@ import { AddingRolesToUsersDto } from 'src/roles/dto/add-roles-to-users.dto';
 // @ApiBearerAuth()
 export class UsersController {
   // ч/з внедр.завис. + UsersService > раб.ч/з this с serv.users
-  constructor(private usersService: UsersService) {}
+  constructor(
+    // private readonly authService: AuthService,
+    private usersService: UsersService,
+  ) {}
+  // URL_SERVER > доп.мтд.
+  SERVER_URL: string = `http://localhost:${process.env.PORT}/`;
 
   @Post()
   @ApiOperation({ summary: 'Создание Пользователя' })
@@ -95,6 +109,63 @@ export class UsersController {
   }
 
   // ^^ Расшир.мтд. ----------------------------------------------------------------------------
+  // !! https://www.techiediaries.com/nestjs-upload-serve-static-file/
+  // получ.аватар Пользователя. Раб.со статич.ф.
+  @Get(':userid/avatar/:fileId')
+  @ApiOperation({ summary: 'Открыть Аватар' })
+  // из @`парам` взять id ф., возврат ответа
+  async serveAvatar(
+    @Param('fileId') fileId /* : string - не нужн.загр.добавляет */,
+    @Res() res,
+  ): Promise<any> {
+    // id Изо, п.хран.Изо
+    // в @`ответ`.`отправить файл`(с ф.id, {из п.хран.ф. './../..'})
+    res.sendFile(fileId, { root: 'static/users/avatars' });
+  }
+
+  // загр.аватар Пользователя
+  @Post(':userid/avatar')
+  @ApiOperation({ summary: 'Добавить Аватар' })
+  @ApiConsumes('multipart/form-data')
+  // окно загр.ф.
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        file: {
+          type: 'string',
+          format: 'binary',
+        },
+      },
+    },
+  })
+  // свой перехват > сохр.ф.с нов.name
+  @UseInterceptors(
+    FileInterceptor('file', {
+      storage: diskStorage({
+        destination: './static/users/avatars/',
+        filename: (req, file, cb) => {
+          const randomName = Array(32)
+            .fill(null)
+            .map(() => Math.round(Math.random() * 16).toString(16))
+            .join('');
+          return cb(null, `${randomName}${extname(file.originalname)}`);
+        },
+      }),
+    }),
+  )
+  uploadAvatar(
+    // user id ч/з @Param || @UserId
+    /* @Param('userid') userId */ @UserId() userId: number,
+    @UploadedFile() file: Express.Multer.File /* file */,
+  ) {
+    // сохр./обнов. путь к аватару
+    this.usersService.setAvatar(
+      Number(userId),
+      `${this.SERVER_URL}${file.path}`,
+    );
+  }
+
   // @ApiOperation({ summary: 'Выдать роль' })
   // @ApiResponse({ status: 200 })
   // @Roles('ADMIN')

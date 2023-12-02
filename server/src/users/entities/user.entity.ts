@@ -21,7 +21,7 @@ import { ReactionEntity } from 'src/reactions/entities/reaction.entity';
 // декоратор для соед.с БД
 @Entity('users')
 export class UserEntity {
-  // декоратор для авто.генер.id. поля: id, eml, psw, имя пользователя, подтвржд./ссылк актив.ч/з почту
+  // декоратор для авто.генер.id. поля: id, eml, psw, имя пользователя, подтвржд./ссылк актив.ч/з почту, аватар
   @ApiProperty({ example: '1', description: 'Уникальный идентификатор' })
   // @PrimaryGeneratedColumn()
   @PrimaryColumn({ type: 'integer', unique: true })
@@ -52,6 +52,10 @@ export class UserEntity {
   })
   @Column({ type: 'varchar', default: '' })
   activatedLink: string;
+
+  @ApiProperty({ example: 'avatar', description: 'Аватар' })
+  @Column({ type: 'varchar', name: 'avatar' })
+  avatar: string;
 
   // ^^ связки Мн.>Мн. у users/userId и roles/roleId
   @ManyToMany(() => RoleEntity, (role) => role.users, {

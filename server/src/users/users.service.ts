@@ -140,6 +140,13 @@ export class UsersService {
   //   return await this.userRepository.restore(id);
   // }
 
+  // ^^ доп.мтд. ----------------------------------------------------------------------------------
+  // !! https://www.techiediaries.com/nestjs-upload-serve-static-file/
+  // обнов.аватар Пользователя
+  public async setAvatar(userId: number, avatarUrl: string) {
+    this.userRepository.update(userId, { avatar: avatarUrl });
+  }
+
   // ^^ мтд.> ADMIN ----------------------------------------------------------------------------------
   // добавить неск.Ролей к неск.Пользователям
   async addingRolesToUsers(
