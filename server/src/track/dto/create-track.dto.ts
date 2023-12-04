@@ -4,16 +4,16 @@ import { ApiProperty } from '@nestjs/swagger';
 export class CreateTrackDto {
   // декор.swagger > св-в с возм.указ. default
   @ApiProperty({ default: 'Название трк.#' })
-  name: string;
+  readonly name: string;
 
   @ApiProperty({ default: 'Артист #' })
-  artist: string;
+  readonly artist: string;
 
   @ApiProperty({ default: 'Текст #' })
-  text: string;
+  readonly text: string;
 
   @ApiProperty({ default: 'Other #' })
-  style: string;
+  readonly style: string;
 
   // добав. userId и albumId
 

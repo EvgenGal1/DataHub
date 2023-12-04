@@ -5,24 +5,34 @@ import {
   Entity,
   ManyToOne,
   OneToOne,
-  PrimaryGeneratedColumn,
+  PrimaryColumn,
+  // PrimaryGeneratedColumn,
 } from 'typeorm';
 
 import { AlbumEntity } from 'src/album/entities/album.entity';
 import { TrackEntity } from 'src/track/entities/track.entity';
 import { UserEntity } from 'src/users/entities/user.entity';
 
-// типизация Query парам.ч/з enum. Filter ф.по фото и trash`мусор`
-export enum FileType {
-  PHOTOS = 'photos',
-  TRASH = 'trash',
-  AUDIO = 'audio',
+// типизация (Query парам.ч/з enum. и др.вар.) Filter ф.по фото и trash`мусор`
+export enum FileType { // ^^ возм. стоит завести FileTarget с типами IMAGE = 'IMAGE', и т.д.
   IMAGE = 'image',
+  ALBUM = 'album',
+  AVATAR = 'avatar',
+  PHOTO = 'photo',
+  PERSONAL = 'personal',
+  AUDIO = 'audio',
+  BOOK = 'books',
+  FILE = 'files',
+  PROSE = 'prose',
+  CODE = 'code',
+  SCHEME = 'scheme',
+  BLUEPRINT = 'blueprint',
+  TRASH = 'trash',
 }
 
 @Entity('files')
 export class FileEntity {
-  @PrimaryGeneratedColumn()
+  @PrimaryColumn()
   id: number;
 
   @Column()

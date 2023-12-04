@@ -5,6 +5,8 @@ import {
   OneToMany,
   ManyToOne,
   OneToOne,
+  CreateDateColumn,
+  DeleteDateColumn,
 } from 'typeorm';
 
 import { TrackEntity } from '../../track/entities/track.entity';
@@ -53,4 +55,10 @@ export class AlbumEntity {
   // связь табл. Мн.к 1му. У Мн.альбомов Один польз.
   @ManyToOne(() => UserEntity, (user: UserEntity) => user.albums)
   user: UserEntity;
+
+  @CreateDateColumn()
+  startDate?: Date;
+
+  @DeleteDateColumn()
+  deletedAt?: Date;
 }

@@ -53,8 +53,18 @@ export class UserEntity {
   @Column({ type: 'varchar', default: '' })
   activatedLink: string;
 
-  @ApiProperty({ example: 'avatar', description: 'Аватар' })
-  @Column({ type: 'varchar', name: 'avatar' })
+  @ApiProperty({
+    example: 'avatar',
+    description: 'Аватар',
+    default: 'avatar',
+    nullable: false,
+  })
+  @Column({
+    type: 'varchar',
+    name: 'avatar',
+    default: 'avatar',
+    nullable: false,
+  })
   avatar: string;
 
   // ^^ связки Мн.>Мн. у users/userId и roles/roleId
