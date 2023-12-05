@@ -17,7 +17,7 @@ export const fileStorage = multer.diskStorage({
     if (file.fieldname && !req.query.fileType) {
       fileTarget = getFileTarget(file.fieldname.toUpperCase());
     } else if (req.query.fileType) {
-      fileTarget = getFileTarget(String(req.query.fileType));
+      fileTarget = getFileTarget(String(req.query.fileType).toUpperCase());
     }
     // общий путь
     const destinationPath = baseFolder + fileTarget + '/';
