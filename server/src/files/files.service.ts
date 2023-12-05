@@ -1,94 +1,160 @@
-import { Repository } from 'typeorm';
+import { ILike, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Injectable } from '@nestjs/common';
 
-import { FileType, FileEntity } from './entities/file.entity';
+import { FileType, FileEntity, fileTypesAllowed } from './entities/file.entity';
 import { UpdateFileDto } from './dto/update-file.dto';
+import { DatabaseUtils } from 'src/utils/database.utils';
+import { getFileTarget } from 'src/helpers/getFileTarget';
 
 @Injectable()
 export class FilesService {
   constructor(
     @InjectRepository(FileEntity)
-    private repository: Repository<FileEntity>,
+    private fileRepository: Repository<FileEntity>,
+    private databaseUtils: DatabaseUtils,
   ) {}
 
-  // ^^ UlbiTV
-  // createFile(type: FileType, file): string {
+  async createFile(
+    file: Express.Multer.File,
+    fileType: FileType /* | string, // */,
+    userId: number,
+  ) {
+    console.log(
+      'f.serv file | fileType | userId : ',
+      file,
+      '|',
+      fileType,
+      '|',
+      userId,
+    );
+
+    //  опред.путь сохр./значен. по выбран.типу
+    let fileTarget: string;
+    if (!file.destination) {
+      fileTarget = getFileTarget(fileType.toUpperCase());
+      // удал."./static/" и послед.слеш.ч/з регул.выраж.
+    } else fileTarget = file.destination.replace(/^\.\/static\/|\/$/g, '');
+    console.log('f.serv fileTarget : ' + fileTarget);
+
+    // `получить наименьший доступный идентификатор` из БД > табл.file
+    const smallestFreeId =
+      await this.databaseUtils.getSmallestIDAvailable('file');
+
+    // объ.files созд./сохр./вернуть
+    const files = {
+      id: smallestFreeId,
+      filename: file.filename,
+      originalname: file.originalname,
+      mimetype: file.mimetype,
+      target: fileTarget,
+      size: file.size,
+      user: { id: userId },
+    };
+    console.log('files.serv files : ' + files);
+    await this.fileRepository.save(files);
+    return files;
+  }
+
+  // ^^ отдельная логика сохранения с передачей props
+  // ! не раб. зависает на diskStorage
+  // async saveFile(file: Express.Multer.File, fileTarget: FileType  | string, // userId: number
+  // ) {
   //   try {
-  //     const fileExtension = file.originalname.split('.').pop();
-  //     const fileName = uuid.v4() + '.' + fileExtension;
-  //     const filePath = path.resolve(__dirname, '..', 'static', type);
-  //     if (!fs.existsSync(filePath)) {
-  //       fs.mkdirSync(filePath, { recursive: true });
-  //     }
-  //     fs.writeFileSync(path.resolve(filePath, fileName), file.buffer);
-  //     return type + '/' + fileName;
+  //     const save = await createFileStorage(file, fileTarget);
+  //     return save;
+  //     //
+  //     const save = fileStorage;
+  //     return save;
   //   } catch (e) {
   //     throw new HttpException(e.message, HttpStatus.INTERNAL_SERVER_ERROR);
   //   }
   // }
-  // // удал.ф.
-  // // ^^ eslint-disable-next-line от ошб. - 'fileName' is defined but never used(`опред.но не использ.`)
-  // // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  // removeFile(fileName: string) {}
-
-  create(file: Express.Multer.File, userId: number) {
-    // инфо о ф.сохр.в БД для опред.user
-    return this.repository.save({
-      filename: file.filename,
-      originalname: file.originalname,
-      size: file.size,
-      mimetype: file.mimetype,
-      user: { id: userId },
-    });
-  }
 
   // мтд.получ.всех ф. // возвращ.ф.опред.user и с опред.типом(декор.Query)
-  findAll(userId: number, fileType: FileType) {
-    // генер.спец. SQL req ч/з `Создать строитель запросов`
-    const qb = this.repository.createQueryBuilder('file');
+  async findAllFiles(userId: number, fileTypes: any /* FileType[] */) {
+    console.log('f.serv. userId fileTypes:', userId, fileTypes);
 
-    // наход.ф.где id user совпад.с передан.в парам.
+    // `допустимые типы`. Сравнение входа(fileTypes) с `разрешенными типами ф.`(fileTypesAllowed)
+    const validTypes = fileTypes.filter((type: string) =>
+      fileTypesAllowed.includes(type.toLowerCase()),
+    );
+
+    // проверка на `неверные типы`. Е/и разные типы вход/разрешен.(fileTypes/fileTypesAllowed) и нужен ответ о не разрешённых
+    // const invalidTypes = fileTypes.filter((type) => !validTypes.includes(type));
+    // if (invalidTypes.length > 0) {return `Тип(ы) файла ${invalidTypes.join(', ',)} отсутствует в базе данных.`;}
+
+    // генер.спец.SQL req > "создать строитель запросов"
+    const qb = this.fileRepository.createQueryBuilder('file');
+
+    // req > id user
     qb.where('file.userId = :userId', { userId });
 
-    // е/и тип ф. === фото
-    if (fileType == FileType.PHOTOS) {
-      // возвращ.ф.с mimetype = image
-      qb.andWhere('file.mimetype ILIKE :type', { type: '%image%' });
+    // Если переданы все типы файлов или не указано значение, возвращаем все файлы
+    // ! Аргумент типа ""all"" нельзя назначить параметру типа "FileType" (вход.props)
+    if (validTypes.includes('all') || validTypes.length == 0) {
+      console.log('Возвращение всех файлов');
+      return qb.getMany();
     }
 
-    // е/и тип ф. === `мусор`
-    if (fileType == FileType.TRASH) {
-      // возвращ.ф.с пометкой удалён
-      qb.withDeleted().andWhere('file.deletedAt IS NOT NULL');
+    // составн.req > все `допустимые типы`
+    if (validTypes.length > 0) {
+      console.log(`Возвращение ${validTypes.join(', ')} файлы`);
+      qb.andWhere('file.target ILIKE ANY(:types)', {
+        types: validTypes.map((type) => `%${type}%`),
+      });
     }
 
-    // возвращ.ф. по генер.спец.req
+    // кол-во записей
+    const count = await qb.getCount();
+    console.log('count:', count);
+
+    // проверка наличия данных в БД
+    if (count === 0) {
+      return 'Нет данных для указанных типов файлов.';
+    }
+
+    // возврат.данн.
     return qb.getMany();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} file`;
+  // Проверка наличия типа файла в базе данных
+  async fileTypeExists(fileType: string): Promise<boolean> {
+    console.log('fileType : ' + fileType);
+    // проверяем в БД наличие типа файла
+    const result = await this.fileRepository.findOne({
+      where: { target: ILike(`%${fileType}%`) },
+    });
+    console.log('result : ' + result);
+    console.log(result);
+    return !!result;
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  update(id: number, updateFileDto: UpdateFileDto) {
-    return `This action updates a #${id} file`;
+  async findOneFile(id: number) {
+    return this.fileRepository.findOneBy({ id });
   }
 
-  remove(userId: number, ids: string) {
+  async updateFile(
+    id: number,
+    updateFileDto: UpdateFileDto,
+  ): Promise<FileEntity> {
+    // return this.fileRepository.update(id, UpdateFileDto); // ! ошб. т.к. возвращ.UpdateResult, а не TrackEntity
+    await this.fileRepository.update(id, updateFileDto);
+    const updatedTrack = await this.fileRepository.findOneBy({ id });
+    if (!updatedTrack) throw new Error('Трек не найден');
+    return updatedTrack;
+  }
+
+  async removeFile(userId: number, ids: string) {
     // превращ.ids ф.в масс.
     const idsArray = ids.split(',');
-
     // генер.спец. SQL req ч/з `Создать строитель запросов`
-    const qb = this.repository.createQueryBuilder('files');
-
+    const qb = this.fileRepository.createQueryBuilder('files');
     // наход.ф.по ids И userId
     qb.where('id IN (:...ids) AND userId = :userId', {
       ids: idsArray,
       userId,
     });
-
     // пометка `мягк.удал.`ф.
     return qb.softDelete().execute();
   }

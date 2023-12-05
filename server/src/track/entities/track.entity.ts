@@ -20,14 +20,12 @@ import { ApiProperty } from '@nestjs/swagger';
 @Entity('track')
 export class TrackEntity extends AbstractEntity {
   // id, назв.трека, имя артиста, текст трека, кол-во прослушиваний, ссылк.изо обложки трека, ссылк.аудио, связь с.польз., масс.реакций
-  // @PrimaryGeneratedColumn() // коммит чтоб указ.свободный id ч/з fn getSmallestAvailableId
+  // @PrimaryGeneratedColumn() // коммит чтоб указ.свободный id ч/з fn getSmallestIDAvailable
   @PrimaryColumn()
   id: number;
 
   @ApiProperty({ example: 'назв.трека #', description: 'НАзвание Трека' })
-  @Column({
-    default: 'назв.трека #',
-  })
+  @Column({ default: 'назв.трека #' })
   name: string;
 
   @ApiProperty({ example: 'Аффтор', description: 'Исполнитель Трека' })

@@ -8,6 +8,7 @@ import {
   PrimaryColumn,
   // PrimaryGeneratedColumn,
 } from 'typeorm';
+import { ApiProperty } from '@nestjs/swagger';
 
 import { AlbumEntity } from 'src/album/entities/album.entity';
 import { TrackEntity } from 'src/track/entities/track.entity';
@@ -28,7 +29,27 @@ export enum FileType { // ^^ возм. стоит завести FileTarget с �
   SCHEME = 'scheme',
   BLUEPRINT = 'blueprint',
   TRASH = 'trash',
+  OTHER = 'other',
 }
+
+// `разрешенные типы файлов` для мтд.масс.
+export const fileTypesAllowed = [
+  'all',
+  'image',
+  'album',
+  'avatar',
+  'photo',
+  'personal',
+  'audio',
+  'books',
+  'files',
+  'prose',
+  'code',
+  'scheme',
+  'blueprint',
+  'trash',
+  'other',
+];
 
 @Entity('files')
 export class FileEntity {
@@ -38,7 +59,8 @@ export class FileEntity {
   @Column()
   filename: string;
 
-  @Column()
+  @ApiProperty({ example: 'назв.трека #', description: 'НАзвание Трека' })
+  @Column({ default: 'Документ.' })
   originalname: string;
 
   // тип (разн.req/res)
@@ -46,6 +68,7 @@ export class FileEntity {
   mimetype: string;
 
   // цель (image/file/album)
+  @ApiProperty({ example: 'назв.трека #', description: 'НАзвание Трека' })
   @Column()
   target: string;
 

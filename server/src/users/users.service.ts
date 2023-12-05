@@ -10,6 +10,7 @@ import { RoleEntity } from 'src/roles/entities/role.entity';
 import { RolesService } from 'src/roles/roles.service';
 import { UserRolesEntity } from 'src/roles/entities/user-roles.entity';
 import { AddingRolesToUsersDto } from 'src/roles/dto/add-roles-to-users.dto';
+import { DatabaseUtils } from 'src/utils/database.utils';
 
 @Injectable()
 export class UsersService {
@@ -19,43 +20,17 @@ export class UsersService {
     private userRepository: Repository<UserEntity>,
     @InjectRepository(RoleEntity)
     private roleRepository: Repository<RoleEntity>,
-    private roleService: RolesService,
     @InjectRepository(UserRolesEntity)
     private userRolesRepository: Repository<UserRolesEntity>,
+    private roleService: RolesService,
+    private databaseUtils: DatabaseUtils,
   ) {}
-
-  // `получить наименьший доступный идентификатор`
-  async getSmallestAvailableId(tableName: string): Promise<number> {
-    let customRepository: any;
-    // опред.репозитор.
-    if (tableName === 'user') customRepository = this.userRepository;
-    // else if (tableName === 'track') customRepository = this.trackRepository;
-    // else if (tableName === 'reaction') customRepository = this.reactionRepository;
-    // обраб.ошб.е/и табл.нет
-    if (!customRepository) throw new Error('Неверное название таблицы');
-    // состав.req к табл.tableName по id и по порядку возрастания
-    const query = customRepository
-      .createQueryBuilder(tableName)
-      .select(`${tableName}.id`, 'id')
-      .orderBy(`${tableName}.id`, 'ASC')
-      .getRawMany();
-    // req к БД и перем.сравн.в нач.знач.1
-    const result = await query;
-    let firstAvailableId = 1;
-    // перебор result, сравн.id с нач.знач., увелич.на 1 е/и =, возврт. е/и !=
-    for (const row of result) {
-      const currentId = parseInt(row.id);
-      if (currentId !== firstAvailableId) break;
-      firstAvailableId++;
-    }
-    // возврат измен.нач.знач. е/и != track.id
-    return firstAvailableId;
-  }
 
   // СОЗД User + Role + связь
   async createUser(createUserDto: CreateUserDto) {
-    // fn по возвр.наименьшего свободного id
-    const smallestFreeId = await this.getSmallestAvailableId('user');
+    // `получить наименьший доступный идентификатор` из БД > табл.file
+    const smallestFreeId =
+      await this.databaseUtils.getSmallestIDAvailable('user');
     // созд.объ.user
     const user = this.userRepository.create({
       ...createUserDto,
@@ -65,7 +40,7 @@ export class UsersService {
     const role = await this.roleService.findRoleByValue('USER');
     // запись Роли к User и сохр.связи в БД
     user.roles = [role];
-    // сохр.объ.>БД
+    // сохр.объ.user > БД
     await this.userRepository.save(user);
     // возвр.user
     return user;

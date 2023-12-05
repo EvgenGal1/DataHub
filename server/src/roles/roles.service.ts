@@ -1,4 +1,4 @@
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
@@ -7,6 +7,8 @@ import { UpdateRoleDto } from './dto/update-role.dto';
 import { UserEntity } from 'src/users/entities/user.entity';
 import { RoleEntity } from './entities/role.entity';
 import { UserRolesEntity } from './entities/user-roles.entity';
+import { AddingRolesToUsersDto } from './dto/add-roles-to-users.dto';
+import { DatabaseUtils } from 'src/utils/database.utils';
 
 @Injectable()
 export class RolesService {
@@ -17,41 +19,20 @@ export class RolesService {
     private roleRepository: Repository<RoleEntity>,
     @InjectRepository(UserRolesEntity)
     private userRolesRepository: Repository<UserRolesEntity>,
+    private databaseUtils: DatabaseUtils,
   ) {}
 
-  // `получить наименьший доступный идентификатор`
-  async getSmallestAvailableId(tableName: string): Promise<number> {
-    let customRepository: any;
-    // опред.репозитор.
-    if (tableName === 'role') customRepository = this.roleRepository;
-    // обраб.ошб.е/и табл.нет
-    if (!customRepository) throw new Error('Неверное название таблицы');
-    // состав.req к табл.tableName по id и по порядку возрастания
-    const query = customRepository
-      .createQueryBuilder(tableName)
-      .select(`${tableName}.id`, 'id')
-      .orderBy(`${tableName}.id`, 'ASC')
-      .getRawMany();
-    // req к БД и перем.сравн.в нач.знач.1
-    const result = await query;
-    let firstAvailableId = 1;
-    // перебор result, сравн.id с нач.знач., увелич.на 1 е/и =, возврт. е/и !=
-    for (const row of result) {
-      const currentId = parseInt(row.id);
-      if (currentId !== firstAvailableId) break;
-      firstAvailableId++;
-    }
-    // возврат измен.нач.знач. е/и != track.id
-    return firstAvailableId;
-  }
-
   async createRole(createRoleDto: CreateRoleDto) {
-    const smallestFreeId = await this.getSmallestAvailableId('role');
+    // `получить наименьший доступный идентификатор` из БД > табл.role
+    const smallestFreeId =
+      await this.databaseUtils.getSmallestIDAvailable('role');
+    // объ.track созд./сохр./вернуть
     const role = this.roleRepository.create({
       ...createRoleDto,
       id: smallestFreeId,
     });
-    return await this.roleRepository.save(role);
+    await this.roleRepository.save(role);
+    return role;
   }
 
   async findAllRoles() {
@@ -89,4 +70,37 @@ export class RolesService {
   // async restoreRole(id: number) {
   //   return await this.roleRepository.restore(id);
   // }
+
+  // ^^ мтд.> ADMIN
+  // добавить неск.Ролей к неск.Пользователям
+  async addingRolesToUsers(
+    addingRolesToUsersDto: AddingRolesToUsersDto,
+  ): Promise<void> {
+    const { userIds, roleIds } = addingRolesToUsersDto;
+    // проверки и приведение к общ.типу
+    const userIdss: string | string[] = userIds.includes(',')
+      ? userIds.split(',')
+      : userIds;
+    const roleIdss: string | string[] = roleIds.includes(',')
+      ? roleIds.split(',')
+      : roleIds;
+    // получ.данн. User и Role
+    const users = await this.userRepository.findBy({ id: In([...userIdss]) });
+    const roles = await this.roleRepository.findBy({ id: In([...roleIdss]) });
+    // Проверка существования пользователей и ролей
+    if (users.length !== userIdss.length || roles.length !== roleIdss.length)
+      throw new Error(
+        'Одного или нескольких пользователей или ролей не существует.',
+      );
+
+    // Создание связей между Пользователями и Ролями
+    for (const user of users) {
+      for (const role of roles) {
+        const userRoles = new UserRolesEntity();
+        userRoles.userId = user.id;
+        userRoles.roleId = role.id;
+        await this.userRolesRepository.save(userRoles);
+      }
+    }
+  }
 }

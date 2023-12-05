@@ -16,6 +16,7 @@ import {
 import { CreateRoleDto } from './dto/create-role.dto';
 import { UpdateRoleDto } from './dto/update-role.dto';
 import { RolesService } from './roles.service';
+import { AddingRolesToUsersDto } from './dto/add-roles-to-users.dto';
 // import { RoleEntity } from './entities/role.entity';
 
 @Controller('roles')
@@ -62,4 +63,16 @@ export class RolesController {
   // restoreRole(@Param('id') id: string) {
   //   return this.rolesService.restoreRole(+id);
   // }
+
+  // ^^ мтд.> ADMIN
+  // добавить неск.Ролей к неск.Пользователям
+  @Post('admin/addRolesToUsers')
+  @ApiOperation({ summary: 'Добавить Роли к Пользователям' })
+  async createUserRoles(
+    @Body() addingRolesToUsersDto: AddingRolesToUsersDto,
+  ): Promise<void> {
+    console.log('addingRolesToUsersDto : ' + addingRolesToUsersDto);
+    console.log(addingRolesToUsersDto);
+    await this.rolesService.addingRolesToUsers(addingRolesToUsersDto);
+  }
 }
