@@ -9,24 +9,30 @@ import {
   UploadedFile,
   UseInterceptors,
   Res,
+  ParseFilePipe,
+  MaxFileSizeValidator,
+  FileTypeValidator,
 } from '@nestjs/common';
 import {
   ApiBody,
   ApiConsumes,
   ApiOperation,
   ApiTags,
+  // ApiQuery,
   // ApiBearerAuth,
   // ApiResponse,
 } from '@nestjs/swagger';
-import { FileInterceptor } from '@nestjs/platform-express';
-import { diskStorage } from 'multer';
-import { extname } from 'path';
+import {
+  FileInterceptor,
+  // FileFieldsInterceptor,
+} from '@nestjs/platform-express';
 
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { AddingRolesToUsersDto } from 'src/roles/dto/add-roles-to-users.dto';
 import { UserId } from 'src/decorators/user-id.decorator';
+import { fileStorage } from 'src/files/storage';
 // import { UserEntity } from './entities/user.entity';
 
 @Controller('users')
@@ -69,13 +75,14 @@ export class UsersController {
   @Get(':id')
   @ApiOperation({ summary: 'Получить по ID' })
   // @ApiCreatedResponse({ description: 'Описание findOne' })
-  findOneUser(@Param('id') id: string) {
+  findOneUser(@Param('id') id: string /* ObjectId */) {
     return this.usersService.findOneUser(+id);
   }
-  // ОДИН user.по параметрам
+
+  // ОДИН user.по параметрам ID <> Email <> FullName
   @Get('param/:param')
   @ApiOperation({ summary: 'Получить Usera по ID <> Email <> FullName' })
-  findUserByValue(@Param('param') param: string) {
+  findUserByParam(@Param('param') param: string) {
     return this.usersService.findUserByParam(param);
   }
 
@@ -120,7 +127,9 @@ export class UsersController {
   ): Promise<any> {
     // id Изо, п.хран.Изо
     // в @`ответ`.`отправить файл`(с ф.id, {из п.хран.ф. './../..'})
-    res.sendFile(fileId, { root: 'static/users/avatars' });
+    console.log('u.cntrl ava fileId : ' + fileId);
+    // ^^ дораб.чтоб м/у users/ и /avatar встал userId
+    res.sendFile(fileId, { root: 'static/users/avatar' });
   }
 
   // загр.аватар Пользователя
@@ -132,38 +141,42 @@ export class UsersController {
     schema: {
       type: 'object',
       properties: {
-        file: {
+        avatar /* file */: {
           type: 'string',
           format: 'binary',
         },
       },
     },
   })
+  // данн.выбора req swagger
+  // @ApiQuery({
+  //   name: 'fileType',
+  //   enum: 'avatar',
+  // })
   // свой перехват > сохр.ф.с нов.name
-  @UseInterceptors(
-    FileInterceptor('file', {
-      storage: diskStorage({
-        destination: './static/users/avatars/',
-        filename: (req, file, cb) => {
-          const randomName = Array(32)
-            .fill(null)
-            .map(() => Math.round(Math.random() * 16).toString(16))
-            .join('');
-          return cb(null, `${randomName}${extname(file.originalname)}`);
-        },
-      }),
-    }),
-  )
+  @UseInterceptors(FileInterceptor('avatar', { storage: fileStorage }))
   uploadAvatar(
+    // вытяг.ф.из запроса
+    @UploadedFile(
+      // валид.
+      new ParseFilePipe({
+        validators: [
+          // валид.разм.в bite. Здесь макс.3 Mb
+          new MaxFileSizeValidator({ maxSize: 1024 * 1024 * 3 }),
+          // валид.тип файлов. // ^^ дораб под разн.типы файлов
+          new FileTypeValidator({ fileType: /(jpg|jpeg|png|gif)$/ }),
+        ],
+      }),
+    )
+    avatar /* file */ : Express.Multer.File,
     // user id ч/з @Param || @UserId
     /* @Param('userid') userId */ @UserId() userId: number,
-    @UploadedFile() file: Express.Multer.File /* file */,
   ) {
-    // сохр./обнов. путь к аватару
-    this.usersService.setAvatar(
-      Number(userId),
-      `${this.SERVER_URL}${file.path}`,
-    );
+    let avatarUrl =
+      /* this.SERVER_URL + */
+      avatar.destination.replace(/^\.\/static\/users\//g, `users/${userId}/`);
+    avatarUrl = avatarUrl.replace(/\/$/, '');
+    this.usersService.setAvatar(userId, avatarUrl);
   }
 
   // @ApiOperation({ summary: 'Выдать роль' })

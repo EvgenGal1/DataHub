@@ -69,10 +69,10 @@ export class FilesController {
   createFile(
     // вытяг.ф.из запроса
     @UploadedFile(
-      // валид.разм.в bite. Здесь макс.3 Mb
+      // валид.
       new ParseFilePipe({
         validators: [
-          // валид.разм.в bite.
+          // валид.разм.в bite. Здесь макс.3 Mb
           new MaxFileSizeValidator({ maxSize: 1024 * 1024 * 3 }),
           // валид.тип файлов. // ^^ дораб под разн.типы файлов
           // new FileTypeValidator({ fileType: /(jpg|jpeg|png|gif)$/ }),
@@ -89,7 +89,7 @@ export class FilesController {
 
   // мтд.для получ.всех ф.списком.масс. Обращ.к files, возвращ.масс.всех ф. При получ.запроса обращ.к serv берём мтд.findAll который обращ.к БД, резулт.данн.fn вернёт в ответ на данн.запрос
   @Get()
-  @ApiOperation({ summary: 'Получить Выбранные Типы Файлов' })
+  @ApiOperation({ summary: 'Получить Файлы по Типам <> Все' })
   @ApiQuery({
     name: 'fileType',
     enum: fileTypesAllowed,

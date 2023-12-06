@@ -51,15 +51,16 @@ export class UsersService {
   }
 
   // ОДИН user.по id
-  async findOneUser(id: number) {
+  async findOneUser(id: number): Promise<UserEntity> {
     const user = await this.userRepository.findOneBy({ id });
     if (!user) throw new Error('Пользователь не найден');
     return user;
   }
-  // ОДИН user.по параметрам
+
+  // ОДИН user.по параметрам ID <> Email <> FullName
   // ! переделать под получ roles tracks user_roles в завис.от парам. и пр.
   async findUserByParam(param: string) {
-    // fn для неск.id
+    // ^^ fn для неск.id
     // if (usersIds) {
     //   const splitUserIds = usersIds.split(',');
     //   return this.userRepository./* findAndCount */ find({
@@ -71,13 +72,12 @@ export class UsersService {
     // }
     // return this.userRepository.find();
 
-    // мтд.напрямую
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const users = await this.userRepository.find({
-      relations: ['roles' /* 'tracks' */ /* 'user_roles' */],
-    });
+    // ^^ мтд.напрямую
+    // const users = await this.userRepository.find({
+    //   relations: ['roles', 'tracks', 'user_roles'],
+    // });
 
-    // мтд.ч/з `созд. строитель запросов`
+    // ^^ мтд.ч/з `созд. строитель запросов`
     // const users = await this.userRepository
     //   .createQueryBuilder('user')
     //   .leftJoinAndSelect('user.roles', 'role')
@@ -86,7 +86,7 @@ export class UsersService {
     //   .getMany();
 
     const whereCondition: any = {};
-    // условия res. id/num|eml/@|fullname/str
+    // условия res. id/num|eml/@|fullname/str // ^^ дораб.распозн.eml ч/з регул.выраж.
     if (!isNaN(Number(param))) {
       whereCondition.id = param;
     } else if (param.includes('@')) {
@@ -232,7 +232,4 @@ export class UsersService {
 
   // return userInfo;
   // }
-  //  ----------------------------------------------------------------------------------
-
-  // ^^ ADMIN ----------------------------------------------------------------------------------
 }

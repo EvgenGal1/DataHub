@@ -5,7 +5,7 @@ import { Injectable } from '@nestjs/common';
 import { FileType, FileEntity, fileTypesAllowed } from './entities/file.entity';
 import { UpdateFileDto } from './dto/update-file.dto';
 import { DatabaseUtils } from 'src/utils/database.utils';
-import { getFileTarget } from 'src/helpers/getFileTarget';
+import { fileTargets } from 'src/helpers/fileTargets';
 
 @Injectable()
 export class FilesService {
@@ -17,7 +17,7 @@ export class FilesService {
 
   async createFile(
     file: Express.Multer.File,
-    fileType: FileType /* | string, // */,
+    fileType: FileType | string,
     userId: number,
   ) {
     console.log(
@@ -30,9 +30,10 @@ export class FilesService {
     );
 
     //  опред.путь сохр./значен. по выбран.типу
+    // ^^ настроить паралел.сохр.с тип audio > сохр.в track и <> в serv/track тип
     let fileTarget: string;
     if (!file.destination) {
-      fileTarget = getFileTarget(fileType.toUpperCase());
+      fileTarget = fileTargets(fileType.toUpperCase());
       // удал."./static/" и послед.слеш.ч/з регул.выраж.
     } else fileTarget = file.destination.replace(/^\.\/static\/|\/$/g, '');
     console.log('f.serv fileTarget : ' + fileTarget);
@@ -51,25 +52,12 @@ export class FilesService {
       size: file.size,
       user: { id: userId },
     };
-    console.log('files.serv files : ' + files);
-    await this.fileRepository.save(files);
-    return files;
-  }
+    console.log('files.serv files : ', files);
 
-  // ^^ отдельная логика сохранения с передачей props
-  // ! не раб. зависает на diskStorage
-  // async saveFile(file: Express.Multer.File, fileTarget: FileType  | string, // userId: number
-  // ) {
-  //   try {
-  //     const save = await createFileStorage(file, fileTarget);
-  //     return save;
-  //     //
-  //     const save = fileStorage;
-  //     return save;
-  //   } catch (e) {
-  //     throw new HttpException(e.message, HttpStatus.INTERNAL_SERVER_ERROR);
-  //   }
-  // }
+    // await this.fileRepository.save(files);
+    // return files;
+    return await this.fileRepository.save(files);
+  }
 
   // мтд.получ.всех ф. // возвращ.ф.опред.user и с опред.типом(декор.Query)
   async findAllFiles(userId: number, fileTypes: any /* FileType[] */) {
@@ -99,7 +87,7 @@ export class FilesService {
 
     // составн.req > все `допустимые типы`
     if (validTypes.length > 0) {
-      console.log(`Возвращение ${validTypes.join(', ')} файлы`);
+      console.log(`Возвращение <${validTypes.join(', ')}> файлы`);
       qb.andWhere('file.target ILIKE ANY(:types)', {
         types: validTypes.map((type) => `%${type}%`),
       });
