@@ -1,6 +1,6 @@
 // ^^ типы/назначениея файлов с определением пути сохранения и значением
-export const getFileTarget = (fileType: string) => {
-  console.log('getFileTarget fileType : ' + fileType);
+export const fileTargets = (fileType: string) => {
+  console.log('fileTargets fileType : ' + fileType);
   const fileTarget =
     fileType === 'IMAGE'
       ? 'images/picture'

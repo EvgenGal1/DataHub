@@ -3,7 +3,6 @@ import {
   Entity,
   Column,
   ManyToOne,
-  OneToOne,
   OneToMany,
   PrimaryColumn,
   CreateDateColumn,
@@ -39,9 +38,6 @@ export class TrackEntity extends AbstractEntity {
   @Column({ default: 0 })
   listens: number;
 
-  @Column({ default: '_#_' })
-  picture: string;
-
   @Column({ default: 'mpt3/wav' })
   audio: string;
 
@@ -55,9 +51,9 @@ export class TrackEntity extends AbstractEntity {
   @Column({ type: 'text', default: 180 })
   duration: number | string;
 
-  // у трека один файл с target.album
-  @OneToOne(() => FileEntity, (file: FileEntity) => file.track)
-  file: FileEntity;
+  // связь табл. Мн.к 1му. У Мн.треков Одна обложка.
+  @ManyToOne(() => FileEntity, (file: FileEntity) => file.tracks)
+  cover: FileEntity;
 
   // связь табл. Мн.к 1му. У Мн.треков Один альбом.
   @ManyToOne(() => AlbumEntity, (album: AlbumEntity) => album.tracks)

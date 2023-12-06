@@ -4,6 +4,7 @@ import {
   DeleteDateColumn,
   Entity,
   ManyToOne,
+  OneToMany,
   OneToOne,
   PrimaryColumn,
   // PrimaryGeneratedColumn,
@@ -75,9 +76,9 @@ export class FileEntity {
   @Column()
   size: number;
 
-  // у файла с target.album один трек
-  @OneToOne(() => TrackEntity, (track) => track.file)
-  track: TrackEntity;
+  // связь табл. 1го ко Мн. У обложки Мн.треков
+  @OneToMany(() => TrackEntity, (track: TrackEntity) => track.cover)
+  tracks: TrackEntity[];
 
   // у файла с target.album один альбом
   @OneToOne(() => AlbumEntity, (album) => album.file)

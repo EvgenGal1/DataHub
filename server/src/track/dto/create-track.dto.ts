@@ -1,5 +1,6 @@
 // ^ `Объект передачи данных` разрещ.req front > dack. Отдел.кл.с опис.ожид.св-в/полей
 import { ApiProperty } from '@nestjs/swagger';
+import { AlbumEntity } from 'src/album/entities/album.entity';
 
 export class CreateTrackDto {
   // декор.swagger > св-в с возм.указ. default
@@ -14,6 +15,9 @@ export class CreateTrackDto {
 
   @ApiProperty({ default: 'Other #' })
   readonly style: string;
+
+  @ApiProperty({ default: 'Альбом #' })
+  readonly album: string | AlbumEntity;
 
   // добав. userId и albumId
 

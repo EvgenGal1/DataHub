@@ -2,22 +2,23 @@
 import * as multer from 'multer';
 import * as path from 'path';
 
-import { getFileTarget } from 'src/helpers/getFileTarget';
+import { fileTargets } from 'src/helpers/fileTargets';
 
 // MW > сохр.неск.ф. `файловое хранилище` = `дисковое хранилище`
 export const fileStorage = multer.diskStorage({
   // = diskStorage({ - один файл
   // `место назначения`
   destination: (req, file, cb) => {
+    console.log('fileStorage file 0 : ', file);
     // Баз.п./Путь
     const baseFolder = './static/';
     // формир.путь от выбранного типа
     let fileTarget: string | Promise<string>;
     // е/и нет req.query
     if (file.fieldname && !req.query.fileType) {
-      fileTarget = getFileTarget(file.fieldname.toUpperCase());
+      fileTarget = fileTargets(file.fieldname.toUpperCase());
     } else if (req.query.fileType) {
-      fileTarget = getFileTarget(String(req.query.fileType).toUpperCase());
+      fileTarget = fileTargets(String(req.query.fileType).toUpperCase());
     }
     // общий путь
     const destinationPath = baseFolder + fileTarget + '/';
