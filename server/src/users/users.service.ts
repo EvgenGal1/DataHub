@@ -28,7 +28,7 @@ export class UsersService {
 
   // СОЗД User + Role + связь
   async createUser(createUserDto: CreateUserDto) {
-    // `получить наименьший доступный идентификатор` из БД > табл.file
+    // `получить наименьший доступный идентификатор` из табл.БД
     const smallestFreeId =
       await this.databaseUtils.getSmallestIDAvailable('user');
     // созд.объ.user

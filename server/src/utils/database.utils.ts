@@ -24,30 +24,32 @@ export class DatabaseUtils {
   // `получить наименьший доступный идентификатор` из БД > табл.указ.в tableName
   async getSmallestIDAvailable(tableName: string): Promise<number> {
     console.log('getSmallestIDAvailable tableName : ' + tableName);
+    // перем.Репозитория
     let customRepository: Repository<any>;
-
+    // опред.Репозитория
     if (tableName === 'user') customRepository = this.userRepository;
     if (tableName === 'role') customRepository = this.rolesRepository;
     if (tableName === 'file') customRepository = this.fileRepository;
     if (tableName === 'track') customRepository = this.trackRepository;
-
+    // обраб.ошб.е/и табл.нет
     if (!customRepository) throw new Error('Неверное название таблицы');
-
+    // составной req
     const query = customRepository
       .createQueryBuilder(tableName)
       .select(`${tableName}.id`, 'id')
       .orderBy(`${tableName}.id`, 'ASC')
       .getRawMany();
-
+    // req
     const result = await query;
+    // перем. начального доступного ID
     let firstAvailableId = 1;
-
+    // перебор./сравн. ID начал. <> ID БД
     for (const row of result) {
       const currentId = parseInt(row.id);
       if (currentId !== firstAvailableId) break;
       firstAvailableId++;
     }
-
+    // возврат первого свободного ID
     return firstAvailableId;
   }
 }
