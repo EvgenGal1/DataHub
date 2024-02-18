@@ -1,6 +1,7 @@
+// общ.сервис приложения
 import { Injectable } from '@nestjs/common';
 
-// Ввод Provider в др.кл.ч/з `@Инъекции`
+// декор.`@Инъекции` отметка кл.как Provider
 @Injectable()
 export class AppService {
   getUsers(): string {
@@ -8,6 +9,6 @@ export class AppService {
   }
 
   getUsers2(): string {
-    return 'Страгица /Api';
+    return 'Страница по Api';
   }
 }

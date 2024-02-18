@@ -1,3 +1,4 @@
+// точка входа, запуск приложения
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
@@ -10,7 +11,7 @@ async function bootstrap() {
   try {
     // PORT Запуска
     const PORT = process.env.PORT || 5000;
-    // modul входа
+    // в перем.app асинхр.созд.экзепл.приложения ч/з кл.NestFactory с передачей в парам.modul входа
     const app = await NestFactory.create(AppModule /* , { cors: false } */);
     // в 2х местах откл. cors
     // app.enableCors(/* { credentials: true, origin: true } */);
@@ -59,4 +60,3 @@ async function bootstrap() {
   }
 }
 bootstrap();
-// 123

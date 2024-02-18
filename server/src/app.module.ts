@@ -1,7 +1,10 @@
+// общ.модуль приложения
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
+import { AppController, AppController2 } from './app.controller';
+import { AppService } from './app.service';
 // import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { UserEntity } from './users/entities/user.entity';
@@ -17,7 +20,7 @@ import { AlbumEntity } from './album/entities/album.entity';
 import { ReactionsModule } from './reactions/reactions.module';
 import { ReactionEntity } from './reactions/entities/reaction.entity';
 
-// Комп.Прилож
+// декор.module
 @Module({
   imports: [
     // подкл.модуль для счит.перем.из.env
@@ -57,5 +60,8 @@ import { ReactionEntity } from './reactions/entities/reaction.entity';
     AlbumModule,
     ReactionsModule,
   ],
+  // до декомпозиции (для кажд.сущности свой cntrl,serv )
+  controllers: [AppController, AppController2],
+  providers: [AppService],
 })
 export class AppModule {}
