@@ -1,8 +1,8 @@
-// общ.контроллер приложения
+// общ.контроллер приложения (обраб.маршр.,req|res CRUD, взаимодейств.>тип,тело,парам.req|res)
 import { Controller, Get } from '@nestjs/common';
 import { AppService } from './app.service';
 
-// декор.контроллера(маршр.req)
+// декор.контроллер(маршр.req). (обраб.маршр.req|res CRUD)
 @Controller('/')
 export class AppController {
   constructor(
@@ -10,7 +10,7 @@ export class AppController {
     private readonly appService: AppService,
   ) {}
 
-  // декоратор.получ.данн.
+  // декоратор.маршр.req
   @Get()
   // мтд.получ.данн.
   getUsers(): string {

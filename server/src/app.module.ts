@@ -20,7 +20,7 @@ import { AlbumEntity } from './album/entities/album.entity';
 import { ReactionsModule } from './reactions/reactions.module';
 import { ReactionEntity } from './reactions/entities/reaction.entity';
 
-// декор.module
+// декор.модуль. (организ.структуры области действ.> cntrl и provider)
 @Module({
   imports: [
     // подкл.модуль для счит.перем.из.env
@@ -60,8 +60,10 @@ import { ReactionEntity } from './reactions/entities/reaction.entity';
     AlbumModule,
     ReactionsModule,
   ],
-  // до декомпозиции (для кажд.сущности свой cntrl,serv )
+  // ^^ подкл.App.cnrtl,serv до декомпозиции (для кажд.сущности свой cntrl,serv )
+  // подкл.cnrtl данного модуля
   controllers: [AppController, AppController2],
+  // подкл.serv данного модуля
   providers: [AppService],
 })
 export class AppModule {}

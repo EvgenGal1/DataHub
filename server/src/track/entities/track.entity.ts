@@ -35,14 +35,15 @@ export class TrackEntity extends AbstractEntity {
   @Column({ type: 'varchar', default: '-', length: 500 })
   text: string;
 
+  // кол-во прослушиваний
   @Column({ default: 0 })
   listens: number;
 
+  // ссылк.аудио
   @Column({ default: 'mpt3/wav' })
   audio: string;
 
-  // ^^ добав.: стиль, продолжительность
-  // Стиль Трека
+  // стиль трека
   @ApiProperty({ example: 'Other', description: 'Стиль Трека' })
   @Column({ default: 'Other' })
   style: string;
@@ -51,7 +52,7 @@ export class TrackEntity extends AbstractEntity {
   @Column({ type: 'text', default: 180 })
   duration: number | string;
 
-  // связь табл. Мн.к 1му. У Мн.треков Одна обложка.
+  // связь табл. Мн.к 1му. У Мн.треков Одна обложка. Ссылк.изо обложки
   @ManyToOne(() => FileEntity, (file: FileEntity) => file.tracks)
   cover: FileEntity;
 
