@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Module /* , forwardRef */ } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
