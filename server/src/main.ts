@@ -15,7 +15,7 @@ async function bootstrap() {
     const app = await NestFactory.create(AppModule /* , { cors: false } */);
     // в 2х местах откл. cors
     // app.enableCors(/* { credentials: true, origin: true } */);
-    //  ----------------------------------------------------------------------------------
+
     // 1. Включаем глобальные фильтры и валидацию данных
     // app.useGlobalFilters(new AllExceptionsFilter());
     // app.useGlobalPipes(new ValidationPipe());
@@ -28,7 +28,6 @@ async function bootstrap() {
         allowedHeaders: ['Content-Type', 'Authorization'],
       }),
     );
-    //  ----------------------------------------------------------------------------------
 
     // MW для путей файлов в uploads
     // app.use('/static', express.static(join(__dirname, '..', 'uploads')));
