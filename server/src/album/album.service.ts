@@ -65,18 +65,11 @@ export class AlbumService {
     const count = await this.albumsRepository.count({
       where: { album: albumName },
     });
-
     return count;
   }
 
-  // универс.fn
-  // async getAlbumByProps(props: Partial<AlbumEntity>): Promise<AlbumEntity[]> {
+  // универс.fn поиска по автору, альбому, обложки, год, стилю, id
   async getAlbumByProps(props) {
-    const { var1, var2 } = props;
-    // return this.albumsRepository.find(props);
-    // return this.albumsRepository.findOne(props as FindOneOptions<AlbumEntity>);
-    // return this.albumsRepository.find({ where: { album: props } });
-    // return this.albumsRepository.find({ where: { [var1]: var2 } });
     return this.albumsRepository.find({ where: [props] });
   }
 }

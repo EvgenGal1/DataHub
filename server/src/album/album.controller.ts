@@ -60,17 +60,13 @@ export class AlbumController {
   }
 
   // ^^ ДОП.МТД.
-  // поиск по исполнителю // ~ верн. возвращ.один альбом
-  // ! не раб. @Get('/:author') | '/author' | 'author' > отраб.мтд.@Get(':id')findOne
+  // поиск по исполнителю
   @Get('/author_Name/:Name')
   @ApiOperation({ summary: 'Поиск Альбома по Автору' })
-  searchByAuthor(
-    /* @Param // возвращ.всё */ @Query('author') authorName: string,
-  ) /* : Promise<Album[]> // надо ли тип.возврат. */ {
+  searchByAuthor(@Query('author') authorName: string) {
     return this.albumsService.searchByAuthor(authorName);
   }
 
-  // поиск по назв.альбома
   @Get('/album_Name/:Name')
   @ApiOperation({ summary: 'Поиск Альбома по Названию' })
   searchByAlbumName(@Query('album') albumName: string) {
@@ -93,7 +89,7 @@ export class AlbumController {
         return this.albumsService.getTrackCountByAlbumName(value);
       case 'id':
         return this.albumsService.getTrackCountByAlbumId(Number(value));
-      // Добавьте обработку других вариантов поиска по своим требованиям
+      // ^ Добавить обработку других вариантов поиска по своим требованиям
       default:
         throw new Error('Неверный вариант поиска');
     }
@@ -104,7 +100,7 @@ export class AlbumController {
   @ApiOperation({ summary: 'Получить Альбомы по параметрам' })
   @ApiQuery({
     name: 'field',
-    enum: ['author', 'album', 'picture', 'year', 'style', 'id'],
+    enum: ['author', 'album', 'cover', 'year', 'style', 'id'],
   })
   @ApiQuery({ name: 'value', required: true })
   @ApiResponse({ status: 200, type: AlbumEntity })
