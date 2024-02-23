@@ -35,4 +35,28 @@ lerna-debug.log*
 !.vscode/settings.json
 !.vscode/tasks.json
 !.vscode/launch.json
-!.vscode/extensions.json 
+!.vscode/extensions.json
+
+# СВОЁ пока не нужное 
+# папка временных/пока не нужных файлов. для игнора и случайно залитых
+vr/
+.env
+# dtos/
+dist/
+
+# js
+# src/scripts/*
+
+# scss
+# src/styles/all.scss
+
+# помошники
+GitHub Команды.txt
+info.txt
+webpack*
+
+# настройки
+.vscode
+
+# врем.откл.
+/schemaBD/
