@@ -3,6 +3,7 @@ import {
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
+  JoinColumn,
   ManyToOne,
   OneToMany,
   OneToOne,
@@ -81,7 +82,13 @@ export class FileEntity {
   tracks: TrackEntity[];
 
   // у файла с target.album один альбом
-  @OneToOne(() => AlbumEntity, (album) => album.file)
+  // @OneToOne(() => AlbumEntity, (album) => album.fileId)
+  // albumId: AlbumEntity;
+  // связь табл. 1 к 1. Один файл указ.на Одну обложку (с опцион.указ. album.coverID)
+  @OneToOne(() => AlbumEntity, (album) => album.cover, {
+    nullable: true,
+  })
+  @JoinColumn()
   album: AlbumEntity;
 
   // связь табл. Мн.к 1му. У Мн.файлов Один польз.

@@ -53,7 +53,9 @@ export class TrackEntity extends AbstractEntity {
   duration: number | string;
 
   // связь табл. Мн.к 1му. У Мн.треков Одна обложка. Ссылк.изо обложки
-  @ManyToOne(() => FileEntity, (file: FileEntity) => file.tracks)
+  @ManyToOne(() => FileEntity, (file: FileEntity) => file.tracks, {
+    nullable: true,
+  })
   cover: FileEntity;
 
   // связь табл. Мн.к 1му. У Мн.треков Один альбом.

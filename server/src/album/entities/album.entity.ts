@@ -1,12 +1,13 @@
 import {
   Entity,
-  PrimaryGeneratedColumn,
   Column,
   OneToMany,
   ManyToOne,
   OneToOne,
   CreateDateColumn,
   DeleteDateColumn,
+  JoinColumn,
+  PrimaryColumn,
 } from 'typeorm';
 
 import { TrackEntity } from '../../track/entities/track.entity';
@@ -16,7 +17,7 @@ import { FileEntity } from 'src/files/entities/file.entity';
 @Entity('album')
 export class AlbumEntity {
   // id, назв.альбома, автор, ссылк.изо обложки трека, масс.треков
-  @PrimaryGeneratedColumn()
+  @PrimaryColumn()
   id: number;
 
   // Назв.Альбома
@@ -49,8 +50,14 @@ export class AlbumEntity {
   tracks: TrackEntity[];
 
   // у альбома один файла с target.album
-  @OneToOne(() => FileEntity, (files: FileEntity) => files.album)
-  file: FileEntity;
+  // @OneToOne(() => FileEntity, (files: FileEntity) => files.albumId)
+  // fileId: FileEntity;
+  // связь табл. 1 к 1. У Одного альбома Одна обложка (с опцион.указ. file.albumID)
+  @OneToOne(() => FileEntity, (files: FileEntity) => files.album, {
+    nullable: true,
+  })
+  @JoinColumn()
+  cover: File;
 
   // связь табл. Мн.к 1му. У Мн.альбомов Один польз.
   @ManyToOne(() => UserEntity, (user: UserEntity) => user.albums)
