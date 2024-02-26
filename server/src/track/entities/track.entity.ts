@@ -12,7 +12,7 @@ import {
 import { AbstractEntity } from 'src/model/abstract.entity';
 import { UserEntity } from 'src/users/entities/user.entity';
 import { ReactionEntity } from 'src/reactions/entities/reaction.entity';
-import { AlbumEntity } from 'src/album/entities/album.entity';
+import { AlbumEntity } from 'src/albums/entities/album.entity';
 import { FileEntity } from 'src/files/entities/file.entity';
 import { ApiProperty } from '@nestjs/swagger';
 

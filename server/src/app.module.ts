@@ -15,8 +15,8 @@ import { FilesModule } from './files/files.module';
 import { FileEntity } from './files/entities/file.entity';
 import { TrackModule } from './track/track.module';
 import { TrackEntity } from './track/entities/track.entity';
-import { AlbumModule } from './album/album.module';
-import { AlbumEntity } from './album/entities/album.entity';
+import { AlbumModule } from './albums/albums.module';
+import { AlbumEntity } from './albums/entities/album.entity';
 import { ReactionsModule } from './reactions/reactions.module';
 import { ReactionEntity } from './reactions/entities/reaction.entity';
 

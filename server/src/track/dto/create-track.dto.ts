@@ -1,6 +1,6 @@
 // ^ `Объект передачи данных` разрещ.req front > dack. Отдел.кл.с опис.ожид.св-в/полей
 import { ApiProperty } from '@nestjs/swagger';
-import { AlbumEntity } from 'src/album/entities/album.entity';
+import { AlbumEntity } from 'src/albums/entities/album.entity';
 
 export class CreateTrackDto {
   // декор.swagger > св-в с возм.указ. default

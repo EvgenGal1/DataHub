@@ -15,7 +15,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { RoleEntity } from 'src/roles/entities/role.entity';
 import { FileEntity } from 'src/files/entities/file.entity';
 import { TrackEntity } from '../../track/entities/track.entity';
-import { AlbumEntity } from 'src/album/entities/album.entity';
+import { AlbumEntity } from 'src/albums/entities/album.entity';
 import { ReactionEntity } from 'src/reactions/entities/reaction.entity';
 
 // декоратор для соед.с БД
