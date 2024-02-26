@@ -172,10 +172,22 @@ export class UsersController {
     // user id ч/з @Param || @UserId
     /* @Param('userid') userId */ @UserId() userId: number,
   ) {
+    // console.log('file : ', file);
+    // console.log(file);
+    console.log('avatar : ', avatar);
+    console.log(avatar);
+    // сохр./обнов. путь к аватару
+    // this.usersService.setAvatar(
+    //   Number(userId),
+    //   `${this.SERVER_URL}${file.path}`,
+    // );
+    console.log('avatar.destination : ' + avatar.destination);
     let avatarUrl =
       /* this.SERVER_URL + */
       avatar.destination.replace(/^\.\/static\/users\//g, `users/${userId}/`);
+    console.log('avatarUrl 1 : ' + avatarUrl);
     avatarUrl = avatarUrl.replace(/\/$/, '');
+    console.log('avatarUrl 2 : ' + avatarUrl);
     this.usersService.setAvatar(userId, avatarUrl);
   }
 

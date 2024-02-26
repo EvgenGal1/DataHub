@@ -38,12 +38,14 @@ export class AlbumController {
   @Get()
   @ApiOperation({ summary: 'Получить Все Альбомы' })
   findAllAlbum() {
+    console.log('999 : ' + 999);
     return this.albumsService.findAllAlbums();
   }
 
   @Get(':id')
   @ApiOperation({ summary: 'Получить Альбом' })
   findOneAlbum(@Param('id') id: string) {
+    console.log('111 : ' + 111);
     return this.albumsService.findOneAlbum(+id);
   }
 
@@ -60,16 +62,28 @@ export class AlbumController {
   }
 
   // ^^ ДОП.МТД.
-  // поиск по исполнителю
+  // поиск по исполнителю // ~ верн. возвращ.один альбом
+  // ! не раб. @Get('/:author') | '/author' | 'author' > отраб.мтд.@Get(':id')findOne
+  // @Get('/album/:author_Name')
+  // @Get('/album/author_Name/:Name')
   @Get('/author_Name/:Name')
   @ApiOperation({ summary: 'Поиск Альбома по Автору' })
-  searchByAuthor(@Query('author') authorName: string) {
+  searchByAuthor(
+    /* @Param // возвращ.всё */ @Query('author') authorName: string,
+  ) /* : Promise<Album[]> // надо ли тип.возврат. */ {
+    console.log('cntrl ATHR_Name : ' + authorName);
+    console.log(authorName);
     return this.albumsService.searchByAuthor(authorName);
   }
 
+  // поиск по назв.альбома // ~ не верн. возвращ.по мтд. Author все альбомы
+  // @Get('/album/album_Name/:Name')
   @Get('/album_Name/:Name')
+  // @Get('/:album_Name')
   @ApiOperation({ summary: 'Поиск Альбома по Названию' })
   searchByAlbumName(@Query('album') albumName: string) {
+    console.log('cntrl alb-Name : ' + albumName);
+    console.log(albumName);
     return this.albumsService.searchByAlbumName(albumName);
   }
 
@@ -84,12 +98,14 @@ export class AlbumController {
     @Query('searchBy') searchBy: string,
     @Query('value') value: string,
   ): Promise<number> {
+    console.log('cntrl COUNT searchBy  value : ' + searchBy, '_|_', value);
+    console.log(searchBy, value);
     switch (searchBy) {
       case 'название':
         return this.albumsService.getTrackCountByAlbumName(value);
       case 'id':
         return this.albumsService.getTrackCountByAlbumId(Number(value));
-      // ^ Добавить обработку других вариантов поиска по своим требованиям
+      // ^ Добавьте обработку других вариантов поиска по своим требованиям
       default:
         throw new Error('Неверный вариант поиска');
     }
@@ -108,8 +124,12 @@ export class AlbumController {
     @Query('field') field: string,
     @Query('value') value: string,
   ) /* : Promise<Album> */ {
+    console.log('cntrl PROP field  value : ' + field, '_|_', value);
+    console.log(field, value);
     const props = {};
     props[field] = value;
+    console.log('cntrl props : ' + props);
+    console.log(props);
     return this.albumsService.getAlbumByProps(props);
   }
 }

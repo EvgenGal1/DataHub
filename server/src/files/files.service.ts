@@ -28,6 +28,16 @@ export class FilesService {
       '|',
       userId,
     );
+    // f.serv file | fileType | userId :  {
+    //   fieldname: 'file',
+    //   originalname: '50-690411497.jpg',
+    //   encoding: '7bit',
+    //   mimetype: 'image/jpeg',
+    //   destination: './static/users/avatar/',
+    //   filename: '06-12-2023_d2d55cdb0233da3522.jpg',
+    //   path: 'static\\users\\avatar\\06-12-2023_d2d55cdb0233da3522.jpg',
+    //   size: 312089
+    // } | avatar | 1
 
     //  опред.путь сохр./значен. по выбран.типу
     // ^^ настроить паралел.сохр.с тип audio > сохр.в track и <> в serv/track тип
@@ -35,7 +45,10 @@ export class FilesService {
     if (!file.destination) {
       fileTarget = fileTargets(fileType.toUpperCase());
       // удал."./static/" и послед.слеш.ч/з регул.выраж.
-    } else fileTarget = file.destination.replace(/^\.\/static\/|\/$/g, '');
+    } /* else if (!file.destination && !file.fileType && file.fieldname) {
+      fileTarget = fileTargets(file.fieldname.toUpperCase());
+      // удал."./static/" и послед.слеш.ч/з регул.выраж.
+    } */ else fileTarget = file.destination.replace(/^\.\/static\/|\/$/g, '');
     console.log('f.serv fileTarget : ' + fileTarget);
 
     // `получить наименьший доступный идентификатор` из БД > табл.file
@@ -53,6 +66,15 @@ export class FilesService {
       user: { id: userId },
     };
     console.log('files.serv files : ', files);
+    // files.serv files :  {
+    //   id: 7,
+    //   filename: '06-12-2023_7205e601d9d9870684.jpg',
+    //   originalname: '50-690411497.jpg',
+    //   mimetype: 'image/jpeg',
+    //   target: 'users/avatar',
+    //   size: 312089,
+    //   user: { id: 1 }
+    // }
 
     // await this.fileRepository.save(files);
     // return files;

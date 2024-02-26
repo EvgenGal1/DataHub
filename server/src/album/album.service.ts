@@ -44,16 +44,22 @@ export class AlbumService {
   // ^^ ДОП.МТД.
   // поиск по исполнителю
   async searchByAuthor(author: string): Promise<AlbumEntity[]> {
+    console.log('serv ATHR : ' + author);
+    console.log(author);
     return this.albumsRepository.find({ where: { author: author } });
   }
 
   // поиск по назв.альбома
   async searchByAlbumName(albumName: string): Promise<AlbumEntity[]> {
+    console.log('serv alb_Name : ' + albumName);
+    console.log(albumName);
     return this.albumsRepository.find({ where: { album: albumName } });
   }
 
   // количество по id.альбома
   async getTrackCountByAlbumId(albumId: number): Promise<number> {
+    console.log('serv доп.мтд. alb_Id : ' + albumId);
+    console.log(albumId);
     return this.albumsRepository.count({
       where: { id: albumId },
     });
@@ -61,15 +67,26 @@ export class AlbumService {
 
   // кол-во по Альбому
   async getTrackCountByAlbumName(albumName: string): Promise<number> {
+    console.log('serv доп.мтд. alb_Name : ' + albumName);
+    console.log(albumName);
     // return this.albumsRepository.count({ where: { album: albumName }});
     const count = await this.albumsRepository.count({
       where: { album: albumName },
     });
+    console.log('serv доп.мтд. count : ' + count);
     return count;
   }
 
   // универс.fn поиска по автору, альбому, обложки, год, стилю, id
+  // async getAlbumByProps(props: Partial<AlbumEntity>): Promise<AlbumEntity[]> {
   async getAlbumByProps(props) {
+    console.log('serv props : ' + props);
+    console.log(props);
+    const { var1, var2 } = props;
+    // return this.albumsRepository.find(props);
+    // return this.albumsRepository.findOne(props as FindOneOptions<AlbumEntity>);
+    // return this.albumsRepository.find({ where: { album: props } });
+    // return this.albumsRepository.find({ where: { [var1]: var2 } });
     return this.albumsRepository.find({ where: [props] });
   }
 }
