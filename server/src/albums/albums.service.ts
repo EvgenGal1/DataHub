@@ -6,7 +6,7 @@ import { FindOneOptions, Like, ObjectId, Repository } from 'typeorm';
 import { CreateAlbumDto } from './dto/create-album.dto';
 import { UpdateAlbumDto } from './dto/update-album.dto';
 import { AlbumEntity } from './entities/album.entity';
-import { TrackEntity } from 'src/track/entities/track.entity';
+import { TrackEntity } from 'src/tracks/entities/track.entity';
 import { ReactionEntity } from 'src/reactions/entities/reaction.entity';
 
 @Injectable()

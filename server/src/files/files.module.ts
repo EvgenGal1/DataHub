@@ -7,7 +7,7 @@ import { FileEntity } from './entities/file.entity';
 import { UserEntity } from 'src/users/entities/user.entity';
 import { RoleEntity } from 'src/roles/entities/role.entity';
 import { DatabaseUtils } from 'src/utils/database.utils';
-import { TrackEntity } from 'src/track/entities/track.entity';
+import { TrackEntity } from 'src/tracks/entities/track.entity';
 
 @Module({
   controllers: [FilesController],

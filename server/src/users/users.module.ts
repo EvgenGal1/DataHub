@@ -9,7 +9,7 @@ import { RolesModule } from 'src/roles/roles.module';
 import { UserRolesEntity } from 'src/roles/entities/user-roles.entity';
 import { DatabaseUtils } from 'src/utils/database.utils';
 import { FileEntity } from 'src/files/entities/file.entity';
-import { TrackEntity } from 'src/track/entities/track.entity';
+import { TrackEntity } from 'src/tracks/entities/track.entity';
 
 @Module({
   controllers: [UsersController],

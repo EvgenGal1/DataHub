@@ -8,7 +8,7 @@ import { RolesController } from './roles.controller';
 import { RolesService } from './roles.service';
 import { DatabaseUtils } from 'src/utils/database.utils';
 import { FileEntity } from 'src/files/entities/file.entity';
-import { TrackEntity } from 'src/track/entities/track.entity';
+import { TrackEntity } from 'src/tracks/entities/track.entity';
 
 @Module({
   controllers: [RolesController],

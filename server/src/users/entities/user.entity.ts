@@ -14,7 +14,7 @@ import { ApiProperty } from '@nestjs/swagger';
 
 import { RoleEntity } from 'src/roles/entities/role.entity';
 import { FileEntity } from 'src/files/entities/file.entity';
-import { TrackEntity } from '../../track/entities/track.entity';
+import { TrackEntity } from '../../tracks/entities/track.entity';
 import { AlbumEntity } from 'src/albums/entities/album.entity';
 import { ReactionEntity } from 'src/reactions/entities/reaction.entity';
 

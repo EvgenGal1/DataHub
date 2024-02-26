@@ -10,7 +10,7 @@ import {
   PrimaryColumn,
 } from 'typeorm';
 
-import { TrackEntity } from '../../track/entities/track.entity';
+import { TrackEntity } from '../../tracks/entities/track.entity';
 import { UserEntity } from 'src/users/entities/user.entity';
 import { FileEntity } from 'src/files/entities/file.entity';
 

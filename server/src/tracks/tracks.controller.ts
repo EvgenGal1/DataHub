@@ -29,7 +29,7 @@ import {
 } from '@nestjs/swagger';
 import * as fs from 'fs';
 
-import { TrackService } from './track.service';
+import { TrackService } from './tracks.service';
 import { CreateTrackDto } from './dto/create-track.dto';
 import { UpdateTrackDto } from './dto/update-track.dto';
 import { CreateReactionDto } from 'src/reactions/dto/create-reaction.dto';

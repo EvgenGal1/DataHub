@@ -1,8 +1,8 @@
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Module } from '@nestjs/common';
 
-import { TrackController } from './track.controller';
-import { TrackService } from './track.service';
+import { TrackController } from './tracks.controller';
+import { TrackService } from './tracks.service';
 import { TrackEntity } from './entities/track.entity';
 import { UserEntity } from 'src/users/entities/user.entity';
 import { RoleEntity } from 'src/roles/entities/role.entity';

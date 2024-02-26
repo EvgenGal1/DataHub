@@ -6,7 +6,7 @@ import { Injectable } from '@nestjs/common';
 import { UserEntity } from 'src/users/entities/user.entity';
 import { RoleEntity } from 'src/roles/entities/role.entity';
 import { FileEntity } from 'src/files/entities/file.entity';
-import { TrackEntity } from 'src/track/entities/track.entity';
+import { TrackEntity } from 'src/tracks/entities/track.entity';
 
 @Injectable()
 export class DatabaseUtils {

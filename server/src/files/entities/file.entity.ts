@@ -13,7 +13,7 @@ import {
 import { ApiProperty } from '@nestjs/swagger';
 
 import { AlbumEntity } from 'src/albums/entities/album.entity';
-import { TrackEntity } from 'src/track/entities/track.entity';
+import { TrackEntity } from 'src/tracks/entities/track.entity';
 import { UserEntity } from 'src/users/entities/user.entity';
 
 // типизация (Query парам.ч/з enum. и др.вар.) Filter ф.по фото и trash`мусор`
