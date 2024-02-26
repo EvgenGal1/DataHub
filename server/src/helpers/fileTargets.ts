@@ -1,4 +1,4 @@
-// ^^ типы/назначениея файлов с определением пути сохранения и значением
+// ^^ типы/назначения файлов с определением пути сохранения и значением
 export const fileTargets = (fileType: string) => {
   console.log('fileTargets fileType : ' + fileType);
   const fileTarget =

@@ -14,7 +14,7 @@ import { TrackEntity } from '../../track/entities/track.entity';
 import { UserEntity } from 'src/users/entities/user.entity';
 import { FileEntity } from 'src/files/entities/file.entity';
 
-@Entity('album')
+@Entity('albums')
 export class AlbumEntity {
   // id, назв.альбома, автор, ссылк.изо обложки трека, масс.треков
   @PrimaryColumn()

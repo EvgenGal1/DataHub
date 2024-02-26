@@ -16,7 +16,7 @@ import { AlbumEntity } from 'src/album/entities/album.entity';
 import { FileEntity } from 'src/files/entities/file.entity';
 import { ApiProperty } from '@nestjs/swagger';
 
-@Entity('track')
+@Entity('tracks')
 export class TrackEntity extends AbstractEntity {
   // id, назв.трека, имя артиста, текст трека, кол-во прослушиваний, ссылк.изо обложки трека, ссылк.аудио, связь с.польз., масс.реакций
   // @PrimaryGeneratedColumn() // коммит чтоб указ.свободный id ч/з fn getSmallestIDAvailable
