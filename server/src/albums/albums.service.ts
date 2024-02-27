@@ -53,7 +53,7 @@ export class AlbumService {
   async searchByAlbumName(albumName: string): Promise<AlbumEntity[]> {
     console.log('serv alb_Name : ' + albumName);
     console.log(albumName);
-    return this.albumsRepository.find({ where: { album: albumName } });
+    return this.albumsRepository.find({ where: { title: albumName } });
   }
 
   // количество по id.альбома
@@ -71,7 +71,7 @@ export class AlbumService {
     console.log(albumName);
     // return this.albumsRepository.count({ where: { album: albumName }});
     const count = await this.albumsRepository.count({
-      where: { album: albumName },
+      where: { title: albumName },
     });
     console.log('serv доп.мтд. count : ' + count);
     return count;
