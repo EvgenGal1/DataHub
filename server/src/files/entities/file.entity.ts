@@ -3,7 +3,7 @@ import {
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
-  JoinColumn,
+  // JoinColumn,
   ManyToOne,
   OneToMany,
   OneToOne,
@@ -88,8 +88,10 @@ export class FileEntity {
   @OneToOne(() => AlbumEntity, (album) => album.cover, {
     nullable: true,
   })
-  @JoinColumn()
+  // @JoinColumn()
   album: AlbumEntity;
+  // ^^ сократить до авто.ID и либо объедин путь из filename + target либо в общ столбе.для путей файлов в БД из др.табл - Albums, Tracks, Books и т.д.
+  // ^^ дораб. Сделать связку OneToOne_JoinColumn на табл.Files с отдельным ID у табл. C audioPathID либо 1- сыль на Files.pathID, 2- либо сыль  на авто.ID. Путь либо собирать из filename + target либо совместить в одном поле ~ path(filePath)
 
   // связь табл. Мн.к 1му. У Мн.файлов Один польз.
   @ManyToOne(() => UserEntity, (user: UserEntity) => user.files)

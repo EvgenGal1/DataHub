@@ -83,6 +83,14 @@ export class FilesController {
     @Query('fileType') fileType: FileType,
     @UserId() userId: number,
   ) {
+    console.log(
+      'f.CNTRL file | fileType | userId : ',
+      file,
+      '|',
+      fileType,
+      '|',
+      userId,
+    );
     // использ.мтд.из serv. Пердача file ч/з Multer, выбран.типа FileType ч/з ApiQuery и userId ч/з UserId
     return this.filesService.createFile(file, fileType, userId);
   }
