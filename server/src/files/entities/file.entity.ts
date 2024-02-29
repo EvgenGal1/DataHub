@@ -20,6 +20,7 @@ import { UserEntity } from 'src/users/entities/user.entity';
 export enum FileType { // ^^ возм. стоит завести FileTarget с типами IMAGE = 'IMAGE', и т.д.
   IMAGE = 'image',
   ALBUM = 'album',
+  PICTURE = 'picture',
   AVATAR = 'avatar',
   PHOTO = 'photo',
   PERSONAL = 'personal',
@@ -38,13 +39,15 @@ export enum FileType { // ^^ возм. стоит завести FileTarget с �
 export const fileTypesAllowed = [
   'all',
   'image',
+  'picture',
   'album',
   'avatar',
   'photo',
   'personal',
   'audio',
-  'books',
-  'files',
+  'track',
+  'book',
+  'file',
   'prose',
   'code',
   'scheme',
@@ -81,13 +84,13 @@ export class FileEntity {
   @Column()
   mimetype: string;
 
-  // связь табл. 1 к 1. Один файл указ.на Один трек (с обязат. track.fileID)
+  // связь табл. 1 к 1. Один файл указ.на Один трек (с опцион.указ. files.track)
   @OneToOne(() => TrackEntity, (track: TrackEntity) => track.file, {
     nullable: true,
   })
   track: TrackEntity;
 
-  // связь табл. 1 к 1. Один файл указ.на Одну обложку (с опцион.указ. album.coverID)
+  // связь табл. 1 к 1. Один файл указ.на Одну обложку (с опцион.указ. files.album)
   @OneToOne(() => AlbumEntity, (album: AlbumEntity) => album.cover, {
     nullable: true,
   })

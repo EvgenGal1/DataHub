@@ -52,7 +52,7 @@ export class TrackEntity extends AbstractEntity {
 
   // связь табл. 1 к 1. У Одного трека Один файл (с обязат. tracks.fileID)
   @OneToOne(() => FileEntity, (files: FileEntity) => files.track, {
-    nullable: true,
+    nullable: false,
   })
   @JoinColumn()
   file: FileEntity;
