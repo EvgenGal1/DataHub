@@ -72,8 +72,8 @@ export class FilesController {
       // валид.
       new ParseFilePipe({
         validators: [
-          // валид.разм.в bite. Здесь макс.3 Mb
-          new MaxFileSizeValidator({ maxSize: 1024 * 1024 * 3 }),
+          // валид.разм.в bite. Здесь макс.30 Mb
+          new MaxFileSizeValidator({ maxSize: 1024 * 1024 * 30 }),
           // валид.тип файлов. // ^^ дораб под разн.типы файлов
           // new FileTypeValidator({ fileType: /(jpg|jpeg|png|gif)$/ }),
         ],

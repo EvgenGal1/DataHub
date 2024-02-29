@@ -36,7 +36,7 @@ export class AlbumEntity {
   @Column({ default: 'rock, metal, rap' })
   style: string;
 
-  // связь табл. 1 к 1. У Одного альбома Одна обложка (с опцион.указ. file.albumID)
+  // связь табл. 1 к 1. У Одной обложки Один файл альбома (с опцион.указ. albums.coverID)
   @OneToOne(() => FileEntity, (files: FileEntity) => files.album, {
     nullable: true,
   })

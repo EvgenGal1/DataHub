@@ -58,49 +58,54 @@ export class FileEntity {
   @PrimaryColumn()
   id: number;
 
-  @Column()
-  filename: string;
-
+  // ориг.назв.Трека
   @ApiProperty({ example: 'назв.трека #', description: 'НАзвание Трека' })
   @Column({ default: 'Документ.' })
   originalname: string;
 
-  // тип (разн.req/res)
+  // ^^ Путь либо собирать из `filename + target` либо совместить в одном поле ~ path(filePath)
+  // сгенер.назв.Трека (в f.cntrl > fileStorage.filename)
   @Column()
-  mimetype: string;
+  filename: string;
 
   // цель (image/file/album)
   @ApiProperty({ example: 'назв.трека #', description: 'НАзвание Трека' })
   @Column()
   target: string;
 
+  // размер в bt
   @Column()
   size: number;
 
-  // связь табл. 1го ко Мн. У обложки Мн.треков
-  @OneToMany(() => TrackEntity, (track: TrackEntity) => track.cover)
-  tracks: TrackEntity[];
+  // тип (разн.req/res)
+  @Column()
+  mimetype: string;
 
-  // у файла с target.album один альбом
-  // @OneToOne(() => AlbumEntity, (album) => album.fileId)
-  // albumId: AlbumEntity;
-  // связь табл. 1 к 1. Один файл указ.на Одну обложку (с опцион.указ. album.coverID)
-  @OneToOne(() => AlbumEntity, (album) => album.cover, {
+  // связь табл. 1 к 1. Один файл указ.на Один трек (с обязат. track.fileID)
+  @OneToOne(() => TrackEntity, (track: TrackEntity) => track.file, {
     nullable: true,
   })
-  // @JoinColumn()
+  track: TrackEntity;
+
+  // связь табл. 1 к 1. Один файл указ.на Одну обложку (с опцион.указ. album.coverID)
+  @OneToOne(() => AlbumEntity, (album: AlbumEntity) => album.cover, {
+    nullable: true,
+  })
   album: AlbumEntity;
-  // ^^ сократить до авто.ID и либо объедин путь из filename + target либо в общ столбе.для путей файлов в БД из др.табл - Albums, Tracks, Books и т.д.
-  // ^^ дораб. Сделать связку OneToOne_JoinColumn на табл.Files с отдельным ID у табл. C audioPathID либо 1- сыль на Files.pathID, 2- либо сыль  на авто.ID. Путь либо собирать из filename + target либо совместить в одном поле ~ path(filePath)
+
+  // связь табл. 1го ко Мн. У Одной обложки Мн.треков
+  @OneToMany(() => TrackEntity, (track: TrackEntity) => track.cover)
+  cover: TrackEntity[];
 
   // связь табл. Мн.к 1му. У Мн.файлов Один польз.
   @ManyToOne(() => UserEntity, (user: UserEntity) => user.files)
   user: UserEntity;
 
+  // декор.созд.
   @CreateDateColumn()
   startDate?: Date;
 
-  // декоратор поментки удаления (без удаления)
+  // декор.поментки удаления (без удаления)
   @DeleteDateColumn()
   deletedAt?: Date;
 }

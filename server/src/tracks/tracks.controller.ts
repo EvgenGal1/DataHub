@@ -51,10 +51,11 @@ export class TrackController {
     private readonly trackService: TrackService,
   ) {}
 
-  // созд.Трек
+  // ^^ созд.прост.загр.трека без альбома/обложки
+  // созд.Трек с Обложкой
   @Post()
   // swagger описание мтд.
-  @ApiOperation({ summary: 'Добавить Трек' })
+  @ApiOperation({ summary: 'Добавить Трек, Обложку, Альбом' })
   // свой перехватчик
   @UseInterceptors(
     // `Перехватчик файловых полей`. Загр.ф. - FileFieldsInterceptor(неск.разн.ф.) | FilesInterceptor(масс.ф.) | FileInterceptor (1 ф.) | AnyFilesInterceptor(любые ф.)
@@ -94,7 +95,7 @@ export class TrackController {
             text: { type: 'string', example: 'Текст #' },
             style: { type: 'string', example: 'Other #' },
             // ^^ продумать логику альбома ID | Названия
-            album: { type: 'string', example: 'Альбом #' },
+            // album: { type: 'number', example: '' },
           },
         },
       },
@@ -127,47 +128,47 @@ export class TrackController {
         ],
       }),
     )
-    files: Record<string, Express.Multer.File[]>,
-    // files,
+    tracks: Record<string, Express.Multer.File[]>,
+    // tracks,
     /* : {
       picture?: Express.Multer.File; // [] // е/и неск.ф.
       audio?: Express.Multer.File; // [] // е/и неск.ф.
     } */ // filess: Record<string, Express.Multer.File[]>,
-    // files: Express.Multer.File,
-    // /* из док.настр. */ files: { avatar?: Express.Multer.File[], background?: Express.Multer.File[] },
+    // tracks: Express.Multer.File,
+    // /* из док.настр. */ tracks: { avatar?: Express.Multer.File[], background?: Express.Multer.File[] },
     // авто.подтяг.id вкл.user
     @UserId() userId: number,
   ) {
     // ~
     console.log('track.CNTRL 0 : ' + 0);
     console.log(
-      'track.CNTRL DTO | files | userId : ',
+      'track.CNTRL DTO | tracks | userId : ',
       createTrackDto,
       '|',
-      files,
+      tracks,
       '|',
       userId,
     );
     try {
       // Доступ к загруженным файлам
-      // const { picture, audio } = files;
+      // const { picture, audio } = tracks;
 
       // обраб.ф. и передача в serv
-      return this.trackService.createTrack(createTrackDto, files, userId);
+      return this.trackService.createTrack(createTrackDto, tracks, userId);
     } catch (error) {
       console.log('catch 0 : ' + 0);
       // Удаление файла при неудачной загрузке данных в БД
-      // await fs.promises.unlink(files.path);
+      // await fs.promises.unlink(tracks.path);
       // throw new Error('Ошибка сохранения данных в базе данных');
       //
       // удал.неск.файлв при неудачн.загр.
       const unlinkPromises = [];
 
-      for (const fieldName of Object.keys(files)) {
+      for (const fieldName of Object.keys(tracks)) {
         console.log('fieldName : ', fieldName);
-        for (const file of files[fieldName]) {
-          console.log('file : ', file);
-          unlinkPromises.push(fs.promises.unlink(file.path));
+        for (const track of tracks[fieldName]) {
+          console.log('track : ', track);
+          unlinkPromises.push(fs.promises.unlink(track.path));
         }
       }
 

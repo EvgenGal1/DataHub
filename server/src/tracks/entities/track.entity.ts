@@ -7,6 +7,8 @@ import {
   PrimaryColumn,
   CreateDateColumn,
   DeleteDateColumn,
+  JoinColumn,
+  OneToOne,
 } from 'typeorm';
 
 import { AbstractEntity } from 'src/model/abstract.entity';
@@ -39,10 +41,6 @@ export class TrackEntity extends AbstractEntity {
   @Column({ default: 0 })
   listens: number;
 
-  // ссылк.аудио
-  @Column({ default: 'mpt3/wav' })
-  audio: string;
-
   // стиль трека
   @ApiProperty({ example: 'Other', description: 'Стиль Трека' })
   @Column({ default: 'Other' })
@@ -52,24 +50,34 @@ export class TrackEntity extends AbstractEntity {
   @Column({ type: 'text', default: 180 })
   duration: number | string;
 
-  // связь табл. Мн.к 1му. У Мн.треков Одна обложка. Ссылк.изо обложки
-  @ManyToOne(() => FileEntity, (file: FileEntity) => file.tracks, {
+  // связь табл. 1 к 1. У Одного трека Один файл (с обязат. tracks.fileID)
+  @OneToOne(() => FileEntity, (files: FileEntity) => files.track, {
     nullable: true,
   })
-  cover: FileEntity;
-
-  // связь табл. Мн.к 1му. У Мн.треков Один альбом.
-  @ManyToOne(() => AlbumEntity, (album: AlbumEntity) => album.tracks)
-  album: AlbumEntity;
-  // ?? дораб.до ManyToMany (у альбоиа много треков, трек может быть в разн.альбомах)
-
-  // связь табл. Мн.к 1му. У Мн.треков Один польз.
-  @ManyToOne(() => UserEntity, (user: UserEntity) => user.tracks)
-  user: UserEntity;
+  @JoinColumn()
+  file: FileEntity;
 
   // связь табл. 1го ко Мн. У трека Мн.реакций.
   @OneToMany(() => ReactionEntity, (reaction: ReactionEntity) => reaction.track)
   reactions: ReactionEntity[];
+
+  // связь табл. Мн.к 1му. У Мн.треков Одна обложка. Ссылк.изо обложки (с опцион.указ. tracks.coverID)
+  @ManyToOne(() => FileEntity, (files: FileEntity) => files.cover, {
+    nullable: true,
+  })
+  cover: FileEntity;
+
+  // связь табл. Мн.к 1му. У Мн.треков Один альбом. (с опцион.указ. tracks.albumID)
+  @ManyToOne(() => AlbumEntity, (album: AlbumEntity) => album.tracks, {
+    nullable: true,
+  })
+  album: AlbumEntity;
+
+  // связь табл. Мн.к 1му. У Мн.треков Один польз. (с обязат. tracks.userID)
+  @ManyToOne(() => UserEntity, (user: UserEntity) => user.tracks, {
+    nullable: false,
+  })
+  user: UserEntity;
 
   @CreateDateColumn()
   startDate?: Date;

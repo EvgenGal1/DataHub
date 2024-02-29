@@ -89,12 +89,12 @@ export class UserEntity {
   albums: AlbumEntity[];
 
   // связь табл. 1го ко Мн. У польз.Мн.файлов
-  @OneToMany(() => FileEntity, (file: FileEntity) => file.user)
+  @OneToMany(() => FileEntity, (files: FileEntity) => files.user)
   files: FileEntity[];
 
   // ? мб. связь табл. Мн.ко Мн. У польз.Мн.реакций.ко Мн.трекам @ManyToMany(() => ReactionEntity)
   // связь табл. 1го ко Мн. У польз.Мн.комм
-  @OneToMany(() => ReactionEntity, (file: ReactionEntity) => file.text)
+  @OneToMany(() => ReactionEntity, (files: ReactionEntity) => files.text)
   reactions: ReactionEntity[];
 
   @CreateDateColumn()
