@@ -1,5 +1,5 @@
 import { In, Repository } from 'typeorm';
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
 import { CreateRoleDto } from './dto/create-role.dto';
@@ -39,20 +39,17 @@ export class RolesService {
     return await this.roleRepository.find();
   }
 
+  // Получить Роль по ID <> Значению
   async findRoleByValue(value: string) {
     const whereCondition: any = {};
     // условия res. id/num|value/str
-    if (
-      typeof value === 'number' ||
-      (typeof value === 'string' && !isNaN(parseFloat(value)))
-    ) {
+    if (typeof value === 'number' || !isNaN(parseFloat(value)))
       whereCondition.id = value;
-    } else {
-      whereCondition.value = value;
-    }
+    else whereCondition.value = value;
     // объ.res, обраб.ошб., res по значени.
     const role = await this.roleRepository.findOne({ where: whereCondition });
-    if (!role) throw new Error('Такой Роли нет');
+    // обраб.отсутствие Роли
+    if (!role) throw new NotFoundException('Такой Роли нет');
     return role;
   }
 

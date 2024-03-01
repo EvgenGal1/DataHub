@@ -43,8 +43,8 @@ export class RolesController {
 
   @Get('/:value')
   @ApiOperation({ summary: 'Получить Роль по ID <> Значению' })
-  findRoleByValue(@Param('value') value: string) {
-    return this.rolesService.findRoleByValue(value);
+  async findRoleByValue(@Param('value') value: string) {
+    return await this.rolesService.findRoleByValue(value);
   }
 
   @Patch(':id')
