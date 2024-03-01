@@ -5,7 +5,7 @@ import { Injectable } from '@nestjs/common';
 import { FileType, FileEntity, fileTypesAllowed } from './entities/file.entity';
 import { UpdateFileDto } from './dto/update-file.dto';
 import { DatabaseUtils } from 'src/utils/database.utils';
-import { fileTargets } from 'src/helpers/fileTargets';
+// import { fileTargets } from 'src/helpers/fileTargets';
 
 @Injectable()
 export class FilesService {
@@ -15,7 +15,28 @@ export class FilesService {
     private databaseUtils: DatabaseUtils,
   ) {}
 
-  async createFile(
+  // мтд.созд.файла
+  async createFile(file: Express.Multer.File, userId: number) {
+    // `получить наименьший доступный идентификатор` из БД > табл.file
+    const smallestFreeId =
+      await this.databaseUtils.getSmallestIDAvailable('file');
+
+    // объ.files созд./сохр./вернуть
+    const files = {
+      id: smallestFreeId,
+      filename: file.filename,
+      originalname: file.originalname,
+      mimetype: file.mimetype,
+      target: file.destination,
+      size: file.size,
+      user: { id: userId },
+    };
+
+    return await this.fileRepository.save(files);
+  }
+
+  // мтд.созд.файла с Параметрами
+  async createFileByParam(
     file: Express.Multer.File,
     fileType: FileType | string,
     userId: number,
@@ -39,17 +60,10 @@ export class FilesService {
     //   size: 312089
     // } | avatar | 1
 
-    //  опред.путь сохр./значен. по выбран.типу
+    // опред.путь сохр./значен. по выбран.типу // ~ упраздн. встав.обраб.путь из fileStorage
+    // const fileTarget: string = file.destination.replace(/^\./g, '');
+
     // ^^ настроить паралел.сохр.с тип audio > сохр.в track и <> в serv/track тип
-    let fileTarget: string;
-    if (!file.destination) {
-      fileTarget = fileTargets(fileType.toUpperCase());
-      // удал."./static/" и послед.слеш.ч/з регул.выраж.
-    } /* else if (!file.destination && !file.fileType && file.fieldname) {
-      fileTarget = fileTargets(file.fieldname.toUpperCase());
-      // удал."./static/" и послед.слеш.ч/з регул.выраж.
-    } */ else fileTarget = file.destination.replace(/^\.\/static\/|\/$/g, '');
-    console.log('f.serv fileTarget : ' + fileTarget);
 
     // `получить наименьший доступный идентификатор` из БД > табл.file
     const smallestFreeId =
@@ -61,27 +75,15 @@ export class FilesService {
       filename: file.filename,
       originalname: file.originalname,
       mimetype: file.mimetype,
-      target: fileTarget,
+      target: file.destination,
       size: file.size,
       user: { id: userId },
     };
-    console.log('files.serv files : ', files);
-    // files.serv files :  {
-    //   id: 7,
-    //   filename: '06-12-2023_7205e601d9d9870684.jpg',
-    //   originalname: '50-690411497.jpg',
-    //   mimetype: 'image/jpeg',
-    //   target: 'users/avatar',
-    //   size: 312089,
-    //   user: { id: 1 }
-    // }
 
-    // await this.fileRepository.save(files);
-    // return files;
     return await this.fileRepository.save(files);
   }
 
-  // мтд.получ.всех ф. // возвращ.ф.опред.user и с опред.типом(декор.Query)
+  // мтд.получ.ф. Все/Тип. // возвращ.ф.опред.user и с опред.типом(декор.Query)
   async findAllFiles(userId: number, fileTypes: any /* FileType[] */) {
     console.log('f.serv. userId fileTypes:', userId, fileTypes);
 

@@ -16,7 +16,44 @@ export const fileStorage = multer.diskStorage({
     let fileTarget: string | Promise<string>;
     // е/и нет req.query
     if (file.fieldname && !req.query.fileType) {
-      fileTarget = fileTargets(file.fieldname.toUpperCase());
+      // опред.типа по fieldname чаще `fiel` в итоге fileTarget=`books/file`
+      // fileTarget = fileTargets(file.fieldname.toUpperCase());
+
+      // список досуп.расшир. > ИЗО
+      const allowedExtensionsImg = [
+        '.ico',
+        '.jpg',
+        '.jpeg',
+        '.png',
+        '.gif',
+        '.bmp',
+      ];
+      // список досуп.расшир. > AUDIO
+      const allowedExtensionsAud = [
+        '.mp3',
+        '.wav',
+        '.flac',
+        '.aac',
+        '.aiff',
+        '.ogg',
+        '.wma',
+        '.m4a',
+      ];
+
+      // извлеч.расшир.ф.
+      const fileExtension = file.originalname
+        .substring(file.originalname.lastIndexOf('.'))
+        .toLowerCase();
+      // сравн.знач. доступ.<>расшир.
+      if (allowedExtensionsImg.includes(fileExtension)) {
+        fileTarget = 'images/picture';
+      } else if (allowedExtensionsAud.includes(fileExtension)) {
+        fileTarget = 'audios/track';
+      }
+      // ^^ настр.др.расшир.
+      else {
+        fileTarget = 'other';
+      }
     } else if (req.query.fileType) {
       fileTarget = fileTargets(String(req.query.fileType).toUpperCase());
     }

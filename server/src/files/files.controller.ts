@@ -43,8 +43,50 @@ export class FilesController {
 
   // мтд.создания ф.
   @Post()
-  // описание мтд.swagger
+  // описание мтд.`операции`swagger
   @ApiOperation({ summary: 'Добавить Файл' })
+  // тип запроса`потребляет` swagger()
+  @ApiConsumes('multipart/form-data')
+  // настр.схемы swagger
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        file: {
+          type: 'string',
+          format: 'binary',
+        },
+      },
+    },
+  })
+  // `используйте перехватчики` для раб.с ф
+  @UseInterceptors(FileInterceptor('file', { storage: fileStorage }))
+  createFile(
+    // вытяг.`загруженный файл` из запроса
+    @UploadedFile(
+      // `разбор файлового канала`
+      new ParseFilePipe({
+        // валидаторы
+        validators: [
+          // валид.разм.в bite. Здесь макс.30 Mb
+          new MaxFileSizeValidator({ maxSize: 1024 * 1024 * 30 }),
+          // валид.тип файлов. // ^^ дораб под разн.типы файлов
+          // new FileTypeValidator({ fileType: /(jpg|jpeg|png|gif)$/ }),
+        ],
+      }),
+    )
+    file: Express.Multer.File,
+    @UserId() userId: number,
+  ) {
+    console.log('f.CNTRL file | userId : ', file, '|', userId);
+    // использ.мтд.из serv. Пердача file ч/з Multer, выбран.типа FileType ч/з ApiQuery и userId ч/з UserId
+    return this.filesService.createFile(file, userId);
+  }
+
+  // мтд.создания ф.с Параметрами
+  @Post(':param')
+  // описание мтд.swagger
+  @ApiOperation({ summary: 'Добавить Файл с Параметрами' })
   // тип запроса swagger
   @ApiConsumes('multipart/form-data')
   // настр.схемы swagger
@@ -66,7 +108,7 @@ export class FilesController {
   })
   // перехват.для раб.с ф
   @UseInterceptors(FileInterceptor('file', { storage: fileStorage }))
-  createFile(
+  createFileByParam(
     // вытяг.ф.из запроса
     @UploadedFile(
       // валид.
@@ -92,10 +134,10 @@ export class FilesController {
       userId,
     );
     // использ.мтд.из serv. Пердача file ч/з Multer, выбран.типа FileType ч/з ApiQuery и userId ч/з UserId
-    return this.filesService.createFile(file, fileType, userId);
+    return this.filesService.createFileByParam(file, fileType, userId);
   }
 
-  // мтд.для получ.всех ф.списком.масс. Обращ.к files, возвращ.масс.всех ф. При получ.запроса обращ.к serv берём мтд.findAll который обращ.к БД, резулт.данн.fn вернёт в ответ на данн.запрос
+  // получ.ф. Все/Тип. Обращ.к files, возвращ.масс.объ.
   @Get()
   @ApiOperation({ summary: 'Получить Файлы по Типам <> Все' })
   @ApiQuery({
