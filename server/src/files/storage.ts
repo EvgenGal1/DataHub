@@ -6,20 +6,15 @@ import { fileTargets } from 'src/helpers/fileTargets';
 
 // MW > сохр.неск.ф. `файловое хранилище` = `дисковое хранилище`
 export const fileStorage = multer.diskStorage({
-  // = diskStorage({ - один файл
   // `место назначения`
   destination: (req, file, cb) => {
-    console.log('fileStorage file 0 : ', file);
     // Баз.п./Путь
     const baseFolder = './static/';
-    // формир.путь от выбранного типа
+    // формир.путь по расширению или типу
     let fileTarget: string | Promise<string>;
-    // е/и нет req.query
+    // е/и нет req.query.fileType
     if (file.fieldname && !req.query.fileType) {
-      // опред.типа по fieldname чаще `fiel` в итоге fileTarget=`books/file`
-      // fileTarget = fileTargets(file.fieldname.toUpperCase());
-
-      // список досуп.расшир. > ИЗО
+      // список `разреш.расшир.` > изо
       const allowedExtensionsImg = [
         '.ico',
         '.jpg',
@@ -28,7 +23,7 @@ export const fileStorage = multer.diskStorage({
         '.gif',
         '.bmp',
       ];
-      // список досуп.расшир. > AUDIO
+      // список `разреш.расшир.` > аудио
       const allowedExtensionsAud = [
         '.mp3',
         '.wav',
@@ -45,16 +40,15 @@ export const fileStorage = multer.diskStorage({
         .substring(file.originalname.lastIndexOf('.'))
         .toLowerCase();
       // сравн.знач. доступ.<>расшир.
-      if (allowedExtensionsImg.includes(fileExtension)) {
+      if (allowedExtensionsImg.includes(fileExtension))
         fileTarget = 'images/picture';
-      } else if (allowedExtensionsAud.includes(fileExtension)) {
+      else if (allowedExtensionsAud.includes(fileExtension))
         fileTarget = 'audios/track';
-      }
       // ^^ настр.др.расшир.
-      else {
-        fileTarget = 'other';
-      }
-    } else if (req.query.fileType) {
+      else fileTarget = 'other';
+    }
+    // по переданному Типу
+    else if (req.query.fileType) {
       fileTarget = fileTargets(String(req.query.fileType).toUpperCase());
     }
     // общий путь

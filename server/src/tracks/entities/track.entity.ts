@@ -1,4 +1,5 @@
-// ^ `Сущность`.взаимод.с БД (стркт.табл./измен.данн.в табл.User)
+// ^ `Сущность`.взаимод.с БД (стркт.табл./измен.данн.в табл.Tracks)
+// табл.>хран.данн.<tracks(муз.треки,книги,звуки,медиа)
 import {
   Entity,
   Column,
@@ -32,6 +33,10 @@ export class TrackEntity extends AbstractEntity {
   @ApiProperty({ example: 'Аффтор', description: 'Исполнитель Трека' })
   @Column({ default: 'Аффтор' })
   artist: string;
+
+  @ApiProperty({ example: './audios/track', description: 'путь' })
+  @Column({ default: './audios' })
+  path: string;
 
   @ApiProperty({ example: '-', description: 'Текст Трека' })
   @Column({ type: 'varchar', default: '-', length: 500 })
