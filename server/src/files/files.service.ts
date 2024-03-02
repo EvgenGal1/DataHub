@@ -21,6 +21,8 @@ export class FilesService {
     const smallestFreeId =
       await this.databaseUtils.getSmallestIDAvailable('file');
 
+    // ^^ настроить паралел.сохр.с тип audio > сохр.в track через serv.track
+
     // объ.files созд./сохр./вернуть
     const files = {
       id: smallestFreeId,
@@ -35,7 +37,7 @@ export class FilesService {
     return await this.fileRepository.save(files);
   }
 
-  // мтд.созд.файла с Параметрами
+  // мтд.созд.файла по Параметрам
   async createFileByParam(
     file: Express.Multer.File,
     fileType: FileType | string,
@@ -45,29 +47,17 @@ export class FilesService {
       'f.serv file | fileType | userId : ',
       file,
       '|',
+      // ? нужен ли здесь тип если сохр.в storeF
       fileType,
       '|',
       userId,
     );
-    // f.serv file | fileType | userId :  {
-    //   fieldname: 'file',
-    //   originalname: '50-690411497.jpg',
-    //   encoding: '7bit',
-    //   mimetype: 'image/jpeg',
-    //   destination: './static/users/avatar/',
-    //   filename: '06-12-2023_d2d55cdb0233da3522.jpg',
-    //   path: 'static\\users\\avatar\\06-12-2023_d2d55cdb0233da3522.jpg',
-    //   size: 312089
-    // } | avatar | 1
-
-    // опред.путь сохр./значен. по выбран.типу // ~ упраздн. встав.обраб.путь из fileStorage
-    // const fileTarget: string = file.destination.replace(/^\./g, '');
-
-    // ^^ настроить паралел.сохр.с тип audio > сохр.в track и <> в serv/track тип
 
     // `получить наименьший доступный идентификатор` из БД > табл.file
     const smallestFreeId =
       await this.databaseUtils.getSmallestIDAvailable('file');
+
+    // ^^ настроить паралел.сохр.с тип audio > сохр.в track через serv.track
 
     // объ.files созд./сохр./вернуть
     const files = {

@@ -41,17 +41,18 @@ import { UserId } from 'src/decorators/user-id.decorator';
 export class FilesController {
   constructor(private readonly filesService: FilesService) {}
 
-  // мтд.создания ф.
+  // декор.мршрт./мтд.созд.ф.
   @Post()
-  // описание мтд.`операции`swagger
+  // описание `операции`swagger
   @ApiOperation({ summary: 'Добавить Файл' })
-  // тип запроса`потребляет` swagger()
+  // тип запроса`потребляет` swagger
   @ApiConsumes('multipart/form-data')
-  // настр.схемы swagger
+  // настр.схемы передачи данн.swagger
   @ApiBody({
     schema: {
       type: 'object',
       properties: {
+        // загр.ч/з окно "Выберите файл"
         file: {
           type: 'string',
           format: 'binary',
@@ -61,7 +62,7 @@ export class FilesController {
   })
   // `используйте перехватчики` для раб.с ф
   @UseInterceptors(FileInterceptor('file', { storage: fileStorage }))
-  createFile(
+  async createFile(
     // вытяг.`загруженный файл` из запроса
     @UploadedFile(
       // `разбор файлового канала`
@@ -79,14 +80,14 @@ export class FilesController {
     @UserId() userId: number,
   ) {
     console.log('f.CNTRL file | userId : ', file, '|', userId);
-    // использ.мтд.из serv. Пердача file ч/з Multer, выбран.типа FileType ч/з ApiQuery и userId ч/з UserId
-    return this.filesService.createFile(file, userId);
+    // использ.мтд.из serv. Пердача file ч/з Multer, userId ч/з UserId
+    return await this.filesService.createFile(file, userId);
   }
 
-  // мтд.создания ф.с Параметрами
+  // декор.мршрт./мтд.созд.ф.с Параметрами
   @Post(':param')
   // описание мтд.swagger
-  @ApiOperation({ summary: 'Добавить Файл с Параметрами' })
+  @ApiOperation({ summary: 'Добавить Файл по Параметрам' })
   // тип запроса swagger
   @ApiConsumes('multipart/form-data')
   // настр.схемы swagger
@@ -108,7 +109,7 @@ export class FilesController {
   })
   // перехват.для раб.с ф
   @UseInterceptors(FileInterceptor('file', { storage: fileStorage }))
-  createFileByParam(
+  async createFileByParam(
     // вытяг.ф.из запроса
     @UploadedFile(
       // валид.
@@ -134,7 +135,7 @@ export class FilesController {
       userId,
     );
     // использ.мтд.из serv. Пердача file ч/з Multer, выбран.типа FileType ч/з ApiQuery и userId ч/з UserId
-    return this.filesService.createFileByParam(file, fileType, userId);
+    return await this.filesService.createFileByParam(file, fileType, userId);
   }
 
   // получ.ф. Все/Тип. Обращ.к files, возвращ.масс.объ.
