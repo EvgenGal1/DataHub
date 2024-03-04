@@ -56,24 +56,41 @@ export const fileStorage = multer.diskStorage({
     console.log('fileStorage destinationPath : ' + destinationPath);
     cb(null, destinationPath);
   },
+
   // `имя файла`
   filename: (req, file, cb) => {
-    // формат даты - 01-12-2023
-    const formattedDate = new Date()
-      .toLocaleDateString('RU')
-      .split('.')
-      .join('-');
-    // формир.Random
-    const Random = Array(18)
-      .fill(null)
-      .map(() => Math.round(Math.random() * 16).toString(16))
-      .join('');
-    // формир.Имя
-    const fileNameDateRandomExt = `${formattedDate}_${Random}${path.extname(
-      file.originalname,
-    )}`;
-    console.log('fileStorage fileNameDateRandomExt : ' + fileNameDateRandomExt);
-    cb(null, fileNameDateRandomExt);
+    let fileNameReturn: string;
+
+    // проверки читаемости имени трека
+    // наличие букв(RU/EN,цифры) в названии
+    const regExStand = /^[а-яА-Яa-zA-Z0-9\s]+$/u;
+    // налич.: любой в([) букв(p{L}),пробел(s),цифра(d),знаки(.,&!@#%()-) ] повтор(+) регистр(i)Юникод(u)
+    const regExpHard = /^([\p{L}\s\d.,&!@#%()-]+)$/iu;
+    // логика разбора по Unicode, символам, random
+    if (!regExStand.test(file.originalname)) {
+      fileNameReturn = decodeURIComponent(escape(file.originalname));
+      // fileNameReturn = Buffer.from(file.originalname, 'utf8').toString('utf8'); // альтер.вар.для строки без символов
+    } else if (regExpHard.test(file.originalname)) {
+      fileNameReturn = file.originalname;
+    } else {
+      // формат даты - 01-12-2023
+      const formattedDate = new Date()
+        .toLocaleDateString('ru-RU')
+        /* .split('.').join('-') */
+        .replace(/\./g, '-');
+      // формир.Random
+      const Random = Array(5)
+        .fill(null)
+        .map(() => Math.round(Math.random() * 16).toString(16))
+        .join('');
+      // формир.Имя
+      const fileNameDateRandomExt = `${formattedDate}_${Random}${path.extname(
+        file.originalname,
+      )}`;
+      fileNameReturn = fileNameDateRandomExt;
+    }
+    console.log('fileStorage fileNameReturn : ' + fileNameReturn);
+    cb(null, fileNameReturn);
   },
 });
 
