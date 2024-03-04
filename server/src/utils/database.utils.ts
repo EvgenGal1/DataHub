@@ -23,7 +23,6 @@ export class DatabaseUtils {
 
   // `получить наименьший доступный идентификатор` из БД > табл.указ.в tableName
   async getSmallestIDAvailable(tableName: string): Promise<number> {
-    console.log('getSmallestIDAvailable tableName : ' + tableName);
     // перем.Репозитория
     let customRepository: Repository<any>;
     // опред.Репозитория
@@ -49,6 +48,11 @@ export class DatabaseUtils {
       if (currentId !== firstAvailableId) break;
       firstAvailableId++;
     }
+    console.log(
+      'help.db SmallestID table | ID : ',
+      tableName,
+      firstAvailableId,
+    );
     // возврат первого свободного ID
     return firstAvailableId;
   }
