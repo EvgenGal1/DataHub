@@ -45,7 +45,7 @@ export class FilesController {
   @Post()
   // описание `операции`swagger
   @ApiOperation({ summary: 'Добавить Файл' })
-  // тип запроса`потребляет` swagger
+  // тип запроса`потребляет`для формы swagger
   @ApiConsumes('multipart/form-data')
   // настр.схемы передачи данн.swagger
   @ApiBody({
@@ -88,7 +88,7 @@ export class FilesController {
   @Post(':param')
   // описание мтд.swagger
   @ApiOperation({ summary: 'Добавить Файл по Параметрам' })
-  // тип запроса swagger
+  // тип запроса`потребляет`для формы swagger
   @ApiConsumes('multipart/form-data')
   // настр.схемы swagger
   @ApiBody({
