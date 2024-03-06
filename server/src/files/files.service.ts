@@ -1,11 +1,10 @@
 import { ILike, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 
 import { FileType, FileEntity, fileTypesAllowed } from './entities/file.entity';
 import { UpdateFileDto } from './dto/update-file.dto';
 import { DatabaseUtils } from 'src/utils/database.utils';
-// import { fileTargets } from 'src/helpers/fileTargets';
 
 @Injectable()
 export class FilesService {
@@ -15,62 +14,62 @@ export class FilesService {
     private databaseUtils: DatabaseUtils,
   ) {}
 
-  // мтд.созд.файла
-  async createFile(file: Express.Multer.File, userId: number) {
-    // `получить наименьший доступный идентификатор` из БД > табл.file
-    const smallestFreeId =
-      await this.databaseUtils.getSmallestIDAvailable('file');
-
-    // ^^ настроить паралел.сохр.с тип audio > сохр.в track через serv.track
-
-    // объ.files созд./сохр./вернуть
-    const files = {
-      id: smallestFreeId,
-      filename: file.filename,
-      originalname: file.originalname,
-      mimetype: file.mimetype,
-      target: file.destination,
-      size: file.size,
-      user: { id: userId },
-    };
-
-    return await this.fileRepository.save(files);
-  }
-
   // мтд.созд.файла по Параметрам
   async createFileByParam(
     file: Express.Multer.File,
-    fileType: FileType | string,
     userId: number,
+    fileType?: FileType | null,
   ) {
     console.log(
-      'f.serv file | fileType | userId : ',
+      'f.serv.Param file | userId | fileType : ',
       file,
+      '|',
+      userId,
       '|',
       // ? нужен ли здесь тип если сохр.в storeF
       fileType,
-      '|',
-      userId,
     );
 
-    // `получить наименьший доступный идентификатор` из БД > табл.file
-    const smallestFreeId =
-      await this.databaseUtils.getSmallestIDAvailable('file');
+    // перем.сохр.File
+    let savedFile;
+    try {
+      // `получить наименьший доступный идентификатор` из БД > табл.file
+      const smallestFreeId =
+        await this.databaseUtils.getSmallestIDAvailable('file');
 
-    // ^^ настроить паралел.сохр.с тип audio > сохр.в track через serv.track
+      // ^^ настроить паралел.сохр.с тип audio > сохр.в track через serv.track
 
-    // объ.files созд./сохр./вернуть
-    const files = {
-      id: smallestFreeId,
-      filename: file.filename,
-      originalname: file.originalname,
-      mimetype: file.mimetype,
-      target: file.destination,
-      size: file.size,
-      user: { id: userId },
-    };
+      // проверка на Unicode
+      const isValidUtf8 = /^[\x00-\x7F\xC2-\xFD]+$/;
 
-    return await this.fileRepository.save(files);
+      // объ.files созд./сохр./вернуть
+      const files = {
+        id: smallestFreeId,
+        filename: file.filename,
+        originalname: isValidUtf8.test(file.originalname)
+          ? file.originalname
+          : decodeURIComponent(escape(file.originalname)),
+        mimetype: file.mimetype,
+        target: file.destination,
+        size: file.size,
+        user: { id: userId },
+      };
+      console.log('f.serv.Param files : ', files);
+      savedFile = await this.fileRepository.save(files);
+      return savedFile;
+    } catch (error) {
+      console.log('f.serv.Param catch error : ', error);
+      // удал.записи табл./ф. при неудачн.загр.
+      if (!savedFile) {
+        // удален.ф.с локал.хран.
+        // fs.promises
+        //   .unlink(savedTrack.path)
+        //   .catch((error) => console.error(`Ошибка удаления файла: ${error}`));
+        // удален.записи табл.
+        await this.deleteTrack(savedFile.id);
+      }
+      throw new NotFoundException('Ошибка сохранения файла в БД', error);
+    }
   }
 
   // мтд.получ.ф. Все/Тип. // возвращ.ф.опред.user и с опред.типом(декор.Query)
@@ -120,18 +119,6 @@ export class FilesService {
     return qb.getMany();
   }
 
-  // Проверка наличия типа файла в базе данных
-  async fileTypeExists(fileType: string): Promise<boolean> {
-    console.log('fileType : ' + fileType);
-    // проверяем в БД наличие типа файла
-    const result = await this.fileRepository.findOne({
-      where: { target: ILike(`%${fileType}%`) },
-    });
-    console.log('result : ' + result);
-    console.log(result);
-    return !!result;
-  }
-
   async findOneFile(id: number) {
     return this.fileRepository.findOneBy({ id });
   }
@@ -147,9 +134,20 @@ export class FilesService {
     return updatedTrack;
   }
 
-  async removeFile(userId: number, ids: string) {
+  // Пометка Удаления
+  async removeFile(userId: number, ids: any /* string | number */) {
+    console.log('f.serv DEL id : ' + ids);
+
     // превращ.ids ф.в масс.
-    const idsArray = ids.split(',');
+    let idsArray: number[] = [];
+    if (isNaN(Number(ids))) {
+      // Если ids не является числом, разбиваем строку на массив
+      idsArray = ids.split(',').map((id) => parseInt(id.trim(), 10));
+    } else {
+      // Если ids является числом, добавляем его в массив
+      idsArray.push(parseInt(ids, 10));
+    }
+
     // генер.спец. SQL req ч/з `Создать строитель запросов`
     const qb = this.fileRepository.createQueryBuilder('files');
     // наход.ф.по ids И userId
@@ -157,7 +155,25 @@ export class FilesService {
       ids: idsArray,
       userId,
     });
+
     // пометка `мягк.удал.`ф.
     return qb.softDelete().execute();
+  }
+
+  // Удаление
+  async deleteTrack(id: number /* ObjectId */) /* : Promise<ObjectId> */ {
+    // запись > удал.; delete - удал.
+    return this.fileRepository.delete(id);
+  }
+
+  // Проверка наличия типа файла в базе данных
+  async fileTypeExists(fileType: string): Promise<boolean> {
+    console.log('fileType : ' + fileType);
+    // проверяем в БД наличие типа файла
+    const result = await this.fileRepository.findOne({
+      where: { target: ILike(`%${fileType}%`) },
+    });
+    console.log('result : ', result);
+    return !!result;
   }
 }

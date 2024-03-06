@@ -81,7 +81,7 @@ export class FilesController {
   ) {
     console.log('f.CNTRL file | userId : ', file, '|', userId);
     // использ.мтд.из serv. Пердача file ч/з Multer, userId ч/з UserId
-    return await this.filesService.createFile(file, userId);
+    return await this.filesService.createFileByParam(file, userId);
   }
 
   // декор.мршрт./мтд.созд.ф.с Параметрами
@@ -135,7 +135,7 @@ export class FilesController {
       userId,
     );
     // использ.мтд.из serv. Пердача file ч/з Multer, выбран.типа FileType ч/з ApiQuery и userId ч/з UserId
-    return await this.filesService.createFileByParam(file, fileType, userId);
+    return await this.filesService.createFileByParam(file, userId, fileType);
   }
 
   // получ.ф. Все/Тип. Обращ.к files, возвращ.масс.объ.
