@@ -68,8 +68,10 @@ export const fileStorage = multer.diskStorage({
     const regExpHard = /^([\p{L}\s\d.,&!@#%()-]+)$/iu;
     // логика разбора по Unicode, символам, random
     if (!regExStand.test(file.originalname)) {
+      // Получает некодируемую версию кодируемого компонента единого идентификатора ресурсов (URI).
       fileNameReturn = decodeURIComponent(escape(file.originalname));
-      // fileNameReturn = Buffer.from(file.originalname, 'utf8').toString('utf8'); // альтер.вар.для строки без символов
+      // перекодирует ч/з буфур в указ.кодировку(utf8). Альтер.вар.для строки без символов
+      // fileNameReturn = Buffer.from(file.originalname, 'utf8').toString('utf8');
     } else if (regExpHard.test(file.originalname)) {
       fileNameReturn = file.originalname;
     } else {
