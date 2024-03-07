@@ -57,7 +57,7 @@ export const fileTypesAllowed = [
   'other',
 ];
 
-@Entity('files')
+@Entity({ name: 'files', schema: 'public' })
 export class FileEntity {
   @PrimaryColumn()
   id: number;

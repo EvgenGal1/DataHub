@@ -19,7 +19,7 @@ import { AlbumEntity } from 'src/albums/entities/album.entity';
 import { ReactionEntity } from 'src/reactions/entities/reaction.entity';
 
 // декоратор для соед.с БД
-@Entity('users')
+@Entity({ name: 'users', schema: 'public' })
 export class UserEntity {
   // декоратор для авто.генер.id. поля: id, eml, psw, имя пользователя, подтвржд./ссылк актив.ч/з почту, аватар
   @ApiProperty({ example: '1', description: 'Уникальный идентификатор' })

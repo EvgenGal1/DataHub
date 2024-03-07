@@ -3,7 +3,7 @@ import { Entity, Column, ManyToOne, PrimaryColumn } from 'typeorm';
 import { UserEntity } from 'src/users/entities/user.entity';
 import { TrackEntity } from 'src/tracks/entities/track.entity';
 
-@Entity('reactions')
+@Entity({ name: 'reactions', schema: 'public' })
 export class ReactionEntity {
   // id, текст реакции, id.user, id.track
   @PrimaryColumn()

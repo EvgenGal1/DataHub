@@ -10,7 +10,7 @@ import {
 import { UserEntity } from '../../users/entities/user.entity';
 import { RoleEntity } from './role.entity';
 
-@Entity('user_roles')
+@Entity({ name: 'user_roles', schema: 'public' })
 export class UserRolesEntity {
   @PrimaryGeneratedColumn()
   // @PrimaryColumn({type: 'integer',unique: true,})

@@ -9,12 +9,13 @@ import {
   JoinColumn,
   PrimaryColumn,
 } from 'typeorm';
+import { ApiProperty } from '@nestjs/swagger';
 
 import { TrackEntity } from '../../tracks/entities/track.entity';
 import { UserEntity } from 'src/users/entities/user.entity';
 import { FileEntity } from 'src/files/entities/file.entity';
 
-@Entity('albums')
+@Entity({ name: 'albums', schema: 'public' })
 export class AlbumEntity {
   // id, назв.альбома, автор, ссылк.изо обложки трека, масс.треков
   @PrimaryColumn()
@@ -29,12 +30,17 @@ export class AlbumEntity {
   author: string;
 
   // год выпуска
-  @Column({ default: '199_' })
-  year: string;
+  @Column({ default: null })
+  year: number;
 
   // общ.стиль Треков
   @Column({ default: 'rock, metal, rap' })
   style: string;
+
+  // связь табл. 1 к 1. У Одного альбома Одна обложка (с обязат. tracks.fileID)
+  @ApiProperty({ example: './images/track', description: 'путь' })
+  @Column({ default: './images' })
+  path: string;
 
   // связь табл. 1 к 1. У Одной обложки Один файл альбома (с опцион.указ. albums.coverID)
   @OneToOne(() => FileEntity, (files: FileEntity) => files.album, {
