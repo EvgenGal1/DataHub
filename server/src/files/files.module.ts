@@ -8,13 +8,20 @@ import { UserEntity } from 'src/users/entities/user.entity';
 import { RoleEntity } from 'src/roles/entities/role.entity';
 import { DatabaseUtils } from 'src/utils/database.utils';
 import { TrackEntity } from 'src/tracks/entities/track.entity';
+import { AlbumEntity } from 'src/albums/entities/album.entity';
 
 @Module({
   controllers: [FilesController],
   providers: [FilesService, DatabaseUtils],
   // подкл.FileEntity ч/з TypeOrmModule в import для раб.с табл.filesб users, roles, tracks
   imports: [
-    TypeOrmModule.forFeature([FileEntity, UserEntity, RoleEntity, TrackEntity]),
+    TypeOrmModule.forFeature([
+      FileEntity,
+      AlbumEntity,
+      UserEntity,
+      RoleEntity,
+      TrackEntity,
+    ]),
   ],
   exports: [FilesService],
 })

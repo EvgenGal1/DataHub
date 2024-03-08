@@ -9,6 +9,7 @@ import { RolesService } from './roles.service';
 import { DatabaseUtils } from 'src/utils/database.utils';
 import { FileEntity } from 'src/files/entities/file.entity';
 import { TrackEntity } from 'src/tracks/entities/track.entity';
+import { AlbumEntity } from 'src/albums/entities/album.entity';
 
 @Module({
   controllers: [RolesController],
@@ -20,6 +21,7 @@ import { TrackEntity } from 'src/tracks/entities/track.entity';
       UserRolesEntity,
       FileEntity,
       TrackEntity,
+      AlbumEntity,
     ]),
   ],
   exports: [RolesService],

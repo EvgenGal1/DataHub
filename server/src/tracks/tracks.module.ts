@@ -2,7 +2,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Module } from '@nestjs/common';
 
 import { TrackController } from './tracks.controller';
-import { TrackService } from './tracks.service';
+import { TracksService } from './tracks.service';
 import { TrackEntity } from './entities/track.entity';
 import { UserEntity } from 'src/users/entities/user.entity';
 import { RoleEntity } from 'src/roles/entities/role.entity';
@@ -11,10 +11,11 @@ import { AlbumEntity } from 'src/albums/entities/album.entity';
 import { FileEntity } from 'src/files/entities/file.entity';
 import { FilesService } from 'src/files/files.service';
 import { DatabaseUtils } from 'src/utils/database.utils';
+import { AlbumsService } from 'src/albums/albums.service';
 
 @Module({
   controllers: [TrackController],
-  providers: [TrackService, FilesService, DatabaseUtils],
+  providers: [TracksService, AlbumsService, FilesService, DatabaseUtils],
   imports: [
     TypeOrmModule.forFeature([
       TrackEntity,
@@ -25,6 +26,6 @@ import { DatabaseUtils } from 'src/utils/database.utils';
       FileEntity,
     ]),
   ],
-  exports: [TrackService],
+  exports: [TracksService],
 })
 export class TrackModule {}

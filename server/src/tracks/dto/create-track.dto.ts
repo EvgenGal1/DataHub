@@ -28,7 +28,7 @@ export class CreateTrackDto {
   @ApiProperty({ default: 'Альбом #' })
   readonly album: string | AlbumEntity;
 
-  // для учитывания динамических свойств при измен. TrackService.templateTrackDto
+  // для учитывания динамических свойств при измен. TracksService.templateTrackDto
   // [key: string]: any;
 
   // добав. userId и albumId

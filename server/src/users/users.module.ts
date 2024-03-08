@@ -10,6 +10,7 @@ import { UserRolesEntity } from 'src/roles/entities/user-roles.entity';
 import { DatabaseUtils } from 'src/utils/database.utils';
 import { FileEntity } from 'src/files/entities/file.entity';
 import { TrackEntity } from 'src/tracks/entities/track.entity';
+import { AlbumEntity } from 'src/albums/entities/album.entity';
 
 @Module({
   controllers: [UsersController],
@@ -22,6 +23,7 @@ import { TrackEntity } from 'src/tracks/entities/track.entity';
       UserRolesEntity,
       FileEntity,
       TrackEntity,
+      AlbumEntity,
     ]),
     // подкл.использ.modulи
     RolesModule,
