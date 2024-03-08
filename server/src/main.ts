@@ -47,8 +47,8 @@ async function bootstrap() {
     SwaggerModule.setup('swagger', app, document, {
       customSiteTitle: 'Музыкальная Платформа', // Название страницы Swagger
       swaggerOptions: {
-        // настр.для использ.jwt.Токен в swagger
-        persisAuthorization: true,
+        // `постоянное разрешение`настр.для использ.jwt.Токен в swagger
+        persistAuthorization: true,
       },
     });
 

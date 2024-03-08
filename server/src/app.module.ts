@@ -50,7 +50,8 @@ import { ReactionEntity } from './reactions/entities/reaction.entity';
       ],
       // ^^ ТОЛЬКО DEV
       // ! при true начала падать в ошб. - ERROR [TypeOrmModule] Unable to connect to the database. Retrying (1)... QueryFailedError: максимальное число столбцов в таблице: 1600
-      synchronize: false,
+      synchronize: true,
+      logging: true,
     }),
     // подкл.использ.modulи
     // AuthModule,
