@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import {
   Controller,
   Get,
@@ -15,10 +16,11 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 
-import { AlbumService } from './albums.service';
+import { AlbumsService } from './albums.service';
 import { CreateAlbumDto } from './dto/create-album.dto';
 import { UpdateAlbumDto } from './dto/update-album.dto';
 import { AlbumEntity } from './entities/album.entity';
+import { UserId } from 'src/decorators/user-id.decorator';
 
 @Controller('/albums')
 // групп.мтд.cntrl tracks > swagger
@@ -26,13 +28,16 @@ import { AlbumEntity } from './entities/album.entity';
 // сообщ.о защищены req jwt Токеном > swagger
 // @ApiBearerAuth()
 export class AlbumController {
-  constructor(private readonly albumsService: AlbumService) {}
+  constructor(private readonly albumsService: AlbumsService) {}
 
   // ^^ МТД.CRUD
   @Post()
   @ApiOperation({ summary: 'Создать Альбом' })
-  createAlbum(@Body() createAlbumDto: CreateAlbumDto) {
-    return this.albumsService.createAlbum(createAlbumDto);
+  async createAlbum(
+    @Body() createAlbumDto: CreateAlbumDto,
+    @UserId() userId: number,
+  ) {
+    return await this.albumsService.createAlbum(createAlbumDto, userId);
   }
 
   @Get()

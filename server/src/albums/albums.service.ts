@@ -8,9 +8,12 @@ import { UpdateAlbumDto } from './dto/update-album.dto';
 import { AlbumEntity } from './entities/album.entity';
 import { TrackEntity } from 'src/tracks/entities/track.entity';
 import { ReactionEntity } from 'src/reactions/entities/reaction.entity';
+import { FilesService } from 'src/files/files.service';
+import { FileEntity } from 'src/files/entities/file.entity';
+import { DatabaseUtils } from 'src/utils/database.utils';
 
 @Injectable()
-export class AlbumService {
+export class AlbumsService {
   constructor(
     @InjectRepository(AlbumEntity)
     private albumsRepository: Repository<AlbumEntity>,
@@ -18,11 +21,25 @@ export class AlbumService {
     private tracksRepository: Repository<TrackEntity>,
     @InjectRepository(ReactionEntity)
     private reactionsRepository: Repository<ReactionEntity>,
+    @InjectRepository(FileEntity)
+    private fileRepository: Repository<FileEntity>,
+    private databaseUtils: DatabaseUtils,
   ) {}
 
   // ^^ МТД.CRUD
-  createAlbum(createAlbumDto: CreateAlbumDto) {
-    return 'This action adds a new album';
+  async createAlbum(createAlbumDto: CreateAlbumDto, userId: number) {
+    // `получить наименьший доступный идентификатор` из БД > табл.role
+    const smallestFreeId =
+      await this.databaseUtils.getSmallestIDAvailable('album');
+    // объ.track созд./сохр./вернуть
+    const album = this.albumsRepository.create({
+      ...createAlbumDto,
+      // ...alb,
+      id: smallestFreeId,
+    });
+    console.log('a.s. album : ', album);
+    const savedAlbum = await this.albumsRepository.save(album);
+    return savedAlbum;
   }
 
   findAllAlbums() {
