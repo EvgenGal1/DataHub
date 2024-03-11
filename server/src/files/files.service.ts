@@ -11,7 +11,7 @@ export class FilesService {
   constructor(
     @InjectRepository(FileEntity)
     private fileRepository: Repository<FileEntity>,
-    private databaseUtils: DatabaseUtils,
+    private dataBaseUtils: DatabaseUtils,
   ) {}
 
   // мтд.созд.файла по Параметрам
@@ -35,7 +35,7 @@ export class FilesService {
     try {
       // `получить наименьший доступный идентификатор` из БД > табл.file
       const smallestFreeId =
-        await this.databaseUtils.getSmallestIDAvailable('file');
+        await this.dataBaseUtils.getSmallestIDAvailable('file');
 
       // ^^ настроить паралел.сохр.с тип audio > сохр.в track через serv.track
 

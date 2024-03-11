@@ -19,13 +19,13 @@ export class RolesService {
     private roleRepository: Repository<RoleEntity>,
     @InjectRepository(UserRolesEntity)
     private userRolesRepository: Repository<UserRolesEntity>,
-    private databaseUtils: DatabaseUtils,
+    private dataBaseUtils: DatabaseUtils,
   ) {}
 
   async createRole(createRoleDto: CreateRoleDto) {
     // `получить наименьший доступный идентификатор` из БД > табл.role
     const smallestFreeId =
-      await this.databaseUtils.getSmallestIDAvailable('role');
+      await this.dataBaseUtils.getSmallestIDAvailable('role');
     // объ.track созд./сохр./вернуть
     const role = this.roleRepository.create({
       ...createRoleDto,

@@ -23,14 +23,14 @@ export class UsersService {
     @InjectRepository(UserRolesEntity)
     private userRolesRepository: Repository<UserRolesEntity>,
     private roleService: RolesService,
-    private databaseUtils: DatabaseUtils,
+    private dataBaseUtils: DatabaseUtils,
   ) {}
 
   // СОЗД User + Role + связь
   async createUser(createUserDto: CreateUserDto) {
     // `получить наименьший доступный идентификатор` из табл.БД
     const smallestFreeId =
-      await this.databaseUtils.getSmallestIDAvailable('user');
+      await this.dataBaseUtils.getSmallestIDAvailable('user');
     // созд.объ.user
     const user = this.userRepository.create({
       ...createUserDto,

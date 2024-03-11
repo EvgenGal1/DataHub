@@ -52,8 +52,8 @@ export class TrackEntity /* extends AbstractEntity */ {
   style: string;
 
   // продолжительность
-  @Column({ type: 'text', default: 180 })
-  duration: number | string;
+  @Column({ type: 'text', default: 0 })
+  duration: number;
 
   // связь табл. 1 к 1. У Одного трека Один файл (с обязат. tracks.fileID)
   @OneToOne(() => FileEntity, (files: FileEntity) => files.track, {
