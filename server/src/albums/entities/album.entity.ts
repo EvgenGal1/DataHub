@@ -33,10 +33,6 @@ export class AlbumEntity {
   @Column({ default: null })
   year: number;
 
-  // общ.стиль Треков
-  @Column({ default: 'rock, metal, rap' })
-  style: string;
-
   // связь табл. 1 к 1. У Одного альбома Одна обложка (с обязат. tracks.fileID)
   @ApiProperty({ example: './images/track', description: 'путь' })
   @Column({ default: './images' })
@@ -58,11 +54,21 @@ export class AlbumEntity {
   @ManyToOne(() => UserEntity, (user: UserEntity) => user.albums)
   user: UserEntity;
 
-  // ^^ доп.на будущее
-  // стлб. total_tracks (общее количество треков в альбоме)
-  // стлб. description (описание альбома)
-  // стили музыки (загр.все стили track; чтоб стили из track для данн.alb подружались ч/з конкатенацию (слэш, тчк.запят.))
-  // общ.продолжительность (высчит.из длины всех треков данн.alb общ.длину)
+  // объед.жанры всех Треков одного Альбома
+  @Column({ default: 'Other #', nullable: true })
+  styles: string;
+
+  // общ.кол-во.всех Треков одного Альбома
+  @Column({ default: 1 })
+  total_tracks: number;
+
+  // общ.длительность всех Треков одного Альбома
+  @Column({ default: '0:00' })
+  total_duration: string;
+
+  // описание Альбома, необязательно
+  @Column({ nullable: true })
+  description: string;
 
   @CreateDateColumn()
   startDate?: Date;

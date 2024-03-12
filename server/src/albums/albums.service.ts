@@ -23,21 +23,36 @@ export class AlbumsService {
     private reactionsRepository: Repository<ReactionEntity>,
     @InjectRepository(FileEntity)
     private fileRepository: Repository<FileEntity>,
-    private databaseUtils: DatabaseUtils,
+    private dataBaseUtils: DatabaseUtils,
   ) {}
 
   // ^^ МТД.CRUD
-  async createAlbum(createAlbumDto: CreateAlbumDto, userId: number) {
-    // `получить наименьший доступный идентификатор` из БД > табл.role
+  async createAlbum(
+    createAlbumDto: CreateAlbumDto,
+    userId: number,
+    coverObj?: any,
+    totalAlbumData?: any,
+  ) {
+    console.log(
+      'a.s.CRE createAlbumDto userId coverObj : ',
+      createAlbumDto,
+      userId,
+      coverObj,
+      totalAlbumData,
+    );
+    // `получить наименьший доступный идентификатор` из БД > табл.album
     const smallestFreeId =
-      await this.databaseUtils.getSmallestIDAvailable('album');
-    // объ.track созд./сохр./вернуть
+      await this.dataBaseUtils.getSmallestIDAvailable('album');
+    // объ.album созд./сохр./вернуть
     const album = this.albumsRepository.create({
       ...createAlbumDto,
-      // ...alb,
       id: smallestFreeId,
+      user: { id: userId },
+      cover: coverObj,
+      ...totalAlbumData,
     });
-    console.log('a.s. album : ', album);
+    console.log('a.s.CRE album : ', album);
+
     const savedAlbum = await this.albumsRepository.save(album);
     return savedAlbum;
   }
@@ -50,12 +65,64 @@ export class AlbumsService {
     return `Это действие возвращает #${id} album`;
   }
 
-  updateAlbum(id: number, updateAlbumDto: UpdateAlbumDto) {
-    return `Это действие обновляет #${id} album`;
+  async updateAlbum(
+    id: number,
+    updateAlbumDto?: UpdateAlbumDto,
+    totalAlbumData?: any,
+  ) {
+    console.log('a.s.UPD totalAlbumData : ', totalAlbumData);
+
+    const album = await this.albumsRepository.findOneBy({ id });
+
+    // общ.кол-во.всех Треков одного Альбома
+    if (totalAlbumData.total_tracks) {
+      album.total_tracks = album.total_tracks + totalAlbumData.total_tracks;
+      // альтер.получ.всех Треков по Альбому и их кол-ву
+      // const trackAll = await this.tracksRepository.find({ where: { album: { /* title: updateAlbumDto.title, */ id: id, }, }, });
+      // album.total_tracks = trackAll.length + totalAlbumData.total_tracks;
+    }
+
+    // общ.длительность всех Треков одного Альбома
+    if (totalAlbumData?.total_duration) {
+      const [min1, sec1] = album.total_duration.split(':').map(Number);
+      const [min2, sec2] = totalAlbumData.total_duration.split(':').map(Number);
+      let totalSeconds = (min1 + min2) * 60 + sec1 + sec2;
+      const totalMinutes = Math.floor(totalSeconds / 60);
+      totalSeconds %= 60;
+      album.total_duration = `${totalMinutes}:${
+        totalSeconds < 10 ? '0' : ''
+      }${totalSeconds}`;
+      // альтер.получ.данн.ч/з basicUtils.sumDurations
+      // await this.basicUtils.sumDurations( album.total_duration, totalAlbumData.total_duration );
+    }
+
+    // объед.жанры всех Треков одного Альбома
+    if (totalAlbumData?.styles) {
+      const set = new Set();
+      set.add(album.styles);
+      if (album.styles.toLowerCase() !== totalAlbumData.styles.toLowerCase())
+        set.add(totalAlbumData.styles); // Добавляем второй жанр только если он отличается
+      album.styles = Array.from(set).join('; ');
+    }
+
+    console.log(
+      'a.s.UPD album.total_tracks, album.total_durationб album.styles : ',
+      album.total_tracks,
+      album.total_duration,
+      album.styles,
+    );
+    await this.albumsRepository.save(album);
   }
 
+  // пометка Удаления
   removeAlbum(id: number) {
     return `Это действие удаляет #${id} album`;
+  }
+
+  // Удаление
+  async deleteAlbum(id: number) {
+    // запись > удал.; delete - удал.
+    return this.albumsRepository.delete(id);
   }
 
   // ^^ ДОП.МТД.
