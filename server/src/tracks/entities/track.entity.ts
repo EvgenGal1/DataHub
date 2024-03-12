@@ -46,14 +46,14 @@ export class TrackEntity /* extends AbstractEntity */ {
   @Column({ default: 0 })
   listens: number;
 
-  // стиль трека
+  // стиль Трека
   @ApiProperty({ example: 'Other', description: 'Стиль Трека' })
   @Column({ default: 'Other' })
   style: string;
 
-  // продолжительность
-  @Column({ type: 'text', default: 0 })
-  duration: number;
+  // длительность Трека
+  @Column({ type: 'text', default: '0:00' })
+  duration: string;
 
   // связь табл. 1 к 1. У Одного трека Один файл (с обязат. tracks.fileID)
   @OneToOne(() => FileEntity, (files: FileEntity) => files.track, {
