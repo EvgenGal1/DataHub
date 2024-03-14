@@ -8,14 +8,21 @@ import { UserEntity } from 'src/users/entities/user.entity';
 import { RoleEntity } from 'src/roles/entities/role.entity';
 import { ReactionEntity } from 'src/reactions/entities/reaction.entity';
 import { AlbumEntity } from 'src/albums/entities/album.entity';
+import { AlbumsService } from 'src/albums/albums.service';
 import { FileEntity } from 'src/files/entities/file.entity';
 import { FilesService } from 'src/files/files.service';
 import { DatabaseUtils } from 'src/utils/database.utils';
-import { AlbumsService } from 'src/albums/albums.service';
+import { BasicUtils } from 'src/utils/basic.utils';
 
 @Module({
   controllers: [TrackController],
-  providers: [TracksService, AlbumsService, FilesService, DatabaseUtils],
+  providers: [
+    TracksService,
+    AlbumsService,
+    FilesService,
+    DatabaseUtils,
+    BasicUtils,
+  ],
   imports: [
     TypeOrmModule.forFeature([
       TrackEntity,

@@ -12,10 +12,17 @@ import { FilesService } from 'src/files/files.service';
 import { UserEntity } from 'src/users/entities/user.entity';
 import { RoleEntity } from 'src/roles/entities/role.entity';
 import { DatabaseUtils } from 'src/utils/database.utils';
+import { BasicUtils } from 'src/utils/basic.utils';
 
 @Module({
   controllers: [AlbumController],
-  providers: [AlbumsService, TracksService, FilesService, DatabaseUtils],
+  providers: [
+    AlbumsService,
+    TracksService,
+    FilesService,
+    DatabaseUtils,
+    BasicUtils,
+  ],
   imports: [
     TypeOrmModule.forFeature([
       TrackEntity,
