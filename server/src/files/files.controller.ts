@@ -171,6 +171,6 @@ export class FilesController {
   @ApiOperation({ summary: 'Удалить Файлы' })
   removeFile(@UserId() userId: number, @Query('ids') ids: string) {
     // передача ф.id ч/з запят.> удал. file?ids=1,2,4,
-    return this.filesService.removeFile(userId, ids);
+    return this.filesService.removeFile(ids, userId);
   }
 }

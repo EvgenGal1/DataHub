@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { FindOneOptions, Like, ObjectId, Repository } from 'typeorm';
 
@@ -99,9 +99,16 @@ export class AlbumsService {
     // объед.жанры всех Треков одного Альбома
     if (totalAlbumData?.styles) {
       const set = new Set();
+      console.log('album.styles : ', album.styles);
       set.add(album.styles);
-      if (album.styles.toLowerCase() !== totalAlbumData.styles.toLowerCase())
+      // if (album.styles.toLowerCase() !== totalAlbumData.styles.toLowerCase())
+      if (
+        !album.styles
+          .toLowerCase()
+          .includes(totalAlbumData.styles.toLowerCase())
+      ) {
         set.add(totalAlbumData.styles); // Добавляем второй жанр только если он отличается
+      }
       album.styles = Array.from(set).join('; ');
     }
 
@@ -112,6 +119,31 @@ export class AlbumsService {
       album.styles,
     );
     await this.albumsRepository.save(album);
+  }
+
+  async updateAlbumParam(
+    duration: string | any,
+    albumId: number | any,
+    trackCount: number | any,
+    styles: string | any,
+  ): Promise<void> {
+    const album = await this.albumsRepository.findOne(albumId);
+
+    if (!album) {
+      throw new NotFoundException(`Альбом с id ${albumId} не найдено`);
+    }
+
+    if (trackCount == 1) {
+      await this.albumsRepository.delete(albumId);
+    } else {
+      const albDur = Number(album.total_duration) - Number(duration);
+      album.total_duration = String(albDur);
+      const albTrc = Number(album.total_tracks) - Number(trackCount);
+      album.total_tracks = albTrc;
+      album.styles = album.styles.replace(styles, '');
+
+      await this.albumsRepository.save(album);
+    }
   }
 
   // пометка Удаления
