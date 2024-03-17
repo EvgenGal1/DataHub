@@ -10,7 +10,7 @@ import { DatabaseUtils } from 'src/utils/database.utils';
 export class FilesService {
   constructor(
     @InjectRepository(FileEntity)
-    private fileRepository: Repository<FileEntity>,
+    private filesRepository: Repository<FileEntity>,
     private dataBaseUtils: DatabaseUtils,
   ) {}
 
@@ -55,7 +55,7 @@ export class FilesService {
         user: { id: userId },
       };
       console.log('f.serv.Param files : ', files);
-      savedFile = await this.fileRepository.save(files);
+      savedFile = await this.filesRepository.save(files);
       return savedFile;
     } catch (error) {
       console.log('f.serv.Param catch error : ', error);
@@ -63,10 +63,10 @@ export class FilesService {
       if (!savedFile) {
         // удален.ф.с локал.хран.
         // fs.promises
-        //   .unlink(savedTrack.path)
+        //   .unlink(deleteFile.path)
         //   .catch((error) => console.error(`Ошибка удаления файла: ${error}`));
         // удален.записи табл.
-        await this.deleteTrack(savedFile.id);
+        await this.removeFile(savedFile.id);
       }
       throw new NotFoundException('Ошибка сохранения файла в БД', error);
     }
@@ -86,7 +86,7 @@ export class FilesService {
     // if (invalidTypes.length > 0) {return `Тип(ы) файла ${invalidTypes.join(', ',)} отсутствует в базе данных.`;}
 
     // генер.спец.SQL req > "создать строитель запросов"
-    const qb = this.fileRepository.createQueryBuilder('file');
+    const qb = this.filesRepository.createQueryBuilder('file');
 
     // req > id user
     qb.where('file.userId = :userId', { userId });
@@ -120,23 +120,32 @@ export class FilesService {
   }
 
   async findOneFile(id: number) {
-    return this.fileRepository.findOneBy({ id });
+    return this.filesRepository.findOneBy({ id });
   }
 
   async updateFile(
     id: number,
     updateFileDto: UpdateFileDto,
   ): Promise<FileEntity> {
-    // return this.fileRepository.update(id, UpdateFileDto); // ! ошб. т.к. возвращ.UpdateResult, а не TrackEntity
-    await this.fileRepository.update(id, updateFileDto);
-    const updatedTrack = await this.fileRepository.findOneBy({ id });
+    // return this.filesRepository.update(id, UpdateFileDto); // ! ошб. т.к. возвращ.UpdateResult, а не TrackEntity
+    await this.filesRepository.update(id, updateFileDto);
+    const updatedTrack = await this.filesRepository.findOneBy({ id });
     if (!updatedTrack) throw new Error('Трек не найден');
     return updatedTrack;
   }
 
-  // Пометка Удаления
-  async removeFile(userId: number, ids: any /* string | number */) {
-    console.log('f.serv DEL id : ' + ids);
+  // пометка Удаления
+  async removeFile(
+    ids: any /* string | number */,
+    userId?: number,
+    param?: string,
+  ) {
+    console.log('f.serv DEL id userId param : ', ids, userId, param);
+
+    // ошб.е/и нет ID
+    if (!ids) {
+      throw new NotFoundException('Нет Файла > Удаления');
+    }
 
     // превращ.ids ф.в масс.
     let idsArray: number[] = [];
@@ -148,29 +157,37 @@ export class FilesService {
       idsArray.push(parseInt(ids, 10));
     }
 
-    // генер.спец. SQL req ч/з `Создать строитель запросов`
-    const qb = this.fileRepository.createQueryBuilder('files');
-    // наход.ф.по ids И userId
-    qb.where('id IN (:...ids) AND userId = :userId', {
-      ids: idsArray,
-      userId,
-    });
+    // полн.удал.Файла е/и нет userId
+    if (!userId && !param) {
+      console.log('f.s.DEL FULL_DEL ids : ', ids);
+      return await this.filesRepository.delete(ids);
+    }
 
-    // пометка `мягк.удал.`ф.
-    return qb.softDelete().execute();
-  }
+    // `созд.строит.req` > `мягк.удал.`ф.
+    const sotDelFiles = await this.filesRepository
+      .createQueryBuilder('files')
+      .where('id IN (:...ids) AND userId = :userId', {
+        ids: idsArray,
+        userId,
+      })
+      .softDelete()
+      .execute();
 
-  // Удаление
-  async deleteTrack(id: number /* ObjectId */) /* : Promise<ObjectId> */ {
-    // запись > удал.; delete - удал.
-    return this.fileRepository.delete(id);
+    // при парам.сразу удал.
+    if (param) {
+      console.log('f.s.DEL param : ', param);
+      return sotDelFiles;
+    }
+
+    console.log('f.s.DEL в др.табл. : ', '>>>>>');
+    // ^^ удал.данн.др.табл.
   }
 
   // Проверка наличия типа файла в базе данных
   async fileTypeExists(fileType: string): Promise<boolean> {
     console.log('fileType : ' + fileType);
     // проверяем в БД наличие типа файла
-    const result = await this.fileRepository.findOne({
+    const result = await this.filesRepository.findOne({
       where: { target: ILike(`%${fileType}%`) },
     });
     console.log('result : ', result);

@@ -122,25 +122,45 @@ export class AlbumsService {
   }
 
   async updateAlbumParam(
-    duration: string | any,
     albumId: number | any,
+    duration: string | any,
     trackCount: number | any,
     styles: string | any,
   ): Promise<void> {
-    const album = await this.albumsRepository.findOne(albumId);
+    const album = await this.albumsRepository.findOne({
+      where: { id: albumId },
+    });
 
     if (!album) {
       throw new NotFoundException(`Альбом с id ${albumId} не найдено`);
     }
 
-    if (trackCount == 1) {
+    if (album.total_tracks == 1) {
       await this.albumsRepository.delete(albumId);
     } else {
-      const albDur = Number(album.total_duration) - Number(duration);
-      album.total_duration = String(albDur);
+      const durationArray = duration.split(':');
+      const durationMinutes = parseInt(durationArray[0], 10);
+      const durationSeconds = parseInt(durationArray[1], 10);
+
+      const totalDuration = album.total_duration.split(':');
+      let newDurationMinutes = Number(totalDuration[0]) - durationMinutes;
+      let newDurationSeconds = Number(totalDuration[1]) - durationSeconds;
+
+      if (newDurationSeconds < 0) {
+        newDurationMinutes--; // Уменьшаем минуты, если секунды отрицательные
+        newDurationSeconds += 60; // Добавляем 60 секунд, чтобы они стали положительными
+      }
+
+      album.total_duration = `${newDurationMinutes}:${newDurationSeconds}`;
+
       const albTrc = Number(album.total_tracks) - Number(trackCount);
       album.total_tracks = albTrc;
-      album.styles = album.styles.replace(styles, '');
+      const filteredStyles = album.styles
+        .split(';')
+        .map((style) => style.trim())
+        .filter((style) => style !== styles[0].trim())
+        .join('; ');
+      album.styles = filteredStyles;
 
       await this.albumsRepository.save(album);
     }
