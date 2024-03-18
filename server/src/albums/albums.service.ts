@@ -1,14 +1,13 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { FindOneOptions, Like, ObjectId, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 
 import { CreateAlbumDto } from './dto/create-album.dto';
 import { UpdateAlbumDto } from './dto/update-album.dto';
 import { AlbumEntity } from './entities/album.entity';
 import { TrackEntity } from 'src/tracks/entities/track.entity';
 import { ReactionEntity } from 'src/reactions/entities/reaction.entity';
-import { FilesService } from 'src/files/files.service';
 import { FileEntity } from 'src/files/entities/file.entity';
 import { DatabaseUtils } from 'src/utils/database.utils';
 
@@ -33,13 +32,6 @@ export class AlbumsService {
     coverObj?: any,
     totalAlbumData?: any,
   ) {
-    console.log(
-      'a.s.CRE createAlbumDto userId coverObj : ',
-      createAlbumDto,
-      userId,
-      coverObj,
-      totalAlbumData,
-    );
     // `получить наименьший доступный идентификатор` из БД > табл.album
     const smallestFreeId =
       await this.dataBaseUtils.getSmallestIDAvailable('album');
@@ -51,7 +43,6 @@ export class AlbumsService {
       cover: coverObj,
       ...totalAlbumData,
     });
-    console.log('a.s.CRE album : ', album);
 
     const savedAlbum = await this.albumsRepository.save(album);
     return savedAlbum;
@@ -70,8 +61,6 @@ export class AlbumsService {
     updateAlbumDto?: UpdateAlbumDto,
     totalAlbumData?: any,
   ) {
-    console.log('a.s.UPD totalAlbumData : ', totalAlbumData);
-
     const album = await this.albumsRepository.findOneBy({ id });
 
     // общ.кол-во.всех Треков одного Альбома
@@ -99,7 +88,7 @@ export class AlbumsService {
     // объед.жанры всех Треков одного Альбома
     if (totalAlbumData?.styles) {
       const set = new Set();
-      console.log('album.styles : ', album.styles);
+
       set.add(album.styles);
       // if (album.styles.toLowerCase() !== totalAlbumData.styles.toLowerCase())
       if (
@@ -112,12 +101,6 @@ export class AlbumsService {
       album.styles = Array.from(set).join('; ');
     }
 
-    console.log(
-      'a.s.UPD album.total_tracks, album.total_durationб album.styles : ',
-      album.total_tracks,
-      album.total_duration,
-      album.styles,
-    );
     await this.albumsRepository.save(album);
   }
 
@@ -130,7 +113,6 @@ export class AlbumsService {
     const album = await this.albumsRepository.findOne({
       where: { id: albumId },
     });
-
     if (!album) {
       throw new NotFoundException(`Альбом с id ${albumId} не найдено`);
     }

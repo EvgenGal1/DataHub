@@ -10,9 +10,8 @@ import {
   Delete,
   UseInterceptors,
   UploadedFiles,
-  ParseFilePipe,
-  MaxFileSizeValidator,
-  FileTypeValidator,
+  NotFoundException,
+  Query,
   // Query,
 } from '@nestjs/common';
 import {
@@ -29,14 +28,15 @@ import {
 } from '@nestjs/swagger';
 import * as fs from 'fs';
 
-import { TrackService } from './tracks.service';
+import { TracksService } from './tracks.service';
 import { CreateTrackDto } from './dto/create-track.dto';
 import { UpdateTrackDto } from './dto/update-track.dto';
 import { CreateReactionDto } from 'src/reactions/dto/create-reaction.dto';
 import { UserId } from 'src/decorators/user-id.decorator';
 import { fileStorage } from 'src/files/storage';
+import { FileTypeValidationPipe } from './fileTypeValidation.pipe';
 
-@Controller('/tracks')
+@Controller('tracks')
 // групп.мтд.cntrl tracks > swagger
 @ApiTags('tracks')
 // сообщ.о защищены req jwt Токеном > swagger
@@ -48,28 +48,14 @@ export class TrackController {
     // private readonly imageValidator: ImageValidator,
     // private readonly audioValidator: AudioValidator,
 
-    private readonly trackService: TrackService,
+    private readonly trackService: TracksService,
   ) {}
 
-  // ^^ созд.прост.загр.трека без альбома/обложки
-  // созд.Трек с Обложкой
-  @Post()
+  // декор.мршрт./мтд.созд.ф.с допами
+  @Post(/* ':param' */)
   // swagger описание мтд.
   @ApiOperation({ summary: 'Добавить Трек, Обложку, Альбом' })
-  // свой перехватчик
-  @UseInterceptors(
-    // `Перехватчик файловых полей`. Загр.ф. - FileFieldsInterceptor(неск.разн.ф.) | FilesInterceptor(масс.ф.) | FileInterceptor (1 ф.) | AnyFilesInterceptor(любые ф.)
-    FileFieldsInterceptor(
-      // name - стр.содер.имя из HTML форм с файлом, maxCount - макс.кло-во ф.;
-      [
-        { name: 'album', maxCount: 1 },
-        { name: 'audio', maxCount: 1 },
-      ],
-      // сохр. > store локального хранилища
-      { storage: fileStorage },
-    ),
-  )
-  // тип запроса > swagger
+  // тип запроса`потребляет`для формы swagger
   @ApiConsumes('multipart/form-data')
   // схема передачи данн.> swagger
   @ApiBody({
@@ -78,11 +64,11 @@ export class TrackController {
       type: 'object',
       properties: {
         // загр.ч/з окно "Выберите файл"
-        album: {
+        audio: {
           type: 'string',
           format: 'binary',
         },
-        audio: {
+        album: {
           type: 'string',
           format: 'binary',
         },
@@ -101,79 +87,81 @@ export class TrackController {
       },
     },
   })
-  async createTrack(
+  // свой перехватчик
+  @UseInterceptors(
+    // `Перехватчик файловых полей`. Загр.ф. - FileFieldsInterceptor(неск.разн.ф.) | FilesInterceptor(масс.ф.) | FileInterceptor (1 ф.) | AnyFilesInterceptor(любые ф.)
+    FileFieldsInterceptor(
+      // name - стр.содер.имя из HTML форм с файлом, maxCount - макс.кло-во ф.;
+      [
+        { name: 'audio', maxCount: 10 },
+        { name: 'album', maxCount: 1 },
+      ],
+      // сохр. > store локального хранилища
+      { storage: fileStorage },
+    ),
+  )
+  async createTrackByParam(
     @Body() createTrackDto: CreateTrackDto,
     // декор.`Загруженные файлы`
     @UploadedFiles(
-      // `Разобрать Тип Файла`(встроенная проверка/валид.файла) | можн.созд.отд.ф.настр. | ParseFilePipeBuilder спец.кл.состав./созд.валид.
-      new ParseFilePipe({
-        validators: [
-          // валид.разм.в bite. Здесь макс.20 Mb // ! Validation failed (expected size is less than 20971520) размер меньше 20Mb
-          // new MaxFileSizeValidator({ maxSize: 1024 * 1024 * 20 }),
-          // валид.тип файлов
-          // new FileTypeValidator({ fileType: /(wav|aiff|ape|flac|mp3|ogg)$/ }),
-          // ~ пробы валибации в разн.файлах
-          // настр.в отдел.ф.
-          // ! ошб. - Объектный литерал может использовать только известные свойства. "validator" не существует в типе "FileValidator<Record<string, any>,
-          // {
-          //   validator: this.imageValidator.validate,
-          //   field: 'image',
-          //   maxCount: 1,
-          // },
-          // {
-          //   validator: this.audioValidator.validate,
-          //   field: 'audio',
-          //   maxCount: 1,
-          // },
-        ],
-      }),
-    )
-    tracks: Record<string, Express.Multer.File[]>,
-    // tracks,
-    /* : {
-      picture?: Express.Multer.File; // [] // е/и неск.ф.
-      audio?: Express.Multer.File; // [] // е/и неск.ф.
-    } */ // filess: Record<string, Express.Multer.File[]>,
-    // tracks: Express.Multer.File,
-    // /* из док.настр. */ tracks: { avatar?: Express.Multer.File[], background?: Express.Multer.File[] },
+      // ^^ `Разобрать Тип Файла`(встроенная проверка/валид.файла) | можн.созд.отд.ф.настр. | ParseFilePipeBuilder спец.кл.состав./созд.валид.
+      // `разбор файлового канала`. Распастранённые стандарт.валидации
+      //   new ParseFilePipe({
+      //     validators: [
+      //       // валид.разм.в bite. Здесь макс.20 Mb
+      //          new MaxFileSizeValidator({ maxSize: 1024 * 1024 * 30 }), // ! Validation failed (expected size is less than 31457280)
+      //       // валид.тип файлов > аудио
+      //          new FileTypeValidator({ fileType: /(wav|aiff|ape|flac|mp3|ogg)$/ }), // ! Validation failed (expected type is /(wav|.....
+      //       new FileTypeValidator({ fileType: 'audio/mpeg', }),
+      //     ],
+      //   }),
+      // кастом.валид.
+      // new ParseFilePipeBuilder()
+      //   .addFileTypeValidator({ fileType: /(jpg|jpeg|png|gif|mp3|audio\/mpeg|audio|mpeg)$/, })
+      //   .addMaxSizeValidator({ maxSize: 1000, })
+      //   .addValidator(new MaxFileSizeValidator({ maxSize: 1024 * 1024 * 30 }))
+      //   .build({ errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY, }),
+      // валидация ч/з доп.файл fileTypeValidation.pipe.ts
+      new FileTypeValidationPipe(),
+    ) // масс.ф.
+    tracks: Record<string, Express.Multer.File[]>, // альтер.способы Array<Express.Multer.File[]>
     // авто.подтяг.id вкл.user
     @UserId() userId: number,
   ) {
-    // ~
-    console.log('track.CNTRL 0 : ' + 0);
-    console.log(
-      'track.CNTRL DTO | tracks | userId : ',
-      createTrackDto,
-      '|',
-      tracks,
-      '|',
-      userId,
-    );
     try {
-      // Доступ к загруженным файлам
-      // const { picture, audio } = tracks;
-
-      // обраб.ф. и передача в serv
-      return this.trackService.createTrack(createTrackDto, tracks, userId);
-    } catch (error) {
-      console.log('catch 0 : ' + 0);
-      // Удаление файла при неудачной загрузке данных в БД
-      // await fs.promises.unlink(tracks.path);
-      // throw new Error('Ошибка сохранения данных в базе данных');
-      //
-      // удал.неск.файлв при неудачн.загр.
-      const unlinkPromises = [];
-
-      for (const fieldName of Object.keys(tracks)) {
-        console.log('fieldName : ', fieldName);
-        for (const track of tracks[fieldName]) {
-          console.log('track : ', track);
-          unlinkPromises.push(fs.promises.unlink(track.path));
-        }
+      // перем.эл.в tracks по услов. > загр.serv > обраб.данн. > возврат
+      const keys = Object.keys(tracks);
+      if (keys.length === 1 && keys[0] === 'audio') {
+        // Обработка загрузки только трека
+        return await this.trackService.createTrackByParam(tracks, userId);
+      } else {
+        // Обработка загрузки трека с обложкой альбома
+        return await this.trackService.createTrackByParam(
+          tracks,
+          userId,
+          createTrackDto,
+        );
       }
+    } catch (error) {
+      console.log('t.cntrl.Param catch error : ', error);
 
+      // перем.`отсоединить обещания` > удал.эл.
+      const unlinkPromises = [];
+      // перебор объ.tracks, заполнение перем.> удал.неск.файлов при неудачн.загр.
+      Object.values(tracks).forEach((trackArray) => {
+        trackArray.forEach((track) => {
+          unlinkPromises.push(fs.promises.unlink(track.path));
+        });
+      });
       await Promise.all(unlinkPromises);
-      throw new Error('Ошибка сохранения данных в базе данных');
+
+      // кастом.ошб. Данн.msg serv <<>> cntrl + ошб.с serv
+      throw new NotFoundException(
+        error.response.message +
+          ' <<>> ' +
+          'Ошибка сохранения данных в БД на контроле загрузки Трека',
+        error.options.message,
+      );
     }
   }
 
@@ -201,10 +189,15 @@ export class TrackController {
     return this.trackService.updateTrack(+id, updateTrackDto);
   }
 
-  @Delete(':id')
-  @ApiOperation({ summary: 'Удаление трека' })
-  deleteTrack(@Param('id') id: ObjectId) {
-    return this.trackService.deleteTrack(+id);
+  @Delete(/* ':id' */)
+  @ApiOperation({ summary: 'Удаление Трек/и' })
+  deleteTrack(
+    @Query('ids') ids: string,
+    // @Param('ids') ids: string | number,
+    @UserId() userId: number,
+  ) {
+    // передача ф.id ч/з запят.> удал. tracks?ids=1,2,4, под userId
+    return this.trackService.deleteTrack(ids, userId);
   }
 
   // @Get('/search')
