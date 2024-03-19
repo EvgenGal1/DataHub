@@ -61,10 +61,15 @@ export class AlbumsService {
     updateAlbumDto?: UpdateAlbumDto,
     totalAlbumData?: any,
   ) {
-    const album = await this.albumsRepository.findOneBy({ id });
+    const existingAlbum = await this.albumsRepository
+      .createQueryBuilder('AlbumEntity')
+      .withDeleted()
+      .where('AlbumEntity.id = :id', { id: id })
+      .getMany();
+    const album = existingAlbum[0];
 
     // общ.кол-во.всех Треков одного Альбома
-    if (totalAlbumData.total_tracks) {
+    if (totalAlbumData?.total_tracks) {
       album.total_tracks = album.total_tracks + totalAlbumData.total_tracks;
       // альтер.получ.всех Треков по Альбому и их кол-ву
       // const trackAll = await this.tracksRepository.find({ where: { album: { /* title: updateAlbumDto.title, */ id: id, }, }, });
@@ -101,6 +106,11 @@ export class AlbumsService {
       album.styles = Array.from(set).join('; ');
     }
 
+    // обнов.мягк.удал.
+    // if (totalAlbumData?.deletedAt) {
+    album.deletedAt = totalAlbumData.deletedAt;
+    // }
+
     await this.albumsRepository.save(album);
   }
 
@@ -118,7 +128,11 @@ export class AlbumsService {
     }
 
     if (album.total_tracks == 1) {
-      await this.albumsRepository.delete(albumId);
+      await this.albumsRepository
+        .createQueryBuilder('albums')
+        .where({ id: albumId })
+        .softDelete()
+        .execute();
     } else {
       const durationArray = duration.split(':');
       const durationMinutes = parseInt(durationArray[0], 10);
@@ -154,9 +168,50 @@ export class AlbumsService {
   }
 
   // Удаление
-  async deleteAlbum(id: number) {
+  async deleteAlbum(
+    ids: any /* string | number */,
+    userId?: number,
+    param?: string,
+  ) {
+    // ошб.е/и нет ID
+    if (!ids) {
+      throw new NotFoundException('Нет Альбома > Удаления');
+    }
+
+    // превращ.ids ф.в масс.
+    let idsArray: number[] = [];
+    if (isNaN(Number(ids))) {
+      // Если ids не является числом, разбиваем строку на массив
+      idsArray = ids.split(',').map((id) => parseInt(id.trim(), 10));
+    } else {
+      // Если ids является числом, добавляем его в массив
+      idsArray.push(parseInt(ids, 10));
+    }
+
+    // полн.удал.Альбома е/и нет userId
+    if (!userId && !param) {
+      // return await this.tracksRepository.delete(ids);
+    }
+
+    // `созд.строит.req` > `мягк.удал.`ф.
+    const sotDelFiles = await this.albumsRepository
+      .createQueryBuilder('files')
+      .where('id IN (:...ids) AND userId = :userId', {
+        ids: idsArray,
+        userId,
+      })
+      .softDelete()
+      .execute();
+
+    // при парам.сразу удал.
+    if (param) {
+      return sotDelFiles;
+    }
+
+    // ^^ удал.данн.др.табл.
+
     // запись > удал.; delete - удал.
-    return this.albumsRepository.delete(id);
+    // return this.albumsRepository.delete(ids);
   }
 
   // ^^ ДОП.МТД.

@@ -125,11 +125,20 @@ export class FilesService {
 
   async updateFile(
     id: number,
-    updateFileDto: UpdateFileDto,
+    updateFileDto?: UpdateFileDto,
+    totalFileData?: any,
   ): Promise<FileEntity> {
+    const updatedTrack = await this.filesRepository.findOneBy({ id });
+
+    if (!updateFileDto && totalFileData) {
+      console.log('f.s. UPD totalFileData : ', totalFileData);
+      await this.filesRepository.update(id, totalFileData);
+      return updatedTrack;
+    }
+
     // return this.filesRepository.update(id, UpdateFileDto); // ! ошб. т.к. возвращ.UpdateResult, а не TrackEntity
     await this.filesRepository.update(id, updateFileDto);
-    const updatedTrack = await this.filesRepository.findOneBy({ id });
+
     if (!updatedTrack) throw new Error('Трек не найден');
     return updatedTrack;
   }
@@ -140,8 +149,6 @@ export class FilesService {
     userId?: number,
     param?: string,
   ) {
-    console.log('f.serv DEL id userId param : ', ids, userId, param);
-
     // ошб.е/и нет ID
     if (!ids) {
       throw new NotFoundException('Нет Файла > Удаления');
