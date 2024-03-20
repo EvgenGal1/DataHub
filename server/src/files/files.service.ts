@@ -166,27 +166,22 @@ export class FilesService {
 
     // полн.удал.Файла е/и нет userId
     if (!userId && !param) {
-      console.log('f.s.DEL FULL_DEL ids : ', ids);
       return await this.filesRepository.delete(ids);
     }
 
     // `созд.строит.req` > `мягк.удал.`ф.
-    const sotDelFiles = await this.filesRepository
+    const sotDelFiles = this.filesRepository
       .createQueryBuilder('files')
-      .where('id IN (:...ids) AND userId = :userId', {
+      .withDeleted()
+      .where('id IN (:...ids) AND user = :userId', {
         ids: idsArray,
-        userId,
-      })
-      .softDelete()
-      .execute();
+        userId: userId,
+      });
 
     // при парам.сразу удал.
     if (param) {
-      console.log('f.s.DEL param : ', param);
-      return sotDelFiles;
+      return await sotDelFiles.softDelete().execute();
     }
-
-    console.log('f.s.DEL в др.табл. : ', '>>>>>');
     // ^^ удал.данн.др.табл.
   }
 

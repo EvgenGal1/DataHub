@@ -34,8 +34,8 @@ export class AlbumEntity {
   year: number;
 
   // связь табл. 1 к 1. У Одного альбома Одна обложка (с обязат. tracks.fileID)
-  @ApiProperty({ example: './images/track', description: 'путь' })
-  @Column({ default: './images' })
+  @ApiProperty({ example: './static/images/albums', description: 'путь' })
+  @Column({ default: './static/images/albums/заглушка.jpg', nullable: true })
   path: string;
 
   // связь табл. 1 к 1. У Одной обложки Один файл альбома (с опцион.указ. albums.coverID)

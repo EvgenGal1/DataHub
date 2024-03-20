@@ -16,4 +16,7 @@ export class CreateAlbumDto {
 
   @ApiProperty({ default: './images' })
   path: string = './images';
+
+  @ApiProperty({ default: null })
+  cover?: boolean | number;
 }
