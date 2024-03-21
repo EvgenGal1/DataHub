@@ -1,6 +1,5 @@
 // ^ `Объект передачи данных` разрещ.req front > dack. Отдел.кл.с опис.ожид.св-в/полей
 import { ApiProperty } from '@nestjs/swagger';
-import { AlbumEntity } from 'src/albums/entities/album.entity';
 
 export class CreateTrackDto {
   // декор.swagger > св-в с возм.указ. default
@@ -24,9 +23,6 @@ export class CreateTrackDto {
     if (style) this.style = style;
     if (artist) this.artist = artist;
   }
-
-  @ApiProperty({ default: 'Альбом #' })
-  readonly album: string | AlbumEntity;
 
   // для учитывания динамических свойств при измен. TracksService.templateTrackDto
   // [key: string]: any;

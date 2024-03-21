@@ -27,8 +27,6 @@ export class BasicUtils {
   async getAudioMetaData(
     audio: Express.Multer.File,
   ): Promise<{ [key: string | number]: any }> {
-    console.log('getAudioMetaData 0 audio : ', audio);
-
     let audioMetaData;
     if (audio.buffer) {
       audioMetaData = audio.buffer;
@@ -37,8 +35,6 @@ export class BasicUtils {
     }
 
     const metadata = await mm.parseBuffer(audioMetaData);
-    console.log('meta-data_Audi format', metadata.format);
-    console.log('meta-data_Audi common', metadata.common);
 
     // `всего секунд` верн.ближ.целое число(округ.до ближ.цел.значения / раздел.на 60)=получ.цел.сек. + ":" + округ.до ближ.цел.значения % раздел.на остаток 60=получ.остаток секунд
     const totalSeconds =
@@ -57,59 +53,29 @@ export class BasicUtils {
       if (Array.isArray(value)) {
         value = value.length === 1 ? value[0] : value.join(', ');
       }
-      console.log('value 000 : ', value);
 
-      // наличие букв RU/EN, цифр в названии
-      const regExStand = /^[а-яА-Яa-zA-Z0-9\s]+$/u;
-      // налич.: любой в([) букв(p{L}),пробел(s),цифра(d),знаки(.,&!@#%()-) ] повтор(+) регистр(i)Юникод(u)
-      const regExpHard = /^([\p{L}\s\d.,&!@#%()-]+)$/iu;
-      // проверка на UTF8 // Windows1251
-      const isValidUtf8 = /^[\x00-\x7F\xC2-\xFD]+$/; // /^[\x00-\xFF]+$/
-      // const isValidWindows1251 = ;
+      // налич.: любых в([) букв RU/EN,цифр,пробел,знаки(.,&!@#%()-) ] повтор(+)регистр(i)Unicode(u)
+      const regExValid = /^[a-zA-Zа-яА-Я0-9\s.,:&!@#%()-]+$/iu;
+      // расшир.буквы Unicode - /[\u00C0-\u017F]/;
+      // наличие букв RU/EN, цифр в названии - /^[а-яА-Яa-zA-Z0-9\s]+$/iu;
+      // налич.: любой в([) букв(p{L}),пробел(s),цифра(d),знаки(.,&!@#%()-) ] повтор(+) регистр(i)Юникод(u) - /^([\p{L}\s\d.,:&!@#%()-]+)$/iu;
+      // проверка на UTF8. ASCII 0-255 + двухбайт - /[\x00-\xFF\xC2-\xFD]/;
 
       // условие по региляр.выраж. напрямую <> перекод.URI <> перекод.UTF8
-      if (regExStand.test(value) && regExpHard.test(value)) {
-        console.log('value 0 : ', value);
+      if (regExValid.test(value)) {
         // формир.объ.ключ.знач.
         result[key] = value;
-      }
-      if (!regExStand.test(value)) {
-        console.log('value 2 : ', value, typeof value);
-        try {
-          value = decodeURIComponent(escape(value));
-        } catch (error) {
-          value = decodeURIComponent(value);
-        }
+      } else if (!regExValid.test(value)) {
+        value =
+          key === 'originalname'
+            ? decodeURIComponent(escape(value)) // decodeURIComponent(value)
+            : iconv.decode(value, 'windows-1251'); // utf8 <> win1251
         result[key] = value;
-        console.log('value 2== : ', value);
+        // перекодировка value в utf8
+        // value = Buffer.from(String(value), 'utf8').toString('utf8');
         // доп.перекод.на пакетах iconv-lite и chardet // ! не раб - iconv.decode
         // const detectedEncoding = chardet.detect(Buffer.from(value));
         // const result = iconv.decode(Buffer.from(value), detectedEncoding);
-      }
-      if (isValidUtf8.test(value)) {
-        console.log('value 4 : ', value, typeof value);
-        // перекодировка value в utf8
-        value = decodeURIComponent(value);
-        console.log('value 4== : ', value);
-        // формир.объ.ключ.знач.
-        result[key] = value;
-      }
-      if (!isValidUtf8.test(value)) {
-        console.log('value 1 : ', value, typeof value);
-        // перекодировка value в utf8
-        value = Buffer.from(String(value), 'utf8').toString('utf8');
-        console.log('value 1== : ', value);
-        // формир.объ.ключ.знач.
-        result[key] = value;
-      }
-      if (/[\u00C0-\u017F]/.test(value)) {
-        console.log('value 3 : ', value, typeof value);
-
-        value = iconv.decode(value, 'windows-1251'); // utf8 <> win1251
-        // const value1 = iconv.encode(iconv.decode(value, 'win1251'), 'utf8');
-
-        // формир.объ.ключ.знач.
-        result[key] = value;
       }
     }
     // разреш.парам. Вызов кажд.поля
@@ -125,6 +91,6 @@ export class BasicUtils {
 
     console.log('getAudioMetaData result : ', result);
 
-    return result /* null */;
+    return result;
   }
 }
