@@ -4,8 +4,6 @@ import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import * as cors from 'cors';
 // import { ValidationPipe } from '@nestjs/common';
-// import * as express from 'express';
-// import { join } from 'path';
 
 async function bootstrap() {
   try {
@@ -29,8 +27,8 @@ async function bootstrap() {
       }),
     );
 
-    // MW для путей файлов в uploads
-    // app.use('/static', express.static(join(__dirname, '..', 'uploads')));
+    // MW для путей файлов в static - перенос в AppModule
+    // app.use('/static', express.static(join(__dirname, '..', 'static')));
 
     // настр.док.swagger(swg)
     const config = new DocumentBuilder()

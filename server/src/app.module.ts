@@ -1,7 +1,9 @@
 // общ.модуль приложения
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { TypeOrmModule } from '@nestjs/typeorm';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import * as path from 'path';
 
 import { AppController, AppController2 } from './app.controller';
 import { AppService } from './app.service';
@@ -49,9 +51,15 @@ import { ReactionEntity } from './reactions/entities/reaction.entity';
         ReactionEntity,
       ],
       // ^^ ТОЛЬКО DEV
+      // синхрон.табл.БД, логи сборки
       // ! при true начала падать в ошб. - ERROR [TypeOrmModule] Unable to connect to the database. Retrying (1)... QueryFailedError: максимальное число столбцов в таблице: 1600
       synchronize: true,
       logging: true,
+    }),
+    // обслуж.статич.контент с путь/папка
+    ServeStaticModule.forRoot({
+      rootPath: path.resolve(__dirname, /* '..', */ 'static'),
+      serveRoot: '/static',
     }),
     // подкл.использ.modulи
     // AuthModule,
