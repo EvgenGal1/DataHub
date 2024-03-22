@@ -64,7 +64,7 @@ export class TrackController {
       type: 'object',
       properties: {
         // загр.ч/з окно "Выберите файл"
-        audio: {
+        track: {
           type: 'string',
           format: 'binary',
         },
@@ -93,7 +93,7 @@ export class TrackController {
     FileFieldsInterceptor(
       // name - стр.содер.имя из HTML форм с файлом, maxCount - макс.кло-во ф.;
       [
-        { name: 'audio', maxCount: 10 },
+        { name: 'track', maxCount: 10 },
         { name: 'album', maxCount: 1 },
       ],
       // сохр. > store локального хранилища
@@ -124,20 +124,20 @@ export class TrackController {
       // валидация ч/з доп.файл fileTypeValidation.pipe.ts
       new FileTypeValidationPipe(),
     ) // масс.ф.
-    tracks: Record<string, Express.Multer.File[]>, // альтер.способы Array<Express.Multer.File[]>
+    audios: Record<string, Express.Multer.File[]>, // альтер.способы Array<Express.Multer.File[]>
     // авто.подтяг.id вкл.user
     @UserId() userId: number,
   ) {
     try {
-      // перем.эл.в tracks по услов. > загр.serv > обраб.данн. > возврат
-      const keys = Object.keys(tracks);
-      if (keys.length === 1 && keys[0] === 'audio') {
+      // перем.эл.в audios по услов. > загр.serv > обраб.данн. > возврат
+      const keys = Object.keys(audios);
+      if (keys.length === 1 && keys[0] === 'track') {
         // Обработка загрузки только трека
-        return await this.trackService.createTrackByParam(tracks, userId);
+        return await this.trackService.createTrackByParam(audios, userId);
       } else {
         // Обработка загрузки трека с обложкой альбома
         return await this.trackService.createTrackByParam(
-          tracks,
+          audios,
           userId,
           createTrackDto,
         );
@@ -147,8 +147,8 @@ export class TrackController {
 
       // перем.`отсоединить обещания` > удал.эл.
       const unlinkPromises = [];
-      // перебор объ.tracks, заполнение перем.> удал.неск.файлов при неудачн.загр.
-      Object.values(tracks).forEach((trackArray) => {
+      // перебор объ.audios, заполнение перем.> удал.неск.файлов при неудачн.загр.
+      Object.values(audios).forEach((trackArray) => {
         trackArray.forEach((track) => {
           unlinkPromises.push(fs.promises.unlink(track.path));
         });

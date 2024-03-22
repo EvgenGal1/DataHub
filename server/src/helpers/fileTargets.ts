@@ -3,7 +3,7 @@ export const fileTargets = (fileType: string) => {
   console.log('fileTargets fileType : ' + fileType);
   const fileTarget =
     fileType === 'IMAGE'
-      ? 'images/picture'
+      ? 'images'
       : fileType === 'PICTURE'
       ? 'images/picture'
       : fileType === 'AVATAR'
@@ -15,6 +15,8 @@ export const fileTargets = (fileType: string) => {
       : fileType === 'PERSONAL'
       ? 'users/personal'
       : fileType === 'AUDIO'
+      ? 'audios'
+      : fileType === 'TRACK'
       ? 'audios/track'
       : fileType === 'BOOK'
       ? 'books/book'

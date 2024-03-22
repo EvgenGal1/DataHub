@@ -9,14 +9,22 @@ import { fileTargets } from 'src/helpers/fileTargets';
 export const fileStorage = multer.diskStorage({
   // `место назначения`
   destination: (req, file, cb) => {
-    console.log('fileStorage DES.file : ', file);
+    console.log('flStor DES.file : ', file);
     // Баз.п./Путь
     const baseFolder = 'static';
-    // формир.путь по расширению или типу
+    // перем.путь по расширению <> типу
     let fileTarget: string;
 
-    // е/и нет req.query.fileType
-    if (file.fieldname && !req.query.fileType) {
+    // опред.путь. по переданному Типу
+    if (req.query.fileType) {
+      fileTarget = fileTargets(String(req.query.fileType).toUpperCase());
+    }
+    // по fieldname кроме file
+    else if (file.fieldname && file.fieldname != 'file') {
+      fileTarget = fileTargets(String(file.fieldname).toUpperCase());
+    }
+    // е/и нет req.query.fileType и file.mimetype
+    else if (!req.query.fileType && !file.mimetype) {
       // список `разреш.расшир.` > изо
       const allowedExtensionsImg = [
         '.ico',
@@ -43,21 +51,15 @@ export const fileStorage = multer.diskStorage({
         .substring(file.originalname.lastIndexOf('.'))
         .toLowerCase();
 
-      // сравн.знач. доступ.<>расшир.
-      if (allowedExtensionsImg.includes(fileExtension))
-        fileTarget = 'images/album/';
+      // опред.путь ч/з сравн.знач. доступ. <> расшир.
+      if (allowedExtensionsImg.includes(fileExtension)) fileTarget = 'images/';
       else if (allowedExtensionsAud.includes(fileExtension))
-        fileTarget = 'audios/track/';
-      // ^^ настр.др.расшир.
+        fileTarget = 'audios/';
       else fileTarget = 'other';
-    }
-    // по переданному Типу
-    else if (req.query.fileType) {
-      fileTarget = fileTargets(String(req.query.fileType).toUpperCase());
     }
 
     // формир.путь сохран. сокращ.ручной <> полн.автомат
-    // const destinationPath = baseFolder + '/' + fileTarget + '/'; // /static/audios/track/
+    // const destinationPath = baseFolder + '/' + fileTarget; // /static/audios/track/
     const filePath = path.resolve(__dirname, '..', baseFolder, fileTarget); // D:\Про\Творения\FullStack\music-platform_Next-Nest\server\dist\static\audios\track
     // альтер.сохр.п./ф. // ! не раб. - file.buffer = undf
     // fs.writeFileSync(path.resolve(filePath, fileName), file.buffer)
@@ -74,13 +76,13 @@ export const fileStorage = multer.diskStorage({
     //   } else { console.log('Папка уже существует:', filePath); cb(null, filePath); }
     // });
 
-    console.log('fileStorage filePath = : ', filePath);
+    console.log('flStor destination = : ', filePath);
     cb(null, filePath);
   },
 
   // `имя файла`
   filename: (req, file, cb) => {
-    console.log('fileStorage FIL.file : ', file);
+    console.log('flStor FIL.file : ', file);
     let fileNameReturn: string;
 
     // проверки читаемости имени трека
@@ -113,7 +115,7 @@ export const fileStorage = multer.diskStorage({
       )}`;
       fileNameReturn = fileNameDateRandomExt;
     }
-    console.log('fileStorage fileNameReturn : ' + fileNameReturn);
+    console.log('flStor filename = : ' + fileNameReturn);
     cb(null, fileNameReturn);
   },
 });

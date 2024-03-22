@@ -26,6 +26,7 @@ export enum FileType { // ^^ возм. стоит завести FileTarget с �
   PHOTO = 'photo',
   PERSONAL = 'personal',
   AUDIO = 'audio',
+  TRACK = 'track',
   BOOK = 'books',
   FILE = 'files',
   PROSE = 'prose',
