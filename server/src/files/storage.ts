@@ -1,6 +1,7 @@
 // ^^ лог.хран-ща.ф. + MW.multer обраб.ф.>загр.формата multipart/form-data(локал.хран.ф.diskStorage) + генер.уник.id/имён
 import * as multer from 'multer';
 import * as path from 'path';
+import * as fs from 'fs';
 
 import { fileTargets } from 'src/helpers/fileTargets';
 
@@ -8,10 +9,12 @@ import { fileTargets } from 'src/helpers/fileTargets';
 export const fileStorage = multer.diskStorage({
   // `место назначения`
   destination: (req, file, cb) => {
+    console.log('fileStorage DES.file : ', file);
     // Баз.п./Путь
-    const baseFolder = './static/';
+    const baseFolder = 'static';
     // формир.путь по расширению или типу
-    let fileTarget: string | Promise<string>;
+    let fileTarget: string;
+
     // е/и нет req.query.fileType
     if (file.fieldname && !req.query.fileType) {
       // список `разреш.расшир.` > изо
@@ -39,11 +42,12 @@ export const fileStorage = multer.diskStorage({
       const fileExtension = file.originalname
         .substring(file.originalname.lastIndexOf('.'))
         .toLowerCase();
+
       // сравн.знач. доступ.<>расшир.
       if (allowedExtensionsImg.includes(fileExtension))
-        fileTarget = 'images/picture';
+        fileTarget = 'images/album/';
       else if (allowedExtensionsAud.includes(fileExtension))
-        fileTarget = 'audios/track';
+        fileTarget = 'audios/track/';
       // ^^ настр.др.расшир.
       else fileTarget = 'other';
     }
@@ -51,18 +55,36 @@ export const fileStorage = multer.diskStorage({
     else if (req.query.fileType) {
       fileTarget = fileTargets(String(req.query.fileType).toUpperCase());
     }
-    // общий путь
-    const destinationPath = baseFolder + fileTarget + '/';
-    console.log('fileStorage destinationPath : ' + destinationPath);
-    cb(null, destinationPath);
+
+    // формир.путь сохран. сокращ.ручной <> полн.автомат
+    // const destinationPath = baseFolder + '/' + fileTarget + '/'; // /static/audios/track/
+    const filePath = path.resolve(__dirname, '..', baseFolder, fileTarget); // D:\Про\Творения\FullStack\music-platform_Next-Nest\server\dist\static\audios\track
+    // альтер.сохр.п./ф. // ! не раб. - file.buffer = undf
+    // fs.writeFileSync(path.resolve(filePath, fileName), file.buffer)
+
+    // провер./созд. папки собраб.ошб.
+    if (!fs.existsSync(filePath)) {
+      fs.mkdirSync(filePath, { recursive: true });
+    }
+    // альтер.проверка п.
+    // fs.access(filePath, (error) => {
+    //   if (error) { fs.mkdir(filePath, { recursive: true }, (err) => {
+    //       if (err) { console.error('Ошибка при создании папки:', err); cb(err, null);
+    //       } else { console.log('Папка успешно создана:', filePath); cb(null, filePath); } });
+    //   } else { console.log('Папка уже существует:', filePath); cb(null, filePath); }
+    // });
+
+    console.log('fileStorage filePath = : ', filePath);
+    cb(null, filePath);
   },
 
   // `имя файла`
   filename: (req, file, cb) => {
+    console.log('fileStorage FIL.file : ', file);
     let fileNameReturn: string;
 
     // проверки читаемости имени трека
-    // наличие букв(RU/EN,цифры) в названии
+    // наличие букв RU/EN, цифр в названии
     const regExStand = /^[а-яА-Яa-zA-Z0-9\s]+$/u;
     // налич.: любой в([) букв(p{L}),пробел(s),цифра(d),знаки(.,&!@#%()-) ] повтор(+) регистр(i)Юникод(u)
     const regExpHard = /^([\p{L}\s\d.,&!@#%()-]+)$/iu;
