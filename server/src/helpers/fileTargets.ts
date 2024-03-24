@@ -10,6 +10,8 @@ export const fileTargets = (fileType: string) => {
       ? 'users/avatar'
       : fileType === 'ALBUM'
       ? 'images/album'
+      : fileType === 'COVER'
+      ? 'images/album'
       : fileType === 'PHOTO'
       ? 'users/photo'
       : fileType === 'PERSONAL'
@@ -31,5 +33,15 @@ export const fileTargets = (fileType: string) => {
       : fileType === 'BLUEPRINT'
       ? 'prog/blueprint'
       : 'other';
+
+  // доп.обраб.частичного сходства // ^^ переимен.const fileTarget > partialFileTargets
+  // let fileTarget: string = 'other';
+  // for (const key in fileTarget) {
+  //     if (fileType.toUpperCase().startsWith(key)) {
+  //         fileTarget = partialFileTargets[key];
+  //         break;
+  //     }
+  // }
+
   return fileTarget;
 };
