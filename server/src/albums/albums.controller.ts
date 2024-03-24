@@ -121,7 +121,7 @@ export class AlbumController {
   @ApiOperation({ summary: 'Получить Альбомы по параметрам' })
   @ApiQuery({
     name: 'field',
-    enum: ['author', 'album', 'cover', 'year', 'style', 'id'],
+    enum: ['author', 'album', 'cover', 'year', 'genre', 'id'],
   })
   @ApiQuery({ name: 'value', required: true })
   @ApiResponse({ status: 200, type: AlbumEntity })

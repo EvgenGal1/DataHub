@@ -49,7 +49,7 @@ export class TrackEntity /* extends AbstractEntity */ {
   // стиль Трека
   @ApiProperty({ example: 'Other', description: 'Стиль Трека' })
   @Column({ default: 'Other' })
-  style: string;
+  genre: string;
 
   // длительность Трека
   @Column({ type: 'text', default: '0:00' })

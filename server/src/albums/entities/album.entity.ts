@@ -56,7 +56,7 @@ export class AlbumEntity {
 
   // объед.жанры всех Треков одного Альбома
   @Column({ default: 'Other #', nullable: true })
-  styles: string;
+  genres: string;
 
   // общ.кол-во.всех Треков одного Альбома
   @Column({ default: 1 })

@@ -12,7 +12,7 @@ export class CreateAlbumDto {
   year: number = null;
 
   @ApiProperty({ default: 'Other #' })
-  styles: string = 'Other #';
+  genres: string = 'Other #';
 
   @ApiProperty({ default: './images' })
   path: string = './images';

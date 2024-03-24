@@ -79,7 +79,7 @@ export class TrackController {
             name: { type: 'string', example: 'Название трк.#' },
             artist: { type: 'string', example: 'Артист #' },
             text: { type: 'string', example: 'Текст #' },
-            style: { type: 'string', example: 'Other #' },
+            genre: { type: 'string', example: 'Other #' },
             // ^^ продумать логику альбома ID | Названия
             // album: { type: 'number', example: '' },
           },

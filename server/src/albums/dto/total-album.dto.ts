@@ -8,7 +8,7 @@ export class TotalAlbumDto {
   readonly total_tracks?: number;
 
   @ApiProperty({ default: 'нет' })
-  readonly styles?: string;
+  readonly genres?: string;
 
   @ApiProperty({ default: '2022-02-22 00:11:23' })
   readonly deletedAt?: Date;

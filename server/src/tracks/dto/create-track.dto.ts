@@ -15,12 +15,12 @@ export class CreateTrackDto {
   text: string = 'Текст #';
 
   @ApiProperty({ default: 'Other #' })
-  style: string = 'Other #';
+  genre: string = 'Жанр #';
 
-  constructor(name?: string, text?: string, style?: string, artist?: string) {
+  constructor(name?: string, text?: string, genre?: string, artist?: string) {
     if (name) this.name = name;
     if (text) this.text = text;
-    if (style) this.style = style;
+    if (genre) this.genre = genre;
     if (artist) this.artist = artist;
   }
 
