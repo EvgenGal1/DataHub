@@ -21,7 +21,7 @@ async function bootstrap() {
     // 2. Включаем CORS с настройками
     app.use(
       cors({
-        // origin: '*', // Измените на нужный URL вашего фронтенда
+        origin: '*', // Измените на нужный URL вашего фронтенда
         methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
         allowedHeaders: ['Content-Type', 'Authorization'],
       }),
@@ -29,6 +29,17 @@ async function bootstrap() {
 
     // MW для путей файлов в static - перенос в AppModule
     // app.use('/static', express.static(join(__dirname, '..', 'static')));
+
+    // MW для ошб.
+    // app.use((err, req, res, next) => {
+    //   // Проверяем, является ли ошибка нашей ожидаемой ошибкой от multer.diskStorage
+    //   if (err.code === 'EXPECTED_ERROR_CODE') {
+    //     // Возвращаем ошибку в формате, подходящем для Swagger
+    //     return res.status(400).json({ error: 'Описание ошибки для Swagger' });
+    //   }
+    //   // Если это не ошибка от multer.diskStorage, передаем управление дальше
+    //   next(err);
+    // });
 
     // настр.док.swagger(swg)
     const config = new DocumentBuilder()

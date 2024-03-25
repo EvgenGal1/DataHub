@@ -68,7 +68,7 @@ export class TrackController {
           type: 'string',
           format: 'binary',
         },
-        album: {
+        cover: {
           type: 'string',
           format: 'binary',
         },
@@ -81,7 +81,7 @@ export class TrackController {
             text: { type: 'string', example: 'Текст #' },
             genre: { type: 'string', example: 'Other #' },
             // ^^ продумать логику альбома ID | Названия
-            // album: { type: 'number', example: '' },
+            // cover: { type: 'number', example: '' },
           },
         },
       },
@@ -94,7 +94,7 @@ export class TrackController {
       // name - стр.содер.имя из HTML форм с файлом, maxCount - макс.кло-во ф.;
       [
         { name: 'track', maxCount: 10 },
-        { name: 'album', maxCount: 1 },
+        { name: 'cover', maxCount: 1 },
       ],
       // сохр. > store локального хранилища
       { storage: fileStorage },
@@ -129,6 +129,14 @@ export class TrackController {
     @UserId() userId: number,
   ) {
     try {
+      console.log(
+        't.c. audios | userId | DTO : ',
+        audios,
+        '|',
+        userId,
+        '|',
+        createTrackDto,
+      );
       // перем.эл.в audios по услов. > загр.serv > обраб.данн. > возврат
       const keys = Object.keys(audios);
       if (keys.length === 1 && keys[0] === 'track') {
