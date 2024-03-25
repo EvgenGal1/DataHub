@@ -2,6 +2,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import * as fs from 'fs';
 
 import { CreateAlbumDto } from './dto/create-album.dto';
 import { UpdateAlbumDto } from './dto/update-album.dto';
@@ -10,6 +11,7 @@ import { TrackEntity } from 'src/tracks/entities/track.entity';
 import { ReactionEntity } from 'src/reactions/entities/reaction.entity';
 import { FileEntity } from 'src/files/entities/file.entity';
 import { DatabaseUtils } from 'src/utils/database.utils';
+import { TotalAlbumDto } from './dto/total-album.dto';
 
 @Injectable()
 export class AlbumsService {
@@ -30,7 +32,7 @@ export class AlbumsService {
     createAlbumDto: CreateAlbumDto,
     userId: number,
     coverObj?: any,
-    totalAlbumData?: any,
+    totalAlbumData?: TotalAlbumDto,
   ) {
     // `получить наименьший доступный идентификатор` из БД > табл.album
     const smallestFreeId =
@@ -57,109 +59,168 @@ export class AlbumsService {
   }
 
   async updateAlbum(
-    id: number,
+    albumIds: any /* string | number */,
     updateAlbumDto?: UpdateAlbumDto,
-    totalAlbumData?: any,
+    totalAlbumDto?: TotalAlbumDto,
+    param?: string,
   ) {
+    console.log(
+      'a.s. UPD albumIds updateAlbumDto totalAlbumDto param : ',
+      albumIds,
+      updateAlbumDto,
+      totalAlbumDto,
+      param,
+    );
+
+    // ошб.е/и нет ID
+    if (!albumIds) {
+      throw new NotFoundException('Нет Альбома > Удаления');
+    }
+
+    // превращ.ids ф.в масс.
+    let idsArray: number[] = [];
+    if (isNaN(Number(albumIds))) {
+      // Если ids не является числом, разбиваем строку на массив
+      idsArray = albumIds.split(',').map((id) => parseInt(id.trim(), 10));
+    } else {
+      // Если ids является числом, добавляем его в массив
+      idsArray.push(parseInt(albumIds, 10));
+    }
+
+    // const album = await this.albumsRepository.findOneBy({ id });
     const existingAlbum = await this.albumsRepository
-      .createQueryBuilder('AlbumEntity')
+      .createQueryBuilder('albums')
       .withDeleted()
-      .where('AlbumEntity.id = :id', { id: id })
+      .where('id IN (:...ids)', { ids: idsArray })
       .getMany();
+    // альтер.получ.всех Треков по Альбому и их кол-ву
+    // const trackAll = await this.tracksRepository.find({ where: { album: { /* title: updateAlbumDto.title, */ id: id, }, }, });
+
     const album = existingAlbum[0];
+    if (!album) {
+      throw new NotFoundException(`Альбом с id ${idsArray} не найдено`);
+    }
 
     // общ.кол-во.всех Треков одного Альбома
-    if (totalAlbumData?.total_tracks) {
-      album.total_tracks = album.total_tracks + totalAlbumData.total_tracks;
-      // альтер.получ.всех Треков по Альбому и их кол-ву
-      // const trackAll = await this.tracksRepository.find({ where: { album: { /* title: updateAlbumDto.title, */ id: id, }, }, });
-      // album.total_tracks = trackAll.length + totalAlbumData.total_tracks;
+    if (totalAlbumDto?.total_tracks) {
+      if (param == 'add') {
+        album.total_tracks = album.total_tracks + totalAlbumDto.total_tracks;
+      } else if ((param = 'del')) {
+        album.total_tracks = album.total_tracks - totalAlbumDto.total_tracks;
+      }
     }
 
     // общ.длительность всех Треков одного Альбома
-    if (totalAlbumData?.total_duration) {
+    if (totalAlbumDto?.total_duration) {
       const [min1, sec1] = album.total_duration.split(':').map(Number);
-      const [min2, sec2] = totalAlbumData.total_duration.split(':').map(Number);
-      let totalSeconds = (min1 + min2) * 60 + sec1 + sec2;
-      const totalMinutes = Math.floor(totalSeconds / 60);
-      totalSeconds %= 60;
-      album.total_duration = `${totalMinutes}:${
-        totalSeconds < 10 ? '0' : ''
-      }${totalSeconds}`;
-      // альтер.получ.данн.ч/з basicUtils.sumDurations
-      // await this.basicUtils.sumDurations( album.total_duration, totalAlbumData.total_duration );
+      const [min2, sec2] = totalAlbumDto.total_duration.split(':').map(Number);
+      if (param == 'add') {
+        let totalSeconds = (min1 + min2) * 60 + sec1 + sec2;
+        const totalMinutes = Math.floor(totalSeconds / 60);
+        totalSeconds %= 60;
+        album.total_duration = `${totalMinutes}:${
+          totalSeconds < 10 ? '0' : ''
+        }${totalSeconds}`;
+        // альтер.получ.данн.ч/з basicUtils.sumDurations
+        // await this.basicUtils.sumDurations( album.total_duration, totalAlbumDto.total_duration );
+        const albumTotal_duration = `${totalMinutes}:${String(
+          totalSeconds % 60,
+        ).padStart(2, '0')}`;
+      } else if ((param = 'del')) {
+        const durationArray = totalAlbumDto.total_duration.split(':');
+        const durationMinutes = parseInt(durationArray[0], 10);
+        const durationSeconds = parseInt(durationArray[1], 10);
+        const totalDuration = album.total_duration.split(':');
+        let newDurationMinutes = Number(totalDuration[0]) - durationMinutes;
+        let newDurationSeconds = Number(totalDuration[1]) - durationSeconds;
+
+        let newMinutes = min1 - /* dMin */ min2;
+        let newSeconds = sec1 - /* dSec */ sec2;
+
+        if (newDurationSeconds < 0) {
+          newDurationMinutes--; // Уменьшаем минуты, если секунды отрицательные
+          newDurationSeconds += 60; // Добавляем 60 секунд, чтобы они стали положительными
+        }
+        if (newSeconds < 0) {
+          newMinutes--;
+          newSeconds += 60;
+        }
+
+        album.total_duration = `${newDurationMinutes}:${newDurationSeconds}`;
+        const albumTotal_duration = `${newMinutes}:${String(
+          newSeconds,
+        ).padStart(2, '0')}`;
+      }
+      // ^^ краткая версия_1. проверить
+      // let totalSeconds = (min1 + (param === 'add' ? min2 : -min2)) * 60 + sec1 + (param === 'add' ? sec2 : -sec2);
+      // let totalMinutes = Math.floor(totalSeconds / 60);
+      // totalSeconds %= 60;
+      // album.total_duration = `${totalMinutes}:${totalSeconds < 10 ? '0' : ''}${totalSeconds}`;
+      // ^^ краткая версия_2. проверить
+      // const modifier = param === 'add' ? 1 : -1;
+      // const totalMinutes = min1 + modifier * min2;
+      // const totalSeconds = sec1 + modifier * sec2;
+      // let totalSecondsAdjusted = totalSeconds;
+      // let totalMinutesAdjusted = totalMinutes;
+      // if (totalSecondsAdjusted < 0) {
+      //   totalSecondsAdjusted += 60;
+      //   totalMinutesAdjusted--;
+      // } else if (totalSecondsAdjusted >= 60) {
+      //   totalSecondsAdjusted -= 60;
+      //   totalMinutesAdjusted++;
+      // }
     }
 
     // объед.жанры всех Треков одного Альбома
-    if (totalAlbumData?.styles) {
-      const set = new Set();
+    if (totalAlbumDto?.genres /* != album.genres */) {
+      if (param == 'add') {
+        const set = new Set();
 
-      set.add(album.styles);
-      // if (album.styles.toLowerCase() !== totalAlbumData.styles.toLowerCase())
-      if (
-        !album.styles
-          .toLowerCase()
-          .includes(totalAlbumData.styles.toLowerCase())
-      ) {
-        set.add(totalAlbumData.styles); // Добавляем второй жанр только если он отличается
+        set.add(album.genres);
+        // if (album.genres.toLowerCase() !== totalAlbumDto.genres.toLowerCase())
+        if (
+          !album.genres
+            .toLowerCase()
+            .includes(totalAlbumDto.genres.toLowerCase())
+        ) {
+          set.add(totalAlbumDto.genres); // Добавляем второй жанр только если он отличается
+        }
+        album.genres = Array.from(set).join('; ');
+      } else if ((param = 'del')) {
+        const filteredGenres = album.genres
+          .split(';')
+          .map((genre) => genre.trim())
+          .filter((genre) => genre !== totalAlbumDto.genres[0].trim())
+          .join('; ');
+        album.genres = filteredGenres;
       }
-      album.styles = Array.from(set).join('; ');
+
+      const set = new Set(album.genres.split(';').map((genre) => genre.trim()));
+
+      if (
+        param === 'add' &&
+        !album.genres.toLowerCase().includes(totalAlbumDto.genres.toLowerCase())
+      ) {
+        set.add(totalAlbumDto.genres.trim());
+      } else if (param === 'del') {
+        set.delete(totalAlbumDto.genres.trim());
+      }
+      const albumGenres = Array.from(set).join('; ');
     }
 
     // обнов.мягк.удал.
     // if (totalAlbumData?.deletedAt) {
-    album.deletedAt = totalAlbumData.deletedAt;
+    album.deletedAt = totalAlbumDto.deletedAt;
     // }
 
+    if (updateAlbumDto != null) {
+      // album = { ...updateAlbumDto };
+      // Обновляем данные альбома, если передан updateAlbumDto
+      Object.assign(album, updateAlbumDto);
+    }
+
+    console.log('a.s. UPD album 999 : ', album);
     await this.albumsRepository.save(album);
-  }
-
-  async updateAlbumParam(
-    albumId: number | any,
-    duration: string | any,
-    trackCount: number | any,
-    styles: string | any,
-  ): Promise<void> {
-    const album = await this.albumsRepository.findOne({
-      where: { id: albumId },
-    });
-    if (!album) {
-      throw new NotFoundException(`Альбом с id ${albumId} не найдено`);
-    }
-
-    if (album.total_tracks == 1) {
-      await this.albumsRepository
-        .createQueryBuilder('albums')
-        .where({ id: albumId })
-        .softDelete()
-        .execute();
-    } else {
-      const durationArray = duration.split(':');
-      const durationMinutes = parseInt(durationArray[0], 10);
-      const durationSeconds = parseInt(durationArray[1], 10);
-
-      const totalDuration = album.total_duration.split(':');
-      let newDurationMinutes = Number(totalDuration[0]) - durationMinutes;
-      let newDurationSeconds = Number(totalDuration[1]) - durationSeconds;
-
-      if (newDurationSeconds < 0) {
-        newDurationMinutes--; // Уменьшаем минуты, если секунды отрицательные
-        newDurationSeconds += 60; // Добавляем 60 секунд, чтобы они стали положительными
-      }
-
-      album.total_duration = `${newDurationMinutes}:${newDurationSeconds}`;
-
-      const albTrc = Number(album.total_tracks) - Number(trackCount);
-      album.total_tracks = albTrc;
-      const filteredStyles = album.styles
-        .split(';')
-        .map((style) => style.trim())
-        .filter((style) => style !== styles[0].trim())
-        .join('; ');
-      album.styles = filteredStyles;
-
-      await this.albumsRepository.save(album);
-    }
   }
 
   // пометка Удаления
@@ -171,11 +232,23 @@ export class AlbumsService {
   async deleteAlbum(
     ids: any /* string | number */,
     userId?: number,
+    totalAlbumDto?: TotalAlbumDto,
     param?: string,
   ) {
+    console.log(
+      'a.s. DEL ids userId param totalAlbumDto : ',
+      ids,
+      userId,
+      totalAlbumDto,
+      param,
+    );
+
     // ошб.е/и нет ID
     if (!ids) {
       throw new NotFoundException('Нет Альбома > Удаления');
+    }
+    if (!userId && !param && !totalAlbumDto) {
+      throw new NotFoundException('Предовращено полное удаление');
     }
 
     // превращ.ids ф.в масс.
@@ -188,27 +261,57 @@ export class AlbumsService {
       idsArray.push(parseInt(ids, 10));
     }
 
-    // полн.удал.Альбома е/и нет userId
-    if (!userId && !param) {
-      // return await this.tracksRepository.delete(ids);
-    }
-
-    // `созд.строит.req` > `мягк.удал.`ф.
-    const sotDelFiles = await this.albumsRepository
-      .createQueryBuilder('files')
-      .where('id IN (:...ids) AND userId = :userId', {
+    // `созд.строит.req` > данн.Альбома/ов
+    const qbAlbums = this.albumsRepository
+      .createQueryBuilder('albums')
+      .withDeleted()
+      .where('id IN (:...ids) AND user = :userId', {
         ids: idsArray,
         userId,
-      })
-      .softDelete()
-      .execute();
+      });
+    // .where('id IN (:...ids)', { ids: idsArray });
+    const qbAlbums2 = await qbAlbums.getRawMany();
 
-    // при парам.сразу удал.
+    const qbAlbums3 = this.albumsRepository
+      .createQueryBuilder('albums')
+      .withDeleted()
+      .where('id IN (:...ids)', { ids: idsArray });
+    const qbAlbums4 = await qbAlbums3.getRawMany();
+
+    // полн.удал.Альбома е/и нет userId
+    if (!userId && !param && !totalAlbumDto) {
+      return qbAlbums.delete().execute();
+    }
+    // .softDelete()
+    // .execute();
+
+    // `мягк.удал.`ф. при парам.
     if (param) {
-      return sotDelFiles;
+      totalAlbumDto.total_tracks <= 1
+        ? await qbAlbums.softDelete().execute()
+        : await this.updateAlbum(ids, null, totalAlbumDto, param);
+      return;
     }
 
     // ^^ удал.данн.др.табл.
+
+    const albumsData = await qbAlbums
+      .select([
+        'tracks.path AS path',
+        'tracks.coverId',
+        // 'tracks.author AS author',
+      ])
+      .getRawMany();
+    const pathArray = albumsData.map((obj) => obj.path);
+    const coverIdsArray = albumsData.map((obj) => obj.coverId);
+    // const authorIdsArray = albumsData.map((obj) => obj.author);
+
+    // Удаление файлов из локального хранилища
+    for (const path of pathArray) {
+      try {
+        await fs.promises.unlink(path);
+      } catch (error) {}
+    }
 
     // запись > удал.; delete - удал.
     // return this.albumsRepository.delete(ids);
@@ -217,22 +320,19 @@ export class AlbumsService {
   // ^^ ДОП.МТД.
   // поиск по исполнителю
   async searchByAuthor(author: string): Promise<AlbumEntity[]> {
-    console.log('serv ATHR : ' + author);
-    console.log(author);
+    console.log('serv ATHR : ', author);
     return this.albumsRepository.find({ where: { author: author } });
   }
 
   // поиск по назв.альбома
   async searchByAlbumName(albumName: string): Promise<AlbumEntity[]> {
-    console.log('serv alb_Name : ' + albumName);
-    console.log(albumName);
+    console.log('serv alb_Name : ', albumName);
     return this.albumsRepository.find({ where: { title: albumName } });
   }
 
   // количество по id.альбома
   async getTrackCountByAlbumId(albumId: number): Promise<number> {
-    console.log('serv доп.мтд. alb_Id : ' + albumId);
-    console.log(albumId);
+    console.log('serv доп.мтд. alb_Id : ', albumId);
     return this.albumsRepository.count({
       where: { id: albumId },
     });
@@ -240,8 +340,7 @@ export class AlbumsService {
 
   // кол-во по Альбому
   async getTrackCountByAlbumName(albumName: string): Promise<number> {
-    console.log('serv доп.мтд. alb_Name : ' + albumName);
-    console.log(albumName);
+    console.log('serv доп.мтд. alb_Name : ', albumName);
     // return this.albumsRepository.count({ where: { album: albumName }});
     const count = await this.albumsRepository.count({
       where: { title: albumName },
@@ -253,8 +352,7 @@ export class AlbumsService {
   // универс.fn поиска по автору, альбому, обложки, год, стилю, id
   // async getAlbumByProps(props: Partial<AlbumEntity>): Promise<AlbumEntity[]> {
   async getAlbumByProps(props) {
-    console.log('serv props : ' + props);
-    console.log(props);
+    console.log('serv props : ', props);
     const { var1, var2 } = props;
     // return this.albumsRepository.find(props);
     // return this.albumsRepository.findOne(props as FindOneOptions<AlbumEntity>);
