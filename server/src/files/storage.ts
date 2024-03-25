@@ -2,6 +2,7 @@
 import * as multer from 'multer';
 import * as path from 'path';
 import * as fs from 'fs';
+import { BadRequestException, NotFoundException } from '@nestjs/common';
 
 import { fileTargets } from 'src/helpers/fileTargets';
 
@@ -10,6 +11,10 @@ export const fileStorage = multer.diskStorage({
   // `место назначения`
   destination: (req, file, cb) => {
     console.log('flStor DES.file : ', file);
+
+    if (file === undefined || file === null) {
+      throw new NotFoundException('Ошибка сохранения данных в БД', 'нет файла');
+    }
     // Баз.п./Путь
     const baseFolder = 'static';
     // перем.путь по расширению <> типу
@@ -19,43 +24,35 @@ export const fileStorage = multer.diskStorage({
     if (req.query.fileType) {
       fileTarget = fileTargets(String(req.query.fileType).toUpperCase());
     }
-    // по fieldname кроме file
-    else if (file.fieldname && file.fieldname != 'file') {
-      fileTarget = fileTargets(String(file.fieldname).toUpperCase());
-    }
-    // е/и нет req.query.fileType и file.mimetype
-    else if (!req.query.fileType && !file.mimetype) {
-      // список `разреш.расшир.` > изо
-      const allowedExtensionsImg = [
-        '.ico',
-        '.jpg',
-        '.jpeg',
-        '.png',
-        '.gif',
-        '.bmp',
-      ];
-      // список `разреш.расшир.` > аудио
-      const allowedExtensionsAud = [
-        '.mp3',
-        '.wav',
-        '.flac',
-        '.aac',
-        '.aiff',
-        '.ogg',
-        '.wma',
-        '.m4a',
-      ];
-
-      // извлеч.расшир.ф.
-      const fileExtension = file.originalname
-        .substring(file.originalname.lastIndexOf('.'))
-        .toLowerCase();
-
-      // опред.путь ч/з сравн.знач. доступ. <> расшир.
-      if (allowedExtensionsImg.includes(fileExtension)) fileTarget = 'images/';
-      else if (allowedExtensionsAud.includes(fileExtension))
-        fileTarget = 'audios/';
-      else fileTarget = 'other';
+    // по fieldname(типу загр.) и mimetype(типу файла)
+    else {
+      // `соответствие типов файлов`
+      const fileTypeMappings = {
+        audio: ['track', 'audiobook', 'sounds'],
+        image: ['album', 'cover', 'picture', 'image'],
+      };
+      // тип файла
+      const fileMimeType = file.mimetype.split('/')[0]; // audio <> image <> ...
+      // альтер.получ.тип ч/з ключи масс.соответствий по нач.знач.mimetype - Object.keys(fileTypeMappings).find((type) => file.mimetype.startsWith(type), );
+      // `разрешенные типы файлов`
+      const allowedFileTypes = fileTypeMappings[fileMimeType]; // track,audiobook,sounds <> ...
+      // опред.путь <> ошб. от соответствия значений fieldname(поле загр.) к fileTypeMappings(типам ф.)
+      if (allowedFileTypes && allowedFileTypes.includes(file.fieldname)) {
+        fileTarget = fileTargets(String(file.fieldname).toUpperCase());
+      } else {
+        const err = `Несоответствие типов. Передан файл '${file.originalname}' с типом '${file.mimetype}', а должен быть '${file.fieldname}'`;
+        console.log('flStor err : ', err);
+        const error = new /* NotFoundException */ BadRequestException(
+          'Ошибка сохранения данных в БД',
+          err,
+        );
+        // if (file.fieldname === 'track') return cb(error, null);
+        // if (file.fieldname === 'cover') return cb(error, null);
+        return cb(error, null);
+        // ! не раб.ошб. SWAGGER >> Loading >> Undocumented - Failed to fetch. - Possible Reasons: CORS > Network Failure > URL scheme must be "http" or "https" for CORS request.
+        // ~~ после первой отработавшей ошибки, любой ошибочный запрос застревает в Loading и позже падает в ошибку с CORE.
+        // ~~ перезагрузки swagger разрешает проблему любого запроса
+      }
     }
 
     // формир.путь сохран. сокращ.ручной <> полн.автомат
@@ -71,9 +68,9 @@ export const fileStorage = multer.diskStorage({
     // альтер.проверка п.
     // fs.access(filePath, (error) => {
     //   if (error) { fs.mkdir(filePath, { recursive: true }, (err) => {
-    //       if (err) { console.error('Ошибка при создании папки:', err); cb(err, null);
-    //       } else { console.log('Папка успешно создана:', filePath); cb(null, filePath); } });
-    //   } else { console.log('Папка уже существует:', filePath); cb(null, filePath); }
+    //       if (err) { cb(err, null);
+    //       } else { cb(null, filePath); } });
+    //   } else { cb(null, filePath); }
     // });
 
     console.log('flStor destination = : ', filePath);

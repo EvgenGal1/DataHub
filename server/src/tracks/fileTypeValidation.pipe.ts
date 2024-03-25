@@ -1,62 +1,53 @@
-import { BadRequestException, Injectable, PipeTransform } from '@nestjs/common';
-import { fromBuffer } from 'file-type';
-import * as fs from 'fs';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+  PipeTransform,
+} from '@nestjs/common';
+import * as path from 'path';
+// import * as fs from 'fs';
 
 @Injectable()
 export class FileTypeValidationPipe implements PipeTransform {
   async transform(value: Express.Multer.File[] | any /* // ! УБРАТЬ ANY */) {
     // обраб.ошб.пустого value
-    if (!value) {
-      throw new BadRequestException('Отсутствуют загруженные файлы.');
+    if (!value || Object.keys(value).length === 0) {
+      throw new /* BadRequestException */ NotFoundException(
+        'Ошибка сохранения данных в БД',
+        'Нет файлов загрузки',
+      );
     }
 
-    // перем.хран.данн.ф.разных типов
-    const fileData = {};
+    console.log('fTypValid value : ', value);
 
     // Перебор ключей value и обраб.соответ.ф.
     for (const key of Object.keys(value)) {
       if (value[key] && value[key].length > 0) {
-        fileData[key] =
-          value[key][0].buffer || fs.readFileSync(value[key][0].path);
+        // разреш.Типы ф. > каждого типа
+        const allowedTypes = {
+          audio: ['.mp3', '.wav', '.flac', '.aac', '.aiff', '.ogg', '.wma'],
+          image: ['.ico', '.jpg', '.jpeg', '.png', '.gif', '.bmp'],
+          video: ['mp4', 'quicktime', 'mpeg'],
+          schema: ['json', 'xml', 'csv'],
+        };
+        // объ.ф.
+        const valueKey = value[key][0];
+        // тип файла
+        const fileMimeType = valueKey.mimetype.split('/')[0]; // audio <> image
+        // `разрешенные типы файлов`
+        const allowedFileTypes = allowedTypes[fileMimeType]; // ['.mp3','.wav','.flac',...
+        // извлеч.расшир.ф.
+        const fileExtension = path.extname(valueKey.originalname); // .mp3 <> .jpg
+        // разреш. <> ошб. от соответствия значений fileExtension(расшир.ф.) к allowedFileTypes(разреш.расшир.)
+        if (!allowedFileTypes.includes(fileExtension)) {
+          const err = `Поле загрузки '${key}' должно иметь один из допустимых форматов файла - '${allowedFileTypes.join()}. Передан '${fileExtension}''`;
+          console.log('fTypValid err : ', err);
+          throw new BadRequestException('Ошибка сохранения данных в БД', err);
+        }
       }
     }
 
-    // опред.MIME типа > каждого типа файла
-    const mimeTypes = {};
-    for (const key of Object.keys(fileData)) {
-      const { mime } = await fromBuffer(fileData[key]);
-      mimeTypes[key] = mime;
-    }
-
-    // разреш.Типы ф. > каждого типа
-    const allowedTypes = {
-      audio: [
-        'audio/wav',
-        'audio/flac',
-        'audio/ogg',
-        'audio/mpeg',
-        'audio/aiff',
-      ],
-      image: [
-        'image/jpg',
-        'image/jpeg',
-        'image/png',
-        'image/webp',
-        'image/gif',
-      ],
-      video: ['video/mp4', 'video/quicktime', 'video/mpeg'],
-      schema: ['application/json', 'application/xml', 'text/csv'],
-    };
-
-    // проверка MIME типов и выбрасывание ошибки при несоответствии
-    for (const key of Object.keys(fileData)) {
-      if (allowedTypes[key] && !allowedTypes[key].includes(mimeTypes[key])) {
-        throw new BadRequestException(
-          `${key} должен быть одним из допустимых типов файлов.`,
-        );
-      }
-    }
-
+    console.log('fTypValid value = : ', value);
     return value;
   }
 }
