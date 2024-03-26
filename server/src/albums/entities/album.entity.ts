@@ -3,10 +3,8 @@ import {
   Column,
   OneToMany,
   ManyToOne,
-  OneToOne,
   CreateDateColumn,
   DeleteDateColumn,
-  JoinColumn,
   PrimaryColumn,
 } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
@@ -33,22 +31,21 @@ export class AlbumEntity {
   @Column({ default: null })
   year: number;
 
-  // связь табл. 1 к 1. У Одного альбома Одна обложка (с обязат. tracks.fileID)
+  // путь
   @ApiProperty({ example: '/images/albums', description: 'путь' })
   @Column({ default: '/images/albums/заглушка.jpg', nullable: true })
   path: string;
-
-  // связь табл. 1 к 1. У Одной обложки Один файл альбома (с опцион.указ. albums.coverID)
-  @OneToOne(() => FileEntity, (files: FileEntity) => files.album, {
-    nullable: true,
-  })
-  @JoinColumn()
-  cover: File;
 
   // связь табл. 1го ко Мн. У Одного альбома Мн.треков
   @OneToMany(() => TrackEntity, (track: TrackEntity) => track.album)
   //  возвращ.масс.треков
   tracks: TrackEntity[];
+
+  // связь табл. Мн.к 1му. У Мн.альбомов Один файл(заглушка). Ранее OneToMany
+  @ManyToOne(() => FileEntity, (files: FileEntity) => files.album, {
+    nullable: true,
+  })
+  cover: File;
 
   // связь табл. Мн.к 1му. У Мн.альбомов Один польз.
   @ManyToOne(() => UserEntity, (user: UserEntity) => user.albums)

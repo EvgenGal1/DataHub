@@ -92,8 +92,8 @@ export class FileEntity {
   })
   track: TrackEntity;
 
-  // связь табл. 1 к 1. Один файл указ.на Одну обложку (с опцион.указ. files.album)
-  @OneToOne(() => AlbumEntity, (album: AlbumEntity) => album.cover, {
+  // связь табл. 1го ко Мн. У Одного файла(заглушка) Мн.альбомов. Ранее OneToMany
+  @OneToMany(() => AlbumEntity, (album: AlbumEntity) => album.cover, {
     nullable: true,
   })
   album: AlbumEntity;
