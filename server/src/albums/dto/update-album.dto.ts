@@ -5,5 +5,20 @@ import { CreateAlbumDto } from './create-album.dto';
 
 export class UpdateAlbumDto extends PartialType(CreateAlbumDto) {
   @ApiProperty({ default: 'Альбом #' })
-  readonly album: string;
+  title: string = 'Назв.Алб. #';
+
+  @ApiProperty({ default: 'Аффтор #' })
+  author: string = 'Аффтор #';
+
+  @ApiProperty({ default: null })
+  year: number = null;
+
+  @ApiProperty({ default: 'Other #' })
+  genres: string = 'Other #';
+
+  @ApiProperty({ default: './images' })
+  path: string = './images';
+
+  @ApiProperty({ default: null })
+  cover?: boolean | number;
 }
