@@ -34,6 +34,13 @@ export class AlbumsService {
     coverObj?: any,
     totalAlbumData?: TotalAlbumDto,
   ) {
+    console.log(
+      'a.s. createAlbumDto userId coverObj  totalAlbumData  : ',
+      createAlbumDto,
+      userId,
+      coverObj,
+      totalAlbumData,
+    );
     // `получить наименьший доступный идентификатор` из БД > табл.album
     const smallestFreeId =
       await this.dataBaseUtils.getSmallestIDAvailable('album');
@@ -172,25 +179,23 @@ export class AlbumsService {
     }
 
     // объед.жанры всех Треков одного Альбома
-    if (totalAlbumDto?.genres /* != album.genres */) {
+    if (updateAlbumDto?.genres || totalAlbumDto?.genres) {
+      const genresDto = updateAlbumDto?.genres || totalAlbumDto?.genres;
       if (param == 'add') {
         const set = new Set();
 
         set.add(album.genres);
         // if (album.genres.toLowerCase() !== totalAlbumDto.genres.toLowerCase())
-        if (
-          !album.genres
-            .toLowerCase()
-            .includes(totalAlbumDto.genres.toLowerCase())
-        ) {
-          set.add(totalAlbumDto.genres); // Добавляем второй жанр только если он отличается
+        if (!album.genres.toLowerCase().includes(genresDto.toLowerCase())) {
+          // добав.второй жанр если отличается
+          set.add(genresDto);
         }
         album.genres = Array.from(set).join('; ');
-      } else if ((param = 'del')) {
+      } else if (param == 'del') {
         const filteredGenres = album.genres
           .split(';')
           .map((genre) => genre.trim())
-          .filter((genre) => genre !== totalAlbumDto.genres[0].trim())
+          .filter((genre) => genre !== genresDto[0].trim())
           .join('; ');
         album.genres = filteredGenres;
       }
@@ -199,11 +204,11 @@ export class AlbumsService {
 
       if (
         param === 'add' &&
-        !album.genres.toLowerCase().includes(totalAlbumDto.genres.toLowerCase())
+        !album.genres.toLowerCase().includes(genresDto.toLowerCase())
       ) {
-        set.add(totalAlbumDto.genres.trim());
+        set.add(genresDto.trim());
       } else if (param === 'del') {
-        set.delete(totalAlbumDto.genres.trim());
+        set.delete(genresDto.trim());
       }
       const albumGenres = Array.from(set).join('; ');
     }
@@ -214,7 +219,6 @@ export class AlbumsService {
     // }
 
     if (updateAlbumDto != null) {
-      // album = { ...updateAlbumDto };
       // Обновляем данные альбома, если передан updateAlbumDto
       Object.assign(album, updateAlbumDto);
     }
@@ -236,7 +240,7 @@ export class AlbumsService {
     param?: string,
   ) {
     console.log(
-      'a.s. DEL ids userId param totalAlbumDto : ',
+      'A.s. DEL ids userId param totalAlbumDto : ',
       ids,
       userId,
       totalAlbumDto,
@@ -265,53 +269,73 @@ export class AlbumsService {
     const qbAlbums = this.albumsRepository
       .createQueryBuilder('albums')
       .withDeleted()
-      .where('id IN (:...ids) AND user = :userId', {
-        ids: idsArray,
-        userId,
-      });
-    // .where('id IN (:...ids)', { ids: idsArray });
-    const qbAlbums2 = await qbAlbums.getRawMany();
-
-    const qbAlbums3 = this.albumsRepository
-      .createQueryBuilder('albums')
-      .withDeleted()
       .where('id IN (:...ids)', { ids: idsArray });
-    const qbAlbums4 = await qbAlbums3.getRawMany();
+    const qbAlbumsGetRaw = await qbAlbums.getRawMany();
+    const qbAlbumsGetM = await qbAlbums.getMany();
 
     // полн.удал.Альбома е/и нет userId
     if (!userId && !param && !totalAlbumDto) {
       return qbAlbums.delete().execute();
     }
-    // .softDelete()
-    // .execute();
-
-    // `мягк.удал.`ф. при парам.
-    if (param) {
-      totalAlbumDto.total_tracks <= 1
-        ? await qbAlbums.softDelete().execute()
-        : await this.updateAlbum(ids, null, totalAlbumDto, param);
-      return;
-    }
 
     // ^^ удал.данн.др.табл.
-
+    // !! опред.доп.вызов выше очистки/удаления в Альбоме иначе сброс
     const albumsData = await qbAlbums
       .select([
-        'tracks.path AS path',
-        'tracks.coverId',
+        'albums.path AS path',
+        'albums.coverId',
         // 'tracks.author AS author',
       ])
       .getRawMany();
-    const pathArray = albumsData.map((obj) => obj.path);
-    const coverIdsArray = albumsData.map((obj) => obj.coverId);
+
+    // `мягк.удал.`ф. при парам.
+    if (param === 'del') {
+      if (qbAlbumsGetRaw[0].albums_total_tracks <= 1) {
+        // Если total_tracks меньше или равно 1, проставляем пустые значения
+        qbAlbumsGetRaw[0].albums_genres = '';
+        qbAlbumsGetRaw[0].albums_total_tracks = 0;
+        qbAlbumsGetRaw[0].albums_total_duration = '0:00';
+
+        // Сохранение изменений в сущности перед мягким удалением
+        await this.albumsRepository.save({
+          id: qbAlbumsGetRaw[0].albums_id,
+          genres: '',
+          total_tracks: 0,
+          total_duration: '0:00',
+        });
+
+        return (
+          qbAlbums
+            .softDelete()
+            // .where('id IN (:...ids)', { ids: idsArray })
+            .execute()
+        );
+      } else {
+        return this.updateAlbum(ids, null, totalAlbumDto, param);
+      }
+    }
+    console.log('A.s. DEL qbAlbumsGetRaw : ', qbAlbumsGetRaw);
+
+    // ^^ удал.данн.др.табл.
+    // !! опред.доп.вызов выше очистки/удаления в Альбоме иначе сброс
+    // eslint-disable-next-line prefer-const
+    // /* const */ albumsData = await qbAlbums
+    //   .select([
+    //     'albums.path AS path',
+    //     'albums.coverId',
+    //     // 'tracks.author AS author',
+    //   ])
+    //   .getRawMany();
+    // const pathArray = albumsData.map((obj) => obj.path);
+    // const coverIdsArray = albumsData.map((obj) => obj.coverId);
     // const authorIdsArray = albumsData.map((obj) => obj.author);
 
     // Удаление файлов из локального хранилища
-    for (const path of pathArray) {
-      try {
-        await fs.promises.unlink(path);
-      } catch (error) {}
-    }
+    // for (const path of pathArray) {
+    //   try {
+    //     await fs.promises.unlink(path);
+    //   } catch (error) {}
+    // }
 
     // запись > удал.; delete - удал.
     // return this.albumsRepository.delete(ids);
