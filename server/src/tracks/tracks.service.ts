@@ -58,221 +58,248 @@ export class TracksService {
     let savedFile,
       savedTrack,
       savedAlbum,
-      savesCover = null;
+      savedCover = null;
     try {
+      // ошб.е/и нет Трека
+      if (!audios) {
+        throw new NotFoundException('Трек не передан для БД');
+      }
+      if (!audios?.track) {
+        throw new NotFoundException('Нет Трека > Записи');
+      }
+
       // АУДИО.
-      // перем.аудио.метаданых
-      let audioObj,
-        audioMetaData,
-        deletedAtExist = null;
       // перебор всех audios.track
-      for (const audioObjEl of audios?.track) {
-        audioObj = audioObjEl;
-        //   audios?.track && audios?.track?.length > 0 ? audios.track[0] : null;
-        if (!audioObjEl) {
-          throw new NotFoundException('Трек не передан для БД');
-        }
+      for (const audioObj of audios?.track) {
+        console.log('T.s. CRE audioObj : ', audioObj);
         // `получить аудио метаданные`
-        audioMetaData = await this.basicUtils.getAudioMetaData(audioObjEl);
+        const audioMetaData = await this.basicUtils.getAudioMetaData(audioObj);
         // проверка `существующий Трек` с учётом deletedAt
         const existingTrack = await this.tracksRepository
           .createQueryBuilder('tracks')
           .withDeleted()
           .where({ name: audioMetaData.title })
-          .getMany();
-        // ошб.Трек есть
-        if (existingTrack.length > 0 && existingTrack[0]?.deletedAt === null) {
+          .getOne();
+        // перем.проверки стар./нов. Трека
+        const deletedAtExist = existingTrack?.deletedAt;
+        // ошб. > Трек есть
+        if (existingTrack?.deletedAt === null) {
           throw new NotFoundException('Трек уже есть в БД');
         }
-        // есть мягк.удал - очистка
-        if (existingTrack.length > 0 && existingTrack[0]?.deletedAt != null) {
-          deletedAtExist = null;
+        // Трек есть > очистка мягк.удал. Запись внизу после всех
+        if (existingTrack?.id) {
+          // очистка мягк.удал.
+          existingTrack?.deletedAt != null
+            ? await this.tracksRepository.save({
+                id: existingTrack?.id,
+                deletedAt: (existingTrack.deletedAt = null),
+              })
+            : '';
         }
 
-        // ТРЕК(name,artist,text,genre) + savedFile(dto=obj<>num)
+        let existingFile;
+        // ф.Трека(name,artist,text,genre) + savedFile(dto=obj<>num)
         if (
           typeof createTrackDto === 'object' ||
           createTrackDto === (null || undefined)
         ) {
+          // приведение к типу JSON обратно из строки odj<>str createTrackDto после track.cntrl.ApiBody.schema
+          // trackDto = JSON.parse(createTrackDto['createTrackDto']);
           // проверка `существующий Файл` по имени с учётом deletedAt
-          const existingFile = await this.filesRepository
+          existingFile = await this.filesRepository
             .createQueryBuilder('files')
             .withDeleted()
             .where({ filename: audioMetaData.originalname })
-            .getMany();
-          // присвойка существ.ID + обнов. <> сохр.Трек
-          if (existingFile.length > 0 && existingFile[0]?.id) {
-            savedFile = existingFile[0].id;
-            const trackDelNull = existingFile[0];
-            trackDelNull.deletedAt != null
-              ? (trackDelNull.deletedAt = null)
-              : trackDelNull.deletedAt;
-            await this.filesRepository.save(trackDelNull);
+            .getOne();
+          //  обнов. <> сохр. Трек
+          if (existingFile?.id) {
+            // присвойка существ.объ.
+            savedFile = existingFile;
+            // очистка мягк.удал.
+            existingFile?.deletedAt != null
+              ? await this.filesRepository.save({
+                  id: existingFile?.id,
+                  deletedAt: (existingFile.deletedAt = null),
+                })
+              : '';
           } else {
             // подмена пути ф. е/и загр.вместе с треком
-            audioObjEl.destination = '/audios/track/';
+            audioObj.destination = '/audios/track/';
             savedFile = await this.filesService.createFileByParam(
-              audioObjEl,
+              audioObj,
               userId,
             );
           }
-        } else {
-          savedFile = createTrackDto ? createTrackDto : null;
-          // приведение к типу JSON обратно из строки odj<>str createTrackDto после track.cntrl.ApiBody.schema
-          // trackDto = JSON.parse(createTrackDto['createTrackDto']);
         }
-      }
-
-      // COVER(обложка).
-      if (audios?.cover && audios?.cover.length > 0 && audios?.track) {
-        // проверка `существующий Обложки` по имени
-        const existingCover = await this.filesRepository
-          .createQueryBuilder('files')
-          .withDeleted()
-          .where({ filename: audios.cover[0].filename })
-          .getMany();
-        // присвойка существ.ID + обнов. <> сохр.Обложку
-        if (existingCover && existingCover[0]?.id) {
-          savesCover = existingCover[0].id;
-          const coverDelNull = existingCover[0];
-          coverDelNull.deletedAt != null
-            ? (coverDelNull.deletedAt = null)
-            : coverDelNull.deletedAt;
-          await this.filesRepository.save(coverDelNull);
-        } else {
-          // подмена пути ф. е/и загр.вместе с треком
-          audios.cover[0].destination = '/images/album/';
-          // сохр.обложку Files
-          savesCover = await this.filesService.createFileByParam(
-            audios.cover[0],
-            userId,
-          );
-        }
-      }
-
-      // АЛЬБОМ
-      if ((audios?.cover && audios?.cover?.length > 0) || audioMetaData.cover) {
-        const albumData = audios.cover[0];
-        // проверка `существующий Альбом` по заголовку с учётом deletedAt
-        const existingAlbum = await this.albumsRepository
-          .createQueryBuilder('albums')
-          .withDeleted()
-          .where({ title: audioMetaData.album })
-          .getMany();
-
-        // присвойка существ.ID + обнов. <> сохр.Альбома
-        if (existingAlbum && existingAlbum[0]?.id) {
-          savedAlbum = existingAlbum[0].id;
-          // есть мягк.удал - очистка <> нет - обнов.доп.поля
-          let totalAlbumData;
-          if (existingAlbum[0]?.deletedAt != null) {
-            totalAlbumData = { deletedAt: null };
-          } else {
-            totalAlbumData = {
-              total_duration: audioMetaData.duration,
-              total_tracks: 1,
-              genres: audioMetaData.genre,
-              deletedAt: null,
-            };
-          }
-
-          // обнов.основ.данн.полей
-          let basicAlbumData = null;
-          if (savesCover?.target && existingAlbum[0]?.path == null) {
-            basicAlbumData = {
-              title: existingAlbum[0].title || albumData?.title,
-              author: existingAlbum[0].author || albumData?.artist,
-              year: existingAlbum[0].year || albumData?.year,
-              genres: existingAlbum[0].genres || albumData?.genre,
-              path:
-                existingAlbum[0].path ||
-                savesCover?.target + savesCover.filename,
-              cover: savesCover.id,
-            };
-          }
-          // обнов.данн.Альбома
-          await this.albumsService.updateAlbum(
-            savedAlbum,
-            basicAlbumData,
-            totalAlbumData,
-            'add',
-          );
-        }
-        // созд.нов.Альбом
+        // ? для чего. createTrackByParam либо есть либо нет
         else {
-          // объ.основ.хар-ик Альбома
-          // const albumDto = new CreateAlbumDto();
+          savedFile = createTrackDto ? createTrackDto : null;
+        }
+        console.log('T.s. CRE savedFile = : ', savedFile);
+
+        // COVER(обложка).
+        if (audios?.cover && audios?.cover.length > 0 && audios?.track) {
+          // проверка `существующий Обложки` по имени
+          const existingCover = await this.filesRepository
+            .createQueryBuilder('files')
+            .withDeleted()
+            .where({ filename: audios.cover[0].filename })
+            .getOne();
+          // обнов. <> сохр. Обложку
+          if (existingCover?.id) {
+            // присвойка существ.объ.
+            savedCover = existingCover;
+            // очистка мягк.удал.
+            existingCover?.deletedAt != null
+              ? await this.filesRepository.save({
+                  id: existingCover.id,
+                  deletedAt: (existingCover.deletedAt = null),
+                })
+              : '';
+          } else {
+            // подмена пути ф. е/и загр.вместе с треком
+            audios.cover[0].destination = '/images/album/';
+            // сохр.обложку Files
+            savedCover = await this.filesService.createFileByParam(
+              audios.cover[0],
+              userId,
+            );
+          }
+        }
+        console.log('T.s. CRE savedCover = : ', savedCover);
+
+        // АЛЬБОМ. есть ф.Обложки <> метаданн.Альбома
+        if (audios?.cover?.length > 0 && audioMetaData.album) {
+          // проверка `существующий Альбом` по заголовку с учётом deletedAt
+          const existingAlbum = await this.albumsRepository
+            .createQueryBuilder('albums')
+            .withDeleted()
+            .where({ title: audioMetaData.album })
+            .getOne();
+          // основ.данн.Альбома
           const basicAlbumData = {
-            // ...albumDto,
-            title: audioMetaData.album || albumData?.title,
-            author: audioMetaData.artist || albumData?.artist,
-            year: Number(audioMetaData.year) || albumData?.year,
-            genres: audioMetaData.genre || albumData?.genre,
-            path: albumData?.destination
-              ? albumData?.destination + albumData.filename
-              : '',
+            title: existingAlbum?.title || audioMetaData.album,
+            author: existingAlbum?.author || audioMetaData.artist,
+            year: existingAlbum?.year || audioMetaData.year,
+            genres: existingAlbum?.genres || audioMetaData.genre,
+            path:
+              // стар.,нов.,нет
+              existingAlbum?.path ||
+              savedCover?.target + savedCover?.filename ||
+              '',
+            cover: savedCover?.id || savedCover,
           };
-          // объ.доп.хар-ик
+          // доп.данн.Альбома
           const totalAlbumData = {
             total_duration: audioMetaData.duration,
-            total_tracks: 1,
+            total_tracks: audios.track.length,
           };
-          // сохр.
-          savedAlbum = await this.albumsService.createAlbum(
-            basicAlbumData,
-            userId,
-            savesCover?.id || savesCover,
-            totalAlbumData,
-          );
+
+          // обнов.существующий Альбом
+          if (existingAlbum?.id) {
+            // присвойка существ.объ.
+            savedAlbum = existingAlbum;
+            // очистка мягк.удал.
+            if (existingAlbum?.deletedAt != null) {
+              await this.albumsRepository.save({
+                id: existingAlbum.id,
+                deletedAt: (existingAlbum.deletedAt = null),
+              });
+            }
+            // перем.обнов.Альбома
+            const updateAlbum = await this.albumsService.updateAlbum(
+              savedAlbum.id,
+              basicAlbumData,
+              totalAlbumData,
+              'add',
+            );
+
+            // есть Track и File в БД
+            if (existingTrack?.id && existingFile?.id) {
+              // req проверки наличия Трека в Альбоме
+              const trackExistsInAlbum = await this.tracksRepository
+                .createQueryBuilder('tracks')
+                .leftJoinAndSelect('tracks.album', 'album')
+                .withDeleted()
+                .where('tracks.name = :trackName', {
+                  trackName: audioMetaData.title,
+                })
+                .andWhere('album.title = :albumName', {
+                  albumName: audioMetaData.album,
+                })
+                .getOne();
+
+              // Трека нет в Альбоме
+              if (!trackExistsInAlbum) updateAlbum;
+              // Трек есть и мягк.удалён
+              else if (trackExistsInAlbum && deletedAtExist != null)
+                updateAlbum;
+            }
+            // нет Трека/Файла в БД
+            else if (!(existingTrack?.id && existingFile?.id)) updateAlbum;
+          }
+          // созд.нов.Альбом
+          else {
+            savedAlbum = await this.albumsService.createAlbum(
+              basicAlbumData,
+              userId,
+              savedCover?.id || savedCover,
+              totalAlbumData,
+            );
+          }
         }
+        console.log('T.s. CRE savedAlbum = : ', savedAlbum);
+
+        // обнов.основ.данн.Трека
+        const trackDto =
+          createTrackDto instanceof CreateTrackDto
+            ? createTrackDto
+            : new CreateTrackDto();
+        const basicTrackData = {
+          ...trackDto,
+          name:
+            trackDto.name.includes('#') && audioMetaData.title
+              ? audioMetaData.title
+              : trackDto.name,
+          genre:
+            trackDto.genre.includes('#') && audioMetaData.genre
+              ? audioMetaData.genre
+              : trackDto.genre,
+          artist:
+            trackDto.artist.includes('#') && audioMetaData.artist
+              ? audioMetaData.artist
+              : trackDto.artist,
+        };
+
+        // trackID. `получить наименьший доступный идентификатор` из БД > табл.track
+        const smallestFreeId =
+          await this.dataBaseUtils.getSmallestIDAvailable('track');
+        // объ.track созд./сохр./вернуть
+        const track = /* this.tracksRepository.create( */ {
+          ...basicTrackData,
+          id: existingTrack?.id || smallestFreeId,
+          path:
+            existingTrack?.path ||
+            savedFile.target + savedFile.filename ||
+            audioObj.path,
+          listens: 0,
+          duration: audioMetaData.duration || 0,
+          file: savedFile.id ? savedFile.id : savedFile,
+          album: savedAlbum.id,
+          cover: savedCover.id,
+          user: { id: userId },
+          // sampleRate: audioMetaData.sampleRate, // частота дискретизации
+          // bitrate: audioMetaData.bitrate:,
+          // year: audioMetaData.year:,
+          reactions: null,
+        }; /* ) */
+
+        console.log('T.s. CRE track : ', track);
+        savedTrack = await this.tracksRepository.save(track);
+        return savedTrack;
       }
-
-      // обнов.данн.Трека
-      const trackDto =
-        createTrackDto instanceof CreateTrackDto
-          ? createTrackDto
-          : new CreateTrackDto();
-      const basicTrackData = {
-        ...trackDto,
-        name:
-          trackDto.name.includes('#') && audioMetaData.title
-            ? audioMetaData.title
-            : trackDto.name,
-        genre:
-          trackDto.genre.includes('#') && audioMetaData.genre
-            ? audioMetaData.genre
-            : trackDto.genre,
-        artist:
-          trackDto.artist.includes('#') && audioMetaData.artist
-            ? audioMetaData.artist
-            : trackDto.artist,
-      };
-
-      // trackID. `получить наименьший доступный идентификатор` из БД > табл.track
-      const smallestFreeId =
-        await this.dataBaseUtils.getSmallestIDAvailable('track');
-
-      // объ.track созд./сохр./вернуть
-      const track = this.tracksRepository.create({
-        ...basicTrackData,
-        id: smallestFreeId,
-        path: audioObj?.destination + audioObj.filename,
-        listens: 0,
-        duration: audioMetaData.duration || 0,
-        file: savedFile?.id ? savedFile.id : savedFile,
-        album: savedAlbum?.id || savedAlbum,
-        cover: savesCover?.id || savesCover,
-        user: { id: userId },
-        deletedAt: deletedAtExist,
-        // sampleRate: audioMetaData.sampleRate, // частота дискретизации
-        // bitrate: audioMetaData.bitrate:,
-        // year: audioMetaData.year:,
-      });
-      console.log('t.s track : ', track);
-      savedTrack = await this.tracksRepository.save(track);
-      return savedTrack;
     } catch (error) {
-      console.log('t.s.Param catch error : ', error);
+      console.log('t.s. catch error : ', error);
       // опред.загр.данн.в табл. и удал.записи табл./ф. при неудачн.загр.
       if (!savedTrack || !savedFile || !savedAlbum) {
         if (savedTrack) {
@@ -365,7 +392,7 @@ export class TracksService {
 
     // ошб.е/и нет ID
     if (!ids) {
-      throw new NotFoundException('Нет Трека > Удаления');
+      throw new NotFoundException('Нет данных Трека > Удаления');
     }
 
     // превращ.ids ф.в масс.
@@ -378,9 +405,9 @@ export class TracksService {
       idsArray.push(parseInt(ids, 10));
     }
 
-    // полн.удал.Трека е/и нет userId
+    // полн.удал.Трека е/и нет userId и param
     if (!userId && !param) {
-      console.log('T.s. DEL FULL_DEL ids : ', ids);
+      throw new NotFoundException('Предовращено полное удаление');
       // return await this.tracksRepository.delete(ids);
     }
 
@@ -394,7 +421,24 @@ export class TracksService {
         ids: idsArray,
         userId: userId,
       });
-    const qbTracks123 = await qbTracks.getRawMany();
+    const qbTracksGet = await qbTracks.getRawMany();
+
+    // ошб.е/и нет qbTracksGet
+    if (!qbTracksGet[0] || qbTracksGet[0].length === 0) {
+      throw new NotFoundException('Трек/и отсутствуют');
+    }
+    // перем./ошб. при deletedAt !== null
+    const invalidTracks = qbTracksGet.filter(
+      (track) => track.tracks_deletedAt !== null,
+    );
+    if (invalidTracks.length > 0) {
+      const invalidTrack = invalidTracks
+        .map(
+          (track) => "'" + track.tracks_name + "'" + ' с ID_' + track.tracks_id,
+        )
+        .join(', ');
+      throw new NotFoundException(`Трек/и ${invalidTrack} удален/ы ранее`);
+    }
 
     // сразу пометка`мягк.удал.`ф. при парам.
     if (param) {
@@ -416,62 +460,60 @@ export class TracksService {
         'tracks.fileId',
       ])
       .getRawMany();
-    // параметры в перемен.масс.
-    const pathArray = tracksData.map((obj) => obj.path);
-    const coverIdsArray = tracksData.map((obj) => obj.coverId);
-    const albumIdsArray = tracksData.map((obj) => obj.albumId);
-    const durationArray = tracksData.map((obj) => obj.duration);
-    const genresArray = tracksData.map((obj) => obj.genre);
-    const fileIdsArray = tracksData.map((obj) => obj.fileId);
 
-    // Удаление файлов из локального хранилища
-    for (const path of pathArray) {
+    // перебор всех track
+    for (let i = 0; i < tracksData.length; i++) {
+      const trackOne = tracksData[i];
+      const pathSTR = trackOne.path;
+      const coverId = trackOne.coverId;
+      const albumId = trackOne.albumId;
+      const duration = trackOne.duration;
+      const genres = trackOne.genre;
+      const fileId = trackOne.fileId;
+
+      // Удаление файлов из локального хранилища
       try {
-        await fs.promises.unlink(path);
-      } catch (error) {
-        console.log('t.s. DEL error : ' + error);
+        await fs.promises.unlink(pathSTR);
+      } catch (error) {}
+
+      // удал.ф.Обложки и удал./обнов.Альбома и если не удал.уже
+      if (coverId && albumId && qbTracksGet[i].tracks_deletedAt === null) {
+        const album = await this.albumsRepository.findOneBy({
+          id: albumId,
+        });
+
+        const totalAlbumData = {
+          total_duration: duration,
+          total_tracks: 1,
+          genres: genres,
+          deletedAt: null,
+        };
+
+        album.total_tracks == 1
+          ? // удал.Альбома и ф.Обложки
+            (await this.albumsService.deleteAlbum(
+              albumId,
+              userId,
+              totalAlbumData,
+              `del`,
+            ),
+            await this.filesService.removeFile(
+              coverId,
+              userId,
+              `del ${coverId}`,
+            ))
+          : // обнов.Альбома
+            await this.albumsService.updateAlbum(
+              albumId,
+              null,
+              totalAlbumData,
+              'del',
+            );
       }
-    }
 
-    // Удаление ф.обложки из таблицы File по coverId
-    if (coverIdsArray[0] != null) {
-      await this.filesService.removeFile(
-        coverIdsArray,
-        userId,
-        `DEL ${coverIdsArray}`,
-      );
+      // Удаление ф.трека из таблицы File по fileId
+      await this.filesService.removeFile(fileId, userId, `del`);
     }
-
-    // Обработка данных таблицы Album
-    for (let i = 0; i < albumIdsArray.length; i++) {
-      const albumId = parseInt(albumIdsArray[i], 10);
-      // const trackCount = 1; // У нас всегда 1 трек на удаление
-      const trackCount = isNaN(Number(ids)) ? ids.length : 1; // У нас всегда 1 трек на удаление
-      // основ.данн.
-      const totalAlbumData = {
-        total_duration: durationArray[0],
-        total_tracks: trackCount,
-        genres: genresArray[0],
-        deletedAt: null,
-      };
-      // удал.
-      await this.albumsService.deleteAlbum(
-        albumId,
-        userId,
-        totalAlbumData,
-        (param = 'del'),
-      );
-    }
-
-    // Удаление ф.трека из таблицы File по fileId
-    for (const fileId of fileIdsArray) {
-      await this.filesService.removeFile(
-        fileIdsArray,
-        userId,
-        `DEL ${fileIdsArray}`,
-      );
-    }
-
     // пометка `мягк.удал.`ф.
     console.log('t.s. DEL 999 : ' + 999);
     return await qbTracks

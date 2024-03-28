@@ -70,6 +70,7 @@ export class AlbumsService {
     updateAlbumDto?: UpdateAlbumDto,
     totalAlbumDto?: TotalAlbumDto,
     param?: string,
+    userId?: number,
   ) {
     console.log(
       'a.s. UPD albumIds updateAlbumDto totalAlbumDto param : ',
@@ -78,12 +79,10 @@ export class AlbumsService {
       totalAlbumDto,
       param,
     );
-
     // ошб.е/и нет ID
     if (!albumIds) {
       throw new NotFoundException('Нет Альбома > Удаления');
     }
-
     // превращ.ids ф.в масс.
     let idsArray: number[] = [];
     if (isNaN(Number(albumIds))) {
@@ -93,7 +92,6 @@ export class AlbumsService {
       // Если ids является числом, добавляем его в массив
       idsArray.push(parseInt(albumIds, 10));
     }
-
     // const album = await this.albumsRepository.findOneBy({ id });
     const existingAlbum = await this.albumsRepository
       .createQueryBuilder('albums')
@@ -185,9 +183,14 @@ export class AlbumsService {
         const set = new Set();
 
         set.add(album.genres);
-        // if (album.genres.toLowerCase() !== totalAlbumDto.genres.toLowerCase())
-        if (!album.genres.toLowerCase().includes(genresDto.toLowerCase())) {
-          // добав.второй жанр если отличается
+        // жанра нет (пустой Альбом)
+        if (album?.genres === null) {
+          set.add(genresDto);
+        }
+        // добав.второй жанр если отличается
+        else if (
+          !album.genres.toLowerCase().includes(genresDto.toLowerCase())
+        ) {
           set.add(genresDto);
         }
         album.genres = Array.from(set).join('; ');
@@ -210,7 +213,7 @@ export class AlbumsService {
       } else if (param === 'del') {
         set.delete(genresDto.trim());
       }
-      const albumGenres = Array.from(set).join('; ');
+      // const albumGenres = Array.from(set).join('; ');
     }
 
     // обнов.мягк.удал.
@@ -290,7 +293,7 @@ export class AlbumsService {
 
     // `мягк.удал.`ф. при парам.
     if (param === 'del') {
-      if (qbAlbumsGetRaw[0].albums_total_tracks <= 1) {
+      if (qbAlbumsGetRaw[0].albums_total_tracks == 1) {
         // Если total_tracks меньше или равно 1, проставляем пустые значения
         qbAlbumsGetRaw[0].albums_genres = '';
         qbAlbumsGetRaw[0].albums_total_tracks = 0;

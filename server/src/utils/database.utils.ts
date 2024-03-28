@@ -39,6 +39,7 @@ export class DatabaseUtils {
     // составной req
     const query = customRepository
       .createQueryBuilder(tableName)
+      .withDeleted()
       .select(`${tableName}.id`, 'id')
       .orderBy(`${tableName}.id`, 'ASC')
       .getRawMany();
