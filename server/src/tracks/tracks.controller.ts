@@ -176,12 +176,20 @@ export class TrackController {
   // получить все треки
   @Get()
   @ApiOperation({ summary: 'Получить все' })
-  findAllTracks(/* @Query('count') count: number, @Query('offset') offset: number */) {
-    return this.trackService.findAllTracks(/* count, offset */);
+  findAllTracks(
+    // кол-во возвращ.Теков, стр.отступ
+    @Query('count') count?: number,
+    @Query('offset') offset?: number,
+  ) {
+    return this.trackService.findAllTracks(
+      /* count || null, offset || null */
+      count === undefined ? null : count,
+      offset === undefined ? null : offset,
+    );
   }
 
   // получ Трек по ID <> Названию <> Исполнителю
-  @Get(/* `:id` */ ':param')
+  @Get(`:id` /* ':param' */)
   @ApiOperation({ summary: 'Получить Трек по ID <> Названию <> Исполнителю' })
   // param получ.из param маршрута req
   findTrackByParam(@Param('param') param: string /* ObjectId */) {
@@ -208,21 +216,27 @@ export class TrackController {
     return this.trackService.deleteTrack(ids, userId);
   }
 
-  // @Get('/search')
-  // @ApiOperation({ summary: 'Поиск' })
-  // search(@Query('query') query: string) {
-  //   return this.trackService.search(query);
-  // }
+  // поиск
+  @Get('/search')
+  @ApiOperation({ summary: 'Поиск' })
+  search(@Query('query') query: string) {
+    return this.trackService.search(query);
+  }
 
+  // Добавить реакцию к Треку
   @Post('/reaction')
-  @ApiOperation({ summary: 'Добавить реакцию к треку' })
+  @ApiOperation({ summary: 'Добавить реакцию к Треку' })
   addReaction(@Body() createReactionDto: CreateReactionDto) {
     return this.trackService.addReaction(createReactionDto);
   }
 
-  // @Post('/listen/:id')
-  // @ApiOperation({ summary: 'Прослушиваний' })
-  // listen(@Param('id') id: ObjectId) {
-  //   return this.trackService.listen(id);
-  // }
+  // увелич.Прослушиваний
+  @Post('/listen/:id')
+  @ApiOperation({ summary: 'увеличение Прослушиваний' })
+  listen(
+    // @Param('id') id: ObjectId,
+    @Query('id') id: string,
+  ) {
+    return this.trackService.listen(id);
+  }
 }

@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */ // ^^ от ошб. - Св-во объяв., но знач.не прочитано.
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Like, Repository } from 'typeorm';
 import * as fs from 'fs';
 
 import { CreateTrackDto } from './dto/create-track.dto';
@@ -327,8 +327,14 @@ export class TracksService {
   }
 
   // ВСЕ треки. Req - "", Res - масс.TrackEntity в `Обещание`
-  async findAllTracks(/* count = 10, offset = 0 */): Promise<TrackEntity[]> {
-    return this.tracksRepository.find() /* .skip(Number(offset)).limit(Number(count)) */;
+  async findAllTracks(count = 10, offset = 0) /* : Promise<TrackEntity[]> */ {
+    // к req найти.`пропустить`(`компенсировать`).limit(считать)
+    return this.tracksRepository.find({
+      skip: Number(offset),
+      take: Number(count),
+    });
+    // .skip(Number(offset)) // Свойство "skip" не существует в типе "Promise<TrackEntity[]>".
+    // .limit(Number(count));
   }
 
   // ОДИН Трек по ID
@@ -382,7 +388,7 @@ export class TracksService {
     return updatedTrack;
   }
 
-  // пометка Удаления
+  // УДАЛЕНИЕ мягкое
   async deleteTrack(
     ids: any /* string | number */,
     userId?: number,
@@ -565,19 +571,26 @@ export class TracksService {
   }
 
   // ? поиск
-  // async search(query: string): Promise<Track[]> {
-  //     const tracks = await this.trackModel.find({
-  //         name: {$regExStand: new RegExp(query, 'i')}
-  //     })
-  //     return tracks;
-  // }
+  async search(query: string) /* : Promise<TrackEntity[]> */ {
+    const tracks = await this.tracksRepository.findOneBy({
+      // name: { $regExStand: new RegExp(query, 'i') },
+      // name: { $reg: new RegExp(query) },
+      name: Like(`%${query}%`),
+    });
+    console.log('tracks : ' + tracks);
+    return tracks;
+  }
 
-  // ? кол-во прослушивания
-  // async listen(id: ObjectId) {
-  //     const track = await this.trackModel.findById(id);
-  //     track.listens += 1
-  //     track.save()
-  // }
+  // увелич.кол-во прослушивания
+  async listen(id: /* ObjectId */ any) {
+    const existingTrack = await this.tracksRepository
+      .createQueryBuilder('tracks')
+      .withDeleted()
+      .where({ id: id })
+      .getOne();
+    existingTrack.listens += 1;
+    await this.tracksRepository.save(existingTrack);
+  }
 }
 function Null(): Date | import('typeorm').FindOperator<Date> {
   throw new Error('Function not implemented.');

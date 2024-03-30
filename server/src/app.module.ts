@@ -56,7 +56,7 @@ import { ReactionEntity } from './reactions/entities/reaction.entity';
       synchronize: true,
       logging: true,
     }),
-    // обслуж.статич.контент с путь/папка
+    // обслуж.статич.контент по путь/папка ч/з веб-сайт
     ServeStaticModule.forRoot({
       rootPath: path.resolve(__dirname, /* '..', */ 'static'),
       serveRoot: '/static',
