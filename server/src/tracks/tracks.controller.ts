@@ -12,7 +12,6 @@ import {
   UploadedFiles,
   NotFoundException,
   Query,
-  // Query,
 } from '@nestjs/common';
 import {
   FileFieldsInterceptor,
@@ -20,11 +19,11 @@ import {
 } from '@nestjs/platform-express';
 import {
   ApiTags,
-  /* ApiBearerAuth, */
   ApiOperation,
   ApiCreatedResponse,
   ApiConsumes,
   ApiBody,
+  ApiQuery,
 } from '@nestjs/swagger';
 import * as fs from 'fs';
 
@@ -176,67 +175,74 @@ export class TrackController {
   // получить все треки
   @Get()
   @ApiOperation({ summary: 'Получить все' })
-  findAllTracks(
+  // уточнен.`запрос`
+  @ApiQuery({ name: 'count', required: false })
+  @ApiQuery({ name: 'offset', required: false })
+  async findAllTracks(
     // кол-во возвращ.Теков, стр.отступ
     @Query('count') count?: number,
     @Query('offset') offset?: number,
   ) {
-    return this.trackService.findAllTracks(
+    console.log('T.c. fAl count offset : ', count, offset);
+    const findAllTracks = await this.trackService.findAllTracks(
       /* count || null, offset || null */
-      count === undefined ? null : count,
-      offset === undefined ? null : offset,
+      count === (undefined || null) ? null : count,
+      offset === (undefined || null) ? null : offset,
     );
+    return findAllTracks;
   }
 
   // получ Трек по ID <> Названию <> Исполнителю
   @Get(`:id` /* ':param' */)
   @ApiOperation({ summary: 'Получить Трек по ID <> Названию <> Исполнителю' })
   // param получ.из param маршрута req
-  findTrackByParam(@Param('param') param: string /* ObjectId */) {
-    return this.trackService.findTrackByParam(param /* +id */);
+  async findTrackByParam(@Param('param') param: string /* ObjectId */) {
+    console.log('t.c. findTrackByParam param : ' + param);
+    return await this.trackService.findTrackByParam(param /* +id */);
   }
 
   @Patch(':id')
   @ApiOperation({ summary: 'Обновление трека !!! НЕ ДОРАБОТАН' })
-  updateTrack(
+  async updateTrack(
     @Param('id') id: ObjectId,
     @Body() updateTrackDto: UpdateTrackDto,
   ) {
-    return this.trackService.updateTrack(+id, updateTrackDto);
+    return await this.trackService.updateTrack(+id, updateTrackDto);
   }
 
   @Delete(/* ':id' */)
   @ApiOperation({ summary: 'Удаление Трек/и' })
-  deleteTrack(
+  async deleteTrack(
     @Query('ids') ids: string,
     // @Param('ids') ids: string | number,
     @UserId() userId: number,
   ) {
     // передача ф.id ч/з запят.> удал. tracks?ids=1,2,4, под userId
-    return this.trackService.deleteTrack(ids, userId);
+    return await this.trackService.deleteTrack(ids, userId);
   }
 
   // поиск
-  @Get('/search')
+  @Get('/search/search?')
   @ApiOperation({ summary: 'Поиск' })
-  search(@Query('query') query: string) {
-    return this.trackService.search(query);
+  async search(@Query('query') query: string) {
+    console.log('t.c. S query : ' + query);
+    return await this.trackService.search(query);
   }
 
   // Добавить реакцию к Треку
   @Post('/reaction')
   @ApiOperation({ summary: 'Добавить реакцию к Треку' })
-  addReaction(@Body() createReactionDto: CreateReactionDto) {
-    return this.trackService.addReaction(createReactionDto);
+  async addReaction(@Body() createReactionDto: CreateReactionDto) {
+    return await this.trackService.addReaction(createReactionDto);
   }
 
   // увелич.Прослушиваний
   @Post('/listen/:id')
   @ApiOperation({ summary: 'увеличение Прослушиваний' })
-  listen(
+  async listen(
     // @Param('id') id: ObjectId,
     @Query('id') id: string,
   ) {
-    return this.trackService.listen(id);
+    return await this.trackService.listen(id);
   }
 }
