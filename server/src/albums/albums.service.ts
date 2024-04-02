@@ -10,6 +10,7 @@ import { AlbumEntity } from './entities/album.entity';
 import { TrackEntity } from 'src/tracks/entities/track.entity';
 import { ReactionEntity } from 'src/reactions/entities/reaction.entity';
 import { FileEntity } from 'src/files/entities/file.entity';
+import { FilesService } from 'src/files/files.service';
 import { DatabaseUtils } from 'src/utils/database.utils';
 import { TotalAlbumDto } from './dto/total-album.dto';
 
@@ -24,6 +25,7 @@ export class AlbumsService {
     private reactionsRepository: Repository<ReactionEntity>,
     @InjectRepository(FileEntity)
     private fileRepository: Repository<FileEntity>,
+    private filesService: FilesService,
     private dataBaseUtils: DatabaseUtils,
   ) {}
 
@@ -273,8 +275,8 @@ export class AlbumsService {
       .createQueryBuilder('albums')
       .withDeleted()
       .where('id IN (:...ids)', { ids: idsArray });
-    const qbAlbumsGetRaw = await qbAlbums.getRawMany();
-    const qbAlbumsGetM = await qbAlbums.getMany();
+    // .where({ ids: idsArray });
+    const qbAlbumsGet = await qbAlbums.getRawMany();
 
     // полн.удал.Альбома е/и нет userId
     if (!userId && !param && !totalAlbumDto) {
@@ -282,43 +284,44 @@ export class AlbumsService {
     }
 
     // ^^ удал.данн.др.табл.
-    // !! опред.доп.вызов выше очистки/удаления в Альбоме иначе сброс
-    const albumsData = await qbAlbums
-      .select([
-        'albums.path AS path',
-        'albums.coverId',
-        // 'tracks.author AS author',
-      ])
-      .getRawMany();
 
-    // `мягк.удал.`ф. при парам.
-    if (param === 'del') {
-      if (qbAlbumsGetRaw[0].albums_total_tracks == 1) {
-        // Если total_tracks меньше или равно 1, проставляем пустые значения
-        qbAlbumsGetRaw[0].albums_genres = '';
-        qbAlbumsGetRaw[0].albums_total_tracks = 0;
-        qbAlbumsGetRaw[0].albums_total_duration = '0:00';
+    // перебор всех track
+    for (let i = 0; i < qbAlbumsGet.length; i++) {
+      const albumOne = qbAlbumsGet[i];
 
-        // Сохранение изменений в сущности перед мягким удалением
-        await this.albumsRepository.save({
-          id: qbAlbumsGetRaw[0].albums_id,
-          genres: '',
-          total_tracks: 0,
-          total_duration: '0:00',
-        });
+      // `мягк.удал.`ф. при парам.
+      if (param === 'del') {
+        // е/и в Альбоме 1 Трек
+        if (albumOne.albums_total_tracks == 1) {
+          // сброс доп.полей
+          albumOne.albums_genres = '';
+          albumOne.albums_total_tracks = 0;
+          albumOne.albums_total_duration = '0:00';
 
-        return (
-          qbAlbums
+          // cохр.измен. перед мягк.удал.
+          await this.albumsRepository.save({
+            id: albumOne.albums_id,
+            genres: '',
+            total_tracks: 0,
+            total_duration: '0:00',
+          });
+
+          // Удаление ф.Обложки из таблицы File по fileId
+          await this.filesService.removeFile(
+            albumOne.albums_coverId,
+            userId,
+            `del`,
+          );
+
+          return await qbAlbums
             .softDelete()
             // .where('id IN (:...ids)', { ids: idsArray })
-            .execute()
-        );
-      } else {
-        return this.updateAlbum(ids, null, totalAlbumDto, param);
+            .execute();
+        } else {
+          return await this.updateAlbum(ids, null, totalAlbumDto, param);
+        }
       }
     }
-    console.log('A.s. DEL qbAlbumsGetRaw : ', qbAlbumsGetRaw);
-
     // ^^ удал.данн.др.табл.
     // !! опред.доп.вызов выше очистки/удаления в Альбоме иначе сброс
     // eslint-disable-next-line prefer-const

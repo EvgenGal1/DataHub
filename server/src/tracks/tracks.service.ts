@@ -169,13 +169,14 @@ export class TracksService {
         console.log('T.s. CRE savedCover = : ', savedCover);
 
         // АЛЬБОМ. есть ф.Обложки <> метаданн.Альбома
-        if (audios?.cover?.length > 0 && audioMetaData.album) {
+        if (audios?.cover?.length > 0 || audioMetaData.album) {
           // проверка `существующий Альбом` по заголовку с учётом deletedAt
-          const existingAlbum = await this.albumsRepository
-            .createQueryBuilder('albums')
-            .withDeleted()
-            .where({ title: audioMetaData.album })
-            .getOne();
+          const existingAlbum = await this.albumsRepository.findOne({
+            where: { title: audioMetaData.album },
+            withDeleted: true,
+            relations: ['cover'],
+          });
+          // const existingAlbum = await this.albumsRepository.createQueryBuilder('albums').withDeleted().leftJoinAndSelect('albums.cover', 'cover').where({ title: audioMetaData.albums }).getOne();
           // основ.данн.Альбома
           const basicAlbumData = {
             title: existingAlbum?.title || audioMetaData.album,
@@ -187,7 +188,7 @@ export class TracksService {
               existingAlbum?.path ||
               savedCover?.target + savedCover?.filename ||
               '',
-            cover: savedCover?.id || savedCover,
+            cover: existingAlbum?.cover || savedCover?.id,
           };
           // доп.данн.Альбома
           const totalAlbumData = {
@@ -199,11 +200,18 @@ export class TracksService {
           if (existingAlbum?.id) {
             // присвойка существ.объ.
             savedAlbum = existingAlbum;
-            // очистка мягк.удал.
+            // очистка мягк.удал.Альбома
             if (existingAlbum?.deletedAt != null) {
               await this.albumsRepository.save({
                 id: existingAlbum.id,
                 deletedAt: (existingAlbum.deletedAt = null),
+              });
+            }
+            // очистка мягк.удал.Обложки
+            if (existingAlbum?.cover?.deletedAt != null) {
+              await this.filesRepository.save({
+                id: existingAlbum?.cover?.id,
+                deletedAt: (existingAlbum.cover.deletedAt = null),
               });
             }
             // перем.обнов.Альбома
@@ -243,7 +251,7 @@ export class TracksService {
             savedAlbum = await this.albumsService.createAlbum(
               basicAlbumData,
               userId,
-              savedCover?.id || savedCover,
+              savedCover?.id || null,
               totalAlbumData,
             );
           }
@@ -282,11 +290,11 @@ export class TracksService {
             existingTrack?.path ||
             savedFile.target + savedFile.filename ||
             audioObj.path,
-          listens: 0,
+          listens: existingTrack.listens || 0,
           duration: audioMetaData.duration || 0,
-          file: savedFile.id ? savedFile.id : savedFile,
-          album: savedAlbum.id,
-          cover: savedCover.id,
+          file: savedFile.id || null,
+          album: savedAlbum?.id || null,
+          cover: savedCover?.id || savedAlbum?.cover || null,
           user: { id: userId },
           // sampleRate: audioMetaData.sampleRate, // частота дискретизации
           // bitrate: audioMetaData.bitrate:,
@@ -338,7 +346,7 @@ export class TracksService {
   // ОДИН Трек по ID
   async findOneTrack(id: number): Promise<TrackEntity> {
     const track = await this.tracksRepository.findOneBy({ id });
-    if (!track) throw new Error('Трек не найден');
+    if (!track) throw new NotFoundException('Трек не найден');
     return track;
   }
 
@@ -356,33 +364,18 @@ export class TracksService {
     }
     // объ.res, обраб.ошб., res по значени.
     const user = await this.tracksRepository.findOne({ where: whereCondition });
-    if (!user) throw new Error('Такого Пользователя нет');
+    if (!user) throw new NotFoundException('Такого Трека нет');
     return user;
   }
 
   async updateTrack(
     id: number,
-    updateTrackDto: UpdateTrackDto,
-    // updateTrackDto: any,
+    updateTrackDto: any /* UpdateTrackDto */,
   ): Promise<TrackEntity> {
     // return this.tracksRepository.update(id, updateTrackDto); // ! ошб. т.к. возвращ.UpdateResult, а не TrackEntity
-    await this.tracksRepository.update(
-      id,
-      updateTrackDto /* as QueryDeepPartialEntity<TrackEntity> */,
-      // ! QueryDeepPartialEntity от двух ошибкок - здесь в updateTrackDto и в CreateTrackDto|UpdateTrackDto.album
-      // в export class UpdateTrackDto extends PartialType(CreateTrackDto) {
-      //   Свойство "album" в типе "UpdateTrackDto" невозможно присвоить тому же свойству в базовом типе "Partial<CreateTrackDto>".
-      //     Тип "string | AlbumEntity" не может быть назначен для типа "string".
-      //       Тип "AlbumEntity" не может быть назначен для типа "string".
-
-      //   в await this.tracksRepository.update(id, updateTrackDto);
-      //   Аргумент типа "UpdateTrackDto" нельзя назначить параметру типа "_QueryDeepPartialEntity<TrackEntity>".
-      //     Типы свойства "album" несовместимы.
-      //       Тип "string | AlbumEntity" не может быть назначен для типа "(() => string) | _QueryDeepPartialEntity<AlbumEntity>".
-      //         Тип "string" не может быть назначен для типа "(() => string) | _QueryDeepPartialEntity<AlbumEntity>"
-    );
+    await this.tracksRepository.update(id, updateTrackDto);
     const updatedTrack = await this.tracksRepository.findOneBy({ id });
-    if (!updatedTrack) throw new Error('Трек не найден');
+    if (!updatedTrack) throw new NotFoundException('Трек не найден');
     return updatedTrack;
   }
 
@@ -415,7 +408,7 @@ export class TracksService {
       // return await this.tracksRepository.delete(ids);
     }
 
-    // генер.спец. SQL req ч/з `Создать строитель запросов`
+    // генер.спец. SQL req ч/з `Создать строитель запросов`. Raw вернёт все поля вместе с ManyToOne
     const qbTracks = this.tracksRepository
       .createQueryBuilder('tracks')
       .withDeleted()
@@ -453,6 +446,7 @@ export class TracksService {
     }
 
     // ^^ удал.данн.др.табл.
+
     // вызов сгенер.спец.SQL req ч/з `создать строитель запросов`
     const tracksData = await qbTracks
       .select([
@@ -479,33 +473,33 @@ export class TracksService {
       try {
         await fs.promises.unlink(pathSTR);
       } catch (error) {}
-
+      // ID Обложки Альбома
+      let albums_coverId;
       // удал.ф.Обложки и удал./обнов.Альбома и если не удал.уже
       if (coverId && albumId && qbTracksGet[i].tracks_deletedAt === null) {
-        const album = await this.albumsRepository.findOneBy({
-          id: albumId,
-        });
-
+        // const album = await this.albumsRepository.findOneBy({ id: albumId, });
+        const albumGet = await this.albumsRepository
+          .createQueryBuilder('albums')
+          .withDeleted()
+          .where({ id: albumId })
+          .getRawOne();
         const totalAlbumData = {
           total_duration: duration,
           total_tracks: 1,
           genres: genres,
           deletedAt: null,
         };
+        // ID Обложки Альбома
+        albums_coverId = albumGet.albums_coverId;
 
-        album.total_tracks == 1
-          ? // удал.Альбома и ф.Обложки
-            (await this.albumsService.deleteAlbum(
+        albumGet.albums_total_tracks == 1
+          ? // удал.Альбома
+            await this.albumsService.deleteAlbum(
               albumId,
               userId,
               totalAlbumData,
               `del`,
-            ),
-            await this.filesService.removeFile(
-              coverId,
-              userId,
-              `del ${coverId}`,
-            ))
+            )
           : // обнов.Альбома
             await this.albumsService.updateAlbum(
               albumId,
@@ -515,7 +509,11 @@ export class TracksService {
             );
       }
 
-      // Удаление ф.трека из таблицы File по fileId
+      // удал.ф.Обложки Трека(е/и != ф.Обложки Алб) из таблицы File по coverId
+      if (coverId != albums_coverId) {
+        await this.filesService.removeFile(coverId, userId, `del ${coverId}`);
+      }
+      // удал.ф.Трека из таблицы File по fileId
       await this.filesService.removeFile(fileId, userId, `del`);
     }
     // пометка `мягк.удал.`ф.
@@ -590,7 +588,4 @@ export class TracksService {
     existingTrack.listens += 1;
     await this.tracksRepository.save(existingTrack);
   }
-}
-function Null(): Date | import('typeorm').FindOperator<Date> {
-  throw new Error('Function not implemented.');
 }
