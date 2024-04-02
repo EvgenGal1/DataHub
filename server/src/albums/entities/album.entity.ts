@@ -45,7 +45,7 @@ export class AlbumEntity {
   @ManyToOne(() => FileEntity, (files: FileEntity) => files.album, {
     nullable: true,
   })
-  cover: File;
+  cover: FileEntity;
 
   // связь табл. Мн.к 1му. У Мн.альбомов Один польз.
   @ManyToOne(() => UserEntity, (user: UserEntity) => user.albums)

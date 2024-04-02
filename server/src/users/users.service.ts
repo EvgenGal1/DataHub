@@ -1,5 +1,5 @@
 // логика(бизнес,)
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { In, Repository } from 'typeorm';
 
@@ -53,7 +53,7 @@ export class UsersService {
   // ОДИН user.по id
   async findOneUser(id: number): Promise<UserEntity> {
     const user = await this.userRepository.findOneBy({ id });
-    if (!user) throw new Error('Пользователь не найден');
+    if (!user) throw new NotFoundException('Пользователь не найден');
     return user;
   }
 
@@ -96,13 +96,13 @@ export class UsersService {
     }
     // объ.res, обраб.ошб., res по значени.
     const user = await this.userRepository.findOne({ where: whereCondition });
-    if (!user) throw new Error('Такого Пользователя нет');
+    if (!user) throw new NotFoundException('Такого Пользователя нет');
     return user;
   }
 
   async updateUser(id: number, updateUserDto: UpdateUserDto) {
     const user = await this.userRepository.findOneBy({ id });
-    if (!user) throw new Error('Пользователь не найдена');
+    if (!user) throw new NotFoundException('Пользователь не найдена');
     user.fullname = updateUserDto.fullname;
     user.email = updateUserDto.email;
     return this.userRepository.save(user);
@@ -140,7 +140,7 @@ export class UsersService {
     const roles = await this.roleRepository.findBy({ id: In([...roleIdss]) });
     // Проверка существования пользователей и ролей
     if (users.length !== userIdss.length || roles.length !== roleIdss.length)
-      throw new Error(
+      throw new NotFoundException(
         'Одного или нескольких пользователей или ролей не существует.',
       );
 

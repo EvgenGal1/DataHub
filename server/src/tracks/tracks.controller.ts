@@ -196,8 +196,9 @@ export class TrackController {
   @Get(`:id` /* ':param' */)
   @ApiOperation({ summary: 'Получить Трек по ID <> Названию <> Исполнителю' })
   // param получ.из param маршрута req
-  async findTrackByParam(@Param('param') param: string /* ObjectId */) {
-    console.log('t.c. findTrackByParam param : ' + param);
+  async findTrackByParam(
+    @/* Param */ Query('param') param: string /* ObjectId */,
+  ) {
     return await this.trackService.findTrackByParam(param /* +id */);
   }
 
@@ -239,10 +240,7 @@ export class TrackController {
   // увелич.Прослушиваний
   @Post('/listen/:id')
   @ApiOperation({ summary: 'увеличение Прослушиваний' })
-  async listen(
-    // @Param('id') id: ObjectId,
-    @Query('id') id: string,
-  ) {
+  async listen(@Param('id') id: /* ObjectId */ string) {
     return await this.trackService.listen(id);
   }
 }

@@ -139,7 +139,7 @@ export class FilesService {
     // return this.filesRepository.update(id, UpdateFileDto); // ! ошб. т.к. возвращ.UpdateResult, а не TrackEntity
     await this.filesRepository.update(id, updateFileDto);
 
-    if (!updatedTrack) throw new Error('Трек не найден');
+    if (!updatedTrack) throw new NotFoundException('Трек не найден');
     return updatedTrack;
   }
 
