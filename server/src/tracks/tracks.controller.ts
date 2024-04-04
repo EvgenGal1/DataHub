@@ -13,10 +13,7 @@ import {
   NotFoundException,
   Query,
 } from '@nestjs/common';
-import {
-  FileFieldsInterceptor,
-  FileInterceptor,
-} from '@nestjs/platform-express';
+import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import {
   ApiTags,
   ApiOperation,
@@ -199,6 +196,7 @@ export class TrackController {
   async findTrackByParam(
     @/* Param */ Query('param') param: string /* ObjectId */,
   ) {
+    console.log('t.c. findTrackByParam param : ', param);
     return await this.trackService.findTrackByParam(param /* +id */);
   }
 
@@ -208,6 +206,7 @@ export class TrackController {
     @Param('id') id: ObjectId,
     @Body() updateTrackDto: UpdateTrackDto,
   ) {
+    console.log('id : ' + id);
     return await this.trackService.updateTrack(+id, updateTrackDto);
   }
 
@@ -241,6 +240,7 @@ export class TrackController {
   @Post('/listen/:id')
   @ApiOperation({ summary: 'увеличение Прослушиваний' })
   async listen(@Param('id') id: /* ObjectId */ string) {
+    console.log('id : ', id);
     return await this.trackService.listen(id);
   }
 }
