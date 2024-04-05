@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */ // ^^ от ошб. - Св-во объяв., но знач.не прочитано.
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { ILike, Repository } from 'typeorm';
+import { Repository, ILike, ObjectId } from 'typeorm';
 import * as fs from 'fs';
 
 import { CreateTrackDto } from './dto/create-track.dto';
@@ -335,11 +335,11 @@ export class TracksService {
   }
 
   // ВСЕ треки. Req - "", Res - масс.TrackEntity в `Обещание`
-  async findAllTracks(count = 10, offset = 0) /* : Promise<TrackEntity[]> */ {
-    // к req найти.`пропустить`(`компенсировать`).limit(считать)
-    return await this.tracksRepository./* findAndCount */ find({
-      skip: Number(offset),
+  async findAllTracks(count = 10, offset = 0): Promise<TrackEntity[]> {
+    // к req `найти`.`брать`(`считать`).`пропустить`(`компенсировать`)
+    return await this.tracksRepository.find({
       take: Number(count),
+      skip: Number(offset),
     });
   }
 
@@ -351,16 +351,16 @@ export class TracksService {
   }
 
   // ОДИН Трек по ID <> Названию <> Исполнителю
-  async findTrackByParam(param: string) {
+  async findTrackByParam(param: string | ObjectId) {
     const whereCondition: any = {};
     // условия res. id/num|eml/@|fullname/str
     // ^^ дораб.распозн.стиль ч/з enum | регул.выраж. | шаблона строки
     if (!isNaN(Number(param))) {
       whereCondition.id = param;
-    } /* else if (param.includes('@')) {
-      whereCondition.email = param;
-    } */ else if (/* !param.includes('@') && */ typeof param === 'string') {
-      whereCondition.fullname = param;
+    }
+    // е/и str то Поиск
+    else if (typeof param === 'string') {
+      return await this.searchTrack(param);
     }
     // объ.res, обраб.ошб., res по значени.
     const user = await this.tracksRepository.findOne({ where: whereCondition });
@@ -525,7 +525,7 @@ export class TracksService {
   }
 
   // ДОБАВИТЬ РЕАКЦИЮ
-  async addReaction(
+  async addReactionTrack(
     createReactionDto: CreateReactionDto,
   ): Promise<ReactionEntity> {
     // ? получ.track
@@ -567,7 +567,7 @@ export class TracksService {
   }
 
   // поиск
-  async search(query: string) /* : Promise<TrackEntity[]> */ {
+  async searchTrack(query: string) /* : Promise<TrackEntity[]> */ {
     // await this.tracksRepository.find({ where: [{ name: ILike(`%${query}%`) }, { artist: ILike(`%${query}%`) }], });
     const tracks = await this.tracksRepository
       .createQueryBuilder('track')
@@ -575,11 +575,13 @@ export class TracksService {
         query: `%${query}%`,
       })
       .getMany();
+    if (tracks.length === 0)
+      throw new NotFoundException(`Поиск по '${query}' не нащёл Трека`);
     return tracks;
   }
 
   // увелич.кол-во прослушивания
-  async listen(id: /* ObjectId */ any) {
+  async listenTrack(id: ObjectId) {
     const existingTrack = await this.tracksRepository
       .createQueryBuilder('tracks')
       .withDeleted()

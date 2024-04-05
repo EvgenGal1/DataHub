@@ -176,7 +176,7 @@ export class TrackController {
   @ApiQuery({ name: 'count', required: false })
   @ApiQuery({ name: 'offset', required: false })
   async findAllTracks(
-    // кол-во возвращ.Теков, стр.отступ
+    // кол-во возвращ.Треков, стр.отступ
     @Query('count') count?: number,
     @Query('offset') offset?: number,
   ) {
@@ -186,16 +186,15 @@ export class TrackController {
       count === (undefined || null) ? null : count,
       offset === (undefined || null) ? null : offset,
     );
+    return { count, offset };
     return findAllTracks;
   }
 
   // получ Трек по ID <> Названию <> Исполнителю
-  @Get(`:id` /* ':param' */)
+  @Get(`:param`)
   @ApiOperation({ summary: 'Получить Трек по ID <> Названию <> Исполнителю' })
   // param получ.из param маршрута req
-  async findTrackByParam(
-    @/* Param */ Query('param') param: string /* ObjectId */,
-  ) {
+  async findTrackByParam(@Param('param') param: string | ObjectId) {
     console.log('t.c. findTrackByParam param : ', param);
     return await this.trackService.findTrackByParam(param /* +id */);
   }
@@ -210,7 +209,7 @@ export class TrackController {
     return await this.trackService.updateTrack(+id, updateTrackDto);
   }
 
-  @Delete(/* ':id' */)
+  @Delete(/* ':ids' */)
   @ApiOperation({ summary: 'Удаление Трек/и' })
   async deleteTrack(
     @Query('ids') ids: string,
@@ -223,24 +222,23 @@ export class TrackController {
 
   // поиск
   @Get('/search/search?')
+  @Get('/search')
   @ApiOperation({ summary: 'Поиск' })
-  async search(@Query('query') query: string) {
-    console.log('t.c. S query : ' + query);
-    return await this.trackService.search(query);
+  async searchTrack(@Query('query') searchQuery: string) {
+    return await this.trackService.searchTrack(searchQuery);
   }
 
   // Добавить реакцию к Треку
   @Post('/reaction')
   @ApiOperation({ summary: 'Добавить реакцию к Треку' })
-  async addReaction(@Body() createReactionDto: CreateReactionDto) {
-    return await this.trackService.addReaction(createReactionDto);
+  async addReactionTrack(@Body() createReactionDto: CreateReactionDto) {
+    return await this.trackService.addReactionTrack(createReactionDto);
   }
 
   // увелич.Прослушиваний
   @Post('/listen/:id')
   @ApiOperation({ summary: 'увеличение Прослушиваний' })
-  async listen(@Param('id') id: /* ObjectId */ string) {
-    console.log('id : ', id);
-    return await this.trackService.listen(id);
+  async listenTrack(@Param('id') id: ObjectId) {
+    return await this.trackService.listenTrack(id);
   }
 }
