@@ -257,7 +257,8 @@ export class AlbumsService {
       throw new NotFoundException('Нет Альбома > Удаления');
     }
     if (!userId && !param && !totalAlbumDto) {
-      throw new NotFoundException('Предовращено полное удаление');
+      throw new NotFoundException('Предовращено полное удаление Альбома');
+      // return await this.albumsRepository.delete(ids);
     }
 
     // превращ.ids ф.в масс.

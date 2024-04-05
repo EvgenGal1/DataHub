@@ -11,8 +11,8 @@ async function bootstrap() {
     const PORT = process.env.PORT || 5000;
     // в перем.app асинхр.созд.экзепл.приложения ч/з кл.NestFactory с передачей в парам.modul входа
     const app = await NestFactory.create(AppModule /* , { cors: false } */);
-    // в 2х местах откл. cors
-    // app.enableCors(/* { credentials: true, origin: true } */);
+    // в 2х местах вкл./откл. cors
+    app.enableCors(/* { credentials: true, origin: true } */);
 
     // 1. Включаем глобальные фильтры и валидацию данных
     // app.useGlobalFilters(new AllExceptionsFilter());

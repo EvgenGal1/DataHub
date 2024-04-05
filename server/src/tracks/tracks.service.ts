@@ -71,7 +71,6 @@ export class TracksService {
       // АУДИО.
       // перебор всех audios.track
       for (const audioObj of audios?.track) {
-        console.log('T.s. CRE audioObj : ', audioObj);
         // `получить аудио метаданные`
         const audioMetaData = await this.basicUtils.getAudioMetaData(audioObj);
         // проверка `существующий Трек` с учётом deletedAt
@@ -135,7 +134,6 @@ export class TracksService {
         else {
           savedFile = createTrackDto ? createTrackDto : null;
         }
-        console.log('T.s. CRE savedFile = : ', savedFile);
 
         // COVER(обложка).
         if (audios?.cover && audios?.cover.length > 0 && audios?.track) {
@@ -166,7 +164,6 @@ export class TracksService {
             );
           }
         }
-        console.log('T.s. CRE savedCover = : ', savedCover);
 
         // АЛЬБОМ. есть ф.Обложки <> метаданн.Альбома
         if (audios?.cover?.length > 0 || audioMetaData.album) {
@@ -256,7 +253,6 @@ export class TracksService {
             );
           }
         }
-        console.log('T.s. CRE savedAlbum = : ', savedAlbum);
 
         // обнов.основ.данн.Трека
         const trackDto =
@@ -288,11 +284,11 @@ export class TracksService {
           id: existingTrack?.id || smallestFreeId,
           path:
             existingTrack?.path ||
-            savedFile.target + savedFile.filename ||
-            audioObj.path,
-          listens: existingTrack.listens || 0,
-          duration: audioMetaData.duration || 0,
-          file: savedFile.id || null,
+            savedFile?.target + savedFile?.filename ||
+            audioObj?.path,
+          listens: existingTrack?.listens || 0,
+          duration: audioMetaData?.duration || 0,
+          file: savedFile?.id || null,
           album: savedAlbum?.id || null,
           cover: savedCover?.id || savedAlbum?.cover || null,
           user: { id: userId },
@@ -404,7 +400,7 @@ export class TracksService {
 
     // полн.удал.Трека е/и нет userId и param
     if (!userId && !param) {
-      throw new NotFoundException('Предовращено полное удаление');
+      throw new NotFoundException('Предовращено полное удаление Трека');
       // return await this.tracksRepository.delete(ids);
     }
 
@@ -508,7 +504,6 @@ export class TracksService {
               'del',
             );
       }
-
       // удал.ф.Обложки Трека(е/и != ф.Обложки Алб) из таблицы File по coverId
       if (coverId != albums_coverId) {
         await this.filesService.removeFile(coverId, userId, `del ${coverId}`);
