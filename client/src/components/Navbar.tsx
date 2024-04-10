@@ -2,7 +2,6 @@
 
 import * as React from "react";
 import { styled, useTheme, Theme, CSSObject } from "@mui/material/styles";
-import Box from "@mui/material/Box";
 import MuiDrawer from "@mui/material/Drawer";
 import MuiAppBar, { AppBarProps as MuiAppBarProps } from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
@@ -18,8 +17,16 @@ import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
-import InboxIcon from "@mui/icons-material/MoveToInbox";
+import CloudDownloadIcon from "@mui/icons-material/CloudDownload";
+import AudiotrackIcon from "@mui/icons-material/Audiotrack";
+import AlbumIcon from "@mui/icons-material/Album";
+import PlaylistPlayIcon from "@mui/icons-material/PlaylistPlay";
 import MailIcon from "@mui/icons-material/Mail";
+import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
+import PersonIcon from "@mui/icons-material/Person";
+// ^^ доп.иконки - https://v4.mui.com/ru/components/material-icons/
+// import PlaylistAddIcon from "@mui/icons-material/PlaylistAdd";
+// import PhotoLibraryIcon from '@material-ui/icons/PhotoLibrary';
 
 const drawerWidth = 240;
 
@@ -104,45 +111,55 @@ export default function Navbar() {
     setOpen(false);
   };
 
+  // подход рендер иконок ч/з интерф./объ. соответствий
+  interface IconMap {
+    [key: string]: JSX.Element;
+  }
+  const iconMap: IconMap = {
+    Почта: <MailIcon />,
+    Корзина: <ShoppingCartIcon />,
+    ЛК: <PersonIcon />,
+  };
+
   return (
     <>
-      <div>
-        Navbar--*0*1*2*3*4*5*6*7*8*9*10*11*12*13*14*15*16*17*18*19*20*--Navbar
-      </div>
-      <Box sx={{ display: "flex" }}>
-        <CssBaseline />
-        <AppBar position="fixed" open={open}>
-          <Toolbar>
-            <IconButton
-              color="inherit"
-              aria-label="open drawer"
-              onClick={handleDrawerOpen}
-              edge="start"
-              sx={{
-                marginRight: 5,
-                ...(open && { display: "none" }),
-              }}
-            >
-              <MenuIcon />
-            </IconButton>
-            <Typography variant="h6" noWrap component="div">
-              Mini variant drawer
-            </Typography>
-          </Toolbar>
-        </AppBar>
-        <Drawer variant="permanent" open={open}>
-          <DrawerHeader>
-            <IconButton onClick={handleDrawerClose}>
-              {theme.direction === "rtl" ? (
-                <ChevronRightIcon />
-              ) : (
-                <ChevronLeftIcon />
-              )}
-            </IconButton>
-          </DrawerHeader>
-          <Divider />
-          <List>
-            {["Inbox", "Starred", "Send email", "Drafts"].map((text, index) => (
+      {/* <Box sx={{ display: "flex" }}> */}
+      <CssBaseline />
+      {/* горизонт.меню */}
+      <AppBar position="fixed" open={open}>
+        <Toolbar>
+          <IconButton
+            color="inherit"
+            aria-label="open drawer"
+            onClick={handleDrawerOpen}
+            edge="start"
+            sx={{
+              marginRight: 5,
+              ...(open && { display: "none" }),
+            }}
+          >
+            <MenuIcon />
+          </IconButton>
+          <Typography variant="h6" noWrap component="div">
+            Mini variant drawer
+          </Typography>
+        </Toolbar>
+      </AppBar>
+      {/* вертикал.меню */}
+      <Drawer variant="permanent" open={open}>
+        <DrawerHeader>
+          <IconButton onClick={handleDrawerClose}>
+            {theme.direction === "rtl" ? (
+              <ChevronRightIcon />
+            ) : (
+              <ChevronLeftIcon />
+            )}
+          </IconButton>
+        </DrawerHeader>
+        <Divider />
+        <List>
+          {["закачать", "Аудио трек", "Альбом", "Плейлист"].map(
+            (text, index) => (
               <ListItem key={text} disablePadding sx={{ display: "block" }}>
                 <ListItemButton
                   sx={{
@@ -158,55 +175,53 @@ export default function Navbar() {
                       justifyContent: "center",
                     }}
                   >
-                    {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
+                    {/* подход > 2х чёт не чёт */}
+                    {/* {index % 2 === 0 ? <InboxIcon /> : <MailIcon />} */}
+                    {/* подход > неск. услов.опер.ind */}
+                    {index === 0 ? (
+                      <CloudDownloadIcon />
+                    ) : index === 1 ? (
+                      <AudiotrackIcon />
+                    ) : index === 2 ? (
+                      <AlbumIcon />
+                    ) : (
+                      <PlaylistPlayIcon />
+                    )}
                   </ListItemIcon>
                   <ListItemText primary={text} sx={{ opacity: open ? 1 : 0 }} />
                 </ListItemButton>
               </ListItem>
-            ))}
-          </List>
-          <Divider />
-          <List>
-            {["All mail", "Trash", "Spam"].map((text, index) => (
-              <ListItem key={text} disablePadding sx={{ display: "block" }}>
-                <ListItemButton
+            )
+          )}
+        </List>
+        <Divider />
+        <List>
+          {["Почта", "Корзина", "ЛК"].map((text, index) => (
+            <ListItem key={text} disablePadding sx={{ display: "block" }}>
+              <ListItemButton
+                sx={{
+                  minHeight: 48,
+                  justifyContent: open ? "initial" : "center",
+                  px: 2.5,
+                }}
+              >
+                <ListItemIcon
                   sx={{
-                    minHeight: 48,
-                    justifyContent: open ? "initial" : "center",
-                    px: 2.5,
+                    minWidth: 0,
+                    mr: open ? 3 : "auto",
+                    justifyContent: "center",
                   }}
                 >
-                  <ListItemIcon
-                    sx={{
-                      minWidth: 0,
-                      mr: open ? 3 : "auto",
-                      justifyContent: "center",
-                    }}
-                  >
-                    {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-                  </ListItemIcon>
-                  <ListItemText primary={text} sx={{ opacity: open ? 1 : 0 }} />
-                </ListItemButton>
-              </ListItem>
-            ))}
-          </List>
-        </Drawer>
-        <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
-          {/* <DrawerHeader /> */}
-          <Typography paragraph>
-            Lorem очень морковь, томатный бакалавриат, но Iusmod в то время для
-            работы или болезненной боли.
-          </Typography>
-          <Typography paragraph>
-            Следует крупнейший в настоящее время паспорт, но жизнь
-            занимает.Экологический к Ullamcorper не нуждается в FARISISI, даже
-            диаметр футбола.
-          </Typography>
-        </Box>
-      </Box>
-      <div>
-        Navbar-^^-*0*1*2*3*4*5*6*7*8*9*10*11*12*13*14*15*16*17*18*19*20*-^^-Navbar
-      </div>
+                  {/* подход ч/з объ.соответствий */}
+                  {iconMap[text]}
+                </ListItemIcon>
+                <ListItemText primary={text} sx={{ opacity: open ? 1 : 0 }} />
+              </ListItemButton>
+            </ListItem>
+          ))}
+        </List>
+      </Drawer>
+      {/* </Box> */}
     </>
   );
 }
