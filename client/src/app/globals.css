@@ -26,3 +26,25 @@ body {
     text-wrap: balance;
   }
 }
+
+/* вр.stl отступ для всехот */
+.strt-wrap {
+  flex-grow: 1;
+  padding: 24px;
+  margin-top: 64px;
+}
+
+/* вр.stl отступ от Navbar > AppBar */
+.main-my {
+  margin-top: 64px;
+  /* background-color: #1976d2; */
+  --hue: 220;
+  /* border-color: hsl(var(--hue), 50%, 40%); */
+  color: hsl(var(--hue), 50%, 20%);
+  background-color: hsl(var(--hue), 50%, 90%);
+}
+
+hr {
+  --hue: 220;
+  border-color: hsl(var(--hue), 50%, 40%);
+}

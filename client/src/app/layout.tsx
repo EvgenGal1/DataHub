@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
+import Box from "@mui/material/Box";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -18,14 +19,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <div>
-          Layout--*0*1*2*3*4*5*6*7*8*9*10*11*12*13*14*15*16*17*18*19*20*--Layout
-        </div>
-        <Navbar />
-        {children}
-        <div>
-          Layout-^^-*0*1*2*3*4*5*6*7*8*9*10*11*12*13*14*15*16*17*18*19*20*-^^-Layout
-        </div>
+        <Box sx={{ display: "flex" }}>
+          <Navbar />
+          {children}
+        </Box>
       </body>
     </html>
   );
