@@ -1,8 +1,8 @@
 {
   "name": "server",
   "version": "0.0.1",
-  "description": "",
-  "author": "",
+  "description": "music-platform(Back__Nest)",
+  "author": "EvGen Gal",
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
