@@ -2,7 +2,7 @@
 
 export default function About() {
   return (
-    <div className="strt-wrap">
+    <div className="about">
       <h1>About page About</h1>
     </div>
   );

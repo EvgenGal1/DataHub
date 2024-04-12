@@ -15,7 +15,7 @@ const DrawerHeader = styled("div")(({ theme }) => ({
 
 export default function Home() {
   return (
-    <Box component="main" sx={{ flexGrow: 1, p: 3 }} className="main-my">
+    <>
       <hr />
       <Typography paragraph>
         Lorem очень морковь, томатный бакалавриат, но Iusmod в то время для
@@ -30,6 +30,6 @@ export default function Home() {
       <p>Заголовок ящика</p>
       <DrawerHeader />
       <hr />
-    </Box>
+    </>
   );
 }
