@@ -26,11 +26,13 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <Box sx={{ display: "flex" }}>
+        {/* альтер.MUI с превикс.stl <Box sx={{ display: "flex" }}> */}
+        <div className="flex">
           <Navbar />
-          {children}
+          {/* альтер.MUI с превикс.stl <Box component="main" sx={{ flexGrow: 1, p: 3 }} > */}
+          <main className="main-my flex-grow">{children}</main>
           <Footer />
-        </Box>
+        </div>
       </body>
     </html>
   );

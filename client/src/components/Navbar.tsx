@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+// Комп.MaterialUI
 import { styled, useTheme, Theme, CSSObject } from "@mui/material/styles";
 import MuiDrawer from "@mui/material/Drawer";
 import MuiAppBar, { AppBarProps as MuiAppBarProps } from "@mui/material/AppBar";
@@ -27,6 +28,8 @@ import PersonIcon from "@mui/icons-material/Person";
 // ^^ доп.иконки - https://v4.mui.com/ru/components/material-icons/
 // import PlaylistAddIcon from "@mui/icons-material/PlaylistAdd";
 // import PhotoLibraryIcon from '@material-ui/icons/PhotoLibrary';
+// Комп.Next
+import Link from "next/link";
 
 const drawerWidth = 240;
 
@@ -99,6 +102,16 @@ const Drawer = styled(MuiDrawer, {
   }),
 }));
 
+// рендер иконок ч/з интерф./объ. соответствий
+interface IconMap {
+  [key: string]: JSX.Element;
+}
+const iconMap: IconMap = {
+  Почта: <MailIcon />,
+  Корзина: <ShoppingCartIcon />,
+  ЛК: <PersonIcon />,
+};
+
 export default function Navbar() {
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
@@ -111,23 +124,13 @@ export default function Navbar() {
     setOpen(false);
   };
 
-  // подход рендер иконок ч/з интерф./объ. соответствий
-  interface IconMap {
-    [key: string]: JSX.Element;
-  }
-  const iconMap: IconMap = {
-    Почта: <MailIcon />,
-    Корзина: <ShoppingCartIcon />,
-    ЛК: <PersonIcon />,
-  };
-
   return (
     <>
-      {/* <Box sx={{ display: "flex" }}> */}
       <CssBaseline />
-      {/* горизонт.меню */}
+      {/* header. горизонт.меню */}
       <AppBar position="fixed" open={open}>
         <Toolbar>
+          {/* иконка откр.вертик.меню */}
           <IconButton
             color="inherit"
             aria-label="open drawer"
@@ -141,12 +144,19 @@ export default function Navbar() {
             <MenuIcon />
           </IconButton>
           <Typography variant="h6" noWrap component="div">
-            Mini variant drawer
+            Музыкальная платформа
           </Typography>
+          <div className={`header-links flex ml-auto`}>
+            {/* stl.Next */}
+            <Link href="/">Home</Link>
+            <Link href="/blog">Blog</Link>
+            <Link href="/about">About</Link>
+          </div>
         </Toolbar>
       </AppBar>
-      {/* вертикал.меню */}
+      {/* вертикальное меню */}
       <Drawer variant="permanent" open={open}>
+        {/* иконка закр.вертик.меню */}
         <DrawerHeader>
           <IconButton onClick={handleDrawerClose}>
             {theme.direction === "rtl" ? (
@@ -156,9 +166,11 @@ export default function Navbar() {
             )}
           </IconButton>
         </DrawerHeader>
+        {/* черта */}
         <Divider />
+        {/* лист вертик.меню */}
         <List>
-          {["закачать", "Аудио трек", "Альбом", "Плейлист"].map(
+          {["Закачать", "Аудио трек", "Альбом", "Плейлист"].map(
             (text, index) => (
               <ListItem key={text} disablePadding sx={{ display: "block" }}>
                 <ListItemButton
@@ -221,7 +233,6 @@ export default function Navbar() {
           ))}
         </List>
       </Drawer>
-      {/* </Box> */}
     </>
   );
 }
