@@ -2,9 +2,9 @@ import React from "react";
 
 export const Footer = () => {
   return (
-    <footer className="">
-      <h1 className="center">Footer</h1>
-      <ul className="nav">
+    <footer>
+      <div>Footer</div>
+      <ul className="nav-bar__top">
         <li>1</li>
         <li>2</li>
         <li>3</li>

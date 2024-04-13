@@ -36,40 +36,48 @@ hr {
 /* шапка */
 header {
   .header-links {
-    /* a:not(:last-child) { margin-right: 15px; } */
     a {
       margin-left: 15px;
+      &:not(:last-child) {
+        margin-right: 15px;
+      }
+      &:hover {
+        color: #f3a505;
+      }
     }
   }
 }
 
-/* вр.stl отступ от Navbar.AppBar > main */
+/* main. вр.stl отступ от Navbar.AppBar */
 .main-my {
   margin-top: 64px;
   padding: 24px;
-  --hue: 220;
+  --hue: 235;
   color: hsl(var(--hue), 50%, 20%);
   background-color: hsl(var(--hue), 50%, 90%);
 }
 
-/* вр.stl отступ > about */
-/* .about {
-  flex-grow: 1;
-  padding: 24px;
-  margin-top: 64px;
-} */
-
+/* подвал */
 footer {
   z-index: 1201;
   position: absolute;
   bottom: 0;
-  width: calc(100% - 64px);
   width: 100%;
   background-color: #2c2c2c;
   padding: 10px;
-  /* margin-left: 64px; */
-  ul.nav {
+  bottom: 0;
+  width: 100%;
+  background-color: #333;
+  color: #fff;
+  padding: 10px;
+
+  div:nth-child(1) /* | :first-child | :first-of-type */ {
+    width: max-content;
+    margin: 0 auto;
+  }
+  ul.nav-bar__top {
     display: flex;
+    justify-content: space-around;
     li {
       margin: 0px 10px;
     }
