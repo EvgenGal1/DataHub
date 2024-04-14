@@ -31,42 +31,13 @@ import PersonIcon from "@mui/icons-material/Person";
 // Комп.Next
 import Link from "next/link";
 
-const drawerWidth = 240;
+// ширина вертик.меню
+const drawerWidth = 175;
 
-const openedMixin = (theme: Theme): CSSObject => ({
-  width: drawerWidth,
-  transition: theme.transitions.create("width", {
-    easing: theme.transitions.easing.sharp,
-    duration: theme.transitions.duration.enteringScreen,
-  }),
-  overflowX: "hidden",
-});
-
-const closedMixin = (theme: Theme): CSSObject => ({
-  transition: theme.transitions.create("width", {
-    easing: theme.transitions.easing.sharp,
-    duration: theme.transitions.duration.leavingScreen,
-  }),
-  overflowX: "hidden",
-  width: `calc(${theme.spacing(7)} + 1px)`,
-  [theme.breakpoints.up("sm")]: {
-    width: `calc(${theme.spacing(8)} + 1px)`,
-  },
-});
-
-const DrawerHeader = styled("div")(({ theme }) => ({
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "flex-end",
-  padding: theme.spacing(0, 1),
-  // necessary for content to be below app bar
-  ...theme.mixins.toolbar,
-}));
-
+// интерф/горизонт.меню(stl/лог.)
 interface AppBarProps extends MuiAppBarProps {
   open?: boolean;
 }
-
 const AppBar = styled(MuiAppBar, {
   shouldForwardProp: (prop) => prop !== "open",
 })<AppBarProps>(({ theme, open }) => ({
@@ -83,8 +54,12 @@ const AppBar = styled(MuiAppBar, {
       duration: theme.transitions.duration.enteringScreen,
     }),
   }),
+  // ^^ свои stl
+  color: "#c2c2c2",
+  backgroundColor: "#252850",
 }));
 
+// вертикал.меню(stl/лог.)
 const Drawer = styled(MuiDrawer, {
   shouldForwardProp: (prop) => prop !== "open",
 })(({ theme, open }) => ({
@@ -100,9 +75,40 @@ const Drawer = styled(MuiDrawer, {
     ...closedMixin(theme),
     "& .MuiDrawer-paper": closedMixin(theme),
   }),
+  // ^^ свои stl
+  "& > div": { backgroundColor: "#003366" },
 }));
-
-// рендер иконок ч/з интерф./объ. соответствий
+// область/иконка закр.вертик.меню
+const DrawerHeader = styled("div")(({ theme }) => ({
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "flex-end",
+  padding: theme.spacing(0, 1),
+  // необходимо, чтобы контент был ниже панели приложений
+  ...theme.mixins.toolbar,
+}));
+// stl.откр.вертик.м.
+const openedMixin = (theme: Theme): CSSObject => ({
+  width: drawerWidth,
+  transition: theme.transitions.create("width", {
+    easing: theme.transitions.easing.sharp,
+    duration: theme.transitions.duration.enteringScreen,
+  }),
+  overflowX: "hidden",
+});
+// stl.закр.верик.м.
+const closedMixin = (theme: Theme): CSSObject => ({
+  transition: theme.transitions.create("width", {
+    easing: theme.transitions.easing.sharp,
+    duration: theme.transitions.duration.leavingScreen,
+  }),
+  overflowX: "hidden",
+  width: `calc(${theme.spacing(7)} + 1px)`,
+  [theme.breakpoints.up("sm")]: {
+    width: `calc(${theme.spacing(8)} + 1px)`,
+  },
+});
+// нтерф./объ.соответствий иконок верт.м.
 interface IconMap {
   [key: string]: JSX.Element;
 }
@@ -110,6 +116,24 @@ const iconMap: IconMap = {
   Почта: <MailIcon />,
   Корзина: <ShoppingCartIcon />,
   ЛК: <PersonIcon />,
+};
+
+// ^^ свои stl.
+// наведение
+const hoverStyle = {
+  "&:hover, &:hover > div > svg": {
+    color: "#f3a505",
+    transition: "color 0.3s ease",
+  },
+};
+const styles = {
+  // назв.сайта
+  typographyStyle: {
+    fontSize: "inherit",
+    fontFamily: "inherit",
+    lineHeight: 1,
+    ...hoverStyle,
+  },
 };
 
 export default function Navbar() {
@@ -129,6 +153,7 @@ export default function Navbar() {
       <CssBaseline />
       {/* header. горизонт.меню */}
       <AppBar position="fixed" open={open}>
+        {/* общ.div эл.в header */}
         <Toolbar>
           {/* иконка откр.вертик.меню */}
           <IconButton
@@ -138,14 +163,24 @@ export default function Navbar() {
             edge="start"
             sx={{
               marginRight: 5,
+              ...hoverStyle,
               ...(open && { display: "none" }),
             }}
+            data-open={open ? "true" : "false"}
           >
             <MenuIcon />
           </IconButton>
-          <Typography variant="h6" noWrap component="div">
+          {/* название сайта */}
+          <Typography
+            variant="h6"
+            noWrap
+            component="div"
+            // style={styles.typographyStyle} // inline stl react без поддержки псевдо-классов
+            sx={styles.typographyStyle} // объ.stl MIU c поддержкой псевдо-классов
+          >
             Музыкальная платформа
           </Typography>
+          {/* страницы */}
           <div className={`header-links flex ml-auto`}>
             {/* stl.Next */}
             <Link href="/">Home</Link>
@@ -158,7 +193,12 @@ export default function Navbar() {
       <Drawer variant="permanent" open={open}>
         {/* иконка закр.вертик.меню */}
         <DrawerHeader>
-          <IconButton onClick={handleDrawerClose}>
+          <IconButton
+            onClick={handleDrawerClose}
+            sx={{
+              ...hoverStyle,
+            }}
+          >
             {theme.direction === "rtl" ? (
               <ChevronRightIcon />
             ) : (
@@ -168,50 +208,60 @@ export default function Navbar() {
         </DrawerHeader>
         {/* черта */}
         <Divider />
-        {/* лист вертик.меню */}
+        {/* 1ый ul лист вертик.меню */}
         <List>
-          {["Закачать", "Аудио трек", "Альбом", "Плейлист"].map(
-            (text, index) => (
-              <ListItem key={text} disablePadding sx={{ display: "block" }}>
-                <ListItemButton
+          {/* масс.эл.li */}
+          {/* // ^^ + запись аудио, скачать */}
+          {["Закачать", "Треки", "Альбомы", "Плейлисты"].map((text, index) => (
+            // li
+            <ListItem key={text} disablePadding sx={{ display: "block" }}>
+              {/* общ.div иконки/текста */}
+              <ListItemButton
+                sx={{
+                  minHeight: 48,
+                  justifyContent: open ? "initial" : "center",
+                  px: 2.5,
+                  ...hoverStyle,
+                }}
+              >
+                {/* div иконки */}
+                <ListItemIcon
                   sx={{
-                    minHeight: 48,
-                    justifyContent: open ? "initial" : "center",
-                    px: 2.5,
+                    minWidth: 0,
+                    mr: open ? 3 : "auto",
+                    justifyContent: "center",
+                    color: "black",
                   }}
                 >
-                  <ListItemIcon
-                    sx={{
-                      minWidth: 0,
-                      mr: open ? 3 : "auto",
-                      justifyContent: "center",
-                    }}
-                  >
-                    {/* подход > 2х чёт не чёт */}
-                    {/* {index % 2 === 0 ? <InboxIcon /> : <MailIcon />} */}
-                    {/* подход > неск. услов.опер.ind */}
-                    {index === 0 ? (
-                      <CloudDownloadIcon />
-                    ) : index === 1 ? (
-                      <AudiotrackIcon />
-                    ) : index === 2 ? (
-                      <AlbumIcon />
-                    ) : (
-                      <PlaylistPlayIcon />
-                    )}
-                  </ListItemIcon>
-                  <ListItemText primary={text} sx={{ opacity: open ? 1 : 0 }} />
-                </ListItemButton>
-              </ListItem>
-            )
-          )}
+                  {/* svg иконки */}
+                  {/* подход > 2х чёт не чёт */}
+                  {/* {index % 2 === 0 ? <InboxIcon /> : <MailIcon />} */}
+                  {/* подход > неск. услов.опер.ind */}
+                  {index === 0 ? (
+                    <CloudDownloadIcon />
+                  ) : index === 1 ? (
+                    <AudiotrackIcon />
+                  ) : index === 2 ? (
+                    <AlbumIcon />
+                  ) : (
+                    <PlaylistPlayIcon />
+                  )}
+                </ListItemIcon>
+                {/* текст */}
+                <ListItemText primary={text} sx={{ opacity: open ? 1 : 0 }} />
+              </ListItemButton>
+            </ListItem>
+          ))}
         </List>
+        {/* черта */}
         <Divider />
+        {/* 2ой ul лист вертик.меню */}
         <List>
           {["Почта", "Корзина", "ЛК"].map((text, index) => (
             <ListItem key={text} disablePadding sx={{ display: "block" }}>
               <ListItemButton
                 sx={{
+                  ...hoverStyle,
                   minHeight: 48,
                   justifyContent: open ? "initial" : "center",
                   px: 2.5,
@@ -222,6 +272,7 @@ export default function Navbar() {
                     minWidth: 0,
                     mr: open ? 3 : "auto",
                     justifyContent: "center",
+                    color: "black",
                   }}
                 >
                   {/* подход ч/з объ.соответствий */}
