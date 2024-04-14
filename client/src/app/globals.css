@@ -55,44 +55,6 @@ header {
   background-color: hsl(var(--hue), 50%, 90%);
 }
 
-/* stl > вкл.совместной раб. NavBar,Main,Footer */
-.general-container {
-  display: flex;
-  flex-direction: column;
-  /* е/и в header data-open=true то в main-my... ч/з header не раб */
-  /* &:has(> header:has(button[data-open='true'])) > .main-my { */
-  &:has(button[data-open='true']) > .main-my {
-    /* width: calc(100% - 175px); */
-    margin-left: 175px;
-    transition: 225ms cubic-bezier(0.4, 0, 0.6, 1) 0ms;
-  }
-  /* заголовок */
-  header {
-    button {
-      margin-right: 20px;
-      @media (min-width: 600px) {
-        margin-right: 40px;
-      }
-    }
-  }
-  /* осн.бл. */
-  .main-my {
-    /* width: calc(100% - 56px); */
-    margin-top: 56px;
-    margin-left: 57px;
-    padding: 16px;
-    transition: 195ms cubic-bezier(0.4, 0, 0.6, 1) 0ms;
-    @media (min-width: 600px) {
-      margin-top: 64px;
-      margin-left: 56px;
-      padding: 24px;
-    }
-  }
-  footer {
-    position: static !important;
-  }
-}
-
 /* подвал */
 footer {
   z-index: 1201;
@@ -121,5 +83,76 @@ footer {
   div.nav-bar__bootom {
     display: flex;
     justify-content: space-between;
+  }
+}
+
+/* ^^ stl > вкл.совместной раб. NavBar,Main,Footer */
+.general-container {
+  display: flex;
+  flex-direction: column;
+  /* е/и в header data-open=true то в main-my... ч/з header не раб */
+  /* &:has(> header:has(button[data-open='true'])) > .main-my { */
+  &:has(button[data-open='true']) > .main-my {
+    /* width: calc(100% - 175px); */
+    margin-left: 175px;
+    transition: 225ms cubic-bezier(0.4, 0, 0.6, 1) 0ms;
+  }
+  /* заголовок */
+  header {
+    button {
+      margin-right: 20px;
+      @media (min-width: 600px) {
+        margin-right: 40px;
+      }
+    }
+  }
+  /* осн.бл. */
+  .main-my {
+    /* width: calc(100% - 56px); */
+    margin-top: 56px;
+    margin-left: 57px;
+    padding: 16px;
+    transition: 195ms cubic-bezier(0.4, 0, 0.6, 1) 0ms;
+    @media (min-width: 600px) {
+      margin-top: 64px;
+      margin-left: 65px;
+      padding: 24px;
+    }
+  }
+  footer {
+    /* position: static; */
+    position: fixed;
+  }
+}
+
+/* ^^ stl > уч.Комп.MUI */
+.switch,
+.select {
+  .text-center {
+    cursor: pointer;
+  }
+  /* откл.бл. */
+  > div,
+  br,
+  hr,
+  a {
+    display: none;
+  }
+  /* stl cl.open */
+  .open {
+    display: flex;
+  }
+  /* вкл.бл. */
+  &:has(div[class*='open']) {
+    & > .flex,
+    & > div .flex {
+      display: flex;
+    }
+    & > a,
+    & br,
+    & > br,
+    & > hr {
+      display: block;
+    }
   }
 }

@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Box from "@mui/material/Box";
 
 // Компоненты
 import Navbar from "@/components/Navbar";
@@ -18,6 +17,7 @@ export const metadata: Metadata = {
   description: "Music-Platform(Next_Nest)",
 };
 
+// возврат fn с приёмом/использ. children
 export default function RootLayout({
   children,
 }: Readonly<{
