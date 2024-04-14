@@ -1,4 +1,9 @@
-"use client";
+import { Metadata } from "next";
+
+// объ.настр.метадаты > SEO
+export const metadata: Metadata = {
+  title: "About | Music Platform",
+};
 
 export default function About() {
   return (

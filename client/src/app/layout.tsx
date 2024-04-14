@@ -13,8 +13,8 @@ const inter = Inter({ subsets: ["latin"] });
 
 // объ.настр.метадаты > SEO
 export const metadata: Metadata = {
-  title: "Music-Platform",
-  description: "Music-Platform(Next_Nest)",
+  title: "Music Platform",
+  description: "Music Platform (stack Next Nest)",
 };
 
 // возврат fn с приёмом/использ. children
