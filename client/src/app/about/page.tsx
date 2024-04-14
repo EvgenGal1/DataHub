@@ -2,8 +2,8 @@
 
 export default function About() {
   return (
-    <div className="about">
-      <h1>About page About</h1>
+    <div className="about block text-center">
+      <h3>About. Выбрать подпункт</h3>
     </div>
   );
 }
