@@ -27,7 +27,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         {/* альтер.MUI с превикс.stl <Box sx={{ display: "flex" }}> */}
-        <div className="flex">
+        <div className="general-container">
           <Navbar />
           {/* альтер.MUI с превикс.stl <Box component="main" sx={{ flexGrow: 1, p: 3 }} > */}
           <main className="main-my flex-grow">{children}</main>
