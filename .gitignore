@@ -44,8 +44,8 @@ lerna-debug.log*
 /coverage
 
 # next.js
-FrontEnd/.next/
-FrontEnd/out/
+/.next/
+/out/
 
 # production
 /build
