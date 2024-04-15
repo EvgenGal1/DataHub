@@ -15,16 +15,10 @@ export const Footer = () => {
         <ul>
           <li>11</li>
           <li>12</li>
-          <li>13</li>
-          <li>14</li>
-          <li>15</li>
         </ul>
         <ul>
           <li>11</li>
           <li>21</li>
-          <li>31</li>
-          <li>41</li>
-          <li>51</li>
         </ul>
       </div>
     </footer>

@@ -182,3 +182,24 @@ footer {
     }
   }
 }
+
+/* заглушка загрузки */
+@keyframes loading {
+  0% {
+    transform: translate(0, 0);
+  }
+  100% {
+    transform: translate(100%, 0);
+  }
+}
+.loading {
+  display: block;
+  width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+}
+.loading span {
+  display: inline-block;
+  padding-right: 100%;
+  animation: loading 5s infinite linear;
+}
