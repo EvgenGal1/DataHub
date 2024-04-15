@@ -5,12 +5,12 @@ import * as React from "react";
 // Комп.MaterialUI
 import Typography from "@mui/material/Typography";
 import Switch from "@mui/joy/Switch";
-import SwitchDecorators from "@/components/UI/vr/SwitchDecorators";
-import ExampleTrackChild from "@/components/UI/vr/ExampleTrackChild";
-import SelectFormSubmission from "@/components/UI/vr/SelectFormSubmission";
-import SelectMultipleAppearance from "@/components/UI/vr/SelectMultipleAppearance";
-import SelectMultipleFormSubmission from "@/components/UI/vr/SelectMultipleFormSubmission";
-import SelectCustomValueAppearance from "@/components/UI/vr/SelectCustomValueAppearance";
+import SwitchDecorators from "@/components/UI/SwitchDecorators";
+import ExampleTrackChild from "@/components/UI/ExampleTrackChild";
+import SelectFormSubmission from "@/components/UI/SelectFormSubmission";
+import SelectMultipleAppearance from "@/components/UI/SelectMultipleAppearance";
+import SelectMultipleFormSubmission from "@/components/UI/SelectMultipleFormSubmission";
+import SelectCustomValueAppearance from "@/components/UI/SelectCustomValueAppearance";
 
 export default function Home() {
   // лог. > уч.Комп.MUI
