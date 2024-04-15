@@ -181,12 +181,18 @@ export default function Navbar() {
             Музыкальная платформа
           </Typography>
           {/* страницы */}
-          <div className={`header-links flex ml-auto`}>
+          <nav className={`header-nav flex ml-auto`}>
             {/* stl.Next */}
-            <Link href="/">Home</Link>
-            <Link href="/blog">Blog</Link>
-            <Link href="/about">About</Link>
-          </div>
+            <Link href="/">
+              <span>Home</span>
+            </Link>
+            <Link href="/blog">
+              <span>Blog</span>
+            </Link>
+            <Link href="/about">
+              <span>About</span>
+            </Link>
+          </nav>
         </Toolbar>
       </AppBar>
       {/* вертикальное меню */}

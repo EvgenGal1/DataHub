@@ -5,11 +5,10 @@ export default function Aboutlayout({
 }: {
   children: React.ReactNode;
 }) {
-  console.log("5.00 Aboutlayout ", 5.0);
   return (
     <div>
-      <h1 className="block text-center">About_layout</h1>
-      <ul className="list-disc ml-5">
+      <h1 className="aboutlayout">About_layout</h1>
+      <ul>
         <li>
           <Link href="/about/">About</Link>
         </li>

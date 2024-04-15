@@ -27,7 +27,17 @@ body {
   }
 }
 
-/* линия */
+h1,
+h2,
+h3 {
+  text-align: center;
+}
+
+ul {
+  list-style-type: disc;
+  margin-left: 1.25rem;
+}
+
 hr {
   --hue: 220;
   border-color: hsl(var(--hue), 50%, 40%);
@@ -35,14 +45,30 @@ hr {
 
 /* шапка */
 header {
-  .header-links {
+  .header-nav {
     a {
-      margin-left: 15px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-left: 5px;
+      padding: 5px 10px;
+      border: 1px solid #222222;
+      transition: 0.3s ease;
+      transform-style: preserve-3d;
       &:not(:last-child) {
-        margin-right: 15px;
+        margin-right: 5px;
       }
       &:hover {
-        color: #f3a505;
+        transition: 0.3s ease;
+        transform: perspective(100px) rotateX(-5deg);
+        box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3);
+        span {
+          color: #f3a505;
+        }
+      }
+      &:active {
+        transform: perspective(100px) rotateX(5deg);
+        box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3) inset;
       }
     }
   }

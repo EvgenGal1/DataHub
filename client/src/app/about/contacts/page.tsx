@@ -1,6 +1,6 @@
 export default function Contacts() {
   return (
-    <div className="contacts block text-center">
+    <div className="contacts">
       <h1>Contacts page</h1>
     </div>
   );
