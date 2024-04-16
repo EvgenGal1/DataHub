@@ -171,32 +171,26 @@ export class TrackController {
 
   // получить все треки
   @Get()
-  @ApiOperation({ summary: 'Получить все' })
+  @ApiOperation({
+    summary: 'Получить: все <> назв.трека <> автор + count|offset',
+  })
   // уточнен.`запрос`
+  @ApiQuery({ name: 'param', required: false })
   @ApiQuery({ name: 'count', required: false })
   @ApiQuery({ name: 'offset', required: false })
   async findAllTracks(
     // кол-во возвращ.Треков, стр.отступ
+    @Query('param') param?: number | string,
     @Query('count') count?: number,
     @Query('offset') offset?: number,
   ) {
-    console.log('T.c. fAl count offset : ', count, offset);
     const findAllTracks = await this.trackService.findAllTracks(
       /* count || null, offset || null */
+      param === (undefined || null) ? null : param,
       count === (undefined || null) ? null : count,
       offset === (undefined || null) ? null : offset,
     );
-    return { count, offset };
     return findAllTracks;
-  }
-
-  // получ Трек по ID <> Названию <> Исполнителю
-  @Get(`:param`)
-  @ApiOperation({ summary: 'Получить Трек по ID <> Названию <> Исполнителю' })
-  // param получ.из param маршрута req
-  async findTrackByParam(@Param('param') param: string | ObjectId) {
-    console.log('t.c. findTrackByParam param : ', param);
-    return await this.trackService.findTrackByParam(param /* +id */);
   }
 
   @Patch(':id')
@@ -205,7 +199,6 @@ export class TrackController {
     @Param('id') id: ObjectId,
     @Body() updateTrackDto: UpdateTrackDto,
   ) {
-    console.log('id : ' + id);
     return await this.trackService.updateTrack(+id, updateTrackDto);
   }
 
@@ -221,8 +214,7 @@ export class TrackController {
   }
 
   // поиск
-  @Get('/search/search?')
-  @Get('/search')
+  @Get('/search?')
   @ApiOperation({ summary: 'Поиск' })
   async searchTrack(@Query('query') searchQuery: string) {
     return await this.trackService.searchTrack(searchQuery);

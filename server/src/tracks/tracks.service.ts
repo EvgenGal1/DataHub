@@ -331,12 +331,36 @@ export class TracksService {
   }
 
   // ВСЕ треки. Req - "", Res - масс.TrackEntity в `Обещание`
-  async findAllTracks(count = 10, offset = 0): Promise<TrackEntity[]> {
-    // к req `найти`.`брать`(`считать`).`пропустить`(`компенсировать`)
-    return await this.tracksRepository.find({
-      take: Number(count),
-      skip: Number(offset),
-    });
+  async findAllTracks(
+    param: string | number,
+    count = 10,
+    offset = 0,
+  ): Promise<TrackEntity[]> {
+    // без парам.вернуть всё
+    if (!param && count === 10 && offset === 0) {
+      return this.tracksRepository.find();
+    }
+
+    const queryBuilder = this.tracksRepository.createQueryBuilder('track');
+
+    // по прам.
+    if (param) {
+      queryBuilder.where(
+        'track.name ILIKE :query OR track.artist ILIKE :query',
+        { query: `%${param}%` },
+      );
+    }
+
+    // к req + `найти`.`брать`(`считать`).`пропустить`(`компенсировать`)
+    queryBuilder.take(count).skip(offset);
+
+    const tracks = await queryBuilder.getMany();
+
+    if (!tracks.length && param) {
+      throw new NotFoundException(`Поиск по '${param}' не нашёл трека`);
+    }
+
+    return tracks;
   }
 
   // ОДИН Трек по ID
@@ -344,24 +368,6 @@ export class TracksService {
     const track = await this.tracksRepository.findOneBy({ id });
     if (!track) throw new NotFoundException('Трек не найден');
     return track;
-  }
-
-  // ОДИН Трек по ID <> Названию <> Исполнителю
-  async findTrackByParam(param: string | ObjectId) {
-    const whereCondition: any = {};
-    // условия res. id/num|eml/@|fullname/str
-    // ^^ дораб.распозн.стиль ч/з enum | регул.выраж. | шаблона строки
-    if (!isNaN(Number(param))) {
-      whereCondition.id = param;
-    }
-    // е/и str то Поиск
-    else if (typeof param === 'string') {
-      return await this.searchTrack(param);
-    }
-    // объ.res, обраб.ошб., res по значени.
-    const user = await this.tracksRepository.findOne({ where: whereCondition });
-    if (!user) throw new NotFoundException('Такого Трека нет');
-    return user;
   }
 
   async updateTrack(
@@ -562,7 +568,7 @@ export class TracksService {
   }
 
   // поиск
-  async searchTrack(query: string) /* : Promise<TrackEntity[]> */ {
+  async searchTrack(query: string): Promise<TrackEntity[]> {
     // await this.tracksRepository.find({ where: [{ name: ILike(`%${query}%`) }, { artist: ILike(`%${query}%`) }], });
     const tracks = await this.tracksRepository
       .createQueryBuilder('track')
@@ -571,7 +577,7 @@ export class TracksService {
       })
       .getMany();
     if (tracks.length === 0)
-      throw new NotFoundException(`Поиск по '${query}' не нащёл Трека`);
+      throw new NotFoundException(`Поиск по '${query}' не нашёл Трека`);
     return tracks;
   }
 
