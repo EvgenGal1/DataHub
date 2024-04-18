@@ -1,6 +1,9 @@
 "use client";
 
 import * as React from "react";
+// логика,Комп.Next
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 // Комп.MaterialUI
 import { styled, useTheme, Theme, CSSObject } from "@mui/material/styles";
 import MuiDrawer from "@mui/material/Drawer";
@@ -28,8 +31,6 @@ import PersonIcon from "@mui/icons-material/Person";
 // ^^ доп.иконки - https://v4.mui.com/ru/components/material-icons/
 // import PlaylistAddIcon from "@mui/icons-material/PlaylistAdd";
 // import PhotoLibraryIcon from '@material-ui/icons/PhotoLibrary';
-// Комп.Next
-import Link from "next/link";
 
 // ширина вертик.меню
 const drawerWidth = 175;
@@ -137,13 +138,17 @@ const styles = {
 };
 
 export default function Navbar() {
+  // опред.актив.ссылок
+  const pathname = usePathname();
+
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
 
+  // откр.вертик.меню
   const handleDrawerOpen = () => {
     setOpen(true);
   };
-
+  // закр.вертик.меню
   const handleDrawerClose = () => {
     setOpen(false);
   };
@@ -183,13 +188,27 @@ export default function Navbar() {
           {/* страницы */}
           <nav className={`header-nav flex ml-auto`}>
             {/* stl.Next */}
-            <Link href="/">
+            <Link
+              className={`link ${pathname === "/" ? "active" : ""}`}
+              href="/"
+            >
               <span>Home</span>
             </Link>
-            <Link href="/blog">
+            <Link
+              className={`link ${pathname === "/blog" ? "active" : ""}`}
+              href="/blog"
+            >
               <span>Blog</span>
             </Link>
-            <Link href="/about">
+            <Link
+              className={`link ${
+                // ? раб.ток.на первый путь
+                pathname === ("/about" || "/about/team" || "/about/contacts")
+                  ? "active"
+                  : ""
+              }`}
+              href="/about"
+            >
               <span>About</span>
             </Link>
           </nav>
