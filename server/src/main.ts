@@ -45,16 +45,19 @@ async function bootstrap() {
     const config = new DocumentBuilder()
       .setTitle('Музыкальная Платформа')
       .setDescription('Описание API Музыкальной платформы')
-      .setVersion('1.0') // настр.для использ.jwt.Токен в swagger
+      .setVersion('1.0')
+      // настр.для использ.jwt.Токен в swagger
       .addBearerAuth()
-      .addServer(`${process.env.PROTOCOL}${PORT}`) // Указ.URL Своёго сервера
+      // Указ.URL Своёго сервера
+      .addServer(`${process.env.PROTOCOL}${PORT}`)
       // .addTag('app')
       .build();
     // созд.док.swg(экземп.прилож., объ.парам., специф.доступа(3ий не обязат.парам.))
     const document = SwaggerModule.createDocument(app, config);
-    // настр.путей swg. Путь устан.swg, Экземп.прилож., Объ.док.
+    // настр.путей swg(путь устан.swg, экземп.прилож., объ.док.)
     SwaggerModule.setup('swagger', app, document, {
-      customSiteTitle: 'Музыкальная Платформа', // Название страницы Swagger
+      // Название страницы Swagger
+      customSiteTitle: 'Музыкальная Платформа',
       swaggerOptions: {
         // `постоянное разрешение`настр.для использ.jwt.Токен в swagger
         persistAuthorization: true,
