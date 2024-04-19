@@ -11,7 +11,7 @@ async function bootstrap() {
     const PORT = process.env.PORT || 5000;
     // в перем.app асинхр.созд.экзепл.приложения ч/з кл.NestFactory с передачей в парам.modul входа
     const app = await NestFactory.create(AppModule /* , { cors: false } */);
-    // в 2х местах вкл./откл. cors
+    // в 2х местах вкл./откл. cors > отправ.req с браузера
     app.enableCors(/* { credentials: true, origin: true } */);
 
     // 1. Включаем глобальные фильтры и валидацию данных
@@ -47,7 +47,7 @@ async function bootstrap() {
       .setDescription('Описание API Музыкальной платформы')
       .setVersion('1.0') // настр.для использ.jwt.Токен в swagger
       .addBearerAuth()
-      .addServer(`http://localhost:${PORT}`) // Указ.URL Своёго сервера
+      .addServer(`${process.env.PROTOCOL}${PORT}`) // Указ.URL Своёго сервера
       // .addTag('app')
       .build();
     // созд.док.swg(экземп.прилож., объ.парам., специф.доступа(3ий не обязат.парам.))
