@@ -12,7 +12,7 @@ async function bootstrap() {
     // в перем.app асинхр.созд.экзепл.приложения ч/з кл.NestFactory с передачей в парам.modul входа
     const app = await NestFactory.create(AppModule /* , { cors: false } */);
     // в 2х местах вкл./откл. cors > отправ.req с браузера
-    app.enableCors(/* { credentials: true, origin: true } */);
+    app.enableCors({ credentials: true, origin: true });
 
     // 1. Включаем глобальные фильтры и валидацию данных
     // app.useGlobalFilters(new AllExceptionsFilter());
@@ -49,7 +49,10 @@ async function bootstrap() {
       // настр.для использ.jwt.Токен в swagger
       .addBearerAuth()
       // Указ.URL Своёго сервера
-      .addServer(`${process.env.PROTOCOL}${PORT}`)
+      // localhost
+      // .addServer(`${process.env.PROTOCOL}${PORT}`)
+      // VERCEL
+      .addServer(`${process.env.VERCEL_URL}`)
       // .addTag('app')
       .build();
     // созд.док.swg(экземп.прилож., объ.парам., специф.доступа(3ий не обязат.парам.))

@@ -1,7 +1,7 @@
 // общ.модуль приложения
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import * as path from 'path';
 
@@ -25,7 +25,7 @@ import { ReactionEntity } from './reactions/entities/reaction.entity';
 // декор.модуль. (организ.структуры области действ.> cntrl и provider)
 @Module({
   imports: [
-    // подкл.модуль для счит.перем.из.env
+    // подкл.модуль > счит.перем.из.env
     ConfigModule.forRoot({
       // путь к ф.конфиг. (по умолч.ищет в корне .env)
       envFilePath: '.env',
@@ -33,28 +33,31 @@ import { ReactionEntity } from './reactions/entities/reaction.entity';
       cache: true,
     }),
     // подкл.к БД ч/з перем.process.env
-    TypeOrmModule.forRoot({
-      type: 'postgres',
-      host: process.env.POSTGRES_HOST,
-      port: Number(process.env.POSTGRESS_PORT) || 5432,
-      database: process.env.POSTGRES_DB,
-      username: process.env.POSTGRES_USER,
-      password: process.env.POSTGRESS_PASSWORD,
-      // указ.`сущности` для авто.синхронз.измен. ч/з TypeOrmModule
-      entities: [
-        UserEntity,
-        RoleEntity,
-        UserRolesEntity,
-        FileEntity,
-        TrackEntity,
-        AlbumEntity,
-        ReactionEntity,
-      ],
-      // ^^ ТОЛЬКО DEV
-      // синхрон.табл.БД, логи сборки
-      // ! при true начала падать в ошб. - ERROR [TypeOrmModule] Unable to connect to the database. Retrying (1)... QueryFailedError: максимальное число столбцов в таблице: 1600
-      synchronize: true,
-      logging: true,
+    TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: (configService: ConfigService) => ({
+        type: 'postgres',
+        host: configService.get('ELEPHANT_PG_HOST'),
+        port: Number(configService.get('ELEPHANT_PG_PORT')) || 5432,
+        database: configService.get('ELEPHANT_PG_DB'),
+        username: configService.get('ELEPHANT_PG_USER'),
+        password: configService.get('ELEPHANT_PG_PSW'),
+        entities: [
+          UserEntity,
+          RoleEntity,
+          UserRolesEntity,
+          FileEntity,
+          TrackEntity,
+          AlbumEntity,
+          ReactionEntity,
+        ],
+        // ^^ ТОЛЬКО DEV true
+        // синхрон.табл.БД, логи сборки
+        // ! при true начала падать в ошб. - ERROR [TypeOrmModule] Unable to connect to the database. Retrying (1)... QueryFailedError: максимальное число столбцов в таблице: 1600
+        synchronize: false,
+        logging: false,
+      }),
+      inject: [ConfigService],
     }),
     // обслуж.статич.контент по путь/папка ч/з веб-сайт
     ServeStaticModule.forRoot({
