@@ -1,8 +1,8 @@
 // точка входа, запуск приложения
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import * as cors from 'cors';
+// import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+// import * as cors from 'cors';
 // import { ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
@@ -11,21 +11,30 @@ async function bootstrap() {
     const PORT = process.env.PORT || 5000;
     // в перем.app асинхр.созд.экзепл.приложения ч/з кл.NestFactory с передачей в парам.modul входа
     const app = await NestFactory.create(AppModule /* , { cors: false } */);
-    // в 2х местах вкл./откл. cors > отправ.req с браузера
-    app.enableCors({ credentials: true, origin: true });
 
-    // 1. Включаем глобальные фильтры и валидацию данных
+    // CORS настр. > отправ./блок.req браузера
+    app.enableCors({
+      // разреш.любой источник
+      origin: true,
+      // разреш.мтд.HTTP
+      methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE'],
+      // разреш.заголовки
+      allowedHeaders: [
+        'Content-Type',
+        'Origin',
+        'X-Requested-With',
+        'Accept',
+        'Authorization',
+      ],
+      // заголовки, доступные клиенту
+      exposedHeaders: ['Authorization'],
+      // вкл.учёт.данн.(куки, заголовки авторизации) из разн.источников
+      credentials: true,
+    });
+
+    // Вкл.глобал.фильтры и валид.данн.
     // app.useGlobalFilters(new AllExceptionsFilter());
     // app.useGlobalPipes(new ValidationPipe());
-
-    // 2. Включаем CORS с настройками
-    app.use(
-      cors({
-        origin: '*', // Измените на нужный URL вашего фронтенда
-        methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
-        allowedHeaders: ['Content-Type', 'Authorization'],
-      }),
-    );
 
     // MW для путей файлов в static - перенос в AppModule
     // app.use('/static', express.static(join(__dirname, '..', 'static')));
@@ -41,31 +50,31 @@ async function bootstrap() {
     //   next(err);
     // });
 
-    // настр.док.swagger(swg)
-    const config = new DocumentBuilder()
-      .setTitle('Музыкальная Платформа')
-      .setDescription('Описание API Музыкальной платформы')
-      .setVersion('1.0')
-      // настр.для использ.jwt.Токен в swagger
-      .addBearerAuth()
-      // Указ.URL Своёго сервера
-      // localhost
-      // .addServer(`${process.env.PROTOCOL}${PORT}`)
-      // VERCEL
-      .addServer(`${process.env.VERCEL_URL}`)
-      // .addTag('app')
-      .build();
-    // созд.док.swg(экземп.прилож., объ.парам., специф.доступа(3ий не обязат.парам.))
-    const document = SwaggerModule.createDocument(app, config);
-    // настр.путей swg(путь устан.swg, экземп.прилож., объ.док.)
-    SwaggerModule.setup('swagger', app, document, {
-      // Название страницы Swagger
-      customSiteTitle: 'Музыкальная Платформа',
-      swaggerOptions: {
-        // `постоянное разрешение`настр.для использ.jwt.Токен в swagger
-        persistAuthorization: true,
-      },
-    });
+    // // настр.док.swagger(swg)
+    // const config = new DocumentBuilder()
+    //   .setTitle('Музыкальная Платформа')
+    //   .setDescription('Описание API Музыкальной платформы')
+    //   .setVersion('1.0')
+    //   // настр.для использ.jwt.Токен в swagger
+    //   .addBearerAuth()
+    //   // Указ.URL Своёго сервера
+    //   // localhost
+    //   // .addServer(`${process.env.PROTOCOL}${PORT}`)
+    //   // VERCEL
+    //   .addServer(`${process.env.VERCEL_URL}`)
+    //   // .addTag('app')
+    //   .build();
+    // // созд.док.swg(экземп.прилож., объ.парам., специф.доступа(3ий не обязат.парам.))
+    // const document = SwaggerModule.createDocument(app, config);
+    // // настр.путей swg(путь устан.swg, экземп.прилож., объ.док.)
+    // SwaggerModule.setup('swagger', app, document, {
+    //   // Название страницы Swagger
+    //   customSiteTitle: 'Музыкальная Платформа',
+    //   swaggerOptions: {
+    //     // `постоянное разрешение`настр.для использ.jwt.Токен в swagger
+    //     persistAuthorization: true,
+    //   },
+    // });
 
     // прослуш.PORT и fn()callback с cg на Запуск
     await app.listen(PORT, () => console.log(`Запуск Сервер > PORT ${PORT}`));
