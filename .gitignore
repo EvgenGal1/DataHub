@@ -1,5 +1,5 @@
 # compiled output
-/dist
+# /dist
 **/node_modules/*
 
 # Logs
@@ -78,7 +78,7 @@ next-env.d.ts
 vr/
 .env
 # dtos/
-dist/
+# dist/
 
 # js
 # src/scripts/*
