@@ -357,16 +357,29 @@ export class TracksService {
     const tracks = await queryBuilder.getMany();
 
     if (!tracks.length && param) {
-      throw new NotFoundException(`Поиск по '${param}' не нашёл трека`);
+      throw new NotFoundException(`По '${param}' не нашёл трека`);
     }
 
     return tracks;
   }
 
   // ОДИН Трек по ID
-  async findOneTrack(id: number): Promise<TrackEntity> {
-    const track = await this.tracksRepository.findOneBy({ id });
-    if (!track) throw new NotFoundException('Трек не найден');
+  async findOneTrack(param: string): Promise<TrackEntity | TrackEntity[]> {
+    const whereCondition: any = {};
+    // условия res. id/num|eml/@|fullname/str
+    // ^^ дораб.распозн.стиль ч/з enum | регул.выраж. | шаблона строки
+    if (!isNaN(Number(param))) {
+      whereCondition.id = param;
+    }
+    // е/и str то Поиск
+    else if (typeof param === 'string') {
+      return await this.searchTrack(param);
+    }
+    // объ.res, обраб.ошб., res по значени.
+    const track = await this.tracksRepository.findOne({
+      where: whereCondition,
+    });
+    if (!track) throw new NotFoundException('Такого Трека нет');
     return track;
   }
 

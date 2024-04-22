@@ -147,30 +147,33 @@ export class FilesController {
     isArray: true,
   })
   // возвращ.ф.опред.user и с опред.типом(декор.Query)
-  findAllFiles(
+  async findAllFiles(
     @UserId() userId: number,
     @Query('fileType') fileType: FileType | FileType[],
   ) {
     if (!Array.isArray(fileType)) fileType = [fileType];
-    return this.filesService.findAllFiles(userId, fileType);
+    return await this.filesService.findAllFiles(userId, fileType);
   }
 
   @Get(':id')
   @ApiOperation({ summary: 'Получить Один Файл' })
-  findOneFile(@Param('id') id: string) {
-    return this.filesService.findOneFile(+id);
+  async findOneFile(@Param('id') id: string) {
+    return await this.filesService.findOneFile(+id);
   }
 
   @Patch(':id')
   @ApiOperation({ summary: 'Изменить Один Файл' })
-  updateFile(@Param('id') id: string, @Body() updateFileDto: UpdateFileDto) {
-    return this.filesService.updateFile(+id, updateFileDto);
+  async updateFile(
+    @Param('id') id: string,
+    @Body() updateFileDto: UpdateFileDto,
+  ) {
+    return await this.filesService.updateFile(+id, updateFileDto);
   }
 
   @Delete(/* ':id' */)
   @ApiOperation({ summary: 'Удалить Файлы' })
-  removeFile(@Query('ids') ids: string, @UserId() userId: number) {
+  async removeFile(@Query('ids') ids: string, @UserId() userId: number) {
     // передача ф.id ч/з запят.> удал. file?ids=1,2,4,
-    return this.filesService.removeFile(ids, userId);
+    return await this.filesService.removeFile(ids, userId);
   }
 }
