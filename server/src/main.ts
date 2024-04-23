@@ -8,29 +8,29 @@ import { AppModule } from './app.module';
 async function bootstrap() {
   try {
     // PORT Запуска
-    // const PORT = process.env.PORT || 5000;
+    const PORT = process.env.PORT || 5000;
     // в перем.app асинхр.созд.экзепл.приложения ч/з кл.NestFactory с передачей в парам.modul входа
     const app = await NestFactory.create(AppModule /* , { cors: false } */);
 
-    // // CORS настр. > отправ./блок.req браузера
-    // app.enableCors({
-    //   // разреш.любой источник
-    //   origin: true,
-    //   // разреш.мтд.HTTP
-    //   methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE'],
-    //   // разреш.заголовки
-    //   allowedHeaders: [
-    //     'Content-Type',
-    //     'Origin',
-    //     'X-Requested-With',
-    //     'Accept',
-    //     'Authorization',
-    //   ],
-    //   // заголовки, доступные клиенту
-    //   exposedHeaders: ['Authorization'],
-    //   // вкл.учёт.данн.(куки, заголовки авторизации) из разн.источников
-    //   credentials: true,
-    // });
+    // CORS настр. > отправ./блок.req браузера
+    app.enableCors({
+      // разреш.любой источник
+      origin: true,
+      // разреш.мтд.HTTP
+      methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE'],
+      // разреш.заголовки
+      allowedHeaders: [
+        'Content-Type',
+        'Origin',
+        'X-Requested-With',
+        'Accept',
+        'Authorization',
+      ],
+      // заголовки, доступные клиенту
+      exposedHeaders: ['Authorization'],
+      // вкл.учёт.данн.(куки, заголовки авторизации) из разн.источников
+      credentials: true,
+    });
 
     // Вкл.глобал.фильтры и валид.данн.
     // app.useGlobalFilters(new AllExceptionsFilter());
@@ -77,8 +77,8 @@ async function bootstrap() {
     // });
 
     // прослуш.PORT и fn()callback с cg на Запуск
-    // await app.listen(PORT, () => console.log(`Запуск Сервер > PORT ${PORT}`));
-    await app.listen(3000);
+    await app.listen(PORT, () => console.log(`Запуск Сервер > PORT ${PORT}`));
+    // await app.listen(3000);
   } catch (e) {
     console.log('main e : ' + e);
   }
