@@ -26,12 +26,12 @@ import { AppService } from './app.service';
 @Module({
   imports: [
     // подкл.модуль > счит.перем.из.env
-    // ConfigModule.forRoot({
-    //   // путь к ф.конфиг. (по умолч.ищет в корне .env)
-    //   envFilePath: '.env',
-    //   // повысить производит.доступа к перем.в process.env.
-    //   cache: true,
-    // }),
+    ConfigModule.forRoot({
+      // путь к ф.конфиг. (по умолч.ищет в корне .env)
+      envFilePath: '.env',
+      // повысить производит.доступа к перем.в process.env.
+      cache: true,
+    }),
     // подкл.к БД ч/з перем.process.env
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
