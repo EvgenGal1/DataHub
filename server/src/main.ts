@@ -61,7 +61,7 @@ async function bootstrap() {
       // localhost
       // .addServer(`${process.env.PROTOCOL}${PORT}`)
       // VERCEL
-      .addServer(`${process.env.VERCEL_URL}`)
+      // .addServer(`${process.env.VERCEL_URL}`)
       // .addTag('app')
       .build();
     // созд.док.swg(экземп.прилож., объ.парам., специф.доступа(3ий не обязат.парам.))
