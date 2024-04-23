@@ -1,7 +1,7 @@
 // точка входа, запуск приложения
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-// import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 // import * as cors from 'cors';
 // import { ValidationPipe } from '@nestjs/common';
 
@@ -50,35 +50,34 @@ async function bootstrap() {
     //   next(err);
     // });
 
-    // // настр.док.swagger(swg)
-    // const config = new DocumentBuilder()
-    //   .setTitle('Музыкальная Платформа')
-    //   .setDescription('Описание API Музыкальной платформы')
-    //   .setVersion('1.0')
-    //   // настр.для использ.jwt.Токен в swagger
-    //   .addBearerAuth()
-    //   // Указ.URL Своёго сервера
-    //   // localhost
-    //   // .addServer(`${process.env.PROTOCOL}${PORT}`)
-    //   // VERCEL
-    //   .addServer(`${process.env.VERCEL_URL}`)
-    //   // .addTag('app')
-    //   .build();
-    // // созд.док.swg(экземп.прилож., объ.парам., специф.доступа(3ий не обязат.парам.))
-    // const document = SwaggerModule.createDocument(app, config);
-    // // настр.путей swg(путь устан.swg, экземп.прилож., объ.док.)
-    // SwaggerModule.setup('swagger', app, document, {
-    //   // Название страницы Swagger
-    //   customSiteTitle: 'Музыкальная Платформа',
-    //   swaggerOptions: {
-    //     // `постоянное разрешение`настр.для использ.jwt.Токен в swagger
-    //     persistAuthorization: true,
-    //   },
-    // });
+    // настр.док.swagger(swg)
+    const config = new DocumentBuilder()
+      .setTitle('Музыкальная Платформа')
+      .setDescription('Описание API Музыкальной платформы')
+      .setVersion('1.0')
+      // настр.для использ.jwt.Токен в swagger
+      .addBearerAuth()
+      // Указ.URL Своёго сервера
+      // localhost
+      // .addServer(`${process.env.PROTOCOL}${PORT}`)
+      // VERCEL
+      .addServer(`${process.env.VERCEL_URL}`)
+      // .addTag('app')
+      .build();
+    // созд.док.swg(экземп.прилож., объ.парам., специф.доступа(3ий не обязат.парам.))
+    const document = SwaggerModule.createDocument(app, config);
+    // настр.путей swg(путь устан.swg, экземп.прилож., объ.док.)
+    SwaggerModule.setup('swagger', app, document, {
+      // Название страницы Swagger
+      customSiteTitle: 'Музыкальная Платформа',
+      swaggerOptions: {
+        // `постоянное разрешение`настр.для использ.jwt.Токен в swagger
+        persistAuthorization: true,
+      },
+    });
 
     // прослуш.PORT и fn()callback с cg на Запуск
     await app.listen(PORT, () => console.log(`Запуск Сервер > PORT ${PORT}`));
-    // await app.listen(3000);
   } catch (e) {
     console.log('main e : ' + e);
   }
