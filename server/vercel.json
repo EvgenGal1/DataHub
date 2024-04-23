@@ -2,10 +2,10 @@
   "version": 2,
   "builds": [
     {
-      "src": "src/main.js",
+      "src": "src/main.ts",
       "use": "@vercel/node",
       "config": {
-        "includeFiles": ["src/**/*"],
+        "includeFiles": ["src/**/*", "package.json", "tsconfig.json"],
         "installCommand": "npm install"
       }
     }
@@ -13,7 +13,7 @@
   "routes": [
     {
       "src": "/(.*)",
-      "dest": "src/main.js",
+      "dest": "src/main.ts",
       "methods": ["GET", "HEAD", "PUT", "PATCH", "POST", "DELETE"]
     }
   ]
