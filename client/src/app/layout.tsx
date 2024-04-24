@@ -19,17 +19,13 @@ export const metadata: Metadata = {
     icon: [
       {
         media: "(prefers-color-scheme: light)",
-        // url: "/images/icon-light.png",
-        // href: "/images/icon-light.png",
-        url: "/images/icon/favicon_MusicBase-Next.ico",
-        href: "/images/icon/favicon_MusicBase-Next.ico",
+        url: "/images/icon/favicon_MusicBase(light).ico",
+        href: "/images/icon/favicon_MusicBase(light).ico",
       },
       {
         media: "(prefers-color-scheme: dark)",
-        // url: "/images/icon.png",
-        // href: "/images/icon-dark.png",
-        url: "/images/icon/favicon_MusicBase-upd.ico",
-        href: "/images/icon/favicon_MusicBase-upd.ico",
+        url: "/images/icon/favicon_MusicBase(dark).ico",
+        href: "/images/icon/favicon_MusicBase(dark).ico",
       },
     ],
   },

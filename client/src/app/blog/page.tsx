@@ -18,7 +18,7 @@ async function getDate() {
 // объ.настр.метадаты > SEO
 export const metadata: Metadata = {
   title: "Blog | Music Platform",
-  icons: "/images/icon/favicon_MusicBase-Next.ico",
+  icons: "/images/icon/favicon_MusicBase(light).ico",
 };
 
 // serv.Комп могут быть async
