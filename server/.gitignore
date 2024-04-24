@@ -59,4 +59,4 @@ webpack*
 .vscode
 
 # врем.откл.
-**/schemaBD/
+# **/schemaBD/
