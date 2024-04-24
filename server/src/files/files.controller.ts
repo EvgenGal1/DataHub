@@ -29,7 +29,7 @@ import { FileType, fileTypesAllowed } from './entities/file.entity';
 import { FilesService } from './files.service';
 import { fileStorage } from './storage';
 // import { JwtAuthGuard } from 'src/auth/guard/jwt.guard';
-import { UserId } from 'src/decorators/user-id.decorator';
+import { UserId } from 'src/common/decorators/user-id.decorator';
 
 @Controller('files')
 //  групп.мтд.cntrl files swagger

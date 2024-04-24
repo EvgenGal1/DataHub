@@ -7,10 +7,10 @@ import { UserEntity } from './entities/user.entity';
 import { RoleEntity } from 'src/roles/entities/role.entity';
 import { RolesModule } from 'src/roles/roles.module';
 import { UserRolesEntity } from 'src/roles/entities/user-roles.entity';
-import { DatabaseUtils } from 'src/utils/database.utils';
 import { FileEntity } from 'src/files/entities/file.entity';
 import { TrackEntity } from 'src/tracks/entities/track.entity';
 import { AlbumEntity } from 'src/albums/entities/album.entity';
+import { DatabaseUtils } from 'src/utils/database.utils';
 
 @Module({
   controllers: [UsersController],

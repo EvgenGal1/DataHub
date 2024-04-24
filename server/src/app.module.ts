@@ -2,8 +2,8 @@
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-// import { ServeStaticModule } from '@nestjs/serve-static';
-// import * as path from 'path';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import * as path from 'path';
 
 import { AppController, AppController2 } from './app.controller';
 import { AppService } from './app.service';
@@ -37,11 +37,11 @@ import { ReactionEntity } from './reactions/entities/reaction.entity';
       imports: [ConfigModule],
       useFactory: (configService: ConfigService) => ({
         type: 'postgres',
-        //       host: configService.get('ELEPHANT_PG_HOST'),
-        // port: Number(configService.get('ELEPHANT_PG_PORT')) || 5432,
-        //       database: configService.get('ELEPHANT_PG_DB'),
-        //       username: configService.get('ELEPHANT_PG_USER'),
-        //       password: configService.get('ELEPHANT_PG_PSW'),
+        host: configService.get('ELEPHANT_PG_HOST'),
+        port: Number(configService.get('ELEPHANT_PG_PORT')) || 5432,
+        database: configService.get('ELEPHANT_PG_DB'),
+        username: configService.get('ELEPHANT_PG_USER'),
+        password: configService.get('ELEPHANT_PG_PSW'),
         entities: [
           UserEntity,
           RoleEntity,
@@ -60,10 +60,10 @@ import { ReactionEntity } from './reactions/entities/reaction.entity';
       inject: [ConfigService],
     }),
     // обслуж.статич.контент по путь/папка ч/з веб-сайт
-    // ServeStaticModule.forRoot({
-    //   rootPath: path.resolve(__dirname, /* '..', */ 'static'),
-    //   serveRoot: '/static',
-    // }),
+    ServeStaticModule.forRoot({
+      rootPath: path.resolve(__dirname, /* '..', */ 'static'),
+      serveRoot: '/static',
+    }),
     // подкл.использ.modulи
     // // AuthModule,
     UsersModule,
