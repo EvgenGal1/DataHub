@@ -50,6 +50,7 @@ async function bootstrap() {
     //   next(err);
     // });
 
+    // ! не раб. - по url vercel (https://music-platform-serv-nest.vercel.app/swagger) ошб. - Uncaught ReferenceError: SwaggerUIBundle is not defined at window.onload (swagger-ui-init.js:71:7)
     // настр.док.swagger(swg)
     const config = new DocumentBuilder()
       .setTitle('Музыкальная Платформа')
@@ -61,7 +62,7 @@ async function bootstrap() {
       // localhost
       // .addServer(`${process.env.PROTOCOL}${PORT}`)
       // VERCEL
-      // .addServer(`${process.env.VERCEL_URL}`)
+      .addServer(`${process.env.VERCEL_URL}`)
       // .addTag('app')
       .build();
     // созд.док.swg(экземп.прилож., объ.парам., специф.доступа(3ий не обязат.парам.))
@@ -70,10 +71,10 @@ async function bootstrap() {
     SwaggerModule.setup('swagger', app, document, {
       // Название страницы Swagger
       customSiteTitle: 'Музыкальная Платформа (swg)',
-      // swaggerOptions: {
-      // `постоянное разрешение`настр.для использ.jwt.Токен в swagger
-      //   persistAuthorization: true,
-      // },
+      swaggerOptions: {
+        // `постоянное разрешение`настр.для использ.jwt.Токен в swagger
+        persistAuthorization: true,
+      },
     });
 
     // прослуш.PORT и fn()callback с cg на Запуск
