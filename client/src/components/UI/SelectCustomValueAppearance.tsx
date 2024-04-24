@@ -36,10 +36,10 @@ export default function SelectCustomValueAppearance() {
         <Option
           key={data.name}
           value={data.name}
-          label={data.name} // The appearance of the selected value will be a string
+          label={data.name} // Появление выбранного значения будет строкой
         >
           <ListItemDecorator>
-            <Avatar src={`/static/images/avatar/${index + 1}.jpg`} />
+            <Avatar src={`/public/images/avatar/${index + 1}.jpg`} />
           </ListItemDecorator>
           <Box component="span" sx={{ display: "block" }}>
             <Typography component="span" level="title-sm">
@@ -64,6 +64,7 @@ export default function SelectCustomValueAppearance() {
           </Chip>
         </Option>
       ))}
+      123123123123123
     </Select>
   );
 }
