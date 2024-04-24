@@ -56,7 +56,7 @@ async function bootstrap() {
       .setDescription('Описание API Музыкальной платформы')
       .setVersion('1.0')
       // настр.для использ.jwt.Токен в swagger
-      .addBearerAuth()
+      // .addBearerAuth()
       // Указ.URL Своёго сервера
       // localhost
       // .addServer(`${process.env.PROTOCOL}${PORT}`)
@@ -69,11 +69,11 @@ async function bootstrap() {
     // настр.путей swg(путь устан.swg, экземп.прилож., объ.док.)
     SwaggerModule.setup('swagger', app, document, {
       // Название страницы Swagger
-      customSiteTitle: 'Музыкальная Платформа',
-      swaggerOptions: {
-        // `постоянное разрешение`настр.для использ.jwt.Токен в swagger
-        persistAuthorization: true,
-      },
+      customSiteTitle: 'Музыкальная Платформа (swg)',
+      // swaggerOptions: {
+      // `постоянное разрешение`настр.для использ.jwt.Токен в swagger
+      //   persistAuthorization: true,
+      // },
     });
 
     // прослуш.PORT и fn()callback с cg на Запуск
