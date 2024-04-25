@@ -62,8 +62,19 @@ webpack*
 # **/schemaBD/
 /src/config/**
 /src/shared/**
-/src/common/
-!/src/common/decorators/user-id.decorator.ts
-!/src/common/decorators/
-!/src/common/decorators/*
-!/src/common/decorators/**
+src/common/**
+# !/src/common/decorators/!user-id.decorator.ts
+# **/src/common/decorators/!user-id.decorator.ts
+src/common/!/123.txt
+!/src/common/decorators/123.txt
+!src/common/decorators/123.txt
+!src/common/decorators/*.txt
+**/!/*.txt
+# $ echo '!/123.txt*' >/src/common/.gitignore
+# !/src/common/decorators/
+# !/src/common/decorators/*
+# !/src/common/decorators/**
+# 
+folder/
+# !folder/*.txt
+!folder/asd.txt
