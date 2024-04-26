@@ -95,7 +95,4 @@ webpack*
 # настройки
 .vscode
 
-# врем.откл.
-**/auth/*
-**/admin/*
-**/validators/*
+# # врем.откл.

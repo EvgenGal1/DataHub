@@ -59,22 +59,24 @@ webpack*
 .vscode
 
 # врем.откл.
-# **/schemaBD/
-/src/config/**
-/src/shared/**
-src/common/**
-# !/src/common/decorators/!user-id.decorator.ts
-# **/src/common/decorators/!user-id.decorator.ts
-src/common/!/123.txt
-!/src/common/decorators/123.txt
-!src/common/decorators/123.txt
-!src/common/decorators/*.txt
-**/!/*.txt
-# $ echo '!/123.txt*' >/src/common/.gitignore
-# !/src/common/decorators/
-# !/src/common/decorators/*
-# !/src/common/decorators/**
-# 
-folder/
-# !folder/*.txt
-!folder/asd.txt
+# server
+**/auth/*
+**/admin/*
+**/validators/*
+**/src/config/**
+**/src/shared/**
+**/src/common/**
+**/src/base/database/config/**
+
+# исключения
+# папки 
+!/**/src/common/decorators/
+!/**/src/config/envs/
+# все.ф.в п. 
+# !/**/src/common/decorators/**
+# ф.
+!/**/src/common/decorators/user-id.decorator.ts
+!/**/src/config/envs/localhost.config.ts
+!/**/src/config/envs/supabase.config.ts
+!/**/src/config/envs/elephant.config.ts
+!/**/src/config/envs/configurationLocalhost.ts
