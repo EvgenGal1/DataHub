@@ -44,10 +44,10 @@ export class UsersController {
   // ч/з внедр.завис. + UsersService > раб.ч/з this с serv.users
   constructor(
     // private readonly authService: AuthService,
-    private usersService: UsersService,
+    private readonly usersService: UsersService,
   ) {}
   // URL_SERVER > доп.мтд.
-  SERVER_URL: string = `http://localhost:${process.env.PORT}/`;
+  // SERVER_URL: string = `http://localhost:${process.env.PORT}/`;
 
   @Post()
   @ApiOperation({ summary: 'Создание Пользователя' })

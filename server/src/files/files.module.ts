@@ -13,7 +13,7 @@ import { AlbumEntity } from 'src/albums/entities/album.entity';
 @Module({
   controllers: [FilesController],
   providers: [FilesService, DatabaseUtils],
-  // подкл.FileEntity ч/з TypeOrmModule в import для раб.с табл.filesб users, roles, tracks
+  // подкл.FileEntity ч/з TypeOrmModule в import для раб.с табл.files, users, roles, tracks
   imports: [
     TypeOrmModule.forFeature([
       FileEntity,
