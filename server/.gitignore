@@ -60,6 +60,8 @@ webpack*
 
 # врем.откл.
 # server
+**/env.validation.ts
+**/env.development.ts
 **/auth/*
 **/admin/*
 **/validators/*
