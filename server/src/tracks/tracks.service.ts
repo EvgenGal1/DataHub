@@ -24,8 +24,16 @@ import { BasicUtils } from 'src/utils/basic.utils';
 export class TracksService {
   // ч/з внедр.завис. + TrackEntity,ReactionEntity,UserEntity > раб.ч/з this с табл.track,reaction,user
   constructor(
-    @InjectRepository(TrackEntity)
+    @InjectRepository(
+      TrackEntity,
+      // ^^ ОБЩ.ф.,настр. Внедрен.репозит.в зависим.от БД (е/и табл.на разн.БД)
+      /* , 'supabase' */
+    )
     private tracksRepository: Repository<TrackEntity>,
+    // ^^ РАЗДЕЛ.ф.,настр. Внедрен.репозит.в зависим.от БД (е/и табл.на разн.БД)
+    // private localTracksRepository: Repository<TrackEntity>,
+    // @InjectRepository(TrackEntity, 'supabase')
+    // private supabaseTracksRepository: Repository<TrackEntity>,
     @InjectRepository(ReactionEntity)
     private reactionsRepository: Repository<ReactionEntity>,
     @InjectRepository(UserEntity)
@@ -300,6 +308,13 @@ export class TracksService {
 
         console.log('T.s. CRE track : ', track);
         savedTrack = await this.tracksRepository.save(track);
+
+        // ^^ РАЗДЕЛ.ф.,настр. Внедрен.репозит.в зависим.от БД (е/и табл.на разн.БД)
+        // await this.localTracksRepository.save(track);
+        // if (process.env.NODE_ENV === 'production') {
+        //   await this.supabaseTracksRepository.save(track);
+        // }
+
         return savedTrack;
       }
     } catch (error) {

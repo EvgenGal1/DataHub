@@ -241,11 +241,13 @@ export class TrackController {
       await Promise.all(unlinkPromises);
 
       // кастом.ошб. Данн.msg serv <<>> cntrl + ошб.с serv
+
       throw new NotFoundException(
-        error.response.message +
-          ' <<>> ' +
-          'Ошибка сохранения данных в БД на контроле загрузки Трека',
-        error.options.message,
+        // ! ошб. -  Property 'response' does not exist on type 'unknown'
+        // error.response.message +
+        //   ' <<>> ' +
+        'Ошибка сохранения данных в БД на контроле загрузки Трека',
+        error /* .options.message */,
       );
     }
   }
