@@ -17,6 +17,11 @@ export class AppController {
     // после внедр.завис. обращ.к serv ч/з this
     return this.appService.getUsers();
   }
+
+  @Get('/api/auth/get')
+  getHello(): string | number {
+    return this.appService.getHello();
+  }
 }
 
 // альтер.декор.маршр.req
@@ -24,7 +29,7 @@ export class AppController {
 export class AppController2 {
   constructor(private readonly appService: AppService) {}
 
-  @Get()
+  @Get(/*    */)
   getUsers(): string {
     return this.appService.getUsers2();
   }
