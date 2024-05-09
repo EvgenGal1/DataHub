@@ -1,9 +1,7 @@
 // ^^ различные/помошники
 import * as fs from 'fs';
 import * as mm from 'music-metadata';
-// import chardet from 'chardet';
-// import iconv from 'iconv-lite';
-const iconv = require('iconv-lite');
+import iconv from 'iconv-lite';
 
 // @Injectable()
 export class BasicUtils {

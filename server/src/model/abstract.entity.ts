@@ -1,12 +1,12 @@
-import { PrimaryColumn } from 'typeorm';
+import { PrimaryColumn, Column } from 'typeorm';
 
 export abstract class AbstractEntity {
-  @PrimaryColumn()
-  id: number;
+@PrimaryColumn()
+id: number;
 
-  // @Column()
-  // title: string;
+@Column()
+title: string;
 
-  // @Column()
-  // description: string;
+@Column()
+description: string;
 }
