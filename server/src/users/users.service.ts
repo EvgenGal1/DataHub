@@ -16,8 +16,16 @@ import { DatabaseUtils } from 'src/utils/database.utils';
 export class UsersService {
   // ч/з внедр.завис. + UserEntity > раб.ч/з this с табл.users
   constructor(
-    @InjectRepository(UserEntity)
+    @InjectRepository(
+      UserEntity,
+      // ^^ ОБЩ.ф.,настр. Внедрен.репозит.в зависим.от БД (е/и табл.на разн.БД)
+      /* , 'elephant' */
+    )
     private userRepository: Repository<UserEntity>,
+    // ^^ РАЗДЕЛ.ф.,настр. Внедрен.репозит.в зависим.от БД (е/и табл.на разн.БД)
+    // private localUsersRepository: Repository<UserEntity>,
+    // @InjectRepository(UserEntity, 'elephant')
+    // private elephantUsersRepository: Repository<UserEntity>,
     @InjectRepository(RoleEntity)
     private roleRepository: Repository<RoleEntity>,
     @InjectRepository(UserRolesEntity)
@@ -42,6 +50,13 @@ export class UsersService {
     user.roles = [role];
     // сохр.объ.user > БД
     await this.userRepository.save(user);
+
+    // ^^ РАЗДЕЛ.ф.,настр. Внедрен.репозит.в зависим.от БД (е/и табл.на разн.БД)
+    // await this.localUsersRepository.save(user);
+    // if (process.env.NODE_ENV === 'production') {
+    //   await this.elephantUsersRepository.save(user);
+    // }
+
     // возвр.user
     return user;
   }
