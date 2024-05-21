@@ -9,7 +9,7 @@ import { DatabaseUtils } from 'src/utils/database.utils';
 @Injectable()
 export class FilesService {
   constructor(
-    @InjectRepository(FileEntity)
+    @InjectRepository(FileEntity, 'localhost')
     private filesRepository: Repository<FileEntity>,
     private dataBaseUtils: DatabaseUtils,
   ) {}

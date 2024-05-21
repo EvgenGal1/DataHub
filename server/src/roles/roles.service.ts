@@ -13,11 +13,11 @@ import { DatabaseUtils } from 'src/utils/database.utils';
 @Injectable()
 export class RolesService {
   constructor(
-    @InjectRepository(UserEntity)
+    @InjectRepository(UserEntity, 'localhost')
     private userRepository: Repository<UserEntity>,
-    @InjectRepository(RoleEntity)
+    @InjectRepository(RoleEntity, 'localhost')
     private roleRepository: Repository<RoleEntity>,
-    @InjectRepository(UserRolesEntity)
+    @InjectRepository(UserRolesEntity, 'localhost')
     private userRolesRepository: Repository<UserRolesEntity>,
     private dataBaseUtils: DatabaseUtils,
   ) {}

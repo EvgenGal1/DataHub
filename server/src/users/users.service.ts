@@ -16,19 +16,11 @@ import { DatabaseUtils } from 'src/utils/database.utils';
 export class UsersService {
   // ч/з внедр.завис. + UserEntity > раб.ч/з this с табл.users
   constructor(
-    @InjectRepository(
-      UserEntity,
-      // ^^ ОБЩ.ф.,настр. Внедрен.репозит.в зависим.от БД (е/и табл.на разн.БД)
-      /* , 'elephant' */
-    )
+    @InjectRepository(UserEntity, 'localhost')
     private userRepository: Repository<UserEntity>,
-    // ^^ РАЗДЕЛ.ф.,настр. Внедрен.репозит.в зависим.от БД (е/и табл.на разн.БД)
-    // private localUsersRepository: Repository<UserEntity>,
-    // @InjectRepository(UserEntity, 'elephant')
-    // private elephantUsersRepository: Repository<UserEntity>,
-    @InjectRepository(RoleEntity)
+    @InjectRepository(RoleEntity, 'localhost')
     private roleRepository: Repository<RoleEntity>,
-    @InjectRepository(UserRolesEntity)
+    @InjectRepository(UserRolesEntity, 'localhost')
     private userRolesRepository: Repository<UserRolesEntity>,
     private roleService: RolesService,
     private dataBaseUtils: DatabaseUtils,

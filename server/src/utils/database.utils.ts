@@ -12,15 +12,15 @@ import { AlbumEntity } from 'src/albums/entities/album.entity';
 @Injectable()
 export class DatabaseUtils {
   constructor(
-    @InjectRepository(UserEntity)
+    @InjectRepository(UserEntity, 'localhost')
     private userRepository: Repository<UserEntity>,
-    @InjectRepository(RoleEntity)
+    @InjectRepository(RoleEntity, 'localhost')
     private rolesRepository: Repository<RoleEntity>,
-    @InjectRepository(TrackEntity)
+    @InjectRepository(TrackEntity, 'localhost')
     private trackRepository: Repository<TrackEntity>,
-    @InjectRepository(FileEntity)
+    @InjectRepository(FileEntity, 'localhost')
     private fileRepository: Repository<FileEntity>,
-    @InjectRepository(AlbumEntity)
+    @InjectRepository(AlbumEntity, 'localhost')
     private albumRepository: Repository<AlbumEntity>,
   ) {}
 

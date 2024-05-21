@@ -24,14 +24,17 @@ import { BasicUtils } from 'src/utils/basic.utils';
     BasicUtils,
   ],
   imports: [
-    TypeOrmModule.forFeature([
-      TrackEntity,
-      UserEntity,
-      ReactionEntity,
-      AlbumEntity,
-      FileEntity,
-      RoleEntity,
-    ]),
+    TypeOrmModule.forFeature(
+      [
+        TrackEntity,
+        UserEntity,
+        ReactionEntity,
+        AlbumEntity,
+        FileEntity,
+        RoleEntity,
+      ],
+      'localhost',
+    ),
   ],
   exports: [AlbumsService],
 })

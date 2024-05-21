@@ -15,13 +15,10 @@ import { AlbumEntity } from 'src/albums/entities/album.entity';
   providers: [FilesService, DatabaseUtils],
   // подкл.FileEntity ч/з TypeOrmModule в import для раб.с табл.files, users, roles, tracks
   imports: [
-    TypeOrmModule.forFeature([
-      FileEntity,
-      AlbumEntity,
-      UserEntity,
-      RoleEntity,
-      TrackEntity,
-    ]),
+    TypeOrmModule.forFeature(
+      [FileEntity, AlbumEntity, UserEntity, RoleEntity, TrackEntity],
+      'localhost',
+    ),
   ],
   exports: [FilesService],
 })

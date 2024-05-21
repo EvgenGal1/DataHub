@@ -24,24 +24,16 @@ import { BasicUtils } from 'src/utils/basic.utils';
 export class TracksService {
   // ч/з внедр.завис. + TrackEntity,ReactionEntity,UserEntity > раб.ч/з this с табл.track,reaction,user
   constructor(
-    @InjectRepository(
-      TrackEntity,
-      // ^^ ОБЩ.ф.,настр. Внедрен.репозит.в зависим.от БД (е/и табл.на разн.БД)
-      /* , 'supabase' */
-    )
+    @InjectRepository(TrackEntity, 'localhost')
     private tracksRepository: Repository<TrackEntity>,
-    // ^^ РАЗДЕЛ.ф.,настр. Внедрен.репозит.в зависим.от БД (е/и табл.на разн.БД)
-    // private localTracksRepository: Repository<TrackEntity>,
-    // @InjectRepository(TrackEntity, 'supabase')
-    // private supabaseTracksRepository: Repository<TrackEntity>,
-    @InjectRepository(ReactionEntity)
+    @InjectRepository(ReactionEntity, 'localhost')
     private reactionsRepository: Repository<ReactionEntity>,
-    @InjectRepository(UserEntity)
+    @InjectRepository(UserEntity, 'localhost')
     private usersRepository: Repository<UserEntity>,
-    @InjectRepository(FileEntity)
+    @InjectRepository(FileEntity, 'localhost')
     private filesRepository: Repository<FileEntity>,
     private filesService: FilesService,
-    @InjectRepository(AlbumEntity)
+    @InjectRepository(AlbumEntity, 'localhost')
     private albumsRepository: Repository<AlbumEntity>,
     private albumsService: AlbumsService,
     private dataBaseUtils: DatabaseUtils,

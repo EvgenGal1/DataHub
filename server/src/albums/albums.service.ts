@@ -17,13 +17,13 @@ import { TotalAlbumDto } from './dto/total-album.dto';
 @Injectable()
 export class AlbumsService {
   constructor(
-    @InjectRepository(AlbumEntity)
+    @InjectRepository(AlbumEntity, 'localhost')
     private albumsRepository: Repository<AlbumEntity>,
-    @InjectRepository(TrackEntity)
+    @InjectRepository(TrackEntity, 'localhost')
     private tracksRepository: Repository<TrackEntity>,
-    @InjectRepository(ReactionEntity)
+    @InjectRepository(ReactionEntity, 'localhost')
     private reactionsRepository: Repository<ReactionEntity>,
-    @InjectRepository(FileEntity)
+    @InjectRepository(FileEntity, 'localhost')
     private fileRepository: Repository<FileEntity>,
     private filesService: FilesService,
     private dataBaseUtils: DatabaseUtils,

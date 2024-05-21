@@ -15,14 +15,17 @@ import { AlbumEntity } from 'src/albums/entities/album.entity';
   controllers: [RolesController],
   providers: [RolesService, DatabaseUtils],
   imports: [
-    TypeOrmModule.forFeature([
-      RoleEntity,
-      UserEntity,
-      UserRolesEntity,
-      FileEntity,
-      TrackEntity,
-      AlbumEntity,
-    ]),
+    TypeOrmModule.forFeature(
+      [
+        RoleEntity,
+        UserEntity,
+        UserRolesEntity,
+        FileEntity,
+        TrackEntity,
+        AlbumEntity,
+      ],
+      'localhost',
+    ),
   ],
   exports: [RolesService],
 })

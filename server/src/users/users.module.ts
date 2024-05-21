@@ -17,14 +17,17 @@ import { DatabaseUtils } from 'src/utils/database.utils';
   providers: [UsersService, DatabaseUtils],
   imports: [
     // ч/з TypeOrmModule.`для функции` подкл.UserEntity и пр. для раб.с табл.users и пр.
-    TypeOrmModule.forFeature([
-      UserEntity,
-      RoleEntity,
-      UserRolesEntity,
-      FileEntity,
-      TrackEntity,
-      AlbumEntity,
-    ]),
+    TypeOrmModule.forFeature(
+      [
+        UserEntity,
+        RoleEntity,
+        UserRolesEntity,
+        FileEntity,
+        TrackEntity,
+        AlbumEntity,
+      ],
+      'localhost',
+    ),
     // подкл.использ.modulи
     RolesModule,
     // forwardRef(() => AuthModule),
