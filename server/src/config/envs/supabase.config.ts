@@ -8,6 +8,7 @@ import { TrackEntity } from 'src/tracks/entities/track.entity';
 import { UserEntity } from 'src/users/entities/user.entity';
 
 export default (): TypeOrmModuleOptions => ({
+  name: 'supabase',
   type: 'postgres',
   synchronize: process.env.NODE_ENV !== 'production',
   entities: [

@@ -9,6 +9,7 @@ import { TrackEntity } from 'src/tracks/entities/track.entity';
 import { AlbumEntity } from 'src/albums/entities/album.entity';
 
 export default (): TypeOrmModuleOptions => ({
+  name: 'localhost',
   type: 'postgres',
   host: process.env.LH_PG_HOST,
   port: parseInt(process.env.LH_PG_PORT, 10) || 5432,
