@@ -17,11 +17,6 @@ export class AppController {
     // после внедр.завис. обращ.к serv ч/з this
     return this.appService.getUsers();
   }
-
-  @Get('/api/auth/get')
-  getHello(): string | number {
-    return this.appService.getHello();
-  }
 }
 
 // альтер.декор.маршр.req
