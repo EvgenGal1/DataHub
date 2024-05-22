@@ -1,16 +1,15 @@
 // точка входа, запуск приложения
 import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module';
+import { AppModule } from './app.module.js';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-// import * as cors from 'cors';
-// import { ValidationPipe } from '@nestjs/common';
+import { NestExpressApplication } from '@nestjs/platform-express';
 
-async function bootstrap() {
+async function bootstrap(): Promise<any> {
   try {
+    // в перем.app асинхр.созд.экзепл.приложения ч/з кл.NestFactory с передачей в парам.modul входа и пр.настр.
+    const app = await NestFactory.create<NestExpressApplication>(AppModule);
     // PORT Запуска
     const PORT = process.env.PORT || 5000;
-    // в перем.app асинхр.созд.экзепл.приложения ч/з кл.NestFactory с передачей в парам.modul входа
-    const app = await NestFactory.create(AppModule /* , { cors: false } */);
 
     // CORS настр. > отправ./блок.req браузера
     app.enableCors({
@@ -36,9 +35,6 @@ async function bootstrap() {
     // app.useGlobalFilters(new AllExceptionsFilter());
     // app.useGlobalPipes(new ValidationPipe());
 
-    // MW для путей файлов в static - перенос в AppModule
-    // app.use('/static', express.static(join(__dirname, '..', 'static')));
-
     // MW для ошб.
     // app.use((err, req, res, next) => {
     //   // Проверяем, является ли ошибка нашей ожидаемой ошибкой от multer.diskStorage
@@ -50,23 +46,23 @@ async function bootstrap() {
     //   next(err);
     // });
 
-    // ! не раб. - по url vercel (https://music-platform-serv-nest.vercel.app/swagger) ошб. - Uncaught ReferenceError: SwaggerUIBundle is not defined at window.onload (swagger-ui-init.js:71:7)
     // настр.док.swagger(swg)
     const config = new DocumentBuilder()
       .setTitle('Музыкальная Платформа')
       .setDescription('Описание API Музыкальной платформы')
       .setVersion('1.0')
       // настр.для использ.jwt.Токен в swagger
-      // .addBearerAuth()
-      // Указ.URL Своёго сервера
-      // localhost
-      // .addServer(`${process.env.PROTOCOL}${PORT}`)
-      // VERCEL
-      .addServer(`${process.env.VERCEL_URL}`)
-      // .addTag('app')
-      .build();
+      .addBearerAuth();
+
+    if (process.env.NODE_ENV === 'production') {
+      config.addServer(process.env.VERCEL_URL);
+    } else if (process.env.NODE_ENV === 'development') {
+      config.addServer(`${process.env.PROTOCOL}${PORT}`);
+    }
+    const configSwagger = config.build();
+
     // созд.док.swg(экземп.прилож., объ.парам., специф.доступа(3ий не обязат.парам.))
-    const document = SwaggerModule.createDocument(app, config);
+    const document = SwaggerModule.createDocument(app, configSwagger);
     // настр.путей swg(путь устан.swg, экземп.прилож., объ.док.)
     SwaggerModule.setup('swagger', app, document, {
       // Название страницы Swagger
@@ -78,7 +74,9 @@ async function bootstrap() {
     });
 
     // прослуш.PORT и fn()callback с cg на Запуск
-    await app.listen(PORT, () => console.log(`Запуск Сервер > PORT ${PORT}`));
+    return await app.listen(PORT, () => {
+      console.log(`Запуск Сервер > PORT ${PORT}`);
+    });
   } catch (e) {
     console.log('main e : ' + e);
   }

@@ -3,10 +3,10 @@ import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { UserEntity } from 'src/users/entities/user.entity';
 import { RoleEntity } from 'src/roles/entities/role.entity';
 import { UserRolesEntity } from 'src/roles/entities/user-roles.entity';
-import { ReactionEntity } from 'src/reactions/entities/reaction.entity';
 import { FileEntity } from 'src/files/entities/file.entity';
 import { TrackEntity } from 'src/tracks/entities/track.entity';
 import { AlbumEntity } from 'src/albums/entities/album.entity';
+import { ReactionEntity } from 'src/reactions/entities/reaction.entity';
 
 export default (): TypeOrmModuleOptions => ({
   name: 'localhost',
