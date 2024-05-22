@@ -1,5 +1,5 @@
 // общ.модуль приложения
-import { TypeOrmModule } from '@nestjs/typeorm';
+// import { TypeOrmModule } from '@nestjs/typeorm';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { ServeStaticModule } from '@nestjs/serve-static';
@@ -14,8 +14,8 @@ import { TrackModule } from './tracks/tracks.module';
 import { AlbumModule } from './albums/albums.module';
 import { ReactionsModule } from './reactions/reactions.module';
 // БД. config
-import localhostConfig from './config/envs/localhost.config.js';
-import supabaseConfig from './config/envs/supabase.config.js';
+// import localhostConfig from './config/envs/localhost.config.js';
+// import supabaseConfig from './config/envs/supabase.config.js';
 
 // декор.модуль. (организ.структуры области действ.> cntrl и provider)
 @Module({
@@ -25,14 +25,14 @@ import supabaseConfig from './config/envs/supabase.config.js';
       // путь к ф.конфиг. (по умолч.ищет в корне .env)
       envFilePath: `.env.${process.env.NODE_ENV}`,
     }),
-    TypeOrmModule.forRootAsync({
-      name: 'localhost',
-      useFactory: localhostConfig,
-    }),
-    TypeOrmModule.forRootAsync({
-      name: 'supabase',
-      useFactory: supabaseConfig,
-    }),
+    // TypeOrmModule.forRootAsync({
+    //   name: 'localhost',
+    //   useFactory: localhostConfig,
+    // }),
+    // TypeOrmModule.forRootAsync({
+    //   name: 'supabase',
+    //   useFactory: supabaseConfig,
+    // }),
     // обслуж.статич.контент по путь/папка ч/з веб-сайт
     ServeStaticModule.forRoot({
       rootPath: `${__dirname}/../static`,
@@ -47,7 +47,6 @@ import supabaseConfig from './config/envs/supabase.config.js';
     AlbumModule,
     ReactionsModule,
   ],
-  // ^^ подкл.App.cnrtl,serv до декомпозиции (для кажд.сущности свой cntrl,serv )
   // подкл.cnrtl данного модуля
   controllers: [AppController, AppController2],
   // подкл.serv данного модуля
