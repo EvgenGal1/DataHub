@@ -27,8 +27,14 @@ import { supabaseConfig } from './config/envs/supabase.config.js';
       // глоб.видим.
       isGlobal: true,
     }),
-    // подкл.к локал.БД > разработки
-    ...(process.env.NODE_ENV !== 'production'
+    // подкл.к БД Supabase всегда
+    TypeOrmModule.forRootAsync({
+      name: 'supabase',
+      useFactory: supabaseConfig,
+    }),
+    // доп.подкл.к локал.БД > разработки
+    ...(process.env.NODE_ENV !== 'production' &&
+    process.env.NODE_ENV === 'development'
       ? [
           TypeOrmModule.forRootAsync({
             name: 'localhost',
@@ -36,11 +42,6 @@ import { supabaseConfig } from './config/envs/supabase.config.js';
           }),
         ]
       : []),
-    // подкл.к БД Supabase всегда
-    TypeOrmModule.forRootAsync({
-      name: 'supabase',
-      useFactory: supabaseConfig,
-    }),
     // обслуж.статич.контент по путь/папка ч/з веб-сайт
     ServeStaticModule.forRoot({
       rootPath: `${__dirname}/../static`,
