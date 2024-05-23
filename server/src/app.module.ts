@@ -1,5 +1,5 @@
 // общ.модуль приложения
-// import { TypeOrmModule } from '@nestjs/typeorm';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { ServeStaticModule } from '@nestjs/serve-static';
@@ -14,8 +14,8 @@ import { TrackModule } from './tracks/tracks.module';
 import { AlbumModule } from './albums/albums.module';
 import { ReactionsModule } from './reactions/reactions.module';
 // БД. config
-// import localhostConfig from './config/envs/localhost.config.js';
-// import supabaseConfig from './config/envs/supabase.config.js';
+import localhostConfig from './config/envs/localhost.config.js';
+import supabaseConfig from './config/envs/supabase.config.js';
 
 // декор.модуль. (организ.структуры области действ.> cntrl и provider)
 @Module({
@@ -40,12 +40,12 @@ import { ReactionsModule } from './reactions/reactions.module';
     }),
     // подкл.использ.modulи
     // AuthModule,
-    UsersModule,
-    RolesModule,
-    FilesModule,
-    TrackModule,
-    AlbumModule,
-    ReactionsModule,
+    // UsersModule,
+    // RolesModule,
+    // FilesModule,
+    // TrackModule,
+    // AlbumModule,
+    // ReactionsModule,
   ],
   // подкл.cnrtl данного модуля
   controllers: [AppController, AppController2],
