@@ -25,14 +25,14 @@ import supabaseConfig from './config/envs/supabase.config.js';
       // путь к ф.конфиг. (по умолч.ищет в корне .env)
       envFilePath: `.env.${process.env.NODE_ENV}`,
     }),
-    // TypeOrmModule.forRootAsync({
-    //   name: 'localhost',
-    //   useFactory: localhostConfig,
-    // }),
-    // TypeOrmModule.forRootAsync({
-    //   name: 'supabase',
-    //   useFactory: supabaseConfig,
-    // }),
+    TypeOrmModule.forRootAsync({
+      name: 'localhost',
+      useFactory: localhostConfig,
+    }),
+    TypeOrmModule.forRootAsync({
+      name: 'supabase',
+      useFactory: supabaseConfig,
+    }),
     // обслуж.статич.контент по путь/папка ч/з веб-сайт
     ServeStaticModule.forRoot({
       rootPath: `${__dirname}/../static`,
