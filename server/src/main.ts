@@ -10,26 +10,6 @@ async function bootstrap(): Promise<any> {
     // PORT Запуска
     const PORT = process.env.PORT || 5000;
 
-    // CORS настр. > отправ./блок.req браузера
-    app.enableCors({
-      // разреш.любой источник
-      origin: true,
-      // разреш.мтд.HTTP
-      methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE'],
-      // разреш.заголовки
-      allowedHeaders: [
-        'Content-Type',
-        'Origin',
-        'X-Requested-With',
-        'Accept',
-        'Authorization',
-      ],
-      // заголовки, доступные клиенту
-      exposedHeaders: ['Authorization'],
-      // вкл.учёт.данн.(куки, заголовки авторизации) из разн.источников
-      credentials: true,
-    });
-
     // прослуш.PORT и fn()callback с cg на Запуск
     return await app.listen(PORT, () => {
       console.log(`Запуск Сервер > PORT ${PORT}`);

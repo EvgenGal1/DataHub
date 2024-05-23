@@ -21,12 +21,12 @@ import supabaseConfig from './config/envs/supabase.config.js';
 @Module({
   imports: [
     // подкл.конфиг.модуль > счит.перем.из.env
-    ConfigModule.forRoot({
-      // путь к ф.конфиг. (по умолч.ищет в корне .env)
-      envFilePath: `.env.${process.env.NODE_ENV}`,
-      // глоб.видим.
-      isGlobal: true,
-    }),
+    // ConfigModule.forRoot({
+    //   // путь к ф.конфиг. (по умолч.ищет в корне .env)
+    //   envFilePath: `.env.${process.env.NODE_ENV}`,
+    //   // глоб.видим.
+    //   isGlobal: true,
+    // }),
     TypeOrmModule.forRootAsync({
       name: 'localhost',
       useFactory: localhostConfig,
@@ -36,10 +36,10 @@ import supabaseConfig from './config/envs/supabase.config.js';
     //   useFactory: supabaseConfig,
     // }),
     // обслуж.статич.контент по путь/папка ч/з веб-сайт
-    ServeStaticModule.forRoot({
-      rootPath: `${__dirname}/../static`,
-      serveRoot: '/static',
-    }),
+    // ServeStaticModule.forRoot({
+    //   rootPath: `${__dirname}/../static`,
+    //   serveRoot: '/static',
+    // }),
     // подкл.использ.modulи
     // AuthModule,
     // UsersModule,
