@@ -28,5 +28,5 @@ export default (): TypeOrmModuleOptions => ({
   //   // `../../*/entities/*.entity.ts`, `src/*/entities/*.entity{.ts,.js}`, `src/**/*.entity.ts`, `*/entities/**.entity{.ts}`, path.join(__dirname, 'src', '**', 'entities', '*.entity.{ts,js}'),
   // ],
   synchronize: process.env.NODE_ENV !== 'production',
-  logging: true,
+  logging: process.env.NODE_ENV !== 'production',
 });
