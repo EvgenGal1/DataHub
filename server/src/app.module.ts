@@ -7,8 +7,8 @@ import { ServeStaticModule } from '@nestjs/serve-static';
 import { AppController, AppController2 } from './app.controller.js';
 import { AppService } from './app.service.js';
 // import { AuthModule } from './auth/auth.module';
-import { UsersModule } from './users/users.module';
-import { RolesModule } from './roles/roles.module';
+// import { UsersModule } from './users/users.module';
+// import { RolesModule } from './roles/roles.module';
 // import { FilesModule } from './files/files.module';
 // import { TrackModule } from './tracks/tracks.module';
 // import { AlbumModule } from './albums/albums.module';
@@ -48,8 +48,8 @@ import { supabaseConfig } from './config/envs/supabase.config.js';
     }),
     // подкл.использ.modulи
     // AuthModule,
-    UsersModule,
-    RolesModule,
+    // UsersModule,
+    // RolesModule,
     // FilesModule,
     // TrackModule,
     // AlbumModule,
