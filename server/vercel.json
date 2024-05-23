@@ -1,5 +1,13 @@
 {
   "version": 2,
+  "env": {
+    "NODE_ENV": "production"
+  },
+  "build": {
+    "env": {
+      "NODE_ENV": "production"
+    }
+  },
   "builds": [
     {
       "src": "src/main.ts",
