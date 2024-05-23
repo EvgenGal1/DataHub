@@ -27,27 +27,27 @@ import supabaseConfig from './config/envs/supabase.config.js';
       // глоб.видим.
       isGlobal: true,
     }),
-    // TypeOrmModule.forRootAsync({
-    //   name: 'localhost',
-    //   useFactory: localhostConfig,
-    // }),
+    TypeOrmModule.forRootAsync({
+      name: 'localhost',
+      useFactory: localhostConfig,
+    }),
     TypeOrmModule.forRootAsync({
       name: 'supabase',
       useFactory: supabaseConfig,
     }),
     // обслуж.статич.контент по путь/папка ч/з веб-сайт
-    // ServeStaticModule.forRoot({
-    //   rootPath: `${__dirname}/../static`,
-    //   serveRoot: '/static',
-    // }),
+    ServeStaticModule.forRoot({
+      rootPath: `${__dirname}/../static`,
+      serveRoot: '/static',
+    }),
     // подкл.использ.modulи
     // AuthModule,
-    // UsersModule,
-    // RolesModule,
-    // FilesModule,
-    // TrackModule,
-    // AlbumModule,
-    // ReactionsModule,
+    UsersModule,
+    RolesModule,
+    FilesModule,
+    TrackModule,
+    AlbumModule,
+    ReactionsModule,
   ],
   // подкл.cnrtl данного модуля
   controllers: [AppController, AppController2],
