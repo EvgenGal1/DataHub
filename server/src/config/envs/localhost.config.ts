@@ -10,29 +10,14 @@ import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 
 console.log('localhostConfig process.env.NODE_ENV : ', process.env.NODE_ENV);
 
-export default /* const localhostConfig = */ (): TypeOrmModuleOptions => ({
+export const localhostConfig = (): TypeOrmModuleOptions => ({
   name: process.env.NODE_ENV !== 'production' ? 'localhost' : 'supabase',
   type: 'postgres',
-  host:
-    process.env.NODE_ENV !== 'production'
-      ? process.env.LH_PG_HOST
-      : process.env.SB_PG_HOST,
-  port:
-    process.env.NODE_ENV !== 'production'
-      ? parseInt(process.env.LH_PG_PORT, 10) || 5432
-      : Number(process.env.SB_PG_PORT),
-  database:
-    process.env.NODE_ENV !== 'production'
-      ? process.env.LH_PG_DBN
-      : process.env.SB_PG_DBN,
-  username:
-    process.env.NODE_ENV !== 'production'
-      ? process.env.LH_PG_USER
-      : process.env.SB_PG_USER,
-  password:
-    process.env.NODE_ENV !== 'production'
-      ? process.env.LH_PG_PSW
-      : process.env.SB_PG_PSW,
+  host: process.env.LH_PG_HOST,
+  port: parseInt(process.env.LH_PG_PORT, 10) || 5432,
+  database: process.env.LH_PG_DBN,
+  username: process.env.LH_PG_USER,
+  password: process.env.LH_PG_PSW,
   // entities: [
   //   UserEntity,
   //   RoleEntity,
