@@ -17,18 +17,24 @@ import { DatabaseUtils } from '../utils/database.utils';
   providers: [UsersService, DatabaseUtils],
   imports: [
     // ч/з TypeOrmModule.`для функции` подкл.UserEntity и пр. для раб.с табл.users и пр.
-    TypeOrmModule.forFeature(
-      [
-        UserEntity,
-        RoleEntity,
-        UserRolesEntity,
-        FileEntity,
-        TrackEntity,
-        AlbumEntity,
-      ],
-      'localhost',
-    ),
-    // TypeOrmModule.forFeature([UserEntity], 'localhost'), // Для локальной базы данных
+    // ^ подкл.неск.БД.
+    // ^ > разраб. + доп.локал.сущности
+    ...(process.env.NODE_ENV === 'development'
+      ? [
+          TypeOrmModule.forFeature(
+            [
+              UserEntity,
+              RoleEntity,
+              UserRolesEntity,
+              FileEntity,
+              TrackEntity,
+              AlbumEntity,
+            ],
+            'localhost',
+          ),
+        ]
+      : []),
+    // ^ > производства только SupaBase
     TypeOrmModule.forFeature(
       [
         UserEntity,
@@ -39,7 +45,7 @@ import { DatabaseUtils } from '../utils/database.utils';
         AlbumEntity,
       ],
       'supabase',
-    ), // Для Supabase
+    ),
     // подкл.использ.modulи
     RolesModule,
     // forwardRef(() => AuthModule),

@@ -1,5 +1,5 @@
 // логика(бизнес,)
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, Optional } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { In, Repository } from 'typeorm';
 
@@ -14,16 +14,31 @@ import { DatabaseUtils } from '../utils/database.utils';
 
 @Injectable()
 export class UsersService {
-  // ч/з внедр.завис. + UserEntity > раб.ч/з this с табл.users
+  // опред. > производства
+  private isProduction = process.env.NODE_ENV === 'production';
   constructor(
-    @InjectRepository(UserEntity, 'localhost')
-    private userRepository: Repository<UserEntity>,
-    @InjectRepository(RoleEntity, 'localhost')
-    private roleRepository: Repository<RoleEntity>,
-    @InjectRepository(UserRolesEntity, 'localhost')
-    private userRolesRepository: Repository<UserRolesEntity>,
+    // ч/з внедр.завис. + UserEntity > раб.ч/з this с табл.users
+    // ^ подкл.неск.БД.
+    // ^ репозитории только > SupaBase
+    @InjectRepository(UserEntity, 'supabase')
+    private readonly userRepositorySB: Repository<UserEntity>,
+    @InjectRepository(RoleEntity, 'supabase')
+    private roleRepositorySB: Repository<RoleEntity>,
+    @InjectRepository(UserRolesEntity, 'supabase')
+    private userRolesRepositorySB: Repository<UserRolesEntity>,
+    // ^ общ.репозит.настр.
     private roleService: RolesService,
     private dataBaseUtils: DatabaseUtils,
+    // ^ доп.необязат.репозит(Optional) > разраб.localhost
+    @Optional()
+    @InjectRepository(UserEntity, 'localhost')
+    private userRepository?: Repository<UserEntity>,
+    @Optional()
+    @InjectRepository(RoleEntity, 'localhost')
+    private roleRepository?: Repository<RoleEntity>,
+    @Optional()
+    @InjectRepository(UserRolesEntity, 'localhost')
+    private userRolesRepository?: Repository<UserRolesEntity>,
   ) {}
 
   // СОЗД User + Role + связь
@@ -37,9 +52,9 @@ export class UsersService {
       id: smallestFreeId,
     });
     // получ.id Роли USER
-    const role = await this.roleService.findRoleByValue('USER');
+    // const role = await this.roleService.findRoleByValue('USER');
     // запись Роли к User и сохр.связи в БД
-    user.roles = [role];
+    // user.roles = [role];
     // сохр.объ.user > БД
     await this.userRepository.save(user);
 
@@ -53,8 +68,61 @@ export class UsersService {
     return user;
   }
 
-  async findAllUsers(): Promise<UserEntity[]> {
-    return await this.userRepository.find();
+  // ^ получ.данн.из неск.БД.
+  // тделить одинаковые данн.из неск.БД
+  async findAllUsers(): Promise<(UserEntity & { source: string })[]> {
+    // Добавляем информацию о источнике данных с помощью расширения типа
+    interface ExtendedUserEntityUnderSource extends UserEntity {
+      source: string;
+    }
+
+    // const isProduction = process.env.NODE_ENV === 'production';
+    const result: (UserEntity & { source: string })[] = [];
+
+    if (this.isProduction) {
+      // В продакшене получаем данные только из Supabase
+      const supabaseUsers = await this.userRepositorySB.find();
+      return supabaseUsers.map((user) => ({ ...user, source: 'supabase' }));
+      // return supabaseUsers;
+    } else {
+      // В режиме разработки получаем данные из обеих БД
+      const localUsers: UserEntity[] = await this.userRepository.find();
+      const supabaseUsers: UserEntity[] = await this.userRepositorySB.find();
+
+      // Проходим по каждому пользователю из Supabase
+      for (const supabaseUser of supabaseUsers) {
+        // Ищем точно такой же объект в локальной БД
+        const localUserIndex = localUsers.findIndex((localUser) => {
+          return JSON.stringify(localUser) === JSON.stringify(supabaseUser);
+        });
+
+        // Если нашли такой же объект
+        if (localUserIndex !== -1) {
+          // Помещаем объект из Supabase с пометкой 'supabase' в результат
+          result.push({
+            ...supabaseUser,
+            source: 'supabase',
+          } as ExtendedUserEntityUnderSource);
+          // Удаляем найденный объект из массива localUsers, чтобы не обрабатывать его повторно
+          localUsers.splice(localUserIndex, 1);
+        } else {
+          // Если не нашли такой же объект, то помещаем объект из Supabase с пометкой 'supabase' в результат
+          result.push({
+            ...supabaseUser,
+            source: 'supabase',
+          } as ExtendedUserEntityUnderSource);
+        }
+      }
+      // Добавляем оставшиеся объекты из localUsers с пометкой 'localhost'
+      result.push(
+        ...localUsers.map(
+          (user) =>
+            ({ ...user, source: 'localhost' }) as ExtendedUserEntityUnderSource,
+        ),
+      );
+    }
+
+    return result.sort((a, b) => a.id - b.id);
   }
 
   // ОДИН user.по id

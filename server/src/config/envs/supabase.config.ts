@@ -8,7 +8,7 @@ import { TrackEntity } from '../../tracks/entities/track.entity';
 import { AlbumEntity } from '../../albums/entities/album.entity';
 import { ReactionEntity } from '../../reactions/entities/reaction.entity';
 
-export default (): TypeOrmModuleOptions => ({
+export const supabaseConfig = (): TypeOrmModuleOptions => ({
   name: 'supabase',
   type: 'postgres',
   host: process.env.SB_PG_HOST,

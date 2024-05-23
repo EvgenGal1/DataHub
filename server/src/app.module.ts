@@ -9,13 +9,13 @@ import { AppService } from './app.service.js';
 // import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { RolesModule } from './roles/roles.module';
-import { FilesModule } from './files/files.module';
-import { TrackModule } from './tracks/tracks.module';
-import { AlbumModule } from './albums/albums.module';
-import { ReactionsModule } from './reactions/reactions.module';
+// import { FilesModule } from './files/files.module';
+// import { TrackModule } from './tracks/tracks.module';
+// import { AlbumModule } from './albums/albums.module';
+// import { ReactionsModule } from './reactions/reactions.module';
 // БД. config
-import localhostConfig from './config/envs/localhost.config.js';
-import supabaseConfig from './config/envs/supabase.config.js';
+import { localhostConfig } from './config/envs/localhost.config.js';
+import { supabaseConfig } from './config/envs/supabase.config.js';
 
 // декор.модуль. (организ.структуры области действ.> cntrl и provider)
 @Module({
@@ -27,10 +27,16 @@ import supabaseConfig from './config/envs/supabase.config.js';
       // глоб.видим.
       isGlobal: true,
     }),
-    TypeOrmModule.forRootAsync({
-      name: 'localhost',
-      useFactory: localhostConfig,
-    }),
+    // подкл.к локал.БД > разработки
+    ...(process.env.NODE_ENV === 'development'
+      ? [
+          TypeOrmModule.forRootAsync({
+            name: 'localhost',
+            useFactory: localhostConfig,
+          }),
+        ]
+      : []),
+    // подкл.к БД Supabase всегда
     TypeOrmModule.forRootAsync({
       name: 'supabase',
       useFactory: supabaseConfig,
@@ -44,10 +50,10 @@ import supabaseConfig from './config/envs/supabase.config.js';
     // AuthModule,
     UsersModule,
     RolesModule,
-    FilesModule,
-    TrackModule,
-    AlbumModule,
-    ReactionsModule,
+    // FilesModule,
+    // TrackModule,
+    // AlbumModule,
+    // ReactionsModule,
   ],
   // подкл.cnrtl данного модуля
   controllers: [AppController, AppController2],

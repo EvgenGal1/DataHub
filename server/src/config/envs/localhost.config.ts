@@ -8,7 +8,7 @@ import { TrackEntity } from '../../tracks/entities/track.entity';
 import { AlbumEntity } from '../../albums/entities/album.entity';
 import { ReactionEntity } from '../../reactions/entities/reaction.entity';
 
-export default (): TypeOrmModuleOptions => ({
+export const localhostConfig = (): TypeOrmModuleOptions => ({
   name: 'localhost',
   type: 'postgres',
   host: process.env.LH_PG_HOST,
