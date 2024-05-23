@@ -28,24 +28,24 @@ import { supabaseConfig } from './config/envs/supabase.config.js';
       isGlobal: true,
     }),
     // подкл.к локал.БД > разработки
-    // ...(process.env.NODE_ENV === 'development'
-    //   ? [
-    //       TypeOrmModule.forRootAsync({
-    //         name: 'localhost',
-    //         useFactory: localhostConfig,
-    //       }),
-    //     ]
-    //   : []),
+    ...(process.env.NODE_ENV !== 'production'
+      ? [
+          TypeOrmModule.forRootAsync({
+            name: 'localhost',
+            useFactory: localhostConfig,
+          }),
+        ]
+      : []),
     // подкл.к БД Supabase всегда
     TypeOrmModule.forRootAsync({
       name: 'supabase',
       useFactory: supabaseConfig,
     }),
     // обслуж.статич.контент по путь/папка ч/з веб-сайт
-    // ServeStaticModule.forRoot({
-    //   rootPath: `${__dirname}/../static`,
-    //   serveRoot: '/static',
-    // }),
+    ServeStaticModule.forRoot({
+      rootPath: `${__dirname}/../static`,
+      serveRoot: '/static',
+    }),
     // подкл.использ.modulи
     // AuthModule,
     // UsersModule,
