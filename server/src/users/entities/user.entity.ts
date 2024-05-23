@@ -12,7 +12,7 @@ import {
 } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 
-import { RoleEntity } from 'src/roles/entities/role.entity';
+import { RoleEntity } from '../../roles/entities/role.entity';
 import { FileEntity } from 'src/files/entities/file.entity';
 import { TrackEntity } from 'src/tracks/entities/track.entity';
 import { AlbumEntity } from 'src/albums/entities/album.entity';
