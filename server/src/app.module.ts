@@ -14,9 +14,10 @@ import { AppService } from './app.service.js';
 // import { AlbumModule } from './albums/albums.module';
 // import { ReactionsModule } from './reactions/reactions.module';
 // БД. config
-import { localhostConfig } from './config/envs/localhost.config.js';
+import localhostConfig from './config/envs/localhost.config.js';
 import { supabaseConfig } from './config/envs/supabase.config.js';
 
+console.log('A.M. process.env.NODE_ENV : ', process.env.NODE_ENV);
 // декор.модуль. (организ.структуры области действ.> cntrl и provider)
 @Module({
   imports: [

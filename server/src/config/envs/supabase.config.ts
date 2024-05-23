@@ -12,7 +12,6 @@ export const supabaseConfig = (): TypeOrmModuleOptions => ({
   name: 'supabase',
   type: 'postgres',
   host: process.env.SB_PG_HOST,
-  // host: supabase.postgres.config.host,
   port: /* + */ Number(process.env.SB_PG_PORT),
   database: process.env.SB_PG_DBN,
   username: process.env.SB_PG_USER,
