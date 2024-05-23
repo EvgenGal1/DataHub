@@ -4,11 +4,11 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { FilesController } from './files.controller';
 import { FilesService } from './files.service';
 import { FileEntity } from './entities/file.entity';
-import { UserEntity } from 'src/users/entities/user.entity';
-import { RoleEntity } from 'src/roles/entities/role.entity';
-import { DatabaseUtils } from 'src/utils/database.utils';
-import { TrackEntity } from 'src/tracks/entities/track.entity';
-import { AlbumEntity } from 'src/albums/entities/album.entity';
+import { UserEntity } from '../users/entities/user.entity';
+import { RoleEntity } from '../roles/entities/role.entity';
+import { DatabaseUtils } from '../utils/database.utils';
+import { TrackEntity } from '../tracks/entities/track.entity';
+import { AlbumEntity } from '../albums/entities/album.entity';
 
 @Module({
   controllers: [FilesController],

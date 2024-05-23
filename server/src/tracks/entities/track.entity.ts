@@ -13,11 +13,11 @@ import {
 } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 
-// import { AbstractEntity } from 'src/model/abstract.entity';
-import { UserEntity } from 'src/users/entities/user.entity';
-import { ReactionEntity } from 'src/reactions/entities/reaction.entity';
-import { AlbumEntity } from 'src/albums/entities/album.entity';
-import { FileEntity } from 'src/files/entities/file.entity';
+// import { AbstractEntity } from '../model/abstract.entity';
+import { UserEntity } from '../../users/entities/user.entity';
+import { ReactionEntity } from '../../reactions/entities/reaction.entity';
+import { AlbumEntity } from '../../albums/entities/album.entity';
+import { FileEntity } from '../../files/entities/file.entity';
 
 @Entity({ name: 'tracks', schema: 'public' })
 export class TrackEntity /* extends AbstractEntity */ {

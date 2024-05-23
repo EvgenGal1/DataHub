@@ -13,9 +13,9 @@ import {
 } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 
-import { AlbumEntity } from 'src/albums/entities/album.entity';
-import { TrackEntity } from 'src/tracks/entities/track.entity';
-import { UserEntity } from 'src/users/entities/user.entity';
+import { AlbumEntity } from '../../albums/entities/album.entity';
+import { TrackEntity } from '../../tracks/entities/track.entity';
+import { UserEntity } from '../../users/entities/user.entity';
 
 // типизация (Query парам.ч/з enum. и др.вар.) Filter ф.по фото и trash`мусор`
 export enum FileType { // ^^ возм. стоит завести FileTarget с типами IMAGE = 'IMAGE', и т.д.

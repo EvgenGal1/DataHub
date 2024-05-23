@@ -4,13 +4,13 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
 import { UserEntity } from './entities/user.entity';
-import { RoleEntity } from 'src/roles/entities/role.entity';
-import { RolesModule } from 'src/roles/roles.module';
-import { UserRolesEntity } from 'src/roles/entities/user-roles.entity';
-import { FileEntity } from 'src/files/entities/file.entity';
-import { TrackEntity } from 'src/tracks/entities/track.entity';
-import { AlbumEntity } from 'src/albums/entities/album.entity';
-import { DatabaseUtils } from 'src/utils/database.utils';
+import { RoleEntity } from '../roles/entities/role.entity';
+import { RolesModule } from '../roles/roles.module';
+import { UserRolesEntity } from '../roles/entities/user-roles.entity';
+import { FileEntity } from '../files/entities/file.entity';
+import { TrackEntity } from '../tracks/entities/track.entity';
+import { AlbumEntity } from '../albums/entities/album.entity';
+import { DatabaseUtils } from '../utils/database.utils';
 
 @Module({
   controllers: [UsersController],
@@ -28,6 +28,18 @@ import { DatabaseUtils } from 'src/utils/database.utils';
       ],
       'localhost',
     ),
+    // TypeOrmModule.forFeature([UserEntity], 'localhost'), // Для локальной базы данных
+    TypeOrmModule.forFeature(
+      [
+        UserEntity,
+        RoleEntity,
+        UserRolesEntity,
+        FileEntity,
+        TrackEntity,
+        AlbumEntity,
+      ],
+      'supabase',
+    ), // Для Supabase
     // подкл.использ.modulи
     RolesModule,
     // forwardRef(() => AuthModule),

@@ -4,11 +4,11 @@ import { InjectRepository } from '@nestjs/typeorm';
 
 import { CreateRoleDto } from './dto/create-role.dto';
 import { UpdateRoleDto } from './dto/update-role.dto';
-import { UserEntity } from 'src/users/entities/user.entity';
+import { UserEntity } from '../users/entities/user.entity';
 import { RoleEntity } from './entities/role.entity';
 import { UserRolesEntity } from './entities/user-roles.entity';
 import { AddingRolesToUsersDto } from './dto/add-roles-to-users.dto';
-import { DatabaseUtils } from 'src/utils/database.utils';
+import { DatabaseUtils } from '../utils/database.utils';
 
 @Injectable()
 export class RolesService {

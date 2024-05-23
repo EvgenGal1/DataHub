@@ -7,11 +7,11 @@ import * as fs from 'fs';
 import { CreateAlbumDto } from './dto/create-album.dto';
 import { UpdateAlbumDto } from './dto/update-album.dto';
 import { AlbumEntity } from './entities/album.entity';
-import { TrackEntity } from 'src/tracks/entities/track.entity';
-import { ReactionEntity } from 'src/reactions/entities/reaction.entity';
-import { FileEntity } from 'src/files/entities/file.entity';
-import { FilesService } from 'src/files/files.service';
-import { DatabaseUtils } from 'src/utils/database.utils';
+import { TrackEntity } from '../tracks/entities/track.entity';
+import { ReactionEntity } from '../reactions/entities/reaction.entity';
+import { FileEntity } from '../files/entities/file.entity';
+import { FilesService } from '../files/files.service';
+import { DatabaseUtils } from '../utils/database.utils';
 import { TotalAlbumDto } from './dto/total-album.dto';
 
 @Injectable()

@@ -13,10 +13,10 @@ import {
 import { ApiProperty } from '@nestjs/swagger';
 
 import { RoleEntity } from '../../roles/entities/role.entity';
-import { FileEntity } from 'src/files/entities/file.entity';
-import { TrackEntity } from 'src/tracks/entities/track.entity';
-import { AlbumEntity } from 'src/albums/entities/album.entity';
-import { ReactionEntity } from 'src/reactions/entities/reaction.entity';
+import { FileEntity } from '../../files/entities/file.entity';
+import { TrackEntity } from '../../tracks/entities/track.entity';
+import { AlbumEntity } from '../../albums/entities/album.entity';
+import { ReactionEntity } from '../../reactions/entities/reaction.entity';
 
 // декоратор для соед.с БД
 @Entity({ name: 'users', schema: 'public' })

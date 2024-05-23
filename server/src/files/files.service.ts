@@ -4,7 +4,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 
 import { FileType, FileEntity, fileTypesAllowed } from './entities/file.entity';
 import { UpdateFileDto } from './dto/update-file.dto';
-import { DatabaseUtils } from 'src/utils/database.utils';
+import { DatabaseUtils } from '../utils/database.utils';
 
 @Injectable()
 export class FilesService {

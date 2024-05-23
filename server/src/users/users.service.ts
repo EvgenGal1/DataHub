@@ -6,11 +6,11 @@ import { In, Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserEntity } from './entities/user.entity';
-import { RoleEntity } from 'src/roles/entities/role.entity';
-import { RolesService } from 'src/roles/roles.service';
-import { UserRolesEntity } from 'src/roles/entities/user-roles.entity';
-import { AddingRolesToUsersDto } from 'src/roles/dto/add-roles-to-users.dto';
-import { DatabaseUtils } from 'src/utils/database.utils';
+import { RoleEntity } from '../roles/entities/role.entity';
+import { RolesService } from '../roles/roles.service';
+import { UserRolesEntity } from '../roles/entities/user-roles.entity';
+import { AddingRolesToUsersDto } from '../roles/dto/add-roles-to-users.dto';
+import { DatabaseUtils } from '../utils/database.utils';
 
 @Injectable()
 export class UsersService {

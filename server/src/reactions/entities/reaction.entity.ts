@@ -1,7 +1,7 @@
 import { Entity, Column, ManyToOne, PrimaryColumn } from 'typeorm';
 
-import { UserEntity } from 'src/users/entities/user.entity';
-import { TrackEntity } from 'src/tracks/entities/track.entity';
+import { UserEntity } from '../../users/entities/user.entity';
+import { TrackEntity } from '../../tracks/entities/track.entity';
 
 @Entity({ name: 'reactions', schema: 'public' })
 export class ReactionEntity {

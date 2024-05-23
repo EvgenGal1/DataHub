@@ -6,17 +6,17 @@ import * as fs from 'fs';
 
 import { CreateTrackDto } from './dto/create-track.dto';
 import { UpdateTrackDto } from './dto/update-track.dto';
-import { CreateAlbumDto } from 'src/albums/dto/create-album.dto';
+import { CreateAlbumDto } from '../albums/dto/create-album.dto';
 import { TrackEntity } from './entities/track.entity';
-import { AlbumEntity } from 'src/albums/entities/album.entity';
-import { UserEntity } from 'src/users/entities/user.entity';
-import { ReactionEntity } from 'src/reactions/entities/reaction.entity';
-import { CreateReactionDto } from 'src/reactions/dto/create-reaction.dto';
-import { AlbumsService } from 'src/albums/albums.service';
-import { FilesService } from 'src/files/files.service';
-import { FileEntity } from 'src/files/entities/file.entity';
-import { DatabaseUtils } from 'src/utils/database.utils';
-import { BasicUtils } from 'src/utils/basic.utils';
+import { AlbumEntity } from '../albums/entities/album.entity';
+import { UserEntity } from '../users/entities/user.entity';
+import { ReactionEntity } from '../reactions/entities/reaction.entity';
+import { CreateReactionDto } from '../reactions/dto/create-reaction.dto';
+import { AlbumsService } from '../albums/albums.service';
+import { FilesService } from '../files/files.service';
+import { FileEntity } from '../files/entities/file.entity';
+import { DatabaseUtils } from '../utils/database.utils';
+import { BasicUtils } from '../utils/basic.utils';
 // второй подход сохр.в serv - плохо раб
 // import { FileService, FileType } from '../file/file.service';
 

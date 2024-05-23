@@ -30,9 +30,9 @@ import {
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { AddingRolesToUsersDto } from 'src/roles/dto/add-roles-to-users.dto';
-import { UserId } from 'src/common/decorators/user-id.decorator';
-import { fileStorage } from 'src/files/storage';
+import { AddingRolesToUsersDto } from '../roles/dto/add-roles-to-users.dto';
+import { UserId } from '../common/decorators/user-id.decorator';
+import { fileStorage } from '../files/storage';
 // import { UserEntity } from './entities/user.entity';
 
 @Controller('users')
