@@ -10,7 +10,7 @@ import { ReactionEntity } from '../../reactions/entities/reaction.entity';
 
 console.log('localhostConfig process.env.NODE_ENV : ', process.env.NODE_ENV);
 
-export default /* const localhostConfig = */ (): TypeOrmModuleOptions => ({
+export /* default */ const localhostConfig = (): TypeOrmModuleOptions => ({
   name: process.env.NODE_ENV !== 'production' ? 'localhost' : 'supabase',
   type: 'postgres',
   host: process.env.LH_PG_HOST,
