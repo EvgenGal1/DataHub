@@ -17,6 +17,11 @@ export class AppController {
     // после внедр.завис. обращ.к serv ч/з this
     return this.appService.getUsers();
   }
+
+  @Get('/api/hello')
+  getHello(): string {
+    return this.appService.getHello();
+  }
 }
 
 // альтер.декор.маршр.req

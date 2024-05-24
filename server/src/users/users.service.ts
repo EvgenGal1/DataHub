@@ -127,9 +127,22 @@ export class UsersService {
 
   // ОДИН user.по id
   async findOneUser(id: number): Promise<UserEntity> {
-    const user = await this.userRepository.findOneBy({ id });
-    if (!user) throw new NotFoundException('Пользователь не найден');
-    return user;
+    if (this.isProduction) {
+      return this.userRepositorySB.findOneBy({ id });
+    } else {
+      const userSB = await this.userRepositorySB.findOneBy({ id });
+      const userLH = await this.userRepository.findOneBy({ id });
+      if (!userSB) throw new NotFoundException('Пользователь из SB не найден');
+      if (!userLH) throw new NotFoundException('Пользователь из LH не найден');
+      // провер.===данн.userSB <> userLH
+      const areEqual = JSON.stringify(userSB) === JSON.stringify(userLH);
+      // указ.исток.данн.SB
+      const userWithSourceSB = { ...userSB, source: 'sb' };
+      // е/и равны возврат userLH <> userLH и влож.{userSB}
+      return areEqual
+        ? userLH
+        : { ...userLH, [`userSB_${userSB.id}`]: userWithSourceSB };
+    }
   }
 
   // ОДИН user.по параметрам ID <> Email <> FullName
