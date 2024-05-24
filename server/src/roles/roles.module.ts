@@ -6,10 +6,10 @@ import { RoleEntity } from './entities/role.entity';
 import { UserRolesEntity } from './entities/user-roles.entity';
 import { RolesController } from './roles.controller';
 import { RolesService } from './roles.service';
-import { DatabaseUtils } from '../utils/database.utils';
 import { FileEntity } from '../files/entities/file.entity';
 import { TrackEntity } from '../tracks/entities/track.entity';
 import { AlbumEntity } from '../albums/entities/album.entity';
+import { DatabaseUtils } from '../utils/database.utils';
 
 @Module({
   controllers: [RolesController],
@@ -17,15 +17,30 @@ import { AlbumEntity } from '../albums/entities/album.entity';
   imports: [
     TypeOrmModule.forFeature(
       [
-        RoleEntity,
         UserEntity,
+        RoleEntity,
         UserRolesEntity,
         FileEntity,
         TrackEntity,
         AlbumEntity,
       ],
-      'localhost',
+      'supabase',
     ),
+    ...(process.env.NODE_ENV !== 'production'
+      ? [
+          TypeOrmModule.forFeature(
+            [
+              UserEntity,
+              RoleEntity,
+              UserRolesEntity,
+              FileEntity,
+              TrackEntity,
+              AlbumEntity,
+            ],
+            'localhost',
+          ),
+        ]
+      : []),
   ],
   exports: [RolesService],
 })

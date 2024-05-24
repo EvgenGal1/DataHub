@@ -1,6 +1,6 @@
 import { ILike, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, Optional } from '@nestjs/common';
 
 import { FileType, FileEntity, fileTypesAllowed } from './entities/file.entity';
 import { UpdateFileDto } from './dto/update-file.dto';
@@ -9,9 +9,14 @@ import { DatabaseUtils } from '../utils/database.utils';
 @Injectable()
 export class FilesService {
   constructor(
-    @InjectRepository(FileEntity, 'localhost')
-    private filesRepository: Repository<FileEntity>,
+    @InjectRepository(FileEntity, 'supabase')
+    private filesRepositorySB: Repository<FileEntity>,
+    //
     private dataBaseUtils: DatabaseUtils,
+    //
+    @Optional()
+    @InjectRepository(FileEntity, 'localhost')
+    private filesRepository?: Repository<FileEntity>,
   ) {}
 
   // мтд.созд.файла по Параметрам

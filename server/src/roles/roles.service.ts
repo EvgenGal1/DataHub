@@ -1,5 +1,5 @@
 import { In, Repository } from 'typeorm';
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, Optional } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
 import { CreateRoleDto } from './dto/create-role.dto';
@@ -13,13 +13,24 @@ import { DatabaseUtils } from '../utils/database.utils';
 @Injectable()
 export class RolesService {
   constructor(
-    @InjectRepository(UserEntity, 'localhost')
-    private userRepository: Repository<UserEntity>,
-    @InjectRepository(RoleEntity, 'localhost')
-    private roleRepository: Repository<RoleEntity>,
-    @InjectRepository(UserRolesEntity, 'localhost')
-    private userRolesRepository: Repository<UserRolesEntity>,
+    @InjectRepository(UserEntity, 'supabase')
+    private userRepositorySB: Repository<UserEntity>,
+    @InjectRepository(RoleEntity, 'supabase')
+    private roleRepositorySB: Repository<RoleEntity>,
+    @InjectRepository(UserRolesEntity, 'supabase')
+    private userRolesRepositorySB: Repository<UserRolesEntity>,
+    //
     private dataBaseUtils: DatabaseUtils,
+    //
+    @Optional()
+    @InjectRepository(UserEntity, 'localhost')
+    private userRepository?: Repository<UserEntity>,
+    @Optional()
+    @InjectRepository(RoleEntity, 'localhost')
+    private roleRepository?: Repository<RoleEntity>,
+    @Optional()
+    @InjectRepository(UserRolesEntity, 'localhost')
+    private userRolesRepository?: Repository<UserRolesEntity>,
   ) {}
 
   async createRole(createRoleDto: CreateRoleDto) {

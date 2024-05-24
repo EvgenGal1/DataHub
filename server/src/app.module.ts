@@ -7,15 +7,15 @@ import { ServeStaticModule } from '@nestjs/serve-static';
 import { AppController, AppController2 } from './app.controller.js';
 import { AppService } from './app.service.js';
 // import { AuthModule } from './auth/auth.module';
-// import { UsersModule } from './users/users.module';
-// import { RolesModule } from './roles/roles.module';
-// import { FilesModule } from './files/files.module';
-// import { TrackModule } from './tracks/tracks.module';
-// import { AlbumModule } from './albums/albums.module';
-// import { ReactionsModule } from './reactions/reactions.module';
+import { UsersModule } from './users/users.module';
+import { RolesModule } from './roles/roles.module';
+import { FilesModule } from './files/files.module';
+import { TrackModule } from './tracks/tracks.module';
+import { AlbumModule } from './albums/albums.module';
+import { ReactionsModule } from './reactions/reactions.module';
 // БД. config
-import { localhostConfig } from './config/envs/localhost.config.js';
-import { supabaseConfig } from './config/envs/supabase.config.js';
+import /* { */ localhostConfig /* } */ from './config/envs/localhost.config.js';
+import /* { */ supabaseConfig /* } */ from './config/envs/supabase.config.js';
 
 console.log('A.M. process.env.NODE_ENV : ', process.env.NODE_ENV);
 // декор.модуль. (организ.структуры области действ.> cntrl и provider)
@@ -50,12 +50,12 @@ console.log('A.M. process.env.NODE_ENV : ', process.env.NODE_ENV);
     }),
     // подкл.использ.modulи
     // AuthModule,
-    // UsersModule,
-    // RolesModule,
-    // FilesModule,
-    // TrackModule,
-    // AlbumModule,
-    // ReactionsModule,
+    UsersModule,
+    RolesModule,
+    FilesModule,
+    TrackModule,
+    AlbumModule,
+    ReactionsModule,
   ],
   // подкл.cnrtl данного модуля
   controllers: [AppController, AppController2],

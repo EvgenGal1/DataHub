@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, Optional } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import * as fs from 'fs';
@@ -17,16 +17,30 @@ import { TotalAlbumDto } from './dto/total-album.dto';
 @Injectable()
 export class AlbumsService {
   constructor(
-    @InjectRepository(AlbumEntity, 'localhost')
-    private albumsRepository: Repository<AlbumEntity>,
-    @InjectRepository(TrackEntity, 'localhost')
-    private tracksRepository: Repository<TrackEntity>,
-    @InjectRepository(ReactionEntity, 'localhost')
-    private reactionsRepository: Repository<ReactionEntity>,
-    @InjectRepository(FileEntity, 'localhost')
-    private fileRepository: Repository<FileEntity>,
+    @InjectRepository(AlbumEntity, 'supabase')
+    private albumsRepositorySB: Repository<AlbumEntity>,
+    @InjectRepository(TrackEntity, 'supabase')
+    private tracksRepositorySB: Repository<TrackEntity>,
+    @InjectRepository(ReactionEntity, 'supabase')
+    private reactionsRepositorySB: Repository<ReactionEntity>,
+    @InjectRepository(FileEntity, 'supabase')
+    private fileRepositorySB: Repository<FileEntity>,
+    //
     private filesService: FilesService,
     private dataBaseUtils: DatabaseUtils,
+    //
+    @Optional()
+    @InjectRepository(AlbumEntity, 'localhost')
+    private albumsRepository?: Repository<AlbumEntity>,
+    @Optional()
+    @InjectRepository(TrackEntity, 'localhost')
+    private tracksRepository?: Repository<TrackEntity>,
+    @Optional()
+    @InjectRepository(ReactionEntity, 'localhost')
+    private reactionsRepository?: Repository<ReactionEntity>,
+    @Optional()
+    @InjectRepository(FileEntity, 'localhost')
+    private fileRepository?: Repository<FileEntity>,
   ) {}
 
   // ^^ МТД.CRUD

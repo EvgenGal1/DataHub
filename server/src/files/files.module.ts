@@ -17,8 +17,16 @@ import { AlbumEntity } from '../albums/entities/album.entity';
   imports: [
     TypeOrmModule.forFeature(
       [FileEntity, AlbumEntity, UserEntity, RoleEntity, TrackEntity],
-      'localhost',
+      'supabase',
     ),
+    ...(process.env.NODE_ENV === 'development'
+      ? [
+          TypeOrmModule.forFeature(
+            [FileEntity, AlbumEntity, UserEntity, RoleEntity, TrackEntity],
+            'localhost',
+          ),
+        ]
+      : []),
   ],
   exports: [FilesService],
 })

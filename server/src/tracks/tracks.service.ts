@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */ // ^^ от ошб. - Св-во объяв., но знач.не прочитано.
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, Optional } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, ILike, ObjectId } from 'typeorm';
 import * as fs from 'fs';
@@ -24,20 +24,37 @@ import { BasicUtils } from '../utils/basic.utils';
 export class TracksService {
   // ч/з внедр.завис. + TrackEntity,ReactionEntity,UserEntity > раб.ч/з this с табл.track,reaction,user
   constructor(
-    @InjectRepository(TrackEntity, 'localhost')
-    private tracksRepository: Repository<TrackEntity>,
-    @InjectRepository(ReactionEntity, 'localhost')
-    private reactionsRepository: Repository<ReactionEntity>,
-    @InjectRepository(UserEntity, 'localhost')
-    private usersRepository: Repository<UserEntity>,
-    @InjectRepository(FileEntity, 'localhost')
-    private filesRepository: Repository<FileEntity>,
+    @InjectRepository(TrackEntity, 'supabase')
+    private tracksRepositorySB: Repository<TrackEntity>,
+    @InjectRepository(ReactionEntity, 'supabase')
+    private reactionsRepositorySB: Repository<ReactionEntity>,
+    @InjectRepository(UserEntity, 'supabase')
+    private usersRepositorySB: Repository<UserEntity>,
+    @InjectRepository(FileEntity, 'supabase')
+    private filesRepositorySB: Repository<FileEntity>,
+    @InjectRepository(AlbumEntity, 'supabase')
+    private albumsRepositorySB: Repository<AlbumEntity>,
+    //
     private filesService: FilesService,
-    @InjectRepository(AlbumEntity, 'localhost')
-    private albumsRepository: Repository<AlbumEntity>,
     private albumsService: AlbumsService,
     private dataBaseUtils: DatabaseUtils,
     private basicUtils: BasicUtils,
+    //
+    @Optional()
+    @InjectRepository(TrackEntity, 'localhost')
+    private tracksRepository?: Repository<TrackEntity>,
+    @Optional()
+    @InjectRepository(ReactionEntity, 'localhost')
+    private reactionsRepository?: Repository<ReactionEntity>,
+    @Optional()
+    @InjectRepository(UserEntity, 'localhost')
+    private usersRepository?: Repository<UserEntity>,
+    @Optional()
+    @InjectRepository(FileEntity, 'localhost')
+    private filesRepository?: Repository<FileEntity>,
+    @Optional()
+    @InjectRepository(AlbumEntity, 'localhost')
+    private albumsRepository?: Repository<AlbumEntity>,
   ) {}
 
   // СОЗД.Трек. Req - track(аудио + обложка),UserId,CreateTrackDto(трек,артист,текст,стиль); Res - TrackEntity в `Обещание`
@@ -343,6 +360,7 @@ export class TracksService {
     count = 10,
     offset = 0,
   ): Promise<TrackEntity[]> {
+    console.log('fAl t.s. fAl param count offset: ', param, count, offset);
     // без парам.вернуть всё
     if (!param && count === 10 && offset === 0) {
       return this.tracksRepository.find();

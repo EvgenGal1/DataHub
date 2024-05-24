@@ -33,8 +33,23 @@ import { BasicUtils } from '../utils/basic.utils';
         AlbumEntity,
         FileEntity,
       ],
-      'localhost',
+      'supabase',
     ),
+    ...(process.env.NODE_ENV === 'development'
+      ? [
+          TypeOrmModule.forFeature(
+            [
+              TrackEntity,
+              UserEntity,
+              RoleEntity,
+              ReactionEntity,
+              AlbumEntity,
+              FileEntity,
+            ],
+            'localhost',
+          ),
+        ]
+      : []),
   ],
   exports: [TracksService],
 })
