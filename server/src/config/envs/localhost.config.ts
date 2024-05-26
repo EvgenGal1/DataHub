@@ -8,10 +8,8 @@ import { TrackEntity } from '../../tracks/entities/track.entity';
 import { AlbumEntity } from '../../albums/entities/album.entity';
 import { ReactionEntity } from '../../reactions/entities/reaction.entity';
 
-console.log('localhostConfig process.env.NODE_ENV : ', process.env.NODE_ENV);
-
 export /* default */ const localhostConfig = (): TypeOrmModuleOptions => ({
-  name: process.env.NODE_ENV !== 'production' ? 'localhost' : 'supabase',
+  name: 'localhost',
   type: 'postgres',
   host: process.env.LH_PG_HOST,
   port: parseInt(process.env.LH_PG_PORT, 10) || 5432,
@@ -29,6 +27,6 @@ export /* default */ const localhostConfig = (): TypeOrmModuleOptions => ({
     // ! не отраб.подкл.по пути - постояный сбор query: SELECT * FROM current_schema() | ошб.в swg - "statusCode": 500, "message": "Internal server error
     // `../../*/entities/*.entity.ts`, `src/*/entities/*.entity{.ts,.js}`, `src/**/*.entity.ts`, `*/entities/**.entity{.ts}`, path.join(__dirname, 'src', '**', 'entities', '*.entity.{ts,js}'),
   ],
-  synchronize: process.env.NODE_ENV !== 'production',
-  logging: process.env.NODE_ENV !== 'production',
+  synchronize: true,
+  logging: true,
 });
