@@ -24,7 +24,7 @@ export const WinstonLoggerProvider = {
           zippedArchive: true,
           maxSize: '20m',
           maxFiles: '14d',
-          dirname: 'logs',
+          dirname: isProduction ? 'tmp' : 'logs',
         }),
       ],
     });
