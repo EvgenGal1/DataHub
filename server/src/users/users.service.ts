@@ -23,7 +23,7 @@ import {
   isProduction,
   isDevelopment,
   isTotal,
-} from 'src/config/envs/env.consts';
+} from '../config/envs/env.consts';
 
 // врем.общ.fn отраб.ошб.throw
 function createThrowError(message?: string): () => never {

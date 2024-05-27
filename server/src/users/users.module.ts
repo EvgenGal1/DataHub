@@ -14,7 +14,7 @@ import { DatabaseUtils } from '../utils/database.utils';
 // логи
 import { WinstonLoggerProvider } from '../config/winston-logger.config';
 // константы > команды запуска process.env.NODE_ENV
-import { isDevelopment, isTotal } from 'src/config/envs/env.consts';
+import { isDevelopment, isTotal } from '../config/envs/env.consts';
 
 @Module({
   controllers: [UsersController],
