@@ -16,15 +16,24 @@ import { ReactionsModule } from './reactions/reactions.module';
 // БД. config
 import { localhostConfig } from './config/envs/localhost.config.js';
 import { supabaseConfig } from './config/envs/supabase.config.js';
+// логи
+import { WinstonLoggerProvider } from './config/winston-logger.config.js';
+// константы > команды запуска process.env.NODE_ENV
+import {
+  isProduction,
+  isDevelopment,
+  isTotal,
+} from './config/envs/env.consts.js';
 
-console.log('A.M. process.env.NODE_ENV : ', process.env.NODE_ENV);
 // декор.модуль. (организ.структуры области действ.> cntrl и provider)
 @Module({
   imports: [
     // подкл.конфиг.модуль > счит.перем.из.env
     ConfigModule.forRoot({
-      // путь к ф.конфиг. (по умолч.ищет в корне .env)
-      envFilePath: `.env.${process.env.NODE_ENV}`,
+      // условн.путь к ф.конфиг.
+      envFilePath:
+        // ['.env.development', '.env.production'],
+        isProduction ? `.env.${process.env.NODE_ENV}` : '.env.development',
       // глоб.видим.
       isGlobal: true,
     }),
@@ -33,9 +42,8 @@ console.log('A.M. process.env.NODE_ENV : ', process.env.NODE_ENV);
       name: 'supabase',
       useFactory: supabaseConfig,
     }),
-    // доп.подкл.к локал.БД > разработки
-    ...(process.env.NODE_ENV !== 'production' &&
-    process.env.NODE_ENV === 'development'
+    // ^ доп.подкл.к локал.БД > разработки (dev БД SB, total БД SB, LH)
+    ...(isDevelopment || isTotal
       ? [
           TypeOrmModule.forRootAsync({
             name: 'localhost',
@@ -60,6 +68,7 @@ console.log('A.M. process.env.NODE_ENV : ', process.env.NODE_ENV);
   // подкл.cnrtl данного модуля
   controllers: [AppController, AppController2],
   // подкл.serv данного модуля
-  providers: [AppService],
+  providers: [AppService, WinstonLoggerProvider],
+  exports: [WinstonLoggerProvider],
 })
 export class AppModule {}

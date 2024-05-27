@@ -1,8 +1,17 @@
 // точка входа, запуск приложения
 import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module.js';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { NestExpressApplication } from '@nestjs/platform-express';
+
+import { AppModule } from './app.module.js';
+// константы > команды запуска process.env.NODE_ENV
+import {
+  isProduction,
+  isDevelopment,
+  isTotal,
+} from './config/envs/env.consts.js';
+// http фильтер исклюяений
+import { HttpExceptionFilter } from './http-exception.filter.js';
 
 async function bootstrap(): Promise<any> {
   try {
@@ -10,12 +19,20 @@ async function bootstrap(): Promise<any> {
     const app = await NestFactory.create<NestExpressApplication>(AppModule, {
       cors: true,
     });
+
+    // логи
+    const logger = app.get('WINSTON_LOGGER');
+    app.useLogger(logger);
+
+    // обраб.ошб.ч/з глобал.обраб.исключений
+    app.useGlobalFilters(new HttpExceptionFilter());
+
     // PORT Запуска
     // const PORT = process.env.PORT || 5000;
     let PORT: number;
-    if (process.env.NODE_ENV === 'development') {
+    if (isDevelopment || isTotal) {
       PORT = +process.env.PORT;
-    } else if (process.env.NODE_ENV === 'production') {
+    } else if (isProduction) {
       PORT = +process.env.SB_PG_PORT;
     }
 
@@ -31,10 +48,9 @@ async function bootstrap(): Promise<any> {
     // .addServer(`${process.env.PROTOCOL}${PORT}`)
     // .addServer(`${process.env.VERCEL_URL}`)
     // .addTag('app') .build();
-
-    if (process.env.NODE_ENV === 'development') {
+    if (isDevelopment || isTotal) {
       config.addServer(`${process.env.PROTOCOL}${PORT}`);
-    } else if (process.env.NODE_ENV === 'production') {
+    } else if (isProduction) {
       config.addServer(process.env.VERCEL_URL);
     }
     const configSwagger = config.build();
@@ -52,22 +68,30 @@ async function bootstrap(): Promise<any> {
     });
 
     // прослуш.PORT и fn()callback с cg на Запуск
-    return await app.listen(PORT, () => {
+    /* return */ await app.listen(PORT, () => {
       // console.log(`Запуск Сервер > PORT ${PORT}`);
+      // ^ вывод подкл.к БД от NODE_ENV. производство(БД SB) <> разработка (dev БД SB, total БД SB, LH)
       let srt: string, port: string, url: string, source: string;
-      if (process.env.NODE_ENV === 'development') {
+      if (isDevelopment) {
         srt = 'DEV';
-        source = 'localhost';
+        source = 'LocalHost';
         port = `${process.env.LH_PG_PORT}(${source})`;
         url = process.env.PROTOCOL + process.env.PORT;
-      } else if (process.env.NODE_ENV === 'production') {
+      } else if (isTotal) {
+        srt = 'DEV + PROD';
+        source = 'LocalHost++';
+        port = `${process.env.LH_PG_PORT}(${source})`;
+        source = 'LocalHost + SupaBase';
+        url = process.env.PROTOCOL + process.env.PORT;
+      } else if (isProduction) {
         srt = 'PROD';
-        port = process.env.SB_PG_PORT + '(SUPABASE)';
+        port = process.env.SB_PG_PORT + '(SupaBase)';
         source = 'VERCEL';
         url = process.env.VERCEL_URL;
       }
       console.log(`${srt}. Сервер - ${port}, подключён '${source}' - ${url}`);
     });
+    logger.info(`Приложение работает на: ${await app.getUrl()}`);
   } catch (e) {
     console.log('main e : ' + e);
   }
