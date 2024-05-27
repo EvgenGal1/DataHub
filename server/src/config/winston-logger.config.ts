@@ -1,6 +1,7 @@
 // ^ logger на winston
 import * as winston from 'winston';
 import 'winston-daily-rotate-file';
+import * as path from 'path';
 
 // константы > команды запуска process.env.NODE_ENV
 import { isProduction } from './envs/env.consts';
@@ -24,7 +25,10 @@ export const WinstonLoggerProvider = {
           zippedArchive: true,
           maxSize: '20m',
           maxFiles: '14d',
-          dirname: isProduction ? 'tmp' : 'logs',
+          // dirname: /* isProduction ? */ 'tmp' /* : 'logs' */,
+          // dirname: path.join(__dirname, 'logs'),
+          // dirname: 'logs',
+          dirname: path.join(process.cwd(), 'logs'),
         }),
       ],
     });
