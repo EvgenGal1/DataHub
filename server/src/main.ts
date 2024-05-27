@@ -2,6 +2,8 @@
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { NestExpressApplication } from '@nestjs/platform-express';
+import * as path from 'path';
+import * as fs from 'fs';
 
 import { AppModule } from './app.module.js';
 // константы > команды запуска process.env.NODE_ENV
@@ -10,11 +12,15 @@ import {
   isDevelopment,
   isTotal,
 } from './config/envs/env.consts.js';
-// http фильтер исклюяений
 import { HttpExceptionFilter } from './http-exception.filter.js';
 
 async function bootstrap(): Promise<any> {
   try {
+    // созд.п.под логи
+    const logDir = path.join('/tmp', 'logssss');
+    if (!fs.existsSync(logDir)) {
+      fs.mkdirSync(logDir, { recursive: true });
+    }
     // в перем.app асинхр.созд.экзепл.приложения ч/з кл.NestFactory с передачей в парам.modul входа и пр.настр.
     const app = await NestFactory.create<NestExpressApplication>(AppModule, {
       cors: true,

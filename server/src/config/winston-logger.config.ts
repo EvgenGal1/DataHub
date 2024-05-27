@@ -25,10 +25,12 @@ export const WinstonLoggerProvider = {
           zippedArchive: true,
           maxSize: '20m',
           maxFiles: '14d',
-          // dirname: /* isProduction ? */ 'tmp' /* : 'logs' */,
-          // dirname: path.join(__dirname, 'logs'),
-          // dirname: 'logs',
-          dirname: path.join(process.cwd(), 'logs'),
+          dirname: path.join(
+            process.cwd(),
+            isProduction ? `'/tmp' 'logs'` : 'logs',
+          ),
+          // dirname: path.join('/tmp', 'logs'),
+          // dirname: isProduction ? path.join('tmp', 'logs') : 'logs',
         }),
       ],
     });
