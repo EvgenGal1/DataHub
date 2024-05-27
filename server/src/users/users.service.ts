@@ -1,7 +1,13 @@
 // логика(бизнес,)
-import { Injectable, NotFoundException, Optional } from '@nestjs/common';
+import {
+  Inject,
+  Injectable,
+  NotFoundException,
+  Optional,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { In, Repository } from 'typeorm';
+import { Logger } from 'winston';
 
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -10,16 +16,28 @@ import { RoleEntity } from '../roles/entities/role.entity';
 import { RolesService } from '../roles/roles.service';
 import { UserRolesEntity } from '../roles/entities/user-roles.entity';
 import { AddingRolesToUsersDto } from '../roles/dto/add-roles-to-users.dto';
+// утилиты БД
 import { DatabaseUtils } from '../utils/database.utils';
+// константы > команды запуска process.env.NODE_ENV
+import {
+  isProduction,
+  isDevelopment,
+  isTotal,
+} from 'src/config/envs/env.consts';
+
+// врем.общ.fn отраб.ошб.throw
+function createThrowError(message?: string): () => never {
+  throw new NotFoundException(`${message}`);
+}
 
 @Injectable()
 export class UsersService {
-  // опред. > производства
-  private isProduction = process.env.NODE_ENV === 'production';
   constructor(
-    // ч/з внедр.завис. + UserEntity > раб.ч/з this с табл.users
+    // логи
+    @Inject('WINSTON_LOGGER') private readonly logger: Logger,
+    // ч/з внедр.завис. + UserEntity и др. > раб.ч/з this с табл.users и др.
     // ^ подкл.неск.БД.
-    // ^ репозитории только > SupaBase
+    // ^ репозитории только > БД SupaBase(SB)
     @InjectRepository(UserEntity, 'supabase')
     private readonly userRepositorySB: Repository<UserEntity>,
     @InjectRepository(RoleEntity, 'supabase')
@@ -29,7 +47,7 @@ export class UsersService {
     // ^ общ.репозит.настр.
     private roleService: RolesService,
     private dataBaseUtils: DatabaseUtils,
-    // ^ доп.необязат.репозит(Optional) > разраб.localhost
+    // ^ доп.необязат.репозит(Optional) > БД LocalHost(LH)
     @Optional()
     @InjectRepository(UserEntity, 'localhost')
     private userRepository?: Repository<UserEntity>,
@@ -43,105 +61,152 @@ export class UsersService {
 
   // СОЗД User + Role + связь
   async createUser(createUserDto: CreateUserDto) {
+    // логи,перем.ошб.
+    this.logger.info(
+      `Запись users в БД ${isProduction ? 'SB' : isDevelopment ? 'LH' : 'SB и LH'}`,
+    );
+    const err = `users не сохранён в БД`;
     // `получить наименьший доступный идентификатор` из табл.БД
     const smallestFreeId =
       await this.dataBaseUtils.getSmallestIDAvailable('user');
-    // созд.объ.user
-    const user = this.userRepository.create({
+    // созд.репез./объ.user взависимости от process.env.NODE_ENV
+    const definiteUserRepository = isProduction
+      ? this.userRepositorySB
+      : this.userRepository;
+    const user = definiteUserRepository.create({
       ...createUserDto,
       id: smallestFreeId,
     });
-    // получ.id Роли USER
-    // const role = await this.roleService.findRoleByValue('USER');
-    // запись Роли к User и сохр.связи в БД
-    // user.roles = [role];
-    // сохр.объ.user > БД
-    await this.userRepository.save(user);
 
-    // ^^ РАЗДЕЛ.ф.,настр. Внедрен.репозит.в зависим.от БД (е/и табл.на разн.БД)
-    // await this.localUsersRepository.save(user);
-    // if (process.env.NODE_ENV === 'production') {
-    //   await this.elephantUsersRepository.save(user);
-    // }
+    // ^ будущ.запись Роли,Уровня Роли,psw,token и др.
 
-    // возвр.user
-    return user;
+    // условие > PROD и DEV. перем.,req.,лог.,ошб.
+    if (isProduction || isDevelopment) {
+      const savedUser: UserEntity = await definiteUserRepository.save(user);
+      if (!savedUser) {
+        this.logger.error(`Лог. ${err} ${isProduction ? 'SB' : 'LH'}`);
+        createThrowError(`Ошб. ${err} ${isProduction ? 'SB' : 'LH'}`);
+      }
+      return savedUser;
+    }
+    // условие > TOTAL. PROD + DEV. запись данн.в SB и LH
+    if (isTotal) {
+      // получ.данн.обеих БД
+      const savedUserSB = await this.userRepositorySB.save(user);
+      const savedUserLH = await this.userRepository.save(user);
+      if (!savedUserSB && !savedUserLH) {
+        this.logger.error(`Лог. ${err} SB и LH`);
+        createThrowError(`Ошб. ${err} SB и LH`);
+      }
+      const userSavedSB = { ...savedUserSB, source: 'DB_SB' };
+      const userSavedLH = { ...savedUserLH, source: 'DB_LH' };
+      return {
+        ...userSavedSB,
+        [`userLH_${userSavedLH.id}`]: userSavedLH,
+      };
+    }
   }
 
-  // ^ получ.данн.из неск.БД.
-  // тделить одинаковые данн.из неск.БД
-  async findAllUsers(): Promise<(UserEntity & { source: string })[]> {
-    // Добавляем информацию о источнике данных с помощью расширения типа
-    interface ExtendedUserEntityUnderSource extends UserEntity {
-      source: string;
+  // все users из одной/неск.БД
+  async findAllUsers(): Promise<
+    (UserEntity | (UserEntity & { source: string }))[]
+  > {
+    // логи,перем.ошб.
+    this.logger.info(
+      `Получение всех users из БД ${isProduction ? 'SB' : isDevelopment ? 'LH' : 'SB и LH'}`,
+    );
+    const err = `users нет в БД`;
+    // условие > PROD и DEV. перем.,req.,лог.,ошб.
+    if (isProduction || isDevelopment) {
+      const definiteUserRepository: Repository<UserEntity> = isProduction
+        ? this.userRepositorySB
+        : this.userRepository;
+      const users = await definiteUserRepository.find();
+      if (!users) {
+        this.logger.error(`Лог. ${err} ${isProduction ? 'SB' : 'LH'}`);
+        createThrowError(`Ошб. ${err} ${isProduction ? 'SB' : 'LH'}`);
+      }
+      return users;
     }
-
-    // const isProduction = process.env.NODE_ENV === 'production';
-    const result: (UserEntity & { source: string })[] = [];
-
-    if (this.isProduction) {
-      // В продакшене получаем данные только из Supabase
-      const supabaseUsers = await this.userRepositorySB.find();
-      return supabaseUsers.map((user) => ({ ...user, source: 'supabase' }));
-      // return supabaseUsers;
-    } else {
-      // В режиме разработки получаем данные из обеих БД
-      const localUsers: UserEntity[] = await this.userRepository.find();
-      const supabaseUsers: UserEntity[] = await this.userRepositorySB.find();
-
-      // Проходим по каждому пользователю из Supabase
-      for (const supabaseUser of supabaseUsers) {
-        // Ищем точно такой же объект в локальной БД
-        const localUserIndex = localUsers.findIndex((localUser) => {
+    // условие > TOTAL. PROD + DEV. объедин.данн.SB с влож.данн.LH
+    if (isTotal) {
+      // расшир.типа,перем.возращ. > неск.БД
+      interface ExtendedUserEntityUnderSource extends UserEntity {
+        source: string;
+      }
+      const resultUnion: (UserEntity & { source: string })[] = [];
+      // получ.данн.обеих БД
+      const usersSB: UserEntity[] = await this.userRepositorySB.find();
+      const usersLH: UserEntity[] = await this.userRepository.find();
+      if (usersSB && !usersLH) {
+        this.logger.error(`Лог. ${err} SB и LH`);
+        createThrowError(`Ошб. ${err} SB и LH`);
+      }
+      // перебор всех user из БД SB
+      for (const supabaseUser of usersSB) {
+        // получ.idx user БД LH е/и объ.одинаковы
+        const localUserIndex = usersLH.findIndex((localUser) => {
           return JSON.stringify(localUser) === JSON.stringify(supabaseUser);
         });
-
-        // Если нашли такой же объект
-        if (localUserIndex !== -1) {
-          // Помещаем объект из Supabase с пометкой 'supabase' в результат
-          result.push({
-            ...supabaseUser,
-            source: 'supabase',
-          } as ExtendedUserEntityUnderSource);
-          // Удаляем найденный объект из массива localUsers, чтобы не обрабатывать его повторно
-          localUsers.splice(localUserIndex, 1);
-        } else {
-          // Если не нашли такой же объект, то помещаем объект из Supabase с пометкой 'supabase' в результат
-          result.push({
-            ...supabaseUser,
-            source: 'supabase',
-          } as ExtendedUserEntityUnderSource);
-        }
+        // е/и idx нет - удал.user из масс.LH
+        if (localUserIndex !== -1) usersLH.splice(localUserIndex, 1);
+        // добав.users SB в масс.resultUnion с указ.источ.БД
+        resultUnion.push({
+          ...supabaseUser,
+          source: 'DB_SB',
+        } as ExtendedUserEntityUnderSource);
       }
-      // Добавляем оставшиеся объекты из localUsers с пометкой 'localhost'
-      result.push(
-        ...localUsers.map(
+      // добав.оставшиеся users LH в масс.resultUnion с указ.источ.БД
+      resultUnion.push(
+        ...usersLH.map(
           (user) =>
-            ({ ...user, source: 'localhost' }) as ExtendedUserEntityUnderSource,
+            ({ ...user, source: 'DB_LH' }) as ExtendedUserEntityUnderSource,
         ),
       );
+      return resultUnion.sort((a, b) => a.id - b.id);
     }
-
-    return result.sort((a, b) => a.id - b.id);
   }
 
   // ОДИН user.по id
   async findOneUser(id: number): Promise<UserEntity> {
-    if (this.isProduction) {
-      return this.userRepositorySB.findOneBy({ id });
-    } else {
+    // логи,перем.ошб.
+    this.logger.info(
+      `Получение user по ID ${id} из ${isProduction ? 'SB' : isDevelopment ? 'LH' : 'SB и LH'}`,
+    );
+    const err = `user с ID ${id} нет в БД`;
+    // условие > PROD и DEV. перем.,req.,лог.,ошб.
+    if (isProduction || isDevelopment) {
+      const definiteUserRepository: Repository<UserEntity> = isProduction
+        ? this.userRepositorySB
+        : this.userRepository;
+      const user = await definiteUserRepository.findOneBy({ id });
+      if (!user) {
+        this.logger.error(`Лог. ${err} ${isProduction ? 'SB' : 'LH'}`);
+        createThrowError(`Ошб. ${err} ${isProduction ? 'SB' : 'LH'}`);
+      }
+      return user;
+    }
+    // ОБЩ.с БД - SB и LH
+    if (isTotal) {
       const userSB = await this.userRepositorySB.findOneBy({ id });
       const userLH = await this.userRepository.findOneBy({ id });
-      if (!userSB) throw new NotFoundException('Пользователь из SB не найден');
-      if (!userLH) throw new NotFoundException('Пользователь из LH не найден');
-      // провер.===данн.userSB <> userLH
+      if (!userSB && !userLH) {
+        this.logger.error(`Лог. ${err} SB и LH`);
+        createThrowError(`Ошб. ${err} SB и LH`);
+      }
+      // провер.равн.данн.userSB <> userLH
       const areEqual = JSON.stringify(userSB) === JSON.stringify(userLH);
-      // указ.исток.данн.SB
-      const userWithSourceSB = { ...userSB, source: 'sb' };
-      // е/и равны возврат userLH <> userLH и влож.{userSB}
-      return areEqual
-        ? userLH
-        : { ...userLH, [`userSB_${userSB.id}`]: userWithSourceSB };
+      // е/и не равны - указ.источ.DB, возвращ.раскрыт.userSB и влож.userLH
+      if (!areEqual) {
+        const userWithSourceSB = { ...userSB, source: 'DB_SB' };
+        const userWithSourceLH = { ...userLH, source: 'DB_LH' };
+        return {
+          ...userWithSourceSB,
+          [`userLH_${userLH.id}`]: userWithSourceLH,
+        };
+      }
+      // е/и равны возврат userSB
+      return userSB;
     }
   }
 

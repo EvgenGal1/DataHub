@@ -11,10 +11,14 @@ import { FileEntity } from '../files/entities/file.entity';
 import { TrackEntity } from '../tracks/entities/track.entity';
 import { AlbumEntity } from '../albums/entities/album.entity';
 import { DatabaseUtils } from '../utils/database.utils';
+// логи
+import { WinstonLoggerProvider } from '../config/winston-logger.config';
+// константы > команды запуска process.env.NODE_ENV
+import { isDevelopment, isTotal } from 'src/config/envs/env.consts';
 
 @Module({
   controllers: [UsersController],
-  providers: [UsersService, DatabaseUtils],
+  providers: [UsersService, DatabaseUtils, WinstonLoggerProvider],
   imports: [
     // ч/з TypeOrmModule.`для функции` подкл.UserEntity и пр. для раб.с табл.users и пр.
     // ^ подкл.неск.БД.
@@ -31,7 +35,7 @@ import { DatabaseUtils } from '../utils/database.utils';
       'supabase',
     ),
     // ^ > разраб. + доп.локал.сущности
-    ...(process.env.NODE_ENV === 'development'
+    ...(isDevelopment || isTotal
       ? [
           TypeOrmModule.forFeature(
             [

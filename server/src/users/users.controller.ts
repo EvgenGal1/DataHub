@@ -12,6 +12,7 @@ import {
   ParseFilePipe,
   MaxFileSizeValidator,
   FileTypeValidator,
+  Inject,
 } from '@nestjs/common';
 import {
   ApiBody,
@@ -26,6 +27,8 @@ import {
   FileInterceptor,
   // FileFieldsInterceptor,
 } from '@nestjs/platform-express';
+// логи
+import { Logger } from 'winston';
 
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -43,6 +46,8 @@ import { fileStorage } from '../files/storage';
 export class UsersController {
   // ч/з внедр.завис. + UsersService > раб.ч/з this с serv.users
   constructor(
+    // логи
+    @Inject('WINSTON_LOGGER') private readonly logger: Logger,
     // private readonly authService: AuthService,
     private readonly usersService: UsersService,
   ) {}
@@ -58,49 +63,56 @@ export class UsersController {
   //   description: 'Ответ о создании Пользователя',
   // })
   // получ.объ из запроса ч/з @Body
-  createUser(@Body() createUserDto: CreateUserDto) {
+  async createUser(@Body() createUserDto: CreateUserDto) {
+    // логи
+    this.logger.info(`create user`);
     // объ передаём в мтд.create в users.serv
-    return this.usersService.createUser(createUserDto);
+    return await this.usersService.createUser(createUserDto);
   }
 
   @Get()
   @ApiOperation({ summary: 'Получить всех Пользователей' })
   // @Roles('ADMIN')
   // @UseGuards(RolesGuard)
-  findAllUsers() {
-    return this.usersService.findAllUsers();
+  async findAllUsers() {
+    this.logger.info(`ALL.users`);
+    return await this.usersService.findAllUsers();
   }
 
   // ОДИН user.по id
   @Get(':id')
   @ApiOperation({ summary: 'Получить по ID' })
   // @ApiCreatedResponse({ description: 'Описание findOne' })
-  findOneUser(@Param('id') id: string /* ObjectId */) {
-    return this.usersService.findOneUser(+id);
+  async findOneUser(@Param('id') id: string /* ObjectId */) {
+    this.logger.info(`res.user ID: ${id}`);
+    return await this.usersService.findOneUser(+id);
   }
 
   // ОДИН user.по параметрам ID <> Email <> FullName
   @Get('param/:param')
   @ApiOperation({ summary: 'Получить Usera по ID <> Email <> FullName' })
-  findUserByParam(@Param('param') param: string) {
-    return this.usersService.findUserByParam(param);
+  async findUserByParam(@Param('param') param: string) {
+    return await this.usersService.findUserByParam(param);
   }
 
   @Patch(':id')
   @ApiOperation({ summary: 'Обновление Пользователя' })
-  updateUser(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.usersService.updateUser(+id, updateUserDto);
+  async updateUser(
+    @Param('id') id: string,
+    @Body() updateUserDto: UpdateUserDto,
+  ) {
+    return await this.usersService.updateUser(+id, updateUserDto);
   }
 
   @Delete(':id')
   @ApiOperation({ summary: 'Удаление Пользователя' })
-  removeUser(@Param('id') id: string) {
-    return this.usersService.removeUser(+id);
+  async removeUser(@Param('id') id: string) {
+    return await this.usersService.removeUser(+id);
   }
   // @Delete(':id')
   // @ApiOperation({ summary: 'Востановить Пользователя' })
   // restoreUser(@Param('id') id: string) {
-  //   return this.usersService.restoreUser(+id);
+  //   return await this.usersService.restoreUser(+id);
   // }
 
   // ^^ мтд.> ADMIN ----------------------------------------------------------------------------------
@@ -155,7 +167,7 @@ export class UsersController {
   // })
   // свой перехват > сохр.ф.с нов.name
   @UseInterceptors(FileInterceptor('avatar', { storage: fileStorage }))
-  uploadAvatar(
+  async uploadAvatar(
     // вытяг.ф.из запроса
     @UploadedFile(
       // валид.
@@ -196,8 +208,8 @@ export class UsersController {
   // @Roles('ADMIN')
   // @UseGuards(RolesGuard)
   // @Post('/role')
-  // addRole(@Body() dto: AddRoleDto) {
-  //   return this.usersService.addRole(dto);
+  // async addRole(@Body() dto: AddRoleDto) {
+  //   return await this.usersService.addRole(dto);
   // }
 
   // @ApiOperation({ summary: 'Забанить пользователя' })
@@ -205,8 +217,8 @@ export class UsersController {
   // @Roles('ADMIN')
   // @UseGuards(RolesGuard)
   // @Post('/ban')
-  // ban(@Body() dto: BanUserDto) {
-  //   return this.usersService.ban(dto);
+  // async ban(@Body() dto: BanUserDto) {
+  //   return await this.usersService.ban(dto);
   // }
 
   // ~~ связь с конкретными ролями
@@ -219,7 +231,7 @@ export class UsersController {
   //     username,
   //     roles,
   //   );
-  //   return newUser;
+  //   return await newUser;
   // }
   //  ----------------------------------------------------------------------------------
   // ~~ Для получения пользователя (user), его роли (role) и уровня (level) из таблиц users, roles и user_roles
@@ -227,6 +239,6 @@ export class UsersController {
   // async getUserRoleAndLevel(@Query('userId') userId: number) {
   //   console.log('userId : ' + userId);
   //   const user = await this.usersService.getUserRoleAndLevel(userId);
-  //   return user;
+  //   return await user;
   // }
 }
