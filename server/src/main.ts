@@ -17,7 +17,7 @@ import { HttpExceptionFilter } from './http-exception.filter.js';
 async function bootstrap(): Promise<any> {
   try {
     // созд.п.под логи
-    const logDir = path.join('/tmp', 'logssss');
+    const logDir = path.join(__dirname, 'tmp', 'logs');
     if (!fs.existsSync(logDir)) {
       fs.mkdirSync(logDir, { recursive: true });
     }
@@ -73,11 +73,12 @@ async function bootstrap(): Promise<any> {
       },
     });
 
+    let url: string;
     // прослуш.PORT и fn()callback с cg на Запуск
     /* return */ await app.listen(PORT, () => {
       // console.log(`Запуск Сервер > PORT ${PORT}`);
       // ^ вывод подкл.к БД от NODE_ENV. производство(БД SB) <> разработка (dev БД SB, total БД SB, LH)
-      let srt: string, port: string, url: string, source: string;
+      let srt: string, port: string, source: string;
       if (isDevelopment) {
         srt = 'DEV';
         source = 'LocalHost';
@@ -97,7 +98,7 @@ async function bootstrap(): Promise<any> {
       }
       console.log(`${srt}. Сервер - ${port}, подключён '${source}' - ${url}`);
     });
-    logger.info(`Приложение работает на: ${await app.getUrl()}`);
+    logger.info(`Приложение работает на: ${/* await app.getUrl() */ url}`);
   } catch (e) {
     console.log('main e : ' + e);
   }
