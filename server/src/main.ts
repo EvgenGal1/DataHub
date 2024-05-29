@@ -16,11 +16,6 @@ import { HttpExceptionFilter } from './http-exception.filter.js';
 
 async function bootstrap(): Promise<any> {
   try {
-    // созд.п.под логи
-    const logDir = path.join(__dirname, 'tmp', 'logs');
-    if (!fs.existsSync(logDir)) {
-      fs.mkdirSync(logDir, { recursive: true });
-    }
     // в перем.app асинхр.созд.экзепл.приложения ч/з кл.NestFactory с передачей в парам.modul входа и пр.настр.
     const app = await NestFactory.create<NestExpressApplication>(AppModule, {
       cors: true,
