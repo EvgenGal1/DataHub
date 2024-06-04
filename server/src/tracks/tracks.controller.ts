@@ -26,7 +26,7 @@ import * as fs from 'fs';
 
 // БАЗЫ ДАННЫХ. localhost, supabase(cloude storage)
 import { fileStorage } from '../files/storage';
-import { createClient } from '@supabase/supabase-js';
+// import { createClient } from '@supabase/supabase-js';
 import { TracksService } from './tracks.service';
 import { CreateTrackDto } from './dto/create-track.dto';
 import { UpdateTrackDto } from './dto/update-track.dto';
@@ -136,84 +136,6 @@ export class TrackController {
         createTrackDto,
       );
 
-      //  ----------------------------------------------------------------------------------
-      const supabaseUrl = process.env.SUPABASE_URL;
-      const supabasePort = process.env.SUPABASE_PORT;
-      console.log(
-        't.c. supabaseUrl supabasePort : ',
-        supabaseUrl,
-        '|',
-        supabasePort,
-      );
-      const supabaseUrlPort = process.env.SUPABASE_URL_PORT;
-      const supabaseKey = process.env.SUPABASE_KEY;
-      const supabase = createClient(supabaseUrlPort, supabaseKey);
-      console.log(
-        't.c. supabaseUrlPort supabaseKey : ',
-        supabaseUrlPort,
-        '|',
-        supabaseKey,
-      );
-      console.log('t.c. supabase : ', supabase);
-
-      const trackFiles = audios.track[0];
-      const coverFile = audios.cover[0];
-      console.log(
-        't.c. cre trackFiles coverFile : ',
-        trackFiles,
-        '|',
-        coverFile,
-      );
-
-      // Загрузка трека в Supabase
-      const { data: trackData, error: trackError } = await supabase.storage
-        .from('tracks')
-        .upload(trackFiles.originalname, trackFiles.buffer, {
-          contentType: trackFiles.mimetype,
-        });
-      console.log('t.c. cre_SB trackData : ', trackData);
-      if (trackError) {
-        throw trackError;
-      }
-
-      // const { publicUrl: trackPublicURL } = supabase.storage
-      const trackPublicURL = supabase.storage
-        .from('tracks')
-        .getPublicUrl(trackData.path);
-      console.log('t.c. cre_SB trackPublicURL : ', trackPublicURL);
-
-      // Загрузка обложки в Supabase
-      const { data: coverData, error: coverError } = await supabase.storage
-        .from('covers')
-        .upload(coverFile.originalname, coverFile.buffer, {
-          contentType: coverFile.mimetype,
-        });
-      console.log('t.c. cre_SB coverData : ', coverData);
-      if (coverError) {
-        throw coverError;
-      }
-
-      // Получение URL-адреса трека и обложки
-      // const { publicUrl: trackUrl } = supabase.storage
-      const trackUrl = supabase.storage
-        .from('tracks')
-        .getPublicUrl(trackData.path);
-      console.log('t.c. cre_SB trackUrl : ', trackUrl);
-
-      // const { publicUrl: coverUrl } = supabase.storage
-      const coverUrl = supabase.storage
-        .from('covers')
-        .getPublicUrl(coverData.path);
-      console.log('t.c. cre_SB coverUrl : ', coverUrl);
-
-      // // Создание трека в базе данных с URL-адресами
-      // return this.trackService.create({
-      //   ...createTrackDto,
-      //   track: trackUrl,
-      //   cover: coverUrl,
-      //   userId,
-      // });
-      //  ----------------------------------------------------------------------------------
       // перем.эл.в audios по услов. > загр.serv > обраб.данн. > возврат
       const keys = Object.keys(audios);
       if (keys.length === 1 && keys[0] === 'track') {
@@ -251,25 +173,6 @@ export class TrackController {
       );
     }
   }
-
-  //  ----------------------------------------------------------------------------------
-  // Используйте Supabase для загрузки файлов:
-  async /* function */ uploadFile(file: File) {
-    const supabaseUrlPort = process.env.SUPABASE_URL_PORT;
-    const supabaseKey = process.env.SUPABASE_KEY;
-    const supabase = createClient(supabaseUrlPort, supabaseKey);
-    console.log('t.c. supabase : ', supabase);
-    const { data, error } = await supabase.storage
-      .from('your-bucket-name')
-      .upload(file.name, file);
-    console.log('t.c. SB_upd data error : ', data, error);
-    if (error) {
-      throw error;
-    }
-
-    return data;
-  }
-  //  ----------------------------------------------------------------------------------
 
   // получить все треки
   @Get()
