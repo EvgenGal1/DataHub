@@ -1,35 +1,56 @@
 {
   "compilerOptions": {
-    "target": "ES2015",
-    "module": "CommonJS",
+    // v.ECMAScript скомпил.кода
+    "target": "ES2015", // "ES6",
+    // модульная система > приложения
+    "module": "CommonJS", // "ES6",
+    // способ разрешения модулей
     "moduleResolution": "node",
+    // п.скомпил.ф.
     "outDir": "./dist",
+    // генер.ф. .d.ts
     "declaration": true,
+    // вкл.подерж.декор-ов
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
+    // ф.map > сравн.исход с скомпил.
     "sourceMap": true,
+    // вкл.строгие типы > null, undefined, any
     "strictNullChecks": false,
     "noImplicitAny": false,
+    // откл.провер.типов у встр.библ.
     "skipLibCheck": true,
+    // откл.коммент
     "removeComments": true,
-    "allowSyntheticDefaultImports": true,
+    // баз.путь
     "baseUrl": "./",
+    // сбор.ток.измен.ф.
     "incremental": true,
+    // проверка примен. bind, call, apply
     "strictBindCallApply": false,
-    "noFallthroughCasesInSwitch": false,
+    // компил. JS и TS 
     "allowJs": true,
+    // пров.ф.JS на ошб.
     "checkJs": false,
+    // импорт ф.JSON как модулей
     "resolveJsonModule": true,
+    // совмест.ECMAScript
     "esModuleInterop": true,
+    // один регистр ф.имя
     "forceConsistentCasingInFileNames": true,
+    // вкл.строг.пров.
     "strict": true,
   },
+  // список конкретных ф.> компиляции
+  // "files": [ "core.ts", "app.ts" ],
+  // спк.п./ф.> компил.
   "include": [
     // "./src/**/*.js",
     "./src/**/*.ts",
     "./src/**/*.mts",
     "./src/**/*.cts"
   ],
+  // исключение п./ф.из компил.
   "exclude": [
     "node_modules",
     "dist"

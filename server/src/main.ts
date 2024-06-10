@@ -24,6 +24,19 @@ async function bootstrap(): Promise<any> {
     // логи
     const logger = app.get('WINSTON_LOGGER');
     app.useLogger(logger);
+    if (isDevelopment || isTotal) {
+      // созд.п. > логи
+      const tmpDir = path.join(process.cwd(), 'tmp');
+      if (!fs.existsSync(tmpDir)) {
+        console.log('123 : ' + 123);
+        fs.mkdirSync(tmpDir, { recursive: true });
+      }
+      const logDir = path.join(tmpDir, 'logs');
+      if (!fs.existsSync(logDir)) {
+        console.log('345 : ' + 345);
+        fs.mkdirSync(logDir, { recursive: true });
+      }
+    }
 
     // обраб.ошб.ч/з глобал.обраб.исключений
     app.useGlobalFilters(new HttpExceptionFilter());
@@ -54,7 +67,7 @@ async function bootstrap(): Promise<any> {
     } else if (isProduction) {
       config.addServer(process.env.VERCEL_URL);
     }
-    const configSwagger = config.build();
+    const configSwagger = config.addTag('app').build();
 
     // созд.док.swg(экземп.прилож., объ.парам., специф.доступа(3ий не обязат.парам.))
     const document = SwaggerModule.createDocument(app, configSwagger);
