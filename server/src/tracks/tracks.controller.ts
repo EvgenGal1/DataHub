@@ -25,7 +25,7 @@ import {
 import * as fs from 'fs';
 
 // БАЗЫ ДАННЫХ. localhost, supabase(cloude storage)
-import { fileStorage } from '../files/storage';
+import { fileStorage } from '../common/storage/storage';
 // import { createClient } from '@supabase/supabase-js';
 import { TracksService } from './tracks.service';
 import { CreateTrackDto } from './dto/create-track.dto';
@@ -95,7 +95,7 @@ export class TrackController {
         { name: 'cover', maxCount: 1 },
       ],
       // сохр. > store локального хранилища
-      // { storage: fileStorage },
+      { storage: fileStorage },
     ),
   )
   async createTrackByParam(

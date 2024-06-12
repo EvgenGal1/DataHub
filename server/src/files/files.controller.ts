@@ -27,7 +27,7 @@ import {
 import { UpdateFileDto } from './dto/update-file.dto';
 import { FileType, fileTypesAllowed } from './entities/file.entity';
 import { FilesService } from './files.service';
-import { fileStorage } from './storage';
+import { fileStorage } from '../common/storage/storage';
 // import { JwtAuthGuard } from '../auth/guard/jwt.guard';
 import { UserId } from '../common/decorators/user-id.decorator';
 

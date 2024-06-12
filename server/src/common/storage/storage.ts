@@ -4,14 +4,13 @@ import * as path from 'path';
 import * as fs from 'fs';
 import { BadRequestException, NotFoundException } from '@nestjs/common';
 
-import { fileTargets } from '../helpers/fileTargets';
+import { BasicUtils } from '../../utils/basic.utils';
 
 // MW > сохр.неск.ф. `файловое хранилище` = `дисковое хранилище`
 export const fileStorage = multer.diskStorage({
   // `место назначения`
-  destination: (req, file, cb) => {
+  destination: /* async */ (req, file, cb) => {
     console.log('flStor DES.file : ', file);
-
     if (file === undefined || file === null) {
       throw new NotFoundException('Ошибка сохранения данных в БД', 'нет файла');
     }
@@ -22,7 +21,9 @@ export const fileStorage = multer.diskStorage({
 
     // опред.путь. по переданному Типу
     if (req.query.fileType) {
-      fileTarget = fileTargets(String(req.query.fileType).toUpperCase());
+      fileTarget = BasicUtils.fileTargets(
+        String(req.query.fileType).toUpperCase(),
+      );
     }
     // по fieldname(типу загр.) и mimetype(типу файла)
     else {
@@ -36,28 +37,33 @@ export const fileStorage = multer.diskStorage({
       // альтер.получ.тип ч/з ключи масс.соответствий по нач.знач.mimetype - Object.keys(fileTypeMappings).find((type) => file.mimetype.startsWith(type), );
       // `разрешенные типы файлов`
       const allowedFileTypes = fileTypeMappings[fileMimeType]; // track,audiobook,sounds <> ...
+
       // опред.путь <> ошб. от соответствия значений fieldname(поле загр.) к fileTypeMappings(типам ф.)
       if (allowedFileTypes && allowedFileTypes.includes(file.fieldname)) {
-        fileTarget = fileTargets(String(file.fieldname).toUpperCase());
+        fileTarget = BasicUtils.fileTargets(
+          String(file.fieldname).toUpperCase(),
+        );
       } else {
         const err = `Несоответствие типов. Передан файл '${file.originalname}' с типом '${file.mimetype}', а должен быть '${file.fieldname}'`;
-        console.log('flStor err : ', err);
         const error = new /* NotFoundException */ BadRequestException(
           'Ошибка сохранения данных в БД',
           err,
         );
-        // if (file.fieldname === 'track') return cb(error, null);
-        // if (file.fieldname === 'cover') return cb(error, null);
+
         return cb(error, null);
-        // ! не раб.ошб. SWAGGER >> Loading >> Undocumented - Failed to fetch. - Possible Reasons: CORS > Network Failure > URL scheme must be "http" or "https" for CORS request.
-        // ~~ после первой отработавшей ошибки, любой ошибочный запрос застревает в Loading и позже падает в ошибку с CORE.
-        // ~~ перезагрузки swagger разрешает проблему любого запроса
       }
     }
 
     // формир.путь сохран. сокращ.ручной <> полн.автомат
     // const destinationPath = baseFolder + '/' + fileTarget; // /static/audios/track/
-    const filePath = path.resolve(__dirname, '..', baseFolder, fileTarget); // D:\Про\Творения\FullStack\music-platform_Next-Nest\server\dist\static\audios\track
+    const filePath = path.resolve(
+      __dirname,
+      '..',
+      '..',
+      '..',
+      baseFolder,
+      fileTarget,
+    ); // D:\Про\Творения\FullStack\music-platform_Next-Nest\server\static\audios\track
     // альтер.сохр.п./ф. // ! не раб. - file.buffer = undf
     // fs.writeFileSync(path.resolve(filePath, fileName), file.buffer)
 
@@ -67,13 +73,9 @@ export const fileStorage = multer.diskStorage({
     }
     // альтер.проверка п.
     // fs.access(filePath, (error) => {
-    //   if (error) { fs.mkdir(filePath, { recursive: true }, (err) => {
-    //       if (err) { cb(err, null);
-    //       } else { cb(null, filePath); } });
-    //   } else { cb(null, filePath); }
-    // });
+    //   if (error) { fs.mkdir(filePath, { recursive: true }, (err) => { if (err) { cb(err, null); } else { cb(null, filePath); } });
+    //   } else { cb(null, filePath); }      });
 
-    console.log('flStor destination = : ', filePath);
     cb(null, filePath);
   },
 
@@ -116,30 +118,3 @@ export const fileStorage = multer.diskStorage({
     cb(null, fileNameReturn);
   },
 });
-
-// ^^ отдельная логика сохранения с передачей props
-// ! не раб. зависает на diskStorage
-// export const createFileStorage = async (
-//   file?: Express.Multer.File,
-//   fileType?: string,
-// ) => {
-//   // отдельная логика формирования `место назначения` - destinationPath
-//   // отдельная формирования `имя файла` - fileNameDateRandomExt
-// // ! зависает код в разн.ошб.с разн.returPromise и т.д.
-//   const fileStorage = diskStorage({
-//     destination: (req, file, cb) => {
-//       cb(null, destinationPath);
-//     },
-//     filename: (req, file, cb) => {
-//       cb(null, fileNameDateRandomExt);
-//     },
-//   })
-//   ((null, null) => {
-//     if (fileStorage) {
-//       resolve(`${destinationPath}/${fileNameDateRandomExt}`);
-//     } else {
-//       reject('Failed to create file storage');
-//     }
-//   });
-//   return fileStorage;
-// };

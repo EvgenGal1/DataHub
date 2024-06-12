@@ -69,7 +69,7 @@ export class UsersService {
     // `получить наименьший доступный идентификатор` из табл.БД
     const smallestFreeId =
       await this.dataBaseUtils.getSmallestIDAvailable('user');
-    // созд.репез./объ.user взависимости от process.env.NODE_ENV
+    // созд.репоз./объ.user взависимости от process.env.NODE_ENV
     const definiteUserRepository = isProduction
       ? this.userRepositorySB
       : this.userRepository;
