@@ -5,6 +5,46 @@ import iconv from 'iconv-lite';
 
 // @Injectable()
 export class BasicUtils {
+  // опред.сохр.пути по передан.типу
+  static fileTargets(fileType: string): string {
+    console.log('BasicUtils fileTargets fileType : ' + fileType);
+    switch (fileType) {
+      case 'IMAGE':
+        return 'images';
+      case 'PICTURE':
+        return 'images/picture';
+      case 'AVATAR':
+        return 'users/avatar';
+      case 'ALBUM':
+      case 'COVER':
+        return 'images/album';
+      case 'PHOTO':
+        return 'users/photo';
+      case 'PERSONAL':
+        return 'users/personal';
+      case 'AUDIO':
+        return 'audios';
+      case 'AUDIOBOOK':
+        return 'audios/audiobook';
+      case 'TRACK':
+        return 'audios/track';
+      case 'BOOK':
+        return 'books/book';
+      case 'FILE':
+        return 'books/file';
+      case 'PROSE':
+        return 'books/prose';
+      case 'CODE':
+        return 'prog/code';
+      case 'SCHEME':
+        return 'prog/scheme';
+      case 'BLUEPRINT':
+        return 'prog/blueprint';
+      default:
+        return 'other';
+    }
+  }
+
   // вычисление общего времени в фомате минуты:секунды
   async sumDurations(duration1, duration2) {
     const [min1, sec1] = duration1.split(':').map(Number);
@@ -19,6 +59,44 @@ export class BasicUtils {
     }${totalSeconds}`;
     console.log('sumDurations totalTime : ', totalTime);
     return totalTime;
+  }
+
+  // fn проверки на пусто/кодировки и добавл.ключ.:значен.
+  async decodeIntoKeyAndValue(
+    key: string,
+    value /* : string | number | null | string[] */,
+  ) {
+    if (!value) return;
+    // данн.из масс. > стр.
+    if (Array.isArray(value)) {
+      value = value.length === 1 ? value[0] : value.join(', ');
+    }
+
+    // налич.: любых в([) букв RU/EN,цифр,пробел,знаки(.,&!@#%()-) ] повтор(+)регистр(i)Unicode(u)
+    const regExValid = /^[a-zA-Zа-яА-Я0-9\s.,:&!@#%()-]+$/iu;
+    // расшир.буквы Unicode - /[\u00C0-\u017F]/;
+    // наличие букв RU/EN, цифр в названии - /^[а-яА-Яa-zA-Z0-9\s]+$/iu;
+    // налич.: любой в([) букв(p{L}),пробел(s),цифра(d),знаки(.,&!@#%()-) ] повтор(+) регистр(i)Юникод(u) - /^([\p{L}\s\d.,:&!@#%()-]+)$/iu;
+    // проверка на UTF8. ASCII 0-255 + двухбайт - /[\x00-\xFF\xC2-\xFD]/;
+
+    const result: { [key: string]: string | number | null } = {};
+    // условие по региляр.выраж. напрямую <> перекод.URI <> перекод.UTF8
+    if (regExValid.test(value)) {
+      // формир.объ.ключ.знач.
+      result[key] = value;
+    } else if (!regExValid.test(value)) {
+      value =
+        key === 'originalname'
+          ? decodeURIComponent(escape(value)) // decodeURIComponent(value)
+          : iconv.decode(value, 'windows-1251'); // utf8 <> win1251
+      result[key] = value;
+      // перекодировка value в utf8
+      // value = Buffer.from(String(value), 'utf8').toString('utf8');
+      // доп.перекод.на пакетах iconv-lite и chardet // ! не раб - iconv.decode
+      // const detectedEncoding = chardet.detect(Buffer.from(value));
+      // const result = iconv.decode(Buffer.from(value), detectedEncoding);
+    }
+    return result[key];
   }
 
   // `получить мета данн.аудио файла`. Возврат объ.с ключ:стр.
@@ -40,52 +118,45 @@ export class BasicUtils {
       ':' +
       String(Math.round(metadata.format.duration) % 60);
 
-    const result = {};
-    // fn проверки на пусто/кодировки и добавл.ключ.:значен.
-    function addToResult(
-      key: string,
-      value /* : string | number | null | string[] */,
-    ) {
-      if (!value) return;
-      // данн.из масс. > стр.
-      if (Array.isArray(value)) {
-        value = value.length === 1 ? value[0] : value.join(', ');
-      }
+    const result /* : AudioMetadata */ = {};
 
-      // налич.: любых в([) букв RU/EN,цифр,пробел,знаки(.,&!@#%()-) ] повтор(+)регистр(i)Unicode(u)
-      const regExValid = /^[a-zA-Zа-яА-Я0-9\s.,:&!@#%()-]+$/iu;
-      // расшир.буквы Unicode - /[\u00C0-\u017F]/;
-      // наличие букв RU/EN, цифр в названии - /^[а-яА-Яa-zA-Z0-9\s]+$/iu;
-      // налич.: любой в([) букв(p{L}),пробел(s),цифра(d),знаки(.,&!@#%()-) ] повтор(+) регистр(i)Юникод(u) - /^([\p{L}\s\d.,:&!@#%()-]+)$/iu;
-      // проверка на UTF8. ASCII 0-255 + двухбайт - /[\x00-\xFF\xC2-\xFD]/;
-
-      // условие по региляр.выраж. напрямую <> перекод.URI <> перекод.UTF8
-      if (regExValid.test(value)) {
-        // формир.объ.ключ.знач.
-        result[key] = value;
-      } else if (!regExValid.test(value)) {
-        value =
-          key === 'originalname'
-            ? decodeURIComponent(escape(value)) // decodeURIComponent(value)
-            : iconv.decode(value, 'windows-1251'); // utf8 <> win1251
-        result[key] = value;
-        // перекодировка value в utf8
-        // value = Buffer.from(String(value), 'utf8').toString('utf8');
-        // доп.перекод.на пакетах iconv-lite и chardet // ! не раб - iconv.decode
-        // const detectedEncoding = chardet.detect(Buffer.from(value));
-        // const result = iconv.decode(Buffer.from(value), detectedEncoding);
-      }
-    }
     // разреш.парам. Вызов кажд.поля
-    addToResult('artist', metadata.common.artist);
-    addToResult('title', metadata.common.title);
-    addToResult('originalname', audio.originalname);
-    addToResult('genre', metadata.common.genre);
-    addToResult('year', metadata.common.year);
-    addToResult('album', metadata.common.album);
-    addToResult('duration', totalSeconds);
-    addToResult('sampleRate', metadata.format.sampleRate);
-    addToResult('bitrate', metadata.format.bitrate);
+    result['artist'] = await this.decodeIntoKeyAndValue(
+      'artist',
+      metadata.common.artist,
+    );
+    result['title'] = await this.decodeIntoKeyAndValue(
+      'title',
+      metadata.common.title,
+    );
+    result['originalname'] = await this.decodeIntoKeyAndValue(
+      'originalname',
+      audio.originalname,
+    );
+    result['genre'] = await this.decodeIntoKeyAndValue(
+      'genre',
+      Number(metadata.common.genre),
+    );
+    result['year'] = await this.decodeIntoKeyAndValue(
+      'year',
+      metadata.common.year,
+    );
+    result['album'] = await this.decodeIntoKeyAndValue(
+      'album',
+      metadata.common.album,
+    );
+    result['duration'] = await this.decodeIntoKeyAndValue(
+      'duration',
+      totalSeconds,
+    );
+    result['sampleRate'] = await this.decodeIntoKeyAndValue(
+      'sampleRate',
+      metadata.format.sampleRate,
+    );
+    result['bitrate'] = await this.decodeIntoKeyAndValue(
+      'bitrate',
+      metadata.format.bitrate,
+    );
 
     console.log('getAudioMetaData result : ', result);
 
