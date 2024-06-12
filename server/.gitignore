@@ -72,15 +72,17 @@ webpack*
 
 # исключения
 # папки 
-!/**/src/common/decorators/
 !/**/src/config/envs/
+!/**/src/common/storage/
+!/**/src/common/decorators/
 # все.ф.в п. 
 # !/**/src/common/decorators/**
 # ф.
-!/**/src/common/decorators/user-id.decorator.ts
 !/**/src/config/winston-logger.config.ts
 !/**/src/config/envs/localhost.config.ts
 !/**/src/config/envs/supabase.config.ts
 !/**/src/config/envs/env.consts.ts
+!/**/src/common/storage/storage.ts
+!/**/src/common/decorators/user-id.decorator.ts
 # !/**/src/config/envs/elephant.config.ts
 # !/**/src/config/envs/configurationLocalhost.ts
