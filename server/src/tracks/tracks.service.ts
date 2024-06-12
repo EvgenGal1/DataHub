@@ -85,16 +85,18 @@ export class TracksService {
         throw new NotFoundException('Нет Трека > Записи');
       }
 
-      // АУДИО.
       // перебор всех audios.track
       for (const audioObj of audios?.track) {
         // `получить аудио метаданные`
         const audioMetaData = await this.basicUtils.getAudioMetaData(audioObj);
-        // проверка `существующий Трек` с учётом deletedAt
+        // проверка `существующий Трек` с учётом deletedAt по title origName
         const existingTrack = await this.tracksRepository
           .createQueryBuilder('tracks')
           .withDeleted()
-          .where({ name: audioMetaData.title })
+          .where('name = :title OR name = :originalname', {
+            title: audioMetaData.title,
+            originalname: audioMetaData.originalname,
+          })
           .getOne();
         // перем.проверки стар./нов. Трека
         const deletedAtExist = existingTrack?.deletedAt;
@@ -113,6 +115,7 @@ export class TracksService {
             : '';
         }
 
+        // ФАЙЛ (табл.всех Files).
         let existingFile;
         // ф.Трека(name,artist,text,genre) + savedFile(dto=obj<>num)
         if (
@@ -127,7 +130,7 @@ export class TracksService {
             .withDeleted()
             .where({ filename: audioMetaData.originalname })
             .getOne();
-          //  обнов. <> сохр. Трек
+          //  мягк.удал. <> сохр.Трек
           if (existingFile?.id) {
             // присвойка существ.объ.
             savedFile = existingFile;
@@ -141,6 +144,10 @@ export class TracksService {
           } else {
             // подмена пути ф. е/и загр.вместе с треком
             audioObj.destination = '/audios/track/';
+            // имя из ttle или назв.
+            audioObj.filename = audioMetaData.title
+              ? audioMetaData.title
+              : audioMetaData.originalname;
             savedFile = await this.filesService.createFileByParam(
               audioObj,
               userId,
@@ -152,7 +159,7 @@ export class TracksService {
           savedFile = createTrackDto ? createTrackDto : null;
         }
 
-        // COVER(обложка).
+        // COVER (обложка > табл.всех Files).
         if (audios?.cover && audios?.cover.length > 0 && audios?.track) {
           // проверка `существующий Обложки` по имени
           const existingCover = await this.filesRepository
@@ -174,6 +181,12 @@ export class TracksService {
           } else {
             // подмена пути ф. е/и загр.вместе с треком
             audios.cover[0].destination = '/images/album/';
+            // перекод.имя
+            audios.cover[0].filename =
+              await this.basicUtils.decodeIntoKeyAndValue(
+                'filename',
+                audios.cover[0].originalname,
+              );
             // сохр.обложку Files
             savedCover = await this.filesService.createFileByParam(
               audios.cover[0],
@@ -182,15 +195,16 @@ export class TracksService {
           }
         }
 
-        // АЛЬБОМ. есть ф.Обложки <> метаданн.Альбома
+        // АЛЬБОМ (табл.Albums). есть ф.Обложки <> метаданн.Альбома
         if (audios?.cover?.length > 0 || audioMetaData.album) {
           // проверка `существующий Альбом` по заголовку с учётом deletedAt
-          const existingAlbum = await this.albumsRepository.findOne({
-            where: { title: audioMetaData.album },
-            withDeleted: true,
-            relations: ['cover'],
-          });
-          // const existingAlbum = await this.albumsRepository.createQueryBuilder('albums').withDeleted().leftJoinAndSelect('albums.cover', 'cover').where({ title: audioMetaData.albums }).getOne();
+          // const existingAlbum = await this.albumsRepository.findOne({ where: { title: audioMetaData.album }, withDeleted: true, relations: ['cover'], }); // ! ошб. выгр.1 при audioMetaData.album = undf
+          const existingAlbum = await this.albumsRepository
+            .createQueryBuilder('albums')
+            .where({ title: audioMetaData.albums })
+            .leftJoinAndSelect('albums.cover', 'cover')
+            .withDeleted()
+            .getOne();
           // основ.данн.Альбома
           const basicAlbumData = {
             title: existingAlbum?.title || audioMetaData.album,
@@ -271,30 +285,27 @@ export class TracksService {
           }
         }
 
-        // обнов.основ.данн.Трека
+        // ТРЕК (табл.Audios)
+        // trackID. `получить наименьший доступный идентификатор` из БД > табл.track
+        const smallestFreeId =
+          await this.dataBaseUtils.getSmallestIDAvailable('track');
+        // обнов.основ.данн.Трека из MetaData иначе существ.Трек или DTO+
         const trackDto =
           createTrackDto instanceof CreateTrackDto
             ? createTrackDto
             : new CreateTrackDto();
         const basicTrackData = {
           ...trackDto,
-          name:
-            trackDto.name.includes('#') && audioMetaData.title
-              ? audioMetaData.title
-              : trackDto.name,
-          genre:
-            trackDto.genre.includes('#') && audioMetaData.genre
-              ? audioMetaData.genre
-              : trackDto.genre,
-          artist:
-            trackDto.artist.includes('#') && audioMetaData.artist
-              ? audioMetaData.artist
-              : trackDto.artist,
+          name: trackDto.name.includes('#')
+            ? audioMetaData?.title ?? `${trackDto?.name}_${smallestFreeId}`
+            : existingTrack?.name ?? `${trackDto?.name}_${smallestFreeId}`,
+          genre: trackDto.genre.includes('#')
+            ? audioMetaData?.genre ?? `${trackDto?.genre}_${smallestFreeId}`
+            : existingTrack?.genre ?? `${trackDto?.genre}_${smallestFreeId}`,
+          artist: trackDto.artist.includes('#')
+            ? audioMetaData?.artist ?? `${trackDto?.artist}_${smallestFreeId}`
+            : existingTrack?.artist ?? `${trackDto?.artist}_${smallestFreeId}`,
         };
-
-        // trackID. `получить наименьший доступный идентификатор` из БД > табл.track
-        const smallestFreeId =
-          await this.dataBaseUtils.getSmallestIDAvailable('track');
         // объ.track созд./сохр./вернуть
         const track = /* this.tracksRepository.create( */ {
           ...basicTrackData,

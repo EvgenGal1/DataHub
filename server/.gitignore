@@ -62,6 +62,8 @@ webpack*
 # server
 **/env.validation.ts
 **/env.development.ts
+**/src/helpers/**
+**/src/helpers/fileTargets.ts
 **/auth/*
 **/admin/*
 **/validators/*
