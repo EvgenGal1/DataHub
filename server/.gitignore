@@ -60,10 +60,12 @@ webpack*
 
 # врем.откл.
 # server
+**/static/**
+**/helpers/**
 **/env.validation.ts
 **/env.development.ts
 **/src/helpers/**
-**/src/helpers/fileTargets.ts
+**/server/src/helpers/fileTargets.ts
 **/auth/*
 **/admin/*
 **/validators/*
