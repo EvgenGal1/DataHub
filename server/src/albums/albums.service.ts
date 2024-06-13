@@ -1,8 +1,13 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { Injectable, NotFoundException, Optional } from '@nestjs/common';
+import {
+  Inject,
+  Injectable,
+  NotFoundException,
+  Optional,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import * as fs from 'fs';
+import { Logger } from 'winston';
 
 import { CreateAlbumDto } from './dto/create-album.dto';
 import { UpdateAlbumDto } from './dto/update-album.dto';
@@ -11,24 +16,36 @@ import { TrackEntity } from '../tracks/entities/track.entity';
 import { ReactionEntity } from '../reactions/entities/reaction.entity';
 import { FileEntity } from '../files/entities/file.entity';
 import { FilesService } from '../files/files.service';
-import { DatabaseUtils } from '../utils/database.utils';
 import { TotalAlbumDto } from './dto/total-album.dto';
+import { DatabaseUtils } from '../utils/database.utils';
+// import {
+//   isProduction,
+//   isDevelopment,
+//   isTotal,
+// } from '../config/envs/env.consts';
 
 @Injectable()
 export class AlbumsService {
   constructor(
+    // логи
+    @Inject('WINSTON_LOGGER') private readonly logger: Logger,
+    // БД SB
+    @Optional()
     @InjectRepository(AlbumEntity, 'supabase')
     private albumsRepositorySB: Repository<AlbumEntity>,
+    @Optional()
     @InjectRepository(TrackEntity, 'supabase')
     private tracksRepositorySB: Repository<TrackEntity>,
+    @Optional()
     @InjectRepository(ReactionEntity, 'supabase')
     private reactionsRepositorySB: Repository<ReactionEntity>,
+    @Optional()
     @InjectRepository(FileEntity, 'supabase')
     private fileRepositorySB: Repository<FileEntity>,
-    //
+    // Общ.
     private filesService: FilesService,
     private dataBaseUtils: DatabaseUtils,
-    //
+    // БД LH
     @Optional()
     @InjectRepository(AlbumEntity, 'localhost')
     private albumsRepository?: Repository<AlbumEntity>,

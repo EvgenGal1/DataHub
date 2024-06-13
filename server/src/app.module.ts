@@ -38,10 +38,14 @@ import {
       isGlobal: true,
     }),
     // подкл.к БД Supabase всегда
-    TypeOrmModule.forRootAsync({
-      name: 'supabase',
-      useFactory: supabaseConfig,
-    }),
+    ...(isProduction || isTotal
+      ? [
+          TypeOrmModule.forRootAsync({
+            name: 'supabase',
+            useFactory: supabaseConfig,
+          }),
+        ]
+      : []),
     // ^ доп.подкл.к локал.БД > разработки (dev БД SB, total БД SB, LH)
     ...(isDevelopment || isTotal
       ? [

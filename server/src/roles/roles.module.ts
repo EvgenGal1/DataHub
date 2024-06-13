@@ -10,23 +10,31 @@ import { FileEntity } from '../files/entities/file.entity';
 import { TrackEntity } from '../tracks/entities/track.entity';
 import { AlbumEntity } from '../albums/entities/album.entity';
 import { DatabaseUtils } from '../utils/database.utils';
+import { WinstonLoggerProvider } from '../config/winston-logger.config';
+import {
+  isProduction,
+  isDevelopment,
+  isTotal,
+} from '../config/envs/env.consts';
 
 @Module({
-  controllers: [RolesController],
-  providers: [RolesService, DatabaseUtils],
   imports: [
-    TypeOrmModule.forFeature(
-      [
-        UserEntity,
-        RoleEntity,
-        UserRolesEntity,
-        FileEntity,
-        TrackEntity,
-        AlbumEntity,
-      ],
-      'supabase',
-    ),
-    ...(process.env.NODE_ENV !== 'production'
+    ...(isProduction || isTotal
+      ? [
+          TypeOrmModule.forFeature(
+            [
+              UserEntity,
+              RoleEntity,
+              UserRolesEntity,
+              FileEntity,
+              TrackEntity,
+              AlbumEntity,
+            ],
+            'supabase',
+          ),
+        ]
+      : []),
+    ...(isDevelopment || isTotal
       ? [
           TypeOrmModule.forFeature(
             [
@@ -42,6 +50,8 @@ import { DatabaseUtils } from '../utils/database.utils';
         ]
       : []),
   ],
+  controllers: [RolesController],
+  providers: [RolesService, DatabaseUtils, WinstonLoggerProvider],
   exports: [RolesService],
 })
 export class RolesModule {}

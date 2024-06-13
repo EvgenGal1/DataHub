@@ -1,6 +1,12 @@
 import { In, Repository } from 'typeorm';
-import { Injectable, NotFoundException, Optional } from '@nestjs/common';
+import {
+  Inject,
+  Injectable,
+  NotFoundException,
+  Optional,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { Logger } from 'winston';
 
 import { CreateRoleDto } from './dto/create-role.dto';
 import { UpdateRoleDto } from './dto/update-role.dto';
@@ -9,14 +15,24 @@ import { RoleEntity } from './entities/role.entity';
 import { UserRolesEntity } from './entities/user-roles.entity';
 import { AddingRolesToUsersDto } from './dto/add-roles-to-users.dto';
 import { DatabaseUtils } from '../utils/database.utils';
+// import {
+//   isProduction,
+//   isDevelopment,
+//   isTotal,
+// } from '../config/envs/env.consts';
 
 @Injectable()
 export class RolesService {
   constructor(
+    @Inject('WINSTON_LOGGER') private readonly logger: Logger,
+    //
+    @Optional()
     @InjectRepository(UserEntity, 'supabase')
     private userRepositorySB: Repository<UserEntity>,
+    @Optional()
     @InjectRepository(RoleEntity, 'supabase')
     private roleRepositorySB: Repository<RoleEntity>,
+    @Optional()
     @InjectRepository(UserRolesEntity, 'supabase')
     private userRolesRepositorySB: Repository<UserRolesEntity>,
     //

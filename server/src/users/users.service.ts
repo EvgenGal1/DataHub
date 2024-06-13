@@ -38,10 +38,13 @@ export class UsersService {
     // ч/з внедр.завис. + UserEntity и др. > раб.ч/з this с табл.users и др.
     // ^ подкл.неск.БД.
     // ^ репозитории только > БД SupaBase(SB)
+    @Optional()
     @InjectRepository(UserEntity, 'supabase')
     private readonly userRepositorySB: Repository<UserEntity>,
+    @Optional()
     @InjectRepository(RoleEntity, 'supabase')
     private roleRepositorySB: Repository<RoleEntity>,
+    @Optional()
     @InjectRepository(UserRolesEntity, 'supabase')
     private userRolesRepositorySB: Repository<UserRolesEntity>,
     // ^ общ.репозит.настр.
@@ -116,7 +119,7 @@ export class UsersService {
       `Получение всех users из БД ${isProduction ? 'SB' : isDevelopment ? 'LH' : 'SB и LH'}`,
     );
     const err = `users нет в БД`;
-    // условие > PROD и DEV. перем.,req.,лог.,ошб.
+    // условие > PROD или DEV. перем.,req.,лог.,ошб.
     if (isProduction || isDevelopment) {
       const definiteUserRepository: Repository<UserEntity> = isProduction
         ? this.userRepositorySB

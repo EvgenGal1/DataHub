@@ -1,11 +1,17 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
+import { Logger } from 'winston';
 
 import { CreateReactionDto } from './dto/create-reaction.dto';
 import { UpdateReactionDto } from './dto/update-reaction.dto';
 
 @Injectable()
 export class ReactionsService {
+  constructor(
+    // логи
+    @Inject('WINSTON_LOGGER') private readonly logger: Logger,
+  ) {}
+
   create(createReactionDto: CreateReactionDto) {
     return 'This action adds a new reaction';
   }

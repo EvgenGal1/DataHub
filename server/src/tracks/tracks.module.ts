@@ -11,31 +11,40 @@ import { AlbumEntity } from '../albums/entities/album.entity';
 import { AlbumsService } from '../albums/albums.service';
 import { FileEntity } from '../files/entities/file.entity';
 import { FilesService } from '../files/files.service';
-import { DatabaseUtils } from '../utils/database.utils';
+// утилиты Общие
 import { BasicUtils } from '../utils/basic.utils';
+// утилиты БД
+import { DatabaseUtils } from '../utils/database.utils';
+// логи
+import { WinstonLoggerProvider } from '../config/winston-logger.config';
+// константы > команды запуска process.env.NODE_ENV
+import {
+  isProduction,
+  isDevelopment,
+  isTotal,
+} from '../config/envs/env.consts';
 
 @Module({
-  controllers: [TrackController],
-  providers: [
-    TracksService,
-    AlbumsService,
-    FilesService,
-    DatabaseUtils,
-    BasicUtils,
-  ],
   imports: [
-    TypeOrmModule.forFeature(
-      [
-        TrackEntity,
-        UserEntity,
-        RoleEntity,
-        ReactionEntity,
-        AlbumEntity,
-        FileEntity,
-      ],
-      'supabase',
-    ),
-    ...(process.env.NODE_ENV === 'development'
+    // ^ подкл.неск.БД.
+    // ^ PROD или Total > БД SupaBase
+    ...(isProduction || isTotal
+      ? [
+          TypeOrmModule.forFeature(
+            [
+              TrackEntity,
+              UserEntity,
+              RoleEntity,
+              ReactionEntity,
+              AlbumEntity,
+              FileEntity,
+            ],
+            'supabase',
+          ),
+        ]
+      : []),
+    // ^ DEV или Total > БД LocalHost
+    ...(isDevelopment || isTotal
       ? [
           TypeOrmModule.forFeature(
             [
@@ -50,6 +59,15 @@ import { BasicUtils } from '../utils/basic.utils';
           ),
         ]
       : []),
+  ],
+  controllers: [TrackController],
+  providers: [
+    TracksService,
+    AlbumsService,
+    FilesService,
+    DatabaseUtils,
+    BasicUtils,
+    WinstonLoggerProvider,
   ],
   exports: [TracksService],
 })

@@ -12,6 +12,7 @@ import {
   isDevelopment,
   isTotal,
 } from './config/envs/env.consts.js';
+// фильтр исключ.
 import { HttpExceptionFilter } from './http-exception.filter.js';
 
 async function bootstrap(): Promise<any> {

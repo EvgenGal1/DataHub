@@ -1,19 +1,37 @@
 import { ILike, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Injectable, NotFoundException, Optional } from '@nestjs/common';
+import {
+  Inject,
+  Injectable,
+  NotFoundException,
+  Optional,
+} from '@nestjs/common';
+import { Logger } from 'winston';
 
 import { FileType, FileEntity, fileTypesAllowed } from './entities/file.entity';
 import { UpdateFileDto } from './dto/update-file.dto';
+// утилиты БД
 import { DatabaseUtils } from '../utils/database.utils';
+// константы > команды запуска process.env.NODE_ENV
+// import {
+//   isProduction,
+//   isDevelopment,
+//   isTotal,
+// } from '../config/envs/env.consts';
 
 @Injectable()
 export class FilesService {
   constructor(
+    // логи
+    @Inject('WINSTON_LOGGER') private readonly logger: Logger,
+    // ^ подкл.неск.БД.
+    // ^ репозитории только > БД SupaBase(SB)
+    @Optional()
     @InjectRepository(FileEntity, 'supabase')
     private filesRepositorySB: Repository<FileEntity>,
-    //
+    // ^ общ.репозит.настр.
     private dataBaseUtils: DatabaseUtils,
-    //
+    // ^ доп.необязат.репозит(Optional) > БД LocalHost(LH)
     @Optional()
     @InjectRepository(FileEntity, 'localhost')
     private filesRepository?: Repository<FileEntity>,

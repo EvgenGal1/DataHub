@@ -1,7 +1,13 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */ // ^^ от ошб. - Св-во объяв., но знач.не прочитано.
-import { Injectable, NotFoundException, Optional } from '@nestjs/common';
+import {
+  Inject,
+  Injectable,
+  NotFoundException,
+  Optional,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, ILike, ObjectId } from 'typeorm';
+import { Logger } from 'winston';
 import * as fs from 'fs';
 
 import { CreateTrackDto } from './dto/create-track.dto';
@@ -15,31 +21,46 @@ import { CreateReactionDto } from '../reactions/dto/create-reaction.dto';
 import { AlbumsService } from '../albums/albums.service';
 import { FilesService } from '../files/files.service';
 import { FileEntity } from '../files/entities/file.entity';
-import { DatabaseUtils } from '../utils/database.utils';
+// утилиты Общие
 import { BasicUtils } from '../utils/basic.utils';
-// второй подход сохр.в serv - плохо раб
-// import { FileService, FileType } from '../file/file.service';
+// утилиты БД
+import { DatabaseUtils } from '../utils/database.utils';
+// константы > команды запуска process.env.NODE_ENV
+// import {
+//   isProduction,
+//   isDevelopment,
+//   isTotal,
+// } from '../config/envs/env.consts';
 
 @Injectable()
 export class TracksService {
-  // ч/з внедр.завис. + TrackEntity,ReactionEntity,UserEntity > раб.ч/з this с табл.track,reaction,user
   constructor(
+    // логи
+    @Inject('WINSTON_LOGGER') private readonly logger: Logger,
+    // ч/з внедр.завис. + TrackEntity,ReactionEntity,UserEntity > раб.ч/з this с табл.track,reaction,user
+    // ^ подкл.неск.БД.
+    // ^ репозитории только > БД SupaBase(SB)
+    @Optional()
     @InjectRepository(TrackEntity, 'supabase')
     private tracksRepositorySB: Repository<TrackEntity>,
+    @Optional()
     @InjectRepository(ReactionEntity, 'supabase')
     private reactionsRepositorySB: Repository<ReactionEntity>,
+    @Optional()
     @InjectRepository(UserEntity, 'supabase')
     private usersRepositorySB: Repository<UserEntity>,
+    @Optional()
     @InjectRepository(FileEntity, 'supabase')
     private filesRepositorySB: Repository<FileEntity>,
+    @Optional()
     @InjectRepository(AlbumEntity, 'supabase')
     private albumsRepositorySB: Repository<AlbumEntity>,
-    //
+    // ^ общ.репозит.настр.
     private filesService: FilesService,
     private albumsService: AlbumsService,
     private dataBaseUtils: DatabaseUtils,
     private basicUtils: BasicUtils,
-    //
+    // ^ доп.необязат.репозит(Optional) > БД LocalHost(LH)
     @Optional()
     @InjectRepository(TrackEntity, 'localhost')
     private tracksRepository?: Repository<TrackEntity>,

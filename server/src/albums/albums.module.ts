@@ -11,31 +11,33 @@ import { TracksService } from '../tracks/tracks.service';
 import { FilesService } from '../files/files.service';
 import { UserEntity } from '../users/entities/user.entity';
 import { RoleEntity } from '../roles/entities/role.entity';
-import { DatabaseUtils } from '../utils/database.utils';
 import { BasicUtils } from '../utils/basic.utils';
+import { DatabaseUtils } from '../utils/database.utils';
+import { WinstonLoggerProvider } from '../config/winston-logger.config';
+import {
+  isProduction,
+  isDevelopment,
+  isTotal,
+} from '../config/envs/env.consts';
 
 @Module({
-  controllers: [AlbumController],
-  providers: [
-    AlbumsService,
-    TracksService,
-    FilesService,
-    DatabaseUtils,
-    BasicUtils,
-  ],
   imports: [
-    TypeOrmModule.forFeature(
-      [
-        TrackEntity,
-        UserEntity,
-        ReactionEntity,
-        AlbumEntity,
-        FileEntity,
-        RoleEntity,
-      ],
-      'supabase',
-    ),
-    ...(process.env.NODE_ENV === 'development'
+    ...(isProduction || isTotal
+      ? [
+          TypeOrmModule.forFeature(
+            [
+              TrackEntity,
+              UserEntity,
+              ReactionEntity,
+              AlbumEntity,
+              FileEntity,
+              RoleEntity,
+            ],
+            'supabase',
+          ),
+        ]
+      : []),
+    ...(isDevelopment || isTotal
       ? [
           TypeOrmModule.forFeature(
             [
@@ -50,6 +52,15 @@ import { BasicUtils } from '../utils/basic.utils';
           ),
         ]
       : []),
+  ],
+  controllers: [AlbumController],
+  providers: [
+    AlbumsService,
+    TracksService,
+    FilesService,
+    DatabaseUtils,
+    BasicUtils,
+    WinstonLoggerProvider,
   ],
   exports: [AlbumsService],
 })
