@@ -67,7 +67,8 @@ webpack*
 **/src/helpers/**
 **/server/src/helpers/fileTargets.ts
 **/auth/*
-**/admin/*
+**/auth_/*
+**/admins/*
 **/validators/*
 **/src/config/**
 **/src/shared/**
