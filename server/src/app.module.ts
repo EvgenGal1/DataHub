@@ -7,12 +7,12 @@ import { ServeStaticModule } from '@nestjs/serve-static';
 import { AppController, AppController2 } from './app.controller.js';
 import { AppService } from './app.service.js';
 // import { AuthModule } from './auth/auth.module';
-import { UsersModule } from './users/users.module';
-import { RolesModule } from './roles/roles.module';
-import { FilesModule } from './files/files.module';
-import { TrackModule } from './tracks/tracks.module';
-import { AlbumModule } from './albums/albums.module';
-import { ReactionsModule } from './reactions/reactions.module';
+import { UsersModule } from './modules/users/users.module.js';
+import { RolesModule } from './modules/roles/roles.module.js';
+import { FilesModule } from './modules/files/files.module.js';
+import { TrackModule } from './modules/tracks/tracks.module.js';
+import { AlbumModule } from './modules/albums/albums.module.js';
+import { ReactionsModule } from './modules/reactions/reactions.module.js';
 // БД. config
 import { localhostConfig } from './config/envs/localhost.config.js';
 import { supabaseConfig } from './config/envs/supabase.config.js';

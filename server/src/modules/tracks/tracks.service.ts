@@ -22,9 +22,9 @@ import { AlbumsService } from '../albums/albums.service';
 import { FilesService } from '../files/files.service';
 import { FileEntity } from '../files/entities/file.entity';
 // утилиты Общие
-import { BasicUtils } from '../utils/basic.utils';
+import { BasicUtils } from '../../utils/basic.utils';
 // утилиты БД
-import { DatabaseUtils } from '../utils/database.utils';
+import { DatabaseUtils } from '../../utils/database.utils';
 // константы > команды запуска process.env.NODE_ENV
 // import {
 //   isProduction,

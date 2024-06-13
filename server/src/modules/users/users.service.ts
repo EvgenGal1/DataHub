@@ -17,13 +17,13 @@ import { RolesService } from '../roles/roles.service';
 import { UserRolesEntity } from '../roles/entities/user-roles.entity';
 import { AddingRolesToUsersDto } from '../roles/dto/add-roles-to-users.dto';
 // утилиты БД
-import { DatabaseUtils } from '../utils/database.utils';
+import { DatabaseUtils } from '../../utils/database.utils';
 // константы > команды запуска process.env.NODE_ENV
 import {
   isProduction,
   isDevelopment,
   isTotal,
-} from '../config/envs/env.consts';
+} from '../../config/envs/env.consts';
 
 // врем.общ.fn отраб.ошб.throw
 function createThrowError(message?: string): () => never {

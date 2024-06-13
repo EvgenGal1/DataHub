@@ -11,7 +11,7 @@ import { Logger } from 'winston';
 import { FileType, FileEntity, fileTypesAllowed } from './entities/file.entity';
 import { UpdateFileDto } from './dto/update-file.dto';
 // утилиты БД
-import { DatabaseUtils } from '../utils/database.utils';
+import { DatabaseUtils } from '../../utils/database.utils';
 // константы > команды запуска process.env.NODE_ENV
 // import {
 //   isProduction,

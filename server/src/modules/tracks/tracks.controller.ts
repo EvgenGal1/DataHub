@@ -25,13 +25,13 @@ import {
 import * as fs from 'fs';
 
 // БАЗЫ ДАННЫХ. localhost, supabase(cloude storage)
-import { fileStorage } from '../common/storage/storage';
+import { fileStorage } from '../../common/storage/storage';
 // import { createClient } from '@supabase/supabase-js';
 import { TracksService } from './tracks.service';
 import { CreateTrackDto } from './dto/create-track.dto';
 import { UpdateTrackDto } from './dto/update-track.dto';
 import { CreateReactionDto } from '../reactions/dto/create-reaction.dto';
-import { UserId } from '../common/decorators/user-id.decorator';
+import { UserId } from '../../common/decorators/user-id.decorator';
 import { FileTypeValidationPipe } from './fileTypeValidation.pipe';
 
 @Controller('tracks')

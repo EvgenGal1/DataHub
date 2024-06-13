@@ -1,12 +1,12 @@
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 
-import { UserEntity } from '../../users/entities/user.entity';
-import { RoleEntity } from '../../roles/entities/role.entity';
-import { UserRolesEntity } from '../../roles/entities/user-roles.entity';
-import { FileEntity } from '../../files/entities/file.entity';
-import { TrackEntity } from '../../tracks/entities/track.entity';
-import { AlbumEntity } from '../../albums/entities/album.entity';
-import { ReactionEntity } from '../../reactions/entities/reaction.entity';
+import { UserEntity } from '../../modules/users/entities/user.entity';
+import { RoleEntity } from '../../modules/roles/entities/role.entity';
+import { UserRolesEntity } from '../../modules/roles/entities/user-roles.entity';
+import { FileEntity } from '../../modules/files/entities/file.entity';
+import { TrackEntity } from '../../modules/tracks/entities/track.entity';
+import { AlbumEntity } from '../../modules/albums/entities/album.entity';
+import { ReactionEntity } from '../../modules/reactions/entities/reaction.entity';
 
 export /* default */ const localhostConfig = (): TypeOrmModuleOptions => ({
   name: 'localhost',
