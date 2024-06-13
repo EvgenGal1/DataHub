@@ -13,7 +13,6 @@ import {
 } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 
-// import { AbstractEntity } from '../model/abstract.entity';
 import { UserEntity } from '../../users/entities/user.entity';
 import { ReactionEntity } from '../../reactions/entities/reaction.entity';
 import { AlbumEntity } from '../../albums/entities/album.entity';
