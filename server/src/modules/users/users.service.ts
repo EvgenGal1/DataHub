@@ -17,13 +17,13 @@ import { RolesService } from '../roles/roles.service';
 import { UserRolesEntity } from '../roles/entities/user-roles.entity';
 import { AddingRolesToUsersDto } from '../roles/dto/add-roles-to-users.dto';
 // утилиты БД
-import { DatabaseUtils } from '../../utils/database.utils';
+import { DatabaseUtils } from '../../common/utils/database.utils';
 // константы > команды запуска process.env.NODE_ENV
 import {
   isProduction,
   isDevelopment,
   isTotal,
-} from '../../config/envs/env.consts';
+} from '../../common/envs/env.consts';
 
 // врем.общ.fn отраб.ошб.throw
 function createThrowError(message?: string): () => never {
@@ -193,10 +193,13 @@ export class UsersService {
     if (isTotal) {
       const userSB = await this.userRepositorySB.findOneBy({ id });
       const userLH = await this.userRepository.findOneBy({ id });
+      // логг./ошб. е/и нет 2х
       if (!userSB && !userLH) {
         this.logger.error(`Лог. ${err} SB и LH`);
         createThrowError(`Ошб. ${err} SB и LH`);
       }
+      // возврат е/и есть 1
+      if (!userSB || !userLH) return userSB ?? userLH;
       // провер.равн.данн.userSB <> userLH
       const areEqual = JSON.stringify(userSB) === JSON.stringify(userLH);
       // е/и не равны - указ.источ.DB, возвращ.раскрыт.userSB и влож.userLH

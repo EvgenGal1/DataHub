@@ -32,7 +32,7 @@ import { CreateTrackDto } from './dto/create-track.dto';
 import { UpdateTrackDto } from './dto/update-track.dto';
 import { CreateReactionDto } from '../reactions/dto/create-reaction.dto';
 import { UserId } from '../../common/decorators/user-id.decorator';
-import { FileTypeValidationPipe } from './fileTypeValidation.pipe';
+import { FileTypeValidationPipe } from '../../common/pipes/fileTypeValidation.pipe';
 
 @Controller('tracks')
 // групп.мтд.cntrl tracks > swagger

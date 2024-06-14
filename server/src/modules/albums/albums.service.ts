@@ -17,7 +17,7 @@ import { ReactionEntity } from '../reactions/entities/reaction.entity';
 import { FileEntity } from '../files/entities/file.entity';
 import { FilesService } from '../files/files.service';
 import { TotalAlbumDto } from './dto/total-album.dto';
-import { DatabaseUtils } from '../../utils/database.utils';
+import { DatabaseUtils } from '../../common/utils/database.utils';
 // import {
 //   isProduction,
 //   isDevelopment,

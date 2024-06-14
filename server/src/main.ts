@@ -11,9 +11,9 @@ import {
   isProduction,
   isDevelopment,
   isTotal,
-} from './config/envs/env.consts.js';
+} from './common/envs/env.consts.js';
 // фильтр исключ.
-import { HttpExceptionFilter } from './http-exception.filter.js';
+import { HttpExceptionFilter } from './common/filters/http-exception.filter.js';
 
 async function bootstrap(): Promise<any> {
   try {

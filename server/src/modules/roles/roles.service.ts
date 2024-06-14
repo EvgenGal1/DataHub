@@ -14,7 +14,7 @@ import { UserEntity } from '../users/entities/user.entity';
 import { RoleEntity } from './entities/role.entity';
 import { UserRolesEntity } from './entities/user-roles.entity';
 import { AddingRolesToUsersDto } from './dto/add-roles-to-users.dto';
-import { DatabaseUtils } from '../../utils/database.utils';
+import { DatabaseUtils } from '../../common/utils/database.utils';
 // import {
 //   isProduction,
 //   isDevelopment,

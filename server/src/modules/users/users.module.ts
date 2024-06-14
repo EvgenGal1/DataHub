@@ -11,15 +11,15 @@ import { FileEntity } from '../files/entities/file.entity';
 import { TrackEntity } from '../tracks/entities/track.entity';
 import { AlbumEntity } from '../albums/entities/album.entity';
 // утилиты БД
-import { DatabaseUtils } from '../../utils/database.utils';
+import { DatabaseUtils } from '../../common/utils/database.utils';
 // логи
-import { WinstonLoggerProvider } from '../../config/winston-logger.config';
+import { WinstonLoggerProvider } from '../../common/config/winston-logger.config';
 // константы > команды запуска process.env.NODE_ENV
 import {
   isProduction,
   isDevelopment,
   isTotal,
-} from '../../config/envs/env.consts';
+} from '../../common/envs/env.consts';
 
 @Module({
   imports: [

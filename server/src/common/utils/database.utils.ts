@@ -3,25 +3,42 @@ import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Injectable, Optional } from '@nestjs/common';
 
-import { UserEntity } from '../users/entities/user.entity';
-import { RoleEntity } from '../roles/entities/role.entity';
-import { FileEntity } from '../files/entities/file.entity';
-import { TrackEntity } from '../tracks/entities/track.entity';
-import { AlbumEntity } from '../albums/entities/album.entity';
+import { UserEntity } from '../../modules/users/entities/user.entity';
+import { RoleEntity } from '../../modules/roles/entities/role.entity';
+import { FileEntity } from '../../modules/files/entities/file.entity';
+import { TrackEntity } from '../../modules/tracks/entities/track.entity';
+import { AlbumEntity } from '../../modules/albums/entities/album.entity';
+// константы > команды запуска
+// import {
+//   isProduction,
+//   isDevelopment,
+//   isTotal,
+// } from '../config/envs/env.consts';
 
 @Injectable()
 export class DatabaseUtils {
   constructor(
+    @Optional()
     @InjectRepository(UserEntity, 'supabase')
     private userRepositorySB: Repository<UserEntity>,
+    @Optional()
     @InjectRepository(RoleEntity, 'supabase')
     private rolesRepositorySB: Repository<RoleEntity>,
+    @Optional()
     @InjectRepository(TrackEntity, 'supabase')
     private trackRepositorySB: Repository<TrackEntity>,
+    @Optional()
     @InjectRepository(FileEntity, 'supabase')
     private fileRepositorySB: Repository<FileEntity>,
+    @Optional()
     @InjectRepository(AlbumEntity, 'supabase')
     private albumRepositorySB: Repository<AlbumEntity>,
+    //
+    // @Optional()
+    // @InjectRepository(UserEntity, isProduction ? 'supabase' : 'localhost')
+    // private userRepositorySB: Repository<UserEntity>,
+    // private userRepository: Repository<UserEntity>,
+    // private userRepository`${isProduction} ? 'supabase' : 'localhost'`: Repository<UserEntity>,
     //
     @Optional()
     @InjectRepository(UserEntity, 'localhost')
