@@ -26,11 +26,11 @@ import { BasicUtils } from '../../common/utils/basic.utils';
 // утилиты БД
 import { DatabaseUtils } from '../../common/utils/database.utils';
 // константы > команды запуска process.env.NODE_ENV
-// import {
-//   isProduction,
-//   isDevelopment,
-//   isTotal,
-// } from '../config/envs/env.consts';
+import {
+  isProduction,
+  isDevelopment,
+  isTotal,
+} from '../../common/envs/env.consts';
 
 @Injectable()
 export class TracksService {
@@ -92,6 +92,11 @@ export class TracksService {
       '|',
       createTrackDto,
     );
+    // логи,перем.ошб.
+    this.logger.info(
+      `Запись Audios в БД ${isProduction ? 'SB' : isDevelopment ? 'LH' : 'SB и LH'}`,
+    );
+    const err = `Audio не сохранён в БД`;
     // перем.сохр. Track File Album
     let savedFile,
       savedTrack,
@@ -393,6 +398,11 @@ export class TracksService {
     offset = 0,
   ): Promise<TrackEntity[]> {
     console.log('fAl t.s. fAl param count offset: ', param, count, offset);
+    // логи,перем.ошб.
+    this.logger.info(
+      `Получение всех Audios из БД ${isProduction ? 'SB' : isDevelopment ? 'LH' : 'SB и LH'}`,
+    );
+    const err = `Audios нет в БД`;
     // без парам.вернуть всё
     if (!param && count === 10 && offset === 0) {
       return this.tracksRepository.find();
