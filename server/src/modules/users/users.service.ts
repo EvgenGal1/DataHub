@@ -66,9 +66,9 @@ export class UsersService {
   async createUser(createUserDto: CreateUserDto) {
     // логи,перем.ошб.
     this.logger.info(
-      `Запись users в БД ${isProduction ? 'SB' : isDevelopment ? 'LH' : 'SB и LH'}`,
+      `Запись Users в БД ${isProduction ? 'SB' : isDevelopment ? 'LH' : 'SB и LH'}`,
     );
-    const err = `users не сохранён в БД`;
+    const err = `Users не сохранён в БД`;
     // `получить наименьший доступный идентификатор` из табл.БД
     const smallestFreeId =
       await this.dataBaseUtils.getSmallestIDAvailable('user');

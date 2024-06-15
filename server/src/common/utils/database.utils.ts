@@ -13,7 +13,7 @@ import { AlbumEntity } from '../../modules/albums/entities/album.entity';
 //   isProduction,
 //   isDevelopment,
 //   isTotal,
-// } from '../config/envs/env.consts';
+// } from '../../common/envs/env.consts';
 
 @Injectable()
 export class DatabaseUtils {
