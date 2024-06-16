@@ -116,9 +116,9 @@ export class UsersService {
   > {
     // логи,перем.ошб.
     this.logger.info(
-      `Получение всех users из БД ${isProduction ? 'SB' : isDevelopment ? 'LH' : 'SB и LH'}`,
+      `Получение всех Users из БД ${isProduction ? 'SB' : isDevelopment ? 'LH' : 'SB и LH'}`,
     );
-    const err = `users нет в БД`;
+    const err = `Users нет в БД`;
     // условие > PROD или DEV. перем.,req.,лог.,ошб.
     if (isProduction || isDevelopment) {
       const definiteUserRepository: Repository<UserEntity> = isProduction
@@ -174,9 +174,9 @@ export class UsersService {
   async findOneUser(id: number): Promise<UserEntity> {
     // логи,перем.ошб.
     this.logger.info(
-      `Получение user по ID ${id} из ${isProduction ? 'SB' : isDevelopment ? 'LH' : 'SB и LH'}`,
+      `Получение User по ID ${id} из ${isProduction ? 'SB' : isDevelopment ? 'LH' : 'SB и LH'}`,
     );
-    const err = `user с ID ${id} нет в БД`;
+    const err = `User с ID ${id} нет в БД`;
     // условие > PROD и DEV. перем.,req.,лог.,ошб.
     if (isProduction || isDevelopment) {
       const definiteUserRepository: Repository<UserEntity> = isProduction

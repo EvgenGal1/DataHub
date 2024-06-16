@@ -432,6 +432,11 @@ export class TracksService {
 
   // ОДИН Трек по ID
   async findOneTrack(param: string): Promise<TrackEntity | TrackEntity[]> {
+    // логи,перем.ошб.
+    this.logger.info(
+      `Получение Audio по PARAM ${param} из ${isProduction ? 'SB' : isDevelopment ? 'LH' : 'SB и LH'}`,
+    );
+    const err = `Audio с PARAM ${param} нет в БД`;
     const whereCondition: any = {};
     // условия res. id/num|eml/@|fullname/str
     // ^^ дораб.распозн.стиль ч/з enum | регул.выраж. | шаблона строки
