@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */ // ^^ от ошб. - Св-во объяв., но знач.не прочитано.
 import { In, Repository } from 'typeorm';
 import {
   Inject,
@@ -15,11 +16,11 @@ import { RoleEntity } from './entities/role.entity';
 import { UserRolesEntity } from './entities/user-roles.entity';
 import { AddingRolesToUsersDto } from './dto/add-roles-to-users.dto';
 import { DatabaseUtils } from '../../common/utils/database.utils';
-// import {
-//   isProduction,
-//   isDevelopment,
-//   isTotal,
-// } from '../../common/envs/env.consts';
+import {
+  isProduction,
+  isDevelopment,
+  // isTotal,
+} from '../../common/envs/env.consts';
 
 @Injectable()
 export class RolesService {
@@ -50,6 +51,11 @@ export class RolesService {
   ) {}
 
   async createRole(createRoleDto: CreateRoleDto) {
+    // логи,перем.ошб.
+    this.logger.info(
+      `Запись Audios в БД ${isProduction ? 'SB' : isDevelopment ? 'LH' : 'SB и LH'}`,
+    );
+    const err = `Audio не сохранён в БД`;
     // `получить наименьший доступный идентификатор` из БД > табл.role
     const smallestFreeId =
       await this.dataBaseUtils.getSmallestIDAvailable('role');
