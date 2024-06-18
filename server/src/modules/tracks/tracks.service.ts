@@ -94,7 +94,7 @@ export class TracksService {
     );
     // логи,перем.ошб.
     this.logger.info(
-      `Запись Audios в БД ${isProduction ? 'SB' : isDevelopment ? 'LH' : 'SB и LH'}`,
+      `Запись Audio в БД ${isProduction ? 'SB' : isDevelopment ? 'LH' : 'SB и LH'}`,
     );
     const err = `Audio не сохранён в БД`;
     // перем.сохр. Track File Album

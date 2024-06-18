@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */ // ^^ от ошб. - Св-во объяв., но знач.не прочитано.
 import { ILike, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import {
@@ -13,11 +14,11 @@ import { UpdateFileDto } from './dto/update-file.dto';
 // утилиты БД
 import { DatabaseUtils } from '../../common/utils/database.utils';
 // константы > команды запуска process.env.NODE_ENV
-// import {
-//   isProduction,
-//   isDevelopment,
-//   isTotal,
-// } from '../../common/envs/env.consts';
+import {
+  isProduction,
+  isDevelopment,
+  isTotal,
+} from '../../common/envs/env.consts';
 
 @Injectable()
 export class FilesService {
@@ -52,6 +53,11 @@ export class FilesService {
       // ? нужен ли здесь тип если сохр.в storeF
       fileType,
     );
+    // логи,перем.ошб.
+    this.logger.info(
+      `Запись File в БД ${isProduction ? 'SB' : isDevelopment ? 'LH' : 'SB и LH'}`,
+    );
+    const err = `File не сохранён в БД`;
 
     // перем.сохр.File
     let savedFile;
@@ -98,6 +104,11 @@ export class FilesService {
   // мтд.получ.ф. Все/Тип. // возвращ.ф.опред.user и с опред.типом(декор.Query)
   async findAllFiles(userId: number, fileTypes: any /* FileType[] */) {
     console.log('f.serv. userId fileTypes:', userId, fileTypes);
+    // логи,перем.ошб.
+    this.logger.info(
+      `Получение всех Files из БД ${isProduction ? 'SB' : isDevelopment ? 'LH' : 'SB и LH'}`,
+    );
+    const err = `Files нет в БД`;
 
     // `допустимые типы`. Сравнение входа(fileTypes) с `разрешенными типами ф.`(fileTypesAllowed)
     const validTypes = fileTypes.filter((type: string) =>
@@ -143,6 +154,11 @@ export class FilesService {
   }
 
   async findOneFile(id: number) {
+    // логи,перем.ошб.
+    this.logger.info(
+      `Получение File по ID ${id} из ${isProduction ? 'SB' : isDevelopment ? 'LH' : 'SB и LH'}`,
+    );
+    const err = `File с ID ${id} нет в БД`;
     return this.filesRepository.findOneBy({ id });
   }
 

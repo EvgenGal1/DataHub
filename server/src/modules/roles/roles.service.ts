@@ -53,9 +53,9 @@ export class RolesService {
   async createRole(createRoleDto: CreateRoleDto) {
     // логи,перем.ошб.
     this.logger.info(
-      `Запись Audios в БД ${isProduction ? 'SB' : isDevelopment ? 'LH' : 'SB и LH'}`,
+      `Запись Role в БД ${isProduction ? 'SB' : isDevelopment ? 'LH' : 'SB и LH'}`,
     );
-    const err = `Audio не сохранён в БД`;
+    const err = `Role не сохранён в БД`;
     // `получить наименьший доступный идентификатор` из БД > табл.role
     const smallestFreeId =
       await this.dataBaseUtils.getSmallestIDAvailable('role');
