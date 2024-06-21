@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-unused-vars */ // ^^ от ошб. - Св-во объяв., но знач.не прочитано.
 import {
   Inject,
   Injectable,
@@ -18,11 +18,11 @@ import { FileEntity } from '../files/entities/file.entity';
 import { FilesService } from '../files/files.service';
 import { TotalAlbumDto } from './dto/total-album.dto';
 import { DatabaseUtils } from '../../common/utils/database.utils';
-// import {
-//   isProduction,
-//   isDevelopment,
-//   isTotal,
-// } from '../../common/envs/env.consts';
+import {
+  isProduction,
+  isDevelopment,
+  isTotal,
+} from '../../common/envs/env.consts';
 
 @Injectable()
 export class AlbumsService {
@@ -74,6 +74,11 @@ export class AlbumsService {
       coverObj,
       totalAlbumData,
     );
+    // логи,перем.ошб.
+    this.logger.info(
+      `Запись Album в БД ${isProduction ? 'SB' : isDevelopment ? 'LH' : 'SB и LH'}`,
+    );
+    const err = `Album не сохранён в БД`;
     // `получить наименьший доступный идентификатор` из БД > табл.album
     const smallestFreeId =
       await this.dataBaseUtils.getSmallestIDAvailable('album');
@@ -91,10 +96,20 @@ export class AlbumsService {
   }
 
   findAllAlbums() {
+    // логи,перем.ошб.
+    this.logger.info(
+      `Получение всех Albums из БД ${isProduction ? 'SB' : isDevelopment ? 'LH' : 'SB и LH'}`,
+    );
+    const err = `Albums нет в БД`;
     return this.albumsRepository.find();
   }
 
   findOneAlbum(id: number) {
+    // логи,перем.ошб.
+    this.logger.info(
+      `Получение Album по ID ${id} из ${isProduction ? 'SB' : isDevelopment ? 'LH' : 'SB и LH'}`,
+    );
+    const err = `Album с ID ${id} нет в БД`;
     return `Это действие возвращает #${id} album`;
   }
 
