@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */ // ^^ от ошб. - Св-во объяв., но знач.не прочитано.
 // логика(бизнес,)
 import {
   Inject,
@@ -219,6 +220,11 @@ export class UsersService {
   // ОДИН user.по параметрам ID <> Email <> FullName
   // ! переделать под получ roles tracks user_roles в завис.от парам. и пр.
   async findUserByParam(param: string) {
+    // логи,перем.ошб.
+    this.logger.info(
+      `Получение User по Param ${param} из ${isProduction ? 'SB' : isDevelopment ? 'LH' : 'SB и LH'}`,
+    );
+    const err = `User с Param ${param} нет в БД`;
     // ^^ fn для неск.id
     // if (usersIds) {
     //   const splitUserIds = usersIds.split(',');
