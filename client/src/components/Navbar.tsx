@@ -195,6 +195,12 @@ export default function Navbar() {
               <span>Home</span>
             </Link>
             <Link
+              className={`link ${pathname === "/examples" ? "active" : ""}`}
+              href="/examples"
+            >
+              <span>Exempl</span>
+            </Link>
+            <Link
               className={`link ${pathname === "/blog" ? "active" : ""}`}
               href="/blog"
             >
