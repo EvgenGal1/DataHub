@@ -15,7 +15,7 @@ async function getDate() {
   return response.json();
 }
 
-// объ.настр.метадаты > SEO
+// локал.объ.настр.метадаты > SEO
 export const metadata: Metadata = {
   title: "Blog | Music Platform",
   icons: "/images/icon/favicon_MusicBase(light).ico",

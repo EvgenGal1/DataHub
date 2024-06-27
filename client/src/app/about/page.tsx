@@ -1,8 +1,8 @@
 import { Metadata } from "next";
 
-// объ.настр.метадаты > SEO
+// логал.объ.настр.метадаты > SEO
 export const metadata: Metadata = {
-  title: "About | Music Platform",
+  title: "About.local | Music Platform",
   icons: {
     icon: [
       {
