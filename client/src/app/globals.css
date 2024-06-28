@@ -43,8 +43,8 @@ hr {
   border-color: hsl(var(--hue), 50%, 40%);
 }
 
-/* шапка */
-header {
+/* шапка, горизотн.меню */
+header.menu-horizon {
   .header-nav {
     a {
       display: flex;
@@ -66,11 +66,23 @@ header {
           color: #f3a505;
         }
       }
-      /* &:active, */
       &.active {
         transform: perspective(100px) rotateX(5deg);
         box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3) inset;
+        span {
+          color: #f3a505;
+        }
       }
+    }
+  }
+}
+/* вертик.меню */
+div.menu-vertical {
+  li.active {
+    transform: perspective(100px) rotateX(5deg);
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3) inset;
+    div {
+      color: #f3a505;
     }
   }
 }
@@ -135,6 +147,8 @@ footer {
   }
   /* осн.бл. */
   .main-my {
+    /* height: 100vh; */
+    margin-bottom: 116px;
     /* width: calc(100% - 56px); */
     margin-top: 56px;
     margin-left: 57px;
@@ -144,6 +158,14 @@ footer {
       margin-top: 64px;
       margin-left: 65px;
       padding: 24px;
+    }
+    /* 1ый эл.по центру (учёт height.footer + margin-top.main + 2_padding.main) */
+    & > div:first-child {
+      height: calc(100vh - (116px + 64px + 48px)) !important;
+    }
+    /* 2ой эл.вниз (учёт ниж.padding.main) */
+    div:nth-child(2) {
+      margin-top: 24px;
     }
   }
   footer {

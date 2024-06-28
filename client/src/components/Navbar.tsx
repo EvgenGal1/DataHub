@@ -173,7 +173,7 @@ export default function Navbar() {
     <>
       <CssBaseline />
       {/* header. горизонт.меню */}
-      <AppBar position="fixed" open={open}>
+      <AppBar position="fixed" open={open} className="menu-horizon">
         {/* общ.div эл.в header */}
         <Toolbar>
           {/* иконка откр.вертик.меню */}
@@ -237,7 +237,7 @@ export default function Navbar() {
         </Toolbar>
       </AppBar>
       {/* вертикальное меню */}
-      <Drawer variant="permanent" open={open}>
+      <Drawer variant="permanent" open={open} className="menu-vertical">
         {/* иконка закр.вертик.меню */}
         <DrawerHeader>
           <IconButton
@@ -268,6 +268,7 @@ export default function Navbar() {
               onClick={() => router.push(href)}
               disablePadding
               sx={{ display: "block" }}
+              className={`link ${pathname === href ? "active" : ""}`}
             >
               {/* общ.div иконки/текста */}
               <ListItemButton
