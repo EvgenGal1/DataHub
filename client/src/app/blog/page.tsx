@@ -1,5 +1,4 @@
 import { Metadata } from "next";
-import Head from "next/head";
 import Link from "next/link";
 
 // вспомог.fn получ.данн.(без exp). Отраб.на serv,
