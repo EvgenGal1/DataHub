@@ -1,9 +1,9 @@
 "use client";
 
-import * as React from "react";
+import React from "react";
 // логика,Комп.Next
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 // Комп.MaterialUI
 import { styled, useTheme, Theme, CSSObject } from "@mui/material/styles";
 import MuiDrawer from "@mui/material/Drawer";
@@ -25,6 +25,7 @@ import CloudDownloadIcon from "@mui/icons-material/CloudDownload";
 import AudiotrackIcon from "@mui/icons-material/Audiotrack";
 import AlbumIcon from "@mui/icons-material/Album";
 import PlaylistPlayIcon from "@mui/icons-material/PlaylistPlay";
+import InboxIcon from "@mui/icons-material/Inbox";
 import MailIcon from "@mui/icons-material/Mail";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import PersonIcon from "@mui/icons-material/Person";
@@ -32,13 +33,12 @@ import PersonIcon from "@mui/icons-material/Person";
 // import PlaylistAddIcon from "@mui/icons-material/PlaylistAdd";
 // import PhotoLibraryIcon from '@material-ui/icons/PhotoLibrary';
 
-// ширина вертик.меню
-const drawerWidth = 175;
-
-// интерф/горизонт.меню(stl/лог.)
+// ^ ГОРИЗОНТАЛЬНОЕ МЕНЮ
+// интерф.горизонт.меню(stl/лог.)
 interface AppBarProps extends MuiAppBarProps {
   open?: boolean;
 }
+// горизонт.меню(stl/лог.)
 const AppBar = styled(MuiAppBar, {
   shouldForwardProp: (prop) => prop !== "open",
 })<AppBarProps>(({ theme, open }) => ({
@@ -60,6 +60,17 @@ const AppBar = styled(MuiAppBar, {
   backgroundColor: "#252850",
 }));
 
+// ^ ВЕРТИКАЛЬНОЕ МЕНЮ
+// ширина вертик.меню
+const drawerWidth = 175;
+// масс.верх.эл/путей вертик.меню
+const menuVerticalTopItems = [
+  { text: "Главная", href: "/" },
+  { text: "Закачать", href: "/download" },
+  { text: "Треки", href: "/tracks" },
+  { text: "Альбомы", href: "/albums" },
+  { text: "Плейлисты", href: "/playlists" },
+];
 // вертикал.меню(stl/лог.)
 const Drawer = styled(MuiDrawer, {
   shouldForwardProp: (prop) => prop !== "open",
@@ -109,10 +120,11 @@ const closedMixin = (theme: Theme): CSSObject => ({
     width: `calc(${theme.spacing(8)} + 1px)`,
   },
 });
-// нтерф./объ.соответствий иконок верт.м.
+// интерф./объ.соответствий иконок верт.м.
 interface IconMap {
   [key: string]: JSX.Element;
 }
+// объ.соответствий
 const iconMap: IconMap = {
   Почта: <MailIcon />,
   Корзина: <ShoppingCartIcon />,
@@ -138,11 +150,15 @@ const styles = {
 };
 
 export default function Navbar() {
-  // опред.актив.ссылок
-  const pathname = usePathname();
-
-  const theme = useTheme();
+  // сост.откр.вертик.меню
   const [open, setOpen] = React.useState(false);
+  // хук темы MUI
+  const theme = useTheme();
+  // хук навигации NextJS
+  const router = useRouter();
+
+  // опред.актив.ссылок > .active
+  const pathname = usePathname();
 
   // откр.вертик.меню
   const handleDrawerOpen = () => {
@@ -242,10 +258,17 @@ export default function Navbar() {
         {/* 1ый ul лист вертик.меню */}
         <List>
           {/* масс.эл.li */}
-          {/* // ^^ + запись аудио, скачать */}
-          {["Закачать", "Треки", "Альбомы", "Плейлисты"].map((text, index) => (
+          {/* // ^ отрисовка ч/з встроеный масс. (запись, аудио, скачать) */}
+          {/* {["Закачать", "Треки", "Альбомы", "Плейлисты"].map((text, index) => */}
+          {/* // ^ отрисовка ч/з перем.масс. */}
+          {menuVerticalTopItems.map(({ text, href }, index) => (
             // li
-            <ListItem key={text} disablePadding sx={{ display: "block" }}>
+            <ListItem
+              key={href}
+              onClick={() => router.push(href)}
+              disablePadding
+              sx={{ display: "block" }}
+            >
               {/* общ.div иконки/текста */}
               <ListItemButton
                 sx={{
@@ -267,12 +290,14 @@ export default function Navbar() {
                   {/* svg иконки */}
                   {/* подход > 2х чёт не чёт */}
                   {/* {index % 2 === 0 ? <InboxIcon /> : <MailIcon />} */}
-                  {/* подход > неск. услов.опер.ind */}
+                  {/* подход > неск. услов.опер.index */}
                   {index === 0 ? (
-                    <CloudDownloadIcon />
+                    <InboxIcon />
                   ) : index === 1 ? (
-                    <AudiotrackIcon />
+                    <CloudDownloadIcon />
                   ) : index === 2 ? (
+                    <AudiotrackIcon />
+                  ) : index === 3 ? (
                     <AlbumIcon />
                   ) : (
                     <PlaylistPlayIcon />
