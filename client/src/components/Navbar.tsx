@@ -291,7 +291,7 @@ export default function Navbar() {
                   {/* svg иконки */}
                   {/* подход > 2х чёт не чёт */}
                   {/* {index % 2 === 0 ? <InboxIcon /> : <MailIcon />} */}
-                  {/* подход > неск. услов.опер.index */}
+                  {/* подход > неск.услов.опер.index */}
                   {index === 0 ? (
                     <InboxIcon />
                   ) : index === 1 ? (

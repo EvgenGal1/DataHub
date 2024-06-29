@@ -16,7 +16,7 @@ async function getDate() {
 
 // локал.объ.настр.метадаты > SEO
 export const metadata: Metadata = {
-  title: "Blog | Music Platform",
+  title: "Data Hub | Blog",
   icons: "/images/icon/favicon_MusicBase(light).ico",
 };
 

@@ -3,7 +3,7 @@ import Link from "next/link";
 
 // общ.объ.настр.метадаты > SEO
 export const metadata: Metadata = {
-  title: "About | Music Platform",
+  title: "Data Hub | About",
   icons: {
     icon: [
       {

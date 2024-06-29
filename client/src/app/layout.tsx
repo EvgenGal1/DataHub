@@ -13,8 +13,9 @@ const inter = Inter({ subsets: ["latin"] });
 
 // объ.настр.метадаты > SEO
 export const metadata: Metadata = {
-  title: "Music Platform",
-  description: "Music Platform (stack Next Nest)",
+  title: "Data Hub",
+  description: "Data Hub (FullStack App Next Nest)",
+  keywords: "Data Hub, DataHub, track, tracks, треки, трек",
   icons: {
     icon: [
       {
