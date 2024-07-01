@@ -1,4 +1,4 @@
-export default function LoadingPost() {
+export default function Loading() {
   return (
     <h1 className="loading">
       <span>.....loading.....</span>
