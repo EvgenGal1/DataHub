@@ -1,26 +1,44 @@
 # ^ server
-# compiled output
-dist/
+
+# dependencies
 **/node_modules
 /.pnp
 .pnp.js
 .yarn/install-state.gz
 
+# compiled output
+dist/
+# dtos/
+# production
+/build
+
+# misc
+.DS_Store
+*.pem
+
 # Logs
 logs
 *.log
+
+# debug
 npm-debug.log*
 pnpm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 lerna-debug.log*
 
-# OS
-.DS_Store
+# testing
+/coverage
 
 # Tests
 /coverage
 /.nyc_output
+
+# local env files
+.env*.local
+
+# OS
+.DS_Store
 
 # IDEs and editors
 /.idea
@@ -42,8 +60,6 @@ lerna-debug.log*
 # п.врем./не нужных ф./доп.код
 vr/
 .env
-# dtos/
-dist/
 
 # js
 # src/scripts/*
@@ -55,9 +71,6 @@ dist/
 GitHub Команды.txt
 info.txt
 webpack*
-
-# настройки
-.vscode
 
 # ^ общ.врем.ОТКЛ.
 **/static/**

@@ -1,14 +1,12 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+# ^ client
 
 # dependencies
-/node_modules
+**/node_modules
 /.pnp
 .pnp.js
 .yarn/install-state.gz
 
-# testing
-/coverage
-
+# compiled output
 # next.js
 /.next/
 /out/
@@ -20,10 +18,23 @@
 .DS_Store
 *.pem
 
+# Logs
+logs
+*.log
+
 # debug
 npm-debug.log*
+pnpm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+lerna-debug.log*
+
+# testing
+/coverage
+
+# Tests
+/coverage
+/.nyc_output
 
 # local env files
 .env*.local
@@ -34,3 +45,28 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# IDE - VSCode
+.vscode/*
+
+# ^ СВОЁ
+# п.врем./не нужных ф./доп.код
+vr/
+.env
+
+# помошники
+GitHub Команды.txt
+info.txt
+webpack*
+
+# ^ общ.врем.ОТКЛ.
+**/static/**
+**/lang/**
+
+# ^ общ.врем.ИСКЛЮЧЁННЫЕ
+# папки 
+!/**/src/common/decorators/
+# все.ф.в п. 
+# !/**/src/common/decorators/**
+# ф.
+!/**/src/common/config/winston-logger.config.ts
