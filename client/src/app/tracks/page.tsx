@@ -5,7 +5,6 @@ export const metadata: Metadata = {
   title: "Data Hub | Music Platform | Track",
   description: "List of tracks",
   keywords: "track, tracks, треки, трек",
-  icons: "/images/icon/favicon_MusicBase(light).ico",
 };
 
 // serv.Комп могут быть async

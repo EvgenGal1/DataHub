@@ -16,6 +16,9 @@ export default function Error({
   return (
     <div>
       <h2>Что-то пошло не так!</h2>
+      <div>
+        <pre>{error.message}</pre>
+      </div>
       <button onClick={() => reset()}>Попробуйте еще раз</button>
     </div>
   );

@@ -1,15 +1,18 @@
 import { Metadata } from "next";
 import Link from "next/link";
 
-// вспомог.fn получ.данн.(без exp). Отраб.на serv,
+// вспомог.fn получ.данн. Отраб.на serv.
 async function getDate() {
   const response = await fetch(
     "https://jsonplaceholder.typicode.com/posts",
-    // расшир.доп.объ.настр.fetch от Next > повотр.провер.данн.кеша (здесь раз в 60 сек.проверка)
-    { next: { revalidate: 60 } }
+    // расшир.доп.объ.настр.fetch от Next > повотр.провер.данн.кеша (здесь раз в час проверка)
+    { next: { revalidate: 3600 } }
   );
+  // ошб.е/и не ok
   if (!response.ok) {
-    throw new Error("Невозможно получить посты!");
+    throw new Error(
+      `ok: ${response?.ok}\nstatus: ${response?.status}\nsms: ${response?.statusText}\nurl: ${response?.url}`
+    );
   }
   return response.json();
 }

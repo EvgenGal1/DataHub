@@ -2,20 +2,20 @@
 
 import { Metadata } from "next";
 
-// вспомог.fn получ.данн.(без exp)
+// вспомог.fn получ.данн с парам.id. Отраб.на serv.
 async function getDate(id: string) {
   const response = await fetch(
     `https://jsonplaceholder.typicode.com/posts/${id}`,
-    { next: { revalidate: 60 } }
+    { next: { revalidate: 3600 } }
   );
   if (!response.ok) {
     throw new Error("Пост не получен!");
   }
   return response.json();
 }
+
 // тип парам.
 type Props = { params: { /* по назв.[п.] */ id: string } };
-
 // fn.настр.метадаты > SEO + настр.асинхр.отраж.данн.
 export async function generateMetadata({
   params: { id },
