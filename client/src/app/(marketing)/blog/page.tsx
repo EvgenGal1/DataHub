@@ -17,7 +17,6 @@ async function getDate() {
 // локал.объ.настр.метадаты > SEO
 export const metadata: Metadata = {
   title: "Data Hub | Blog",
-  icons: "/images/icon/favicon_MusicBase(light).ico",
 };
 
 // serv.Комп могут быть async
