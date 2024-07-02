@@ -65,8 +65,9 @@ webpack*
 
 # ^ общ.врем.ИСКЛЮЧЁННЫЕ
 # папки 
-!/**/src/common/decorators/
+!/**/src/config/lang/locales/
 # все.ф.в п. 
 # !/**/src/common/decorators/**
 # ф.
-!/**/src/common/config/winston-logger.config.ts
+!/**/src/config/lang/locales/ru.ts
+!/**/src/config/lang/locales/en.ts
