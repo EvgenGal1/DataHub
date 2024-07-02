@@ -1,8 +1,12 @@
 import type { Metadata } from "next";
+import { headers } from "next/headers";
 
 // Компоненты
 import Navbar from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
+// доп.ф.
+import metadataRu from "@/config/lang/locales/ru";
+import metadataEn from "@/config/lang/locales/en";
 // стили
 import "./globals.css";
 // googl шрифты
@@ -12,10 +16,8 @@ import { Inter } from "next/font/google";
 const inter = Inter({ subsets: ["latin"] });
 
 // объ.настр.метадаты > SEO
-export const metadata: Metadata = {
-  title: "Data Hub",
-  description: "Data Hub (FullStack App Next Nest)",
-  keywords: "Data Hub, DataHub, track, tracks, треки, трек",
+export let metadata: Metadata = {
+  // title, description, keywords подтяг.в зависимости от языка пользователя
   icons: {
     icon: [
       {
@@ -33,21 +35,30 @@ export const metadata: Metadata = {
 };
 
 // возврат fn с приёмом/использ. children
-export default function RootLayout({
+export default async function RootLayout({
   children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+}: Readonly<{ children: React.ReactNode }>) {
+  // язык по умолч., опред.языков пользователя
+  let defaultLang = "en";
+  const acceptLanguage = headers().get("accept-language" /* "referer" */);
+  // metadata RU логика. Взять 2 первых символа
+  // const firstTwoSimbol = acceptLanguage?.substring(0, 2);
+  if (/* firstTwoSimbol == "ru" */ acceptLanguage?.startsWith("ru")) {
+    defaultLang = "ru";
+    // добав.св-ва из metadataRu
+    metadata = { ...metadata, /* title: "Хаб Данных" */ ...metadataRu };
+  }
+  // metadata EN логика.
+  else metadata = { ...metadata, ...metadataEn };
+
   return (
-    <html lang="en">
-      {/* <head>
-        <link rel="icon" href="/favicon.ico" />
-      </head> */}
+    <html lang={defaultLang}>
+      {/* <head></head> */}
       <body className={inter.className}>
         {/* альтер.MUI с превикс.stl <Box sx={{ display: "flex" }}> */}
         <div className="general-container">
           <Navbar />
-          {/* альтер.MUI с превикс.stl <Box component="main" sx={{ flexGrow: 1, p: 3 }} > */}
+          {/* альтер.MUI с префикс.stl <Box component="main" sx={{ flexGrow: 1, p: 3 }} > */}
           <main className="main-my flex-grow">{children}</main>
           <Footer />
         </div>
