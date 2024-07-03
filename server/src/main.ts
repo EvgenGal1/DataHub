@@ -54,8 +54,8 @@ async function bootstrap(): Promise<any> {
     // настр.док.swagger(swg)
     // const configSwagger = new DocumentBuilder()
     const config = new DocumentBuilder()
-      .setTitle('Музыкальная Платформа')
-      .setDescription('Описание API Музыкальной платформы')
+      .setTitle('Центр Данных - Data Hub')
+      .setDescription('Описание API Центра Данных')
       .setVersion('1.0')
       // настр.для использ.jwt.Токен в swagger
       .addBearerAuth();
@@ -75,7 +75,7 @@ async function bootstrap(): Promise<any> {
     // настр.путей swg(путь устан.swg, экземп.прилож., объ.док.)
     SwaggerModule.setup('swagger', app, document, {
       // Название страницы Swagger
-      customSiteTitle: 'Музыкальная Платформа (swg)',
+      customSiteTitle: 'Центр Данных - Data Hub (swg)',
       swaggerOptions: {
         // `постоянное разрешение`настр.для использ.jwt.Токен в swagger
         persistAuthorization: true,
