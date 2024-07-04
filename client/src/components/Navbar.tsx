@@ -10,8 +10,6 @@ import MuiDrawer from "@mui/material/Drawer";
 import MuiAppBar, { AppBarProps as MuiAppBarProps } from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
 import List from "@mui/material/List";
-import CssBaseline from "@mui/material/CssBaseline";
-import Typography from "@mui/material/Typography";
 import Divider from "@mui/material/Divider";
 import IconButton from "@mui/material/IconButton";
 import MenuIcon from "@mui/icons-material/Menu";
@@ -171,7 +169,6 @@ export default function Navbar() {
 
   return (
     <>
-      <CssBaseline />
       {/* header. горизонт.меню */}
       <AppBar position="fixed" open={open} className="menu-horizon">
         {/* общ.div эл.в header */}
@@ -192,15 +189,10 @@ export default function Navbar() {
             <MenuIcon />
           </IconButton>
           {/* название сайта */}
-          <Typography
-            variant="h6"
-            noWrap
-            component="div"
-            // style={styles.typographyStyle} // inline stl react без поддержки псевдо-классов
-            sx={styles.typographyStyle} // объ.stl MIU c поддержкой псевдо-классов
-          >
-            Музыкальная платформа
-          </Typography>
+          <div className="name-site">
+            <span>Центр Данных</span>
+            <span>Data Hub</span>
+          </div>
           {/* страницы */}
           <nav className={`header-nav flex ml-auto`}>
             {/* stl.Next */}
