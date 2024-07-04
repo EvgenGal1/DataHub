@@ -1,0 +1,198 @@
+// <ПЕРЕМЕННЫЕ>=============================================================================================
+// переменные размеров
+@import "./varSize.scss";
+
+// <НАСТРОЙКИ THEME>=============================================================================================
+// изменения стилей Темы (theme) при нажате на переключатели в Доп.Меню (новое)
+@import "./settingsThemeColor.scss";
+
+// <НАСТРОЙКИ SIZE>=============================================================================================
+// изменения стилей Размера (size) при нажате на переключатели в Доп.Меню (новое)
+// @import "./settingsSizeDistance.scss";
+
+// <МИКСИНЫ>===============================================================================================
+// миксин - комплект свойств, для быстрого вызова(подробнее mixins.scss)
+// @import "./mixins.scss";
+
+// <ОБНУЛЕНИЕ, ОБЩИЕ ПАРАМЕТРЫ + вкл.отд.эл.>=============================================================================
+// обнуляющий стиль для стандартизации по всем свойствам, брайзерам и пр.
+@import "./null.scss";
+
+// <ШРИФТЫ>=================================================================================================
+// <Подключаем шрифты>--------------------------------------------------------------------------------------
+// подкл шрифты гугл, гуглфондс, напрямую
+// @import url("https://fonts.googleapis.com/css2?family=PT+Sans&display=swap");
+// @font-face {
+//   font-family: "AkzidenzGroteskBQ-BdCnd";
+//   src: url("../../fonts/AkzidenzGroteskBQ-BdCnd.eot");
+//   src: local("☺"), url("../../fonts/AkzidenzGroteskBQ-BdCnd.woff") format("woff"),
+//     url("../../fonts/AkzidenzGroteskBQ-BdCnd.ttf") format("truetype"),
+//     url("../../fonts/AkzidenzGroteskBQ-BdCnd.svg") format("svg");
+//   font-weight: normal;
+//   font-style: normal;
+// }
+// @font-face {
+//   font-family: "Bebas";
+//   src: url("../../fonts/BebasRegular.eot");
+//   src: local("☺"), url("../../fonts/BebasRegular.woff") format("woff"),
+//     url("../../fonts/BebasRegular.ttf") format("truetype"),
+//     url("../../fonts/BebasRegular.svg") format("svg");
+//   font-weight: normal;
+//   font-style: normal;
+// }
+// // font-display: swap;
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
+    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+//<Иконочные шрифты>----------------------------------------------------------------------------------------
+
+// <ПЕРЕМЕННЫЕ>=============================================================================================
+// <ШРИФТ ПО УМОЛЧАНИЮ>-------------------------------------------------------------------------------------
+// переменая шрифта по умолчанию (можно несколько сразу завести)
+$fontfamily: "";
+$fontfamily1: "PT Sans";
+$fontfamily2: "Bebas";
+$fontfamily3: "AkzidenzGroteskBQ-BdCnd";
+$fontfamilyCurs: "cursive";
+
+// <ЦВЕТА>--------------------------------------------------------------------------------------------------
+// @import "./varColors.scss";
+
+// <Сетка адаптива>-----------------------------------------------------------------------------------------
+// минимальная ширина. статична
+$minwidth: 320px;
+// полотно
+$maxWidth: 2020; // 1520;
+// огранич контейнер
+$maxWidthContainer: 1370; // 1170px;
+// брейкпоинты для адаптива. сработает когда есть зазор
+$md1: $maxWidthContainer + 16px;
+
+// Примеры начального значение контейниера из PSD. чаще всего использ дизайнерами
+$mw: 1308;
+$mw: 1908;
+
+// Основной размер до брейкпоинтов + 16px (по 8 с каждой стороны). измен по усмотрению
+$mw: 1720;
+$mw0: $mw + 16;
+// ??? не раб - в медиа не читает переменные с "+ px".
+// ^ md - для js|кода, mdNoErr - для @media запросов.
+// большие экраны
+$md0: 1530;
+$md0NoErr: 1530px;
+// средние экраны ПК/ноут
+$md1: 1400;
+$md1NoErr: 1400px;
+// небольшие экраны ПК/ноут
+$md2: 1200;
+$md2NoErr: 1200px;
+// планшетное расширение
+$md3: 992;
+$md3NoErr: 992px;
+// телефоны
+$md4: 768;
+$md4NoErr: 768px;
+// маленькие телефоны
+$md5: 576;
+$md5NoErr: 576px;
+
+//<ОБОЛОЧКА>================================================================================================
+// настройка блока #root от горизонтального скрола изза ошибок верстки (чтоб не вылазилило за пределы экрана)
+#root {
+  width: 100%;
+  // min-height: 100%;
+  // overflow: hidden;
+  // background: $WetAsphalt;
+  // &.loaded {
+  // }
+  // для прижат.footer к низу
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+}
+
+//<ОСНОВНАЯ СЕТКА>==========================================================================================
+// основная сетка. подстройка под расширение экрана с учётом переменных из сетки адаптива
+// mw0 - изначальная ширина контейниера
+.container {
+  max-width: $mw0 + px;
+  margin: 0 auto;
+  width: 100%;
+  // при ширине экрана md0(1530), макс ширина контейнера станет 1400px.
+  // ??? не раб - в медиа не читает переменные с "+ px". `@media (max-width: $mw+px) {` + перем mdNoErr с px
+  @media (max-width: $md0NoErr) {
+    max-width: 1400px;
+    // ^^^ для скрытия краёв .container от фона #root.(React.Prob)
+    // min-width: 1400px;
+    // width: 1400px;
+  }
+  // $md1: 1400;
+  @media (max-width: $md1NoErr) {
+    max-width: 1200px;
+  }
+  // $md2: 1200;
+  @media (max-width: $md2NoErr) {
+    max-width: 992px;
+  }
+  // $md3: 992;
+  @media (max-width: $md3NoErr) {
+    max-width: 768px;
+  }
+  // $md4: 768;
+  @media (max-width: $md4NoErr) {
+    max-width: 576px;
+    max-width: none !important;
+  }
+  // $md5: 576;
+  @media (max-width: $md5NoErr) {
+    max-width: none;
+  }
+}
+
+//<ПОДКЛЮЧЕНИЕ ФАЙЛОВ СТИЛЕЙ СТРАНИЦ И ЭЛЛЕМЕНТОВ>==========================================================
+// @import "catalog.scss";
+// @import "contacts.scss";
+// @import "footer.scss";
+// @import "mini-aside.scss"; // боковое меню .mini-aside(верх-вниз)
+// @import "audio.scss";
+// @import "video.scss";
+// @import "gallery.scss";
+// @import "manual.scss";
+// @import "home.scss";
+
+//<ПОДКЛЮЧЕНИЕ ФАЙЛОВ UI СТИЛЕЙ, ФОРМ, VISUAL, GRID, jQuery И ГОТОВЫХ КЛАССОВ>==============================
+// элем форм, checkbox, select, кнопки
+// @import "forms.scss";
+// сбор готовых и вспомогательных классов (ibg, video, заголовки, зеркало, серый стиль)
+// @import "./ui.scss";
+// изменения стилей Темы и Размеров (--theme, --size) при нажате на кнопки под меню (старое)
+// @import "./themeModesSettingsBtns.scss";
+// @import "./themeModesSettingsVars.scss";
+// стили полосы прокрутки
+@import "./scrollBar.scss";
+// стили spoler|accordion на scss для раскрытия блока
+// @import "./Accordion.scss";
+// крупные визуальные эффекты CSS
+// @import "visual.scss";
+// не большие анимации, трансформации, эффекты CSS на всех страницах
+// @import "./effect.scss";
+// Grid сетки
+// @import "./grid.scss";
+// <СВОИ СТИЛИ>---------------------------------------------------------------------------------------------
+// @import ".//uiWindowsAndWarrning.scss"; // врем окно предупреждения/доработки с подсказкой/идеей
+// стили отображения куска кода в тегаx pre > code
+// @import "./tagPreCode.scss";
+// стили мини компонентов взаимодействия (кнопки, аккордион, ...)
+// @import "../scss/uiMiniComp.scss";
+
+//<ОСНОВНОЙ БЛОК>===========================================================================================
+
+// @import "./.scss";
+// общие стили для проектов
+// @import "./project.scss";
+// общие стили Главных Компонентов (header, main, footer)
+// @import "../Components/layout/Router.scss";

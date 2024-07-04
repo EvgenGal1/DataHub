@@ -1,0 +1,183 @@
+/* полоса прокрутки */
+/*  */
+html {
+  /* --colBasicBlue: #003366;
+  --colActivBlue: #252850; */
+}
+/* общ.stl */
+::-webkit-scrollbar {
+  /* width: 150px; */
+}
+/* полоса */
+::-webkit-scrollbar-track {
+  /* background: var(--colActivBlue); */
+}
+/* бегунок */
+::-webkit-scrollbar-thumb {
+  /* background: var(--colBasicBlue);
+  border-radius: 50px; */
+}
+/* кнп. */
+::-webkit-scrollbar-button {
+  /* background: var(--colBasicBlue); */
+  /*  */
+}
+
+.triangle-up,
+.triangle-down {
+  position: relative;
+  width: 0;
+  height: 0;
+  border-left: 50px solid transparent;
+  border-right: 50px solid transparent;
+  /* } */
+  /*  */
+  .triangle-up::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: 0;
+
+    border-top: 50px solid #000;
+    border-left: 50px solid transparent;
+    border-right: 50px solid transparent;
+
+    border: 20px solid transparent;
+    border-bottom: 20px solid green;
+  }
+
+  .triangle-down::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    border-bottom: 50px solid #000;
+    border-left: 50px solid transparent;
+    border-right: 50px solid transparent;
+  }
+}
+/* Стили для верхней части полосы прокрутки */
+::-webkit-scrollbar-track-piece:start {
+  background: #003366;
+  border-radius: 5px 5px 0 0;
+}
+/* Стили для нижней части полосы прокрутки */
+::-webkit-scrollbar-track-piece:end {
+  background: #003366;
+  border-radius: 0 0 5px 5px;
+}
+::-webkit-scrollbar-button:single-button:vertical:decrement {
+  color: #f00;
+}
+* {
+  /* // "auto" или "thin"Ff */
+  scrollbar-width: thin;
+  scrollbar-color: var(--DarkRed) #333333;
+  body {
+    overflow-y: scroll;
+  }
+}
+
+/* // весь scrollbar */
+::-webkit-scrollbar {
+  height: 12px;
+  width: 12px;
+  min-width: 12px;
+}
+/* // кнопка верх/вниз */
+::-webkit-scrollbar-button {
+  background-image: url("https://yraaa.ru/_pu/24/59610063.png");
+  background-color: #ffcb17;
+  background-color: #555555;
+  background-position: center;
+  background-repeat: no-repeat;
+  content: "";
+  /* // width: 6px;
+    // height: 0px; */
+}
+/* // дорожка/трек */
+::-webkit-scrollbar-track {
+  background-color: #333333;
+  box-shadow: 0px 0px 3px #000 inset;
+}
+::-webkit-scrollbar-thumb {
+  -webkit-border-radius: 5px;
+  border-radius: 5px;
+  background-color: #ffcb17;
+  background-color: #333333;
+  box-shadow: 0px 1px 1px #fff inset;
+  background-image: url("https://yraaa.ru/_pu/24/59610063.png");
+  background-position: center;
+  background-repeat: no-repeat;
+}
+/* // изменение размеров в углу */
+::-webkit-resizer {
+  /* // background-image: url(""); */
+  background-repeat: no-repeat;
+  width: 7px;
+  height: 7px;
+}
+/* } */
+
+/* границы/рамки */
+::-webkit-scrollbar-corner {
+  background: var(--colActivBlue);
+}
+
+// <скроллбар(полоса прокрутки)>====================================================
+// !!! http://htmlbook.ru/blog/polzovatelskie-skrollbary-v-webkit
+
+// будущие стили
+* {
+  // "auto" или "thin"
+  scrollbar-width: thin;
+  scrollbar-color: var(--DarkRed) #333333;
+  body {
+    overflow-y: scroll;
+  }
+
+  // весь scrollbar
+  ::-webkit-scrollbar {
+    height: 12px;
+    width: 12px;
+    min-width: 12px;
+  }
+  // кнопка верх/вниз
+  ::-webkit-scrollbar-button {
+    background-image: url("https://yraaa.ru/_pu/24/59610063.png");
+    background-color: #ffcb17;
+    background-color: #555555;
+    background-position: center;
+    background-repeat: no-repeat;
+    content: "";
+    // width: 6px;
+    // height: 0px;
+  }
+  // дорожка/трек
+  ::-webkit-scrollbar-track {
+    background-color: #333333;
+    box-shadow: 0px 0px 3px #000 inset;
+  }
+  // видимая часть трека
+  // ::-webkit-scrollbar-track-piece {
+  // background-color: blue;
+  // }
+  // бегунок/ползунок
+  ::-webkit-scrollbar-thumb {
+    -webkit-border-radius: 5px;
+    border-radius: 5px;
+    background-color: #ffcb17;
+    background-color: var(--DarkRed);
+    box-shadow: 0px 1px 1px #fff inset;
+    background-image: url("https://yraaa.ru/_pu/24/59610063.png");
+    background-position: center;
+    background-repeat: no-repeat;
+  }
+  // изменение размеров в углу
+  ::-webkit-resizer {
+    // background-image: url("");
+    background-repeat: no-repeat;
+    width: 7px;
+    height: 7px;
+  }
+}

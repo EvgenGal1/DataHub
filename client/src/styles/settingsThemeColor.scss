@@ -1,0 +1,327 @@
+// ??? не раб - SCSS перем.цвета не обрабат.в CSS. В браузер прилетают названия SCSS. Все перем на CSS
+
+// временно, для наглядности цвета
+:root {
+  --Red: #ff0000;
+  --TrafficRed: #cd0000; // Транспортный красный
+  --DarkRed: #8b0000; // темно-красный
+  --PinkForest: #65000b; // Розовый Лес
+  --CrimsonBrown: #4b0000; // коричнево-малиновый
+  --DeepRedBrown: #490005; // Глубокий Красно-Коричневый
+  --VeryDeepRed: #320a18; // Очень глубокий красный
+  --WhiteAlum: #a3a3a3; // бело-алюминиевый
+  --Gray: #808080; // серый
+  --DullGray: #696969; // Тусклый Серый
+  --WetAsphalt: #505050; // Мокрый Асфальта
+  --BlueGray: #474b4e; // Синий серый
+  --DarkBlueGray: #373737; // Тёмно синий серый
+  --SignalBlack: #333333; // cигнальный черный
+  --BlackBrown: #212121; // Черно Коричневый
+  --AlmostBlack: #131313; // Почти черный
+  --BlackAmber: #0a0a0a; // Черный янтарь
+  --Black: #000000; // Черный
+  --DeepYellow: #b57900; // Глубокий Желтый
+  --MelonYellow: #f4a900; // Дынно-желтый
+  --Gold: #ffd700; // золотой
+  --Yellow: #ffff00; // жёлтый
+  --Coffee: #442d25; // Кофейный
+  --DeerBrown: #59351f; // Олень коричневый
+  --BrownBeige: #8a6642; // Коричнево-Бежевый
+  --BeigeBrown: #79553d; // Бежево-Коричневый
+  --ModYelBrown: #7d512d; // Умеренный Желтый Коричневый
+  --YellowBrown: #d2b48c; // Желто-Коричневый
+  --NavajoWhite: #ffdead; // Белый навахо
+  --Green_1: #004020; // Зелёный_1
+  --Green_2: #006633; // Зелёный_2
+  --Blue_1: #002550; // Синий_1
+  --Blue_2: #004080; // Синий_2
+  --Blue_3: #002244; // Синий_3
+  --Blue_4: #0040cc; // Синий_4
+  --Blue_5: #0050cc; // Синий_5
+  --Blue_6: #0060cc; // Синий_6
+  --Blue_7: #0070cc; // Синий_7
+  --Blue_8: #252850; // Синий_8
+  --Blue_9: #003366; // Синий_9
+}
+
+// Цветовые переменные для Цв.Тем (Тёмной/Светлой/Средней) на атрибутах
+body[data-theme="dark"] {
+  --fon-dark: var(--Coffee);
+  --el-dark: var(--BlackBrown);
+  --el-light: var(--SignalBlack);
+  --ui-bg: var(--DeerBrown);
+  // --ui-col: var(--DeerBrown);
+  --ui-act-col: var(--DeepYellow);
+  --ui-act-bg: var(--ModYelBrown);
+  --act-light: var(--MelonYellow);
+  --act-dark: var(--PinkForest);
+  --act-bg: var(--WetAsphalt);
+  --act-bg-hov: var(--BlueGray);
+  --act-bg-hov: var(--DarkBlueGray);
+  --txt-col: var(--Black);
+  --txt-leght: var(--DeepYellow);
+  --txt-dark: var(--MelonYellow);
+  --bord-hr: var(--DeepRedBrown);
+}
+body[data-theme="natural"] {
+  --fon-dark: var(--BrownBeige);
+  --el-light: var(--WetAsphalt);
+  --el-dark: var(--SignalBlack);
+  --ui-bg: var(--YellowBrown);
+  // --ui-col: var(--YellowBrown);
+  --ui-act-col: var(--Gold);
+  // --ui-act-col: DarkRed;
+  --ui-act-bg: var(--NavajoWhite);
+  --act-light: var(--Gold);
+  --act-dark: var(--DarkRed);
+  --act-bg: var(--DullGray);
+  --act-bg-hov: var(--WetAsphalt);
+  --txt-col: var(--BlackAmber);
+  --txt-leght: var(--DarkRed);
+  --txt-dark: var(--TrafficRed);
+  --bord-hr: var(--PinkForest);
+}
+body[data-theme="light"] {
+  --fon-dark: var(--YellowBrown);
+  --el-light: var(--WhiteAlum);
+  --el-dark: var(--WetAsphalt);
+  --ui-bg: #fff;
+  // --ui-col: #fff;
+  --ui-act-col: var(--Yellow);
+  // --ui-act-col: var(--TrafficRed);
+  --ui-act-bg: var(--NavajoWhite);
+  --act-light: var(--Yellow);
+  --act-dark: var(--TrafficRed);
+  --act-bg: var(--Gray);
+  --act-bg-hov: var(--DullGray);
+  --txt-col: var(--AlmostBlack);
+  --txt-leght: var(--TrafficRed);
+  --txt-dark: var(--Red);
+  --bord-hr: var(--DarkRed);
+}
+
+// ОБЩИЕ СТИЛИ
+:root {
+  body {
+    color: var(--txt-col);
+    background-color: var(--fon-dark);
+
+    // цвет рамки для всех кроме ссылок и списков
+    *:not(a):not(ul) {
+      // border-color: var(--bord-hr) !important;
+    }
+    hr.hr {
+      border-color: var(--bord-hr);
+    }
+
+    // ШАПКА / ПОДВАЛ
+    .header,
+    .footer {
+      // анимация перехода
+      background-color: var(--el-light);
+      transition: background-color 900ms linear;
+    }
+    .footer {
+      .copyright-container {
+        background-color: var(--el-dark);
+      }
+    }
+
+    // ссылки
+    a.a {
+      color: var(--Blue_7);
+      &:hover {
+        color: var(--Blue_4);
+      }
+    }
+    div nav.nav {
+      & a.a {
+        color: var(--activ-col);
+        // background-color: var(--act-bg) ;
+        &.active {
+          color: var(--act-dark);
+          background-color: var(--act-bg);
+          transition: background-color 500ms linear, color 200ms linear;
+        }
+        &:hover {
+          color: var(--act-light);
+          background-color: var(--act-bg);
+          transition: background-color 500ms linear, color 200ms linear;
+        }
+        & + ul {
+          background-color: var(--act-bg) !important;
+          a.a {
+            color: var(--act-light) !important;
+            background-color: var(--act-dark) !important;
+          }
+        }
+      }
+    }
+
+    // ОСНОВНОЙ
+    .main {
+      background-color: var(--fon-dark);
+      transition: background-color 300ms linear;
+
+      // & > div nav {
+      //   & a.active {
+      //     background-color: var(--activ-col);
+      //   }
+      // }
+
+      // div:hover {
+      //   color: var(--activ-col) ;
+      //   background-color: var(--act-bg) ;
+      // }
+    }
+
+    // КНП
+    input.inp,
+      button.btn/* :not([class*="btn-primary"]) */ {
+      border-color: var(--bord-hr) /* !important */;
+      background-color: var(--act-bg);
+      // transition: background-color 200ms linear;
+      &:hover {
+        background-color: var(--act-bg-hov);
+      }
+    }
+    button.btn-primary,
+    button.btn-success,
+    button.btn-danger {
+      border-color: var(--BlackAmber);
+      color: var(--DeepYellow);
+      &:hover,
+      &.active {
+        border-color: var(--BlackBrown);
+        color: var(--MelonYellow);
+      }
+    }
+    button.btn-primary {
+      background-color: var(--Blue_1);
+      &:hover,
+      &.active {
+        background-color: var(--Blue_2);
+      }
+    }
+    button.btn-success {
+      background-color: var(--Green_1);
+      &:hover,
+      &.active {
+        background-color: var(--Green_2);
+      }
+    }
+    button.btn-danger {
+      background-color: var(--CrimsonBrown);
+      &:hover,
+      &.active {
+        background-color: var(--PinkForest);
+      }
+    }
+
+    // ФОРМЫ
+    form.frm {
+      background-color: var(--ui-bg);
+      input.inp {
+        &:hover {
+          background-color: var(--act-bg-hov);
+        }
+      }
+      button.btn {
+        color: var(--act-light);
+        background-color: var(--act-dark);
+        &:hover {
+          // background-color: var(--act-bg-hov);
+        }
+      }
+    }
+
+    // ТАБЛИЦЫ
+    .table {
+      background-color: var(--ui-bg);
+      border-color: var(--bord-hr);
+      color: var(--AlmostBlack) /* !important */;
+      tbody {
+        tr {
+          td {
+            vertical-align: initial;
+          }
+          &:hover,
+          &:hover > * {
+            color: var(--Black) /* !important */;
+            background-color: var(--ModYelBrown);
+            background-color: var(--ui-act-col);
+          }
+          &#th:hover {
+            background-color: transparent;
+            background-color: var(--ui-bg) /* !important */;
+            & > * {
+              background-color: transparent;
+              background-color: var(--ui-bg) /* !important */;
+            }
+          }
+        }
+      }
+    }
+
+    // ВЫБОРКА
+    .select {
+      background-color: var(--Blue_1);
+      border-color: var(--BlackAmber);
+      color: var(--DeepYellow);
+      &:hover {
+        background-color: var(--Blue_2);
+        border-color: var(--BlackBrown);
+        color: var(--MelonYellow);
+      }
+      &:focus {
+        box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+      }
+    }
+
+    // МОДАЛЬНЫЙ ОКНА
+    .modal {
+      background-color: var(--ui-bg);
+    }
+
+    // карточки/сетка блоков
+    .card {
+      color: #000000;
+      background-color: var(--ui-bg);
+      border: solid 1px var(--bord-hr);
+      transition: 0.5s;
+      // наведения для всех кроме содерж. form
+      &:hover:not(:has(form)) {
+        background-color: var(--ui-act-col);
+      }
+    }
+    // карточка с контентом (form)
+    .card-form {
+      background-color: var(--ui-bg);
+      border-color: var(--bord-hr);
+      transition: 0.5s;
+      &:hover {
+        transition: 0.5s;
+        > form {
+          transition: 0.5s;
+          // background-color: var(--ui-act-col);
+        }
+      }
+    }
+    .card-form:hover form {
+      transition: 0.5s;
+      // background-color: var(--ui-act-col);
+    }
+
+    // ПЕРЕКЛЮЧАТЕЛИ ----------------------------------------------------------------------------------
+    // перепись цвета КНП для Цв.Тем
+    .sw3btn-radio__light:checked ~ .sw3btn-slider {
+      background-color: var(--ui-act-bg);
+    }
+    .sw3btn-radio__dark:checked ~ .sw3btn-slider {
+      background-color: var(--act-dark);
+    }
+    .sw3btn-radio__neutral:checked ~ .sw3btn-slider {
+      background-color: var(--MelonYellow);
+    }
+  }
+}

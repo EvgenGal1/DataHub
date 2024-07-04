@@ -21,7 +21,7 @@ export default function Examlpes() {
 
   return (
     <>
-      <hr />
+      <hr className="hr" />
       <Typography paragraph>
         Lorem очень морковь, томатный бакалавриат, но Iusmod в то время для
         работы или болезненной боли.
@@ -30,7 +30,7 @@ export default function Examlpes() {
         Следует крупнейший в настоящее время паспорт, но жизнь занимает. Эколог
         ический к Ullamcorper не нуждается в FARISISI, даже диаметр футбола.
       </Typography>
-      <hr />
+      <hr className="hr" />
       <div className="switch">
         <h1 className="text-center" onClick={() => handleToggle(0)}>
           Switch
@@ -62,8 +62,8 @@ export default function Examlpes() {
           https://mui.com/base-ui/react-switch/
         </a>
       </div>
-      <hr />
-      <div className="select">
+      <hr className="hr" />
+      <div className="select-block">
         <h1 className="text-center" onClick={() => handleToggle(1)}>
           Select
         </h1>
@@ -89,7 +89,7 @@ export default function Examlpes() {
           https://mui.com/base-ui/react-select/
         </a>
       </div>
-      <hr />
+      <hr className="hr" />
       <br />
       <a
         href="https://mui.com/joy-ui/react-slider/#track"
@@ -99,7 +99,7 @@ export default function Examlpes() {
         joy/react-slider/#trac
       </a>
       <br />
-      <hr />
+      <hr className="hr" />
       <br />
       <a
         href="https://mui.com/material-ui/react-slider/#track"
@@ -109,7 +109,7 @@ export default function Examlpes() {
         mui/react-slider/#trac
       </a>
       <br />
-      <hr />
+      <hr className="hr" />
       <br />
       <a
         href="https://mui.com/material-ui/react-slider/#removed-track"
@@ -119,7 +119,7 @@ export default function Examlpes() {
         mui/react-slider/#removed-trac
       </a>
       <br />
-      <hr />
+      <hr className="hr" />
       <br />
       <a
         href="https://mui.com/joy-ui/react-switch/#track-child"
@@ -129,7 +129,7 @@ export default function Examlpes() {
         joy/react-switch/#track-chil
       </a>
       <br />
-      <hr />
+      <hr className="hr" />
       <br />
       <a
         href="https://mui.com/x/react-tree-view/simple-tree-view/expansion/#track-item-expansion-change"
@@ -139,7 +139,7 @@ export default function Examlpes() {
         expansion/#track-item-expansion-chang
       </a>
       <br />
-      <hr />
+      <hr className="hr" />
       <br />
       <a
         href="https://mui.com/base-ui/react-modal/"
@@ -149,7 +149,7 @@ export default function Examlpes() {
         react-modal
       </a>
       <br />
-      <hr />
+      <hr className="hr" />
       <br />
       <a
         href="https://mui.com/base-ui/react-transitions/"
@@ -158,7 +158,7 @@ export default function Examlpes() {
       >
         react-transitions
       </a>
-      <hr />
+      <hr className="hr" />
     </>
   );
 }

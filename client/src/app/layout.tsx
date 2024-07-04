@@ -7,8 +7,10 @@ import { Footer } from "@/components/Footer";
 // доп.ф.
 import metadataRu from "@/config/lang/locales/ru";
 import metadataEn from "@/config/lang/locales/en";
-// стили
+// стили. нач.устан., готов.кл.настр., проекта
 import "./globals.css";
+import "../styles/styles.scss";
+import "../styles/project.scss";
 // googl шрифты
 import { Inter } from "next/font/google";
 
@@ -54,7 +56,7 @@ export default async function RootLayout({
   return (
     <html lang={defaultLang}>
       {/* <head></head> */}
-      <body className={inter.className}>
+      <body className={inter.className} /* data-theme="dark" */>
         {/* альтер.MUI с превикс.stl <Box sx={{ display: "flex" }}> */}
         <div className="general-container">
           <Navbar />

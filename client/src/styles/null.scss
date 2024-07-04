@@ -1,0 +1,210 @@
+// обнуляющий стиль для стандартизации по всем свойствам, брайзерам и пр.
+
+// мини классы со своими стилями (подобие )
+// @import "./miniСls.scss";
+
+// Button, Input, Form, Selecy и подобие
+@import "./BIF.scss";
+
+// модальный окна
+// @import "./modal.scss";
+
+// блоки карточек
+// @import "./board.scss";
+
+// таблицы
+// @import "./table.scss";
+
+// ошибки
+// @import "./err.scss";
+
+* {
+  margin: 0px;
+  border: 0px;
+}
+*:not(ul, ol, li) {
+  // padding: 0px;
+}
+*,
+*:before,
+*:after {
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+}
+:focus,
+:active {
+  outline: none;
+}
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  min-width: /* $minwidth */ 320px;
+  position: relative;
+  width: 100%;
+  color: #000;
+}
+body {
+  font-size: 100%;
+  // line-height: 1;
+  font-size: 18px;
+  font-family: "";
+  -ms-text-size-adjust: 100%;
+  -moz-text-size-adjust: 100%;
+  -webkit-text-size-adjust: 100%;
+  &.lock {
+    overflow: hidden;
+    @media (max-width: 768px) {
+      // @media (max-width: $md3+px) {
+      width: 100%;
+      position: fixed;
+      overflow: hidden;
+    }
+  }
+}
+
+// общ. блоков
+aside,
+nav,
+footer,
+header,
+section {
+  display: block;
+}
+
+// ссылки
+a.a {
+  color: inherit;
+  text-decoration: inherit !important;
+}
+.a0 {
+  color: var(--DeepYellow) !important;
+  text-decoration: none !important;
+}
+a.a,
+a.a:visited {
+  // text-decoration: none;
+}
+a.a:hover {
+  // text-decoration: none;
+}
+a.a:focus,
+a.a:active {
+  outline: none;
+}
+header a.a {
+  letter-spacing: 1px;
+}
+
+// СПИСКИ
+ul li.li {
+  list-style: none;
+}
+.list-param {
+  // display: table-cell;
+  // margin: 0 0 1rem 0;
+  li.li {
+    list-style: square;
+    // &:first-child {
+    p {
+      min-width: 150px;
+      margin: 0 10px 0 0;
+      display: inline-block;
+    }
+  }
+}
+
+// изо
+img.img {
+  vertical-align: top;
+}
+
+// заголовки
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  // font-weight: inherit;
+  font-size: inherit;
+  text-align: center;
+}
+
+// дл.бл
+p {
+  // letter-spacing: normal;
+}
+span.spn {
+  font-weight: bold;
+  // background: #cccccc;
+  // letter-spacing: 3px;
+  // line-height: 1.3;
+}
+
+.tac {
+  text-align: center;
+}
+.tal {
+  text-align: left;
+}
+
+// скрыть длинную строку текста
+.hideLongTxt {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+// hr ----------------------------------------------------------------------------------
+hr.hr {
+  // display: block;
+  // unicode-bidi: -webkit-isolate;
+  // unicode-bidi: -moz-isolate;
+  // unicode-bidi: isolate;
+  // -webkit-margin-before: 7px;
+  // margin-block-start: 7px;
+  // -webkit-margin-after: 7px;
+  // margin-block-end: 7px;
+  // -webkit-margin-start: auto;
+  // margin-inline-start: auto;
+  // -webkit-margin-end: auto;
+  // margin-inline-end: auto;
+  width: 100%;
+  overflow: hidden;
+  border-style: groove;
+  border-style: ridge;
+  border-color: #8b0000;
+  border-width: var(--sz1);
+  opacity: 1;
+  clear: both;
+  // margin: 0 -62px;
+}
+br {
+  // width: 0;
+  // height: 0;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
+    monospace;
+}
+
+// ЭФФЕКТЫ ----------------------------------------------------------------------------------
+.ef {
+  // тень
+  &-bs {
+    box-shadow: 0 3px 5px black;
+    &:hover {
+      // transition: transform 100ms linear;
+      box-shadow: 0 8px 10px #000000;
+    }
+    &:active {
+      // transition: transform 0.2s linear;
+      box-shadow: 0 1px 1px black;
+    }
+  }
+}

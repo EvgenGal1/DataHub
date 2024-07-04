@@ -1,0 +1,218 @@
+// КНП ----------------------------------------------------------------------------------
+input,
+button,
+textarea {
+  // ??? не раб - SassError: Undefined variable. - ont-family: $fontfamily;
+  // font-family: $fontfamily;
+}
+input::-ms-clear {
+  display: none;
+}
+input::placeholder {
+  color: #000000;
+}
+input.search {
+  width: 100%;
+  // margin: 10px 0px 0px 0px;
+  // @media (min-width: 768px) {
+  //   flex: 0 0 auto;
+  //   width: 25%;
+  // }
+  // @media (min-width: 576px) {
+  //   flex: 0 0 auto;
+  //   width: 50%;
+  // }
+}
+button,
+input {
+  // margin: 5px 0px;
+  padding: var(--sz1);
+  margin: 0;
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+  // border: 1px solid #bd0000;
+  // border-radius: var(--sz1);
+  cursor: pointer;
+  // transition: background-color 200ms, transform 100ms linear;
+  &:disabled {
+    opacity: 0.4;
+  }
+}
+input.inpt,
+button.btn,
+select.select {
+  cursor: pointer;
+  padding: var(--sz1) var(--sz2);
+  border: 1px solid #bd0000;
+  border-radius: var(--sz1);
+  line-height: 1.5;
+  transition: background-color 200ms, transform 100ms linear;
+  user-select: none;
+}
+input.inpt {
+  &:focus {
+    outline: 0;
+    color: black;
+    border-color: black;
+    background-color: var(--Gray);
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+  }
+}
+button.btn-primary,
+button.btn-success,
+button.btn-danger {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  // padding: 10px 15px;
+  font-size: 16px;
+  // font-weight: 900;
+  // letter-spacing: var(--sz2);
+  border: 1px solid #bd0000;
+  // box-shadow: 0 3px 5px black;
+  // text-transform: uppercase;
+  line-height: 1.5;
+
+  &:hover {
+    // transition: transform 100ms linear;
+    // box-shadow: 0 8px 10px #000000;
+  }
+  &:active {
+    // transition: transform 0.2s linear;
+    // box-shadow: 0 1px 1px black;
+    // transform: scale(1) translateY(0);
+    opacity: 0.8;
+  }
+
+  // анимация/прыжок/увеличение
+  &.btn-anim {
+    animation: turn-off 0.5s ease-out;
+    @keyframes turn-off {
+      0% {
+        right: 100%;
+      }
+      100% {
+        right: 0%;
+      }
+    }
+    &:hover {
+      transform: scale(1.03) translateY(-3px);
+      animation: turn-on 5s ease-out;
+      @keyframes turn-on {
+        0% {
+          left: 100%;
+        }
+        100% {
+          left: 0%;
+        }
+      }
+    }
+    &:active {
+      transform: scale(1) translateY(0);
+    }
+  }
+}
+input.btn-primary {
+  cursor: pointer;
+}
+button[type="submit"]:active,
+input[type="button"]:active,
+input[type="submit"]:active {
+  // transition: transform 0.3s linear;
+  // transform: translateY(3px);
+  // border: 1px solid transparent;
+  // opacity: 0.8;
+  //
+  transform: translateY(0);
+}
+button::-moz-focus-inner {
+  padding: 0;
+  border: 0;
+}
+
+// FORM ----------------------------------------------------------------------------------
+.form {
+  width: 100%;
+  // max-width: 500px;
+  height: 100%;
+  // margin: 0 auto;
+  // padding: 0;
+  & {
+    border-radius: var(--sz2);
+    border: 1px solid var(--DeepRedBrown);
+  }
+  ::placeholder {
+    color: #5f5f5f;
+    font-family: monospace;
+    text-transform: uppercase;
+    letter-spacing: 10px;
+    text-shadow: -1px -1px 0px #222;
+  }
+}
+
+// ВЫБОРКА ----------------------------------------------------------------------------------
+.select {
+  font-size: 16px !important;
+}
+
+// .fieldset (`набор полей`) ----------------------------------------------------------------------------------
+.fieldset {
+  /* Чтобы подстраивался под контент */
+  display: block;
+  // margin: 20px;
+  border: 1px solid var(--DeepRedBrown);
+  border-radius: var(--sz2);
+  font-size: inherit;
+  .legend {
+    width: auto;
+    float: none;
+    margin: 0;
+    padding: 0 var(--sz4);
+    font-size: inherit;
+    color: var(--DeepRedBrown);
+    line-height: inherit;
+  }
+  // убрать отступ сверху у первого div после legend
+  legend + div,
+  div:first-child {
+    margin-top: var(--sz0) !important;
+    margin-left: var(--sz0) !important;
+  }
+  // cl.объедин.блоков(united)
+  .united {
+    div {
+      // уровнять отступ у первого label с объедин.
+      margin-top: var(--sz0) !important;
+      // уровнять отступ у первого label с объедин.
+      &:first-child {
+        margin-left: 0;
+        // уровнять отступ у первого label с объедин.
+        label {
+          width: calc(10% + var(--sz1));
+        }
+      }
+    }
+    // div:first-child label.w-a {
+    //   width: calc(10% + var(--sz1));
+    // }
+    // отступ для след.label
+    div:not(:first-child) label {
+      // margin-left: var(--sz5);
+    }
+  }
+  // ! не раб - отступ для след.label при горизон.виде
+  div:not(:first-child):has(> .w-a) /* label.w-5.tal */ >  .w-a {
+    // margin-left: var(--sz5);
+  }
+}
+// для внешне объединёных form (из Modal, )
+.uniteddiv .fieldset {
+  // уровнивание отступа у первого label
+  .ununited /* div:first-child */ label {
+    width: calc(11%);
+  }
+  .united div/* div:first-child */ label {
+    width: calc(26%);
+  }
+}
