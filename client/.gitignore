@@ -61,8 +61,8 @@ webpack*
 
 # ^ общ.врем.ОТКЛ.
 **/static/**
-**/lang/**
-**/src/styles/**
+**/src/lang/**
+**/src/config/**
 
 # ^ общ.врем.ИСКЛЮЧЁННЫЕ
 # папки 
