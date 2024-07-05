@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect /* , useState */ } from "react";
 
 export default function Error({
   error,
@@ -9,7 +9,14 @@ export default function Error({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
+  // счётчик, fn увелич. // ! не раб. - после reset cyfxfkf/
+  // const [countErr, setCountErr] = useState(0);
+  // const handleClick = () => {
+  //   setCountErr(countErr + 1);
+  // };
+
   useEffect(() => {
+    // setCountErr((prevCount) => prevCount + 1);
     console.error(error);
   }, [error]);
 
@@ -19,7 +26,29 @@ export default function Error({
       <div>
         <pre>{error.message}</pre>
       </div>
-      <button onClick={() => reset()}>Попробуйте еще раз</button>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "flex-start",
+          alignItems: "center",
+          margin: "10px 0 0",
+        }}
+      >
+        <button
+          className="btn btn-danger"
+          style={{ margin: "0 10px 0 0" }}
+          onClick={() => {
+            // // setCountErr((prevCount) => prevCount + 1);
+            // handleClick();
+            // setTimeout(() => {
+            reset();
+            // }, 1000);
+          }}
+        >
+          Попробуйте еще раз
+        </button>
+        {/* <span>Кол-во попыток : {countErr}</span> */}
+      </div>
     </div>
   );
 }
