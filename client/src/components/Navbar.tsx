@@ -245,8 +245,6 @@ export default function Navbar() {
             )}
           </IconButton>
         </DrawerHeader>
-        {/* черта */}
-        <Divider />
         {/* 1ый ul лист вертик.меню */}
         <List>
           {/* масс.эл.li */}
@@ -302,8 +300,15 @@ export default function Navbar() {
             </ListItem>
           ))}
         </List>
-        {/* черта */}
-        <Divider />
+        {/* Divider черта в MUI */}
+        <hr
+          className="hr" /* data-size="big" */
+          // врем.css
+          style={{
+            // borderWidth: "var(--sz3)",
+            borderWidth: "32px",
+          }}
+        />
         {/* 2ой ul лист вертик.меню */}
         <List>
           {["Почта", "Корзина", "ЛК"].map((text, index) => (
