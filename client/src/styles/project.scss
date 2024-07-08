@@ -202,6 +202,83 @@ footer {
   animation: loading 5s infinite linear;
 }
 
+:root body {
+  // стр.не найдена (Not Found)
+  .notf__control {
+    // обёртка ссылки/стрелки
+    div {
+      position: relative;
+      display: flex;
+      align-items: flex-end;
+      // блок первой ссылки
+      &:first-child {
+        margin-right: 10px;
+        // стрелка
+        & > span {
+          left: -10px;
+          border-right-color: var(--CrimsonBrown);
+          transition: all 0.3s ease;
+        }
+        // ссылка
+        a {
+          margin-left: 10px;
+          border-bottom: 3px solid var(--CrimsonBrown);
+          transition: all 0.3s ease;
+        }
+      }
+      // блок последней ссылки
+      &:last-child {
+        margin-left: 10px;
+        & > span {
+          right: -10px;
+          border-left-color: var(--Green_1);
+          transition: all 0.3s ease;
+        }
+        a {
+          margin-right: 10px;
+          border-bottom: 3px solid var(--Green_1);
+          transition: all 0.3s ease;
+        }
+      }
+      // общ.стрелка
+      & > span {
+        position: absolute;
+        border: 10px solid transparent;
+      }
+      // общ.ссылка
+      a {
+        padding: 5px 10px 0;
+      }
+      // наведение
+      &:hover {
+        &:first-child {
+          & > span {
+            border-right-color: var(/* --PinkForest */ --DarkRed);
+          }
+          a {
+            border-bottom-color: var(/* --PinkForest */ --DarkRed);
+          }
+        }
+        &:last-child {
+          & > span {
+            border-left-color: var(--Green_2);
+          }
+          a {
+            border-bottom-color: var(--Green_2);
+          }
+        }
+      }
+    }
+  }
+
+  input.inp {
+    background-color: var(--Gray);
+    &:hover {
+      background-color: var(--DullGray);
+    }
+  }
+}
+
 /* ^^ stl > учеб.Комп.MUI */
 .switch,
 .select-block {

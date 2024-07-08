@@ -187,21 +187,21 @@ body[data-theme="light"] {
         color: var(--MelonYellow);
       }
     }
-    .primary {
+    .primary-bg {
       background-color: var(--Blue_1);
       &:hover,
       &.active {
         background-color: var(--Blue_2);
       }
     }
-    .success {
+    .success-bg {
       background-color: var(--Green_1);
       &:hover,
       &.active {
         background-color: var(--Green_2);
       }
     }
-    .danger {
+    .danger-bg {
       background-color: var(--CrimsonBrown);
       &:hover,
       &.active {
