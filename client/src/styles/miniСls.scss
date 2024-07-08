@@ -1,0 +1,40 @@
+// flex ----------------------------------------------------------------------------------
+.df {
+  display: flex !important;
+  &-aic {
+    align-items: center;
+  }
+  &-jcc {
+    justify-content: center;
+  }
+  &-jcsa {
+    justify-content: space-around;
+  }
+  &-jcsb {
+    justify-content: space-between;
+  }
+  &-jcse {
+    justify-content: space-evenly;
+  }
+  &-row {
+    flex-direction: row !important;
+  }
+  &-col {
+    flex-direction: column !important;
+  }
+  &-110 {
+    flex: 1 1 0;
+  }
+}
+.dfccc {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+.dfrcc {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}

@@ -171,7 +171,7 @@ footer {
       }
     }
     /* 2ой эл.вниз (учёт ниж.padding.main) */
-    div:nth-child(2) {
+    & > div:nth-child(2) {
       margin-top: 24px;
     }
   }

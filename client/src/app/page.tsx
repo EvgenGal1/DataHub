@@ -1,11 +1,9 @@
-"use client";
-
 import React from "react";
 
 export default function Home() {
   return (
     <>
-      <div className="main-screen">
+      <div className="main-screen dfccc">
         <h1>
           Добро пожаловать в <b>Центр Данных</b>!
         </h1>
@@ -15,7 +13,7 @@ export default function Home() {
         </h3>
       </div>
       {/* локал.стили CSS-in-JS в NextJS на `style jsx` */}
-      <style jsx>
+      {/* <style jsx>
         {`
           .main-screen {
             display: flex;
@@ -23,7 +21,7 @@ export default function Home() {
             align-items: center;
             justify-content: center;
         `}
-      </style>
+      </style> */}
     </>
   );
 }
