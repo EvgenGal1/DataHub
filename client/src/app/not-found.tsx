@@ -33,7 +33,7 @@ export default function NotFound() {
       <div className="main-screen dfrcc err" style={styles.err}>
         {/* авто переадрес на Главную ч/з 30 сек. */}
         <head>
-          <meta http-equiv="refresh" content="9930;url=/" />
+          <meta http-equiv="refresh" content="30;url=/" />
         </head>
         <div className="err__title dfrcc" style={styles.errTitle}>
           <h1 style={styles.h1}>404</h1>
