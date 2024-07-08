@@ -25,6 +25,12 @@
   &-110 {
     flex: 1 1 0;
   }
+  &-dc {
+    flex-direction: column;
+  }
+  &-dr {
+    flex-direction: row;
+  }
 }
 .dfccc {
   display: flex;

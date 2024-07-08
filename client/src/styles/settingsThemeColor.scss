@@ -175,6 +175,40 @@ body[data-theme="light"] {
       // }
     }
 
+    // ЦВЕТ
+    .primary,
+    .success,
+    .danger {
+      color: var(--DeepYellow);
+      border-color: var(--BlackAmber);
+      &:hover,
+      &.active {
+        border-color: var(--BlackBrown);
+        color: var(--MelonYellow);
+      }
+    }
+    .primary {
+      background-color: var(--Blue_1);
+      &:hover,
+      &.active {
+        background-color: var(--Blue_2);
+      }
+    }
+    .success {
+      background-color: var(--Green_1);
+      &:hover,
+      &.active {
+        background-color: var(--Green_2);
+      }
+    }
+    .danger {
+      background-color: var(--CrimsonBrown);
+      &:hover,
+      &.active {
+        background-color: var(--PinkForest);
+      }
+    }
+
     // КНП
     input.inp,
       button.btn/* :not([class*="btn-primary"]) */ {
