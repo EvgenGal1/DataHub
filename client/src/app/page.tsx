@@ -12,7 +12,7 @@ export default function Home() {
           документов, схем
         </h3>
       </div>
-      {/* локал.стили CSS-in-JS в NextJS на `style jsx` */}
+      {/* локал.use-clt стили CSS-in-JS в NextJS на `style jsx` */}
       {/* <style jsx>
         {`
           .main-screen {

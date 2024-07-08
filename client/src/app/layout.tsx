@@ -56,7 +56,7 @@ export default async function RootLayout({
   return (
     <html lang={defaultLang}>
       {/* <head></head> */}
-      <body className={inter.className} /* data-theme="dark" */>
+      <body className={inter.className} data-theme="dark">
         {/* альтер.MUI с превикс.stl <Box sx={{ display: "flex" }}> */}
         <div className="general-container">
           <Navbar />
