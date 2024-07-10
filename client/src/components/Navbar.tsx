@@ -9,8 +9,6 @@ import { styled, useTheme, Theme, CSSObject } from "@mui/material/styles";
 import MuiDrawer from "@mui/material/Drawer";
 import MuiAppBar, { AppBarProps as MuiAppBarProps } from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
-import List from "@mui/material/List";
-import Divider from "@mui/material/Divider";
 import IconButton from "@mui/material/IconButton";
 import MenuIcon from "@mui/icons-material/Menu";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
@@ -246,7 +244,7 @@ export default function Navbar() {
           </IconButton>
         </DrawerHeader>
         {/* 1ый ul лист вертик.меню */}
-        <List>
+        <ul>
           {/* масс.эл.li */}
           {/* // ^ отрисовка ч/з встроеный масс. (запись, аудио, скачать) */}
           {/* {["Закачать", "Треки", "Альбомы", "Плейлисты"].map((text, index) => */}
@@ -299,7 +297,7 @@ export default function Navbar() {
               </ListItemButton>
             </ListItem>
           ))}
-        </List>
+        </ul>
         {/* Divider черта в MUI */}
         <hr
           className="hr" /* data-size="big" */
@@ -310,7 +308,7 @@ export default function Navbar() {
           }}
         />
         {/* 2ой ul лист вертик.меню */}
-        <List>
+        <ul>
           {["Почта", "Корзина", "ЛК"].map((text, index) => (
             <ListItem key={text} disablePadding sx={{ display: "block" }}>
               <ListItemButton
@@ -336,7 +334,7 @@ export default function Navbar() {
               </ListItemButton>
             </ListItem>
           ))}
-        </List>
+        </ul>
       </Drawer>
     </>
   );
