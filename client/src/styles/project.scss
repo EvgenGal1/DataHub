@@ -55,58 +55,86 @@ header.menu-horizon {
     margin 195ms cubic-bezier(0.4, 0, 0.6, 1) 0ms;
   color: #c2c2c2;
   background-color: #252850;
-  /* название сайта */
-  .name-site {
-    width: 135px;
-    padding: 0px 5px;
-    text-align: center;
-    font-weight: 500;
-    white-space: nowrap;
-    span:last-child {
-      display: none;
-      opacity: 0;
-      visibility: hidden;
-      transition: opacity 0.3s ease;
+
+  .menu-horizon-wrapper {
+    @media (min-width: 600px) {
+      min-height: 64px;
     }
-    &:hover {
-      span:nth-child(1) {
+    @media (min-width: 0px) {
+      .css-hyum1k-MuiToolbar-root {
+        min-height: 48px;
+      }
+    }
+    @media (min-width: 600px) {
+      padding-left: 24px;
+      padding-right: 24px;
+    }
+    position: relative;
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-align-items: center;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    padding-left: 16px;
+    padding-right: 16px;
+    min-height: 56px;
+
+    /* название сайта */
+    .name-site {
+      width: 135px;
+      padding: 0px 5px;
+      text-align: center;
+      font-weight: 500;
+      white-space: nowrap;
+      span:last-child {
         display: none;
         opacity: 0;
         visibility: hidden;
-      }
-      span:nth-child(2) {
-        display: block;
-        opacity: 1;
-        visibility: visible;
-      }
-    }
-  }
-  .header-nav {
-    a {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      margin-left: 5px;
-      padding: 5px 10px;
-      border: 1px solid #222222;
-      transition: 0.3s ease;
-      transform-style: preserve-3d;
-      &:not(:last-child) {
-        margin-right: 5px;
+        transition: opacity 0.3s ease;
       }
       &:hover {
-        transition: 0.3s ease;
-        transform: perspective(100px) rotateX(-5deg);
-        box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3);
-        span {
-          color: #f3a505;
+        span:nth-child(1) {
+          display: none;
+          opacity: 0;
+          visibility: hidden;
+        }
+        span:nth-child(2) {
+          display: block;
+          opacity: 1;
+          visibility: visible;
         }
       }
-      &.active {
-        transform: perspective(100px) rotateX(5deg);
-        box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3) inset;
-        span {
-          color: #f3a505;
+    }
+    .header-nav {
+      a {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-left: 5px;
+        padding: 5px 10px;
+        border: 1px solid #222222;
+        transition: 0.3s ease;
+        transform-style: preserve-3d;
+        &:not(:last-child) {
+          margin-right: 5px;
+        }
+        &:hover {
+          transition: 0.3s ease;
+          transform: perspective(100px) rotateX(-5deg);
+          box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3);
+          span {
+            color: #f3a505;
+          }
+        }
+        &.active {
+          transform: perspective(100px) rotateX(5deg);
+          box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3) inset;
+          span {
+            color: #f3a505;
+          }
         }
       }
     }
