@@ -32,18 +32,18 @@ import PersonIcon from "@mui/icons-material/Person";
 // ^ ГОРИЗОНТАЛЬНОЕ МЕНЮ
 // интерф.горизонт.меню(stl/лог.)
 interface AppBarProps extends MuiAppBarProps {
-  open?: boolean;
+  isOpen?: boolean;
 }
 // горизонт.меню(stl/лог.)
 const AppBar = styled(MuiAppBar, {
-  shouldForwardProp: (prop) => prop !== "open",
-})<AppBarProps>(({ theme, open }) => ({
+  shouldForwardProp: (prop) => prop !== "isOpen",
+})<AppBarProps>(({ theme, isOpen }) => ({
   zIndex: theme.zIndex.drawer + 1,
   transition: theme.transitions.create(["width", "margin"], {
     easing: theme.transitions.easing.sharp,
     duration: theme.transitions.duration.leavingScreen,
   }),
-  ...(open && {
+  ...(isOpen && {
     marginLeft: drawerWidth,
     width: `calc(100% - ${drawerWidth}px)`,
     transition: theme.transitions.create(["width", "margin"], {
@@ -56,10 +56,10 @@ const AppBar = styled(MuiAppBar, {
   backgroundColor: "#252850",
 }));
 
-// ^ ВЕРТИКАЛЬНОЕ МЕНЮ
-// ширина вертик.меню
+// ^ БОКОВОЕ МЕНЮ
+// ширина бок.меню
 const drawerWidth = 175;
-// масс.верх.эл/путей вертик.меню
+// масс.верх.эл/путей бок.меню
 const menuVerticalTopItems = [
   { text: "Главная", href: "/" },
   { text: "Закачать", href: "/download" },
@@ -67,9 +67,9 @@ const menuVerticalTopItems = [
   { text: "Альбомы", href: "/albums" },
   { text: "Плейлисты", href: "/playlists" },
 ];
-// вертикал.меню(stl/лог.)
+// бок.меню(stl/лог.)
 const Drawer = styled(MuiDrawer, {
-  shouldForwardProp: (prop) => prop !== "open",
+  shouldForwardProp: (prop) => prop !== "isOpen",
 })(({ theme, open }) => ({
   width: drawerWidth,
   flexShrink: 0,
@@ -86,7 +86,7 @@ const Drawer = styled(MuiDrawer, {
   // ^^ свои stl
   "& > div": { backgroundColor: "#003366" },
 }));
-// область/иконка закр.вертик.меню
+// область/иконка закр.бок.меню
 const DrawerHeader = styled("div")(({ theme }) => ({
   display: "flex",
   alignItems: "center",
@@ -95,7 +95,7 @@ const DrawerHeader = styled("div")(({ theme }) => ({
   // необходимо, чтобы контент был ниже панели приложений
   ...theme.mixins.toolbar,
 }));
-// stl.откр.вертик.м.
+// stl.откр.бок.м.
 const openedMixin = (theme: Theme): CSSObject => ({
   width: drawerWidth,
   transition: theme.transitions.create("width", {
@@ -116,7 +116,7 @@ const closedMixin = (theme: Theme): CSSObject => ({
     width: `calc(${theme.spacing(8)} + 1px)`,
   },
 });
-// интерф./объ.соответствий иконок верт.м.
+// интерф./объ.соответствий иконок бок.м.
 interface IconMap {
   [key: string]: JSX.Element;
 }
@@ -132,6 +132,7 @@ const iconMap: IconMap = {
 const hoverStyle = {
   "&:hover, &:hover > div > svg": {
     color: "#f3a505",
+    backgroundColor: "rgba(0, 0, 0, 0.1)",
     transition: "color 0.3s ease",
   },
 };
@@ -146,8 +147,8 @@ const styles = {
 };
 
 export default function Navbar() {
-  // сост.откр.вертик.меню
-  const [open, setOpen] = React.useState(false);
+  // сост.откр.бок.меню
+  const [isOpen, setOpen] = React.useState(false);
   // хук темы MUI
   const theme = useTheme();
   // хук навигации NextJS
@@ -156,11 +157,11 @@ export default function Navbar() {
   // опред.актив.ссылок > .active
   const pathname = usePathname();
 
-  // откр.вертик.меню
+  // откр.бок.меню
   const handleDrawerOpen = () => {
     setOpen(true);
   };
-  // закр.вертик.меню
+  // закр.бок.меню
   const handleDrawerClose = () => {
     setOpen(false);
   };
@@ -168,24 +169,21 @@ export default function Navbar() {
   return (
     <>
       {/* header. горизонт.меню */}
-      <AppBar position="fixed" open={open} className="menu-horizon">
+      <AppBar position="fixed" isOpen={isOpen} className="header">
         {/* общ.div эл.в header */}
         <Toolbar>
-          {/* иконка откр.вертик.меню */}
-          <IconButton
-            color="inherit"
-            aria-label="open drawer"
+          {/* кнп.откр.бок.меню */}
+          <button
             onClick={handleDrawerOpen}
-            edge="start"
-            sx={{
-              marginRight: 5,
-              ...hoverStyle,
-              ...(open && { display: "none" }),
+            aria-label="isOpen drawer"
+            style={{
+              display: isOpen ? "none" : "inline-block",
             }}
-            data-open={open ? "true" : "false"}
           >
+            {/* иконка откр.бок.меню */}
             <MenuIcon />
-          </IconButton>
+            {/* svg + path */}
+          </button>
           {/* название сайта */}
           <div className="name-site">
             <span>Центр Данных</span>
@@ -226,11 +224,12 @@ export default function Navbar() {
           </nav>
         </Toolbar>
       </AppBar>
-      {/* вертикальное меню */}
-      <Drawer variant="permanent" open={open} className="menu-vertical">
-        {/* иконка закр.вертик.меню */}
-        <DrawerHeader>
+      {/* sideBar. боковое меню */}
+      <Drawer variant="permanent" open={isOpen} className="menu-vertical">
+        {/* иконка закр.бок.меню */}
+        <DrawerHeader className="menu-vertical__huis-1">
           <IconButton
+            className="menu-vertical__huis-1-1"
             onClick={handleDrawerClose}
             sx={{
               ...hoverStyle,
@@ -243,8 +242,8 @@ export default function Navbar() {
             )}
           </IconButton>
         </DrawerHeader>
-        {/* 1ый ul лист вертик.меню */}
-        <ul>
+        {/* 1ый ul лист бок.меню */}
+        <ul className="menu-vertical__list">
           {/* масс.эл.li */}
           {/* // ^ отрисовка ч/з встроеный масс. (запись, аудио, скачать) */}
           {/* {["Закачать", "Треки", "Альбомы", "Плейлисты"].map((text, index) => */}
@@ -262,7 +261,7 @@ export default function Navbar() {
               <ListItemButton
                 sx={{
                   minHeight: 48,
-                  justifyContent: open ? "initial" : "center",
+                  justifyContent: isOpen ? "initial" : "center",
                   px: 2.5,
                   ...hoverStyle,
                 }}
@@ -271,7 +270,7 @@ export default function Navbar() {
                 <ListItemIcon
                   sx={{
                     minWidth: 0,
-                    mr: open ? 3 : "auto",
+                    mr: isOpen ? 3 : "auto",
                     justifyContent: "center",
                     color: "black",
                   }}
@@ -293,11 +292,12 @@ export default function Navbar() {
                   )}
                 </ListItemIcon>
                 {/* текст */}
-                <ListItemText primary={text} sx={{ opacity: open ? 1 : 0 }} />
+                <ListItemText primary={text} sx={{ opacity: isOpen ? 1 : 0 }} />
               </ListItemButton>
             </ListItem>
           ))}
         </ul>
+
         {/* Divider черта в MUI */}
         <hr
           className="hr" /* data-size="big" */
@@ -307,7 +307,7 @@ export default function Navbar() {
             borderWidth: "32px",
           }}
         />
-        {/* 2ой ul лист вертик.меню */}
+        {/* 2ой ul лист бок.меню */}
         <ul>
           {["Почта", "Корзина", "ЛК"].map((text, index) => (
             <ListItem key={text} disablePadding sx={{ display: "block" }}>
@@ -315,14 +315,14 @@ export default function Navbar() {
                 sx={{
                   ...hoverStyle,
                   minHeight: 48,
-                  justifyContent: open ? "initial" : "center",
+                  justifyContent: isOpen ? "initial" : "center",
                   px: 2.5,
                 }}
               >
                 <ListItemIcon
                   sx={{
                     minWidth: 0,
-                    mr: open ? 3 : "auto",
+                    mr: isOpen ? 3 : "auto",
                     justifyContent: "center",
                     color: "black",
                   }}
@@ -330,7 +330,7 @@ export default function Navbar() {
                   {/* подход ч/з объ.соответствий */}
                   {iconMap[text]}
                 </ListItemIcon>
-                <ListItemText primary={text} sx={{ opacity: open ? 1 : 0 }} />
+                <ListItemText primary={text} sx={{ opacity: isOpen ? 1 : 0 }} />
               </ListItemButton>
             </ListItem>
           ))}
