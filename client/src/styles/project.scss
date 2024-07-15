@@ -2,17 +2,25 @@
 
 // переменные
 :root {
-  --Blue_8: #252850;
-  --Blue_9: #003366;
+  $Blue_8: #252850;
+  $Blue_9: #003366;
   // ширина боковой панели (side bar)
-  --drawerWidth: 175px;
+  $drawerWidth: 175px;
+  // hover
+  $colHoverEl: #f3a505;
+  $bgHoverEl: rgba(0, 0, 0, 0.1);
+  $transHoverEl: all 0.3s ease;
 
   body {
     font-size: inherit !important;
 
-    hr.hr {
+    hr.hr-big {
       --hue: 220;
       border-color: hsl(var(--hue), 50%, 40%) !important;
+      border-width: 28px;
+      @media (min-width: 600px) {
+        border-width: 32px;
+      }
     }
 
     pre {
@@ -20,6 +28,53 @@
       width: auto;
       padding: 5px;
     }
+
+    // наведение
+    @mixin hover-el {
+      &:hover,
+      &:hover svg {
+        color: $colHoverEl;
+        background-color: $bgHoverEl;
+        transition: $transHoverEl;
+      }
+    }
+    .hover-el {
+      @include hover-el();
+    }
+
+    // ввод
+    input.inp {
+      background-color: var(--Gray);
+      &:hover {
+        background-color: var(--DullGray);
+      }
+    }
+
+    // кнп.закр.бок.панель
+    // .header {
+    button {
+      padding: 8px;
+      margin-left: -12px;
+      border-radius: 50%;
+
+      @include hover-el();
+
+      @media (min-width: 600px) {
+        // margin-right: 40px;
+      }
+
+      svg {
+        user-select: none;
+        width: 1em;
+        height: 1em;
+        display: inline-block;
+        fill: currentColor;
+        flex-shrink: 0;
+        transition: fill 200ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+        font-size: 1.5rem;
+      }
+    }
+    // }
 
     /* шапка, горизотн.меню */
     header.header/* .menu-top */ {
@@ -42,11 +97,11 @@
         0px 4px 5px 0px rgba(0, 0, 0, 0.14),
         0px 1px 10px 0px rgba(0, 0, 0, 0.12);
       &.isOpen {
-        margin-left: var(--drawerWidth);
-        width: calc(100% - var(--drawerWidth));
+        margin-left: $drawerWidth;
+        width: calc(100% - $drawerWidth);
       }
 
-      // общ.div
+      // общ.div header
       .header-wrapper {
         position: relative;
         display: flex;
@@ -64,63 +119,6 @@
         @media (min-width: 600px) {
           padding-left: 24px;
           padding-right: 24px;
-        }
-      }
-
-      // кнп.закр.бок.панель
-      button {
-        margin-right: 20px;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        position: relative;
-        box-sizing: border-box;
-        background-color: transparent;
-        outline: 0;
-        border: 0;
-        margin: 0;
-        border-radius: 0;
-        padding: 0;
-        cursor: pointer;
-        user-select: none;
-        vertical-align: middle;
-        text-decoration: none;
-        color: inherit;
-        text-align: center;
-        flex: 0 0 auto;
-        font-size: 1.5rem;
-        padding: 8px;
-        border-radius: 50%;
-        overflow: visible;
-        color: rgba(0, 0, 0, 0.54);
-        transition: background-color 150ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
-        margin-left: -12px;
-        color: inherit;
-        margin-right: 40px;
-
-        // .button {
-        margin-right: 5px;
-        transition: color 0.3s ease;
-        // }
-
-        &:hover,
-        &:hover > div > svg {
-          color: #f3a505;
-          background-color: rgba(0, 0, 0, 0.1);
-          transition: all 0.3s ease;
-        }
-        @media (min-width: 600px) {
-          margin-right: 40px;
-        }
-        svg {
-          user-select: none;
-          width: 1em;
-          height: 1em;
-          display: inline-block;
-          fill: currentColor;
-          flex-shrink: 0;
-          transition: fill 200ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
-          font-size: 1.5rem;
         }
       }
 
@@ -195,16 +193,60 @@
 
     /* бок.панель */
     div.side-bar {
-      flex: 0 0 auto;
       width: calc(56px + 1px);
+      flex: 0 0 auto;
       flex-shrink: 0;
       white-space: nowrap;
       box-sizing: border-box;
       transition: width 195ms cubic-bezier(0.4, 0, 0.6, 1) 0ms;
       overflow-x: hidden;
-      & > div,
-      &-wrapper {
-        overflow: hidden;
+      &.isOpen {
+        width: 175px;
+        transition: width 225ms cubic-bezier(0.4, 0, 0.6, 1) 0ms;
+      }
+      @media (min-width: 600px) {
+        width: calc(64px + 1px);
+      }
+      .side-bar-wrapper {
+        height: 100%;
+        /* flex: 1 0 auto; */
+        z-index: 1200;
+        position: fixed;
+        top: 0;
+        outline: 0;
+        left: 0;
+        border-right: 1px solid rgba(0, 0, 0, 0.12);
+        // width: calc(56px + 1px);
+        background-color: #003366;
+        transition: width 195ms cubic-bezier(0.4, 0, 0.6, 1) 0ms;
+        overflow-x: hidden;
+
+        @media (min-width: 600px) {
+          width: calc(64px + 1px);
+        }
+        &.isOpen {
+          width: 175px;
+          -webkit-transition: width 225ms cubic-bezier(0.4, 0, 0.6, 1) 0ms;
+          transition: width 225ms cubic-bezier(0.4, 0, 0.6, 1) 0ms;
+          overflow-x: hidden;
+        }
+      }
+
+      .side-bar__close {
+        // overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        padding: 0px 8px;
+        min-height: 56px;
+        @media (min-width: 0px) {
+          @media (orientation: landscape) {
+            min-height: 48px;
+          }
+        }
+        @media (min-width: 600px) {
+          min-height: 64px;
+        }
       }
       ul {
         list-style: none;
@@ -214,7 +256,7 @@
         padding-top: 8px;
         padding-bottom: 8px;
         li {
-          margin-right: 15px;
+          // margin-right: 15px;
           &.active {
             transform: perspective(100px) rotateX(5deg);
             box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3) inset;
@@ -242,7 +284,6 @@
       background-color: #2c2c2c;
       padding: 10px;
       bottom: 0;
-      width: 100%;
       background-color: #333;
       color: #fff;
       padding: 10px;
@@ -404,13 +445,6 @@
             }
           }
         }
-      }
-    }
-
-    input.inp {
-      background-color: var(--Gray);
-      &:hover {
-        background-color: var(--DullGray);
       }
     }
 
