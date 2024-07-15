@@ -4,6 +4,8 @@
 :root {
   --Blue_8: #252850;
   --Blue_9: #003366;
+  // ширина боковой панели (side bar)
+  --drawerWidth: 175px;
 
   body {
     font-size: inherit !important;
@@ -29,33 +31,27 @@
       display: flex;
       flex-direction: column;
       flex-shrink: 0;
-      // width: 100%;
+      width: 100%;
       color: #c2c2c2;
       background-color: #1976d2;
       background-color: #252850;
-      transition: box-shadow 300ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
-      transition: width 195ms cubic-bezier(0.4, 0, 0.6, 1) 0ms,
-        margin 195ms cubic-bezier(0.4, 0, 0.6, 1) 0ms;
       transition: width 225ms cubic-bezier(0.4, 0, 0.6, 1) 0ms,
-        margin 225ms cubic-bezier(0.4, 0, 0.6, 1) 0ms,
+        margin 195ms cubic-bezier(0.4, 0, 0.6, 1) 0ms,
         box-shadow 300ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
       box-shadow: 0px 2px 4px -1px rgba(0, 0, 0, 0.2),
         0px 4px 5px 0px rgba(0, 0, 0, 0.14),
         0px 1px 10px 0px rgba(0, 0, 0, 0.12);
+      &.isOpen {
+        margin-left: var(--drawerWidth);
+        width: calc(100% - var(--drawerWidth));
+      }
 
       // общ.div
-      .menu-top-wrapper {
+      .header-wrapper {
         position: relative;
-        display: -webkit-box;
-        display: -webkit-flex;
-        display: -ms-flexbox;
         display: flex;
-        -webkit-align-items: center;
-        -webkit-box-align: center;
-        -ms-flex-align: center;
         align-items: center;
-        padding-left: 16px;
-        padding-right: 16px;
+        padding: 0 16px;
         min-height: 56px;
         @media (min-width: 600px) {
           min-height: 64px;
@@ -71,24 +67,14 @@
         }
       }
 
-      // кнп.закр.бок.меню
+      // кнп.закр.бок.панель
       button {
         margin-right: 20px;
-        display: -webkit-inline-box;
-        display: -webkit-inline-flex;
-        display: -ms-inline-flexbox;
         display: inline-flex;
-        -webkit-align-items: center;
-        -webkit-box-align: center;
-        -ms-flex-align: center;
         align-items: center;
-        -webkit-box-pack: center;
-        -ms-flex-pack: center;
-        -webkit-justify-content: center;
         justify-content: center;
         position: relative;
         box-sizing: border-box;
-        -webkit-tap-highlight-color: transparent;
         background-color: transparent;
         outline: 0;
         border: 0;
@@ -96,27 +82,17 @@
         border-radius: 0;
         padding: 0;
         cursor: pointer;
-        -webkit-user-select: none;
-        -moz-user-select: none;
-        -ms-user-select: none;
         user-select: none;
         vertical-align: middle;
-        -moz-appearance: none;
-        -webkit-appearance: none;
-        -webkit-text-decoration: none;
         text-decoration: none;
         color: inherit;
         text-align: center;
-        -webkit-flex: 0 0 auto;
-        -ms-flex: 0 0 auto;
         flex: 0 0 auto;
         font-size: 1.5rem;
         padding: 8px;
         border-radius: 50%;
         overflow: visible;
         color: rgba(0, 0, 0, 0.54);
-        -webkit-transition: background-color 150ms cubic-bezier(0.4, 0, 0.2, 1)
-          0ms;
         transition: background-color 150ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
         margin-left: -12px;
         color: inherit;
@@ -142,10 +118,7 @@
           height: 1em;
           display: inline-block;
           fill: currentColor;
-          -webkit-flex-shrink: 0;
-          -ms-flex-negative: 0;
           flex-shrink: 0;
-          -webkit-transition: fill 200ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
           transition: fill 200ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
           font-size: 1.5rem;
         }
@@ -185,11 +158,11 @@
         }
       }
 
-      // меню стр.
-      .header-nav {
+      // навигация стр.
+      nav.nav {
         font: inherit;
         // margin: auto;
-        a {
+        a.link {
           display: flex;
           justify-content: center;
           align-items: center;
@@ -219,16 +192,20 @@
         }
       }
     }
-    /* бок.меню */
-    div.menu-vertical {
+
+    /* бок.панель */
+    div.side-bar {
       flex: 0 0 auto;
       width: calc(56px + 1px);
       flex-shrink: 0;
       white-space: nowrap;
       box-sizing: border-box;
-      -webkit-transition: width 195ms cubic-bezier(0.4, 0, 0.6, 1) 0ms;
       transition: width 195ms cubic-bezier(0.4, 0, 0.6, 1) 0ms;
       overflow-x: hidden;
+      & > div,
+      &-wrapper {
+        overflow: hidden;
+      }
       ul {
         list-style: none;
         margin: 0;

@@ -8,9 +8,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { styled, useTheme, Theme, CSSObject } from "@mui/material/styles";
 import MuiDrawer from "@mui/material/Drawer";
 import MuiAppBar, { AppBarProps as MuiAppBarProps } from "@mui/material/AppBar";
-import Toolbar from "@mui/material/Toolbar";
 import IconButton from "@mui/material/IconButton";
-import MenuIcon from "@mui/icons-material/Menu";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import ListItem from "@mui/material/ListItem";
@@ -28,6 +26,9 @@ import PersonIcon from "@mui/icons-material/Person";
 // ^^ доп.иконки - https://v4.mui.com/ru/components/material-icons/
 // import PlaylistAddIcon from "@mui/icons-material/PlaylistAdd";
 // import PhotoLibraryIcon from '@material-ui/icons/PhotoLibrary';
+
+// свои компоненты
+import MenuIcon from "./icons/MenuIcon";
 
 // ^ ГОРИЗОНТАЛЬНОЕ МЕНЮ
 // интерф.горизонт.меню(stl/лог.)
@@ -56,10 +57,10 @@ const AppBar = styled(MuiAppBar, {
   backgroundColor: "#252850",
 }));
 
-// ^ БОКОВОЕ МЕНЮ
-// ширина бок.меню
+// ^ БОКОВАЯ ПАНЕЛЬ | SIDE BAR
+// ширина бок.панель
 const drawerWidth = 175;
-// масс.верх.эл/путей бок.меню
+// масс.верх.эл/путей бок.панель
 const menuVerticalTopItems = [
   { text: "Главная", href: "/" },
   { text: "Закачать", href: "/download" },
@@ -67,7 +68,7 @@ const menuVerticalTopItems = [
   { text: "Альбомы", href: "/albums" },
   { text: "Плейлисты", href: "/playlists" },
 ];
-// бок.меню(stl/лог.)
+// бок.панель(stl/лог.)
 const Drawer = styled(MuiDrawer, {
   shouldForwardProp: (prop) => prop !== "isOpen",
 })(({ theme, open }) => ({
@@ -86,7 +87,7 @@ const Drawer = styled(MuiDrawer, {
   // ^^ свои stl
   "& > div": { backgroundColor: "#003366" },
 }));
-// область/иконка закр.бок.меню
+// область/иконка закр.бок.панель
 const DrawerHeader = styled("div")(({ theme }) => ({
   display: "flex",
   alignItems: "center",
@@ -147,7 +148,7 @@ const styles = {
 };
 
 export default function Navbar() {
-  // сост.откр.бок.меню
+  // сост.откр.бок.панель
   const [isOpen, setOpen] = React.useState(false);
   // хук темы MUI
   const theme = useTheme();
@@ -157,11 +158,11 @@ export default function Navbar() {
   // опред.актив.ссылок > .active
   const pathname = usePathname();
 
-  // откр.бок.меню
+  // откр.бок.панель
   const handleDrawerOpen = () => {
     setOpen(true);
   };
-  // закр.бок.меню
+  // закр.бок.панель
   const handleDrawerClose = () => {
     setOpen(false);
   };
@@ -169,20 +170,17 @@ export default function Navbar() {
   return (
     <>
       {/* header. горизонт.меню */}
-      <AppBar position="fixed" isOpen={isOpen} className="header">
+      <header className={`header ${isOpen ? "isOpen" : ""}`}>
         {/* общ.div эл.в header */}
-        <Toolbar>
-          {/* кнп.откр.бок.меню */}
+        <div className="header-wrapper">
+          {/* кнп.откр.бок.панель */}
           <button
             onClick={handleDrawerOpen}
             aria-label="isOpen drawer"
-            style={{
-              display: isOpen ? "none" : "inline-block",
-            }}
+            style={{ display: isOpen ? "none" : "flex" }}
           >
-            {/* иконка откр.бок.меню */}
+            {/* иконка откр.бок.панель */}
             <MenuIcon />
-            {/* svg + path */}
           </button>
           {/* название сайта */}
           <div className="name-site">
@@ -190,46 +188,47 @@ export default function Navbar() {
             <span>Data Hub</span>
           </div>
           {/* страницы */}
-          <nav className={`header-nav flex ml-auto`}>
-            {/* stl.Next */}
+          <nav className={`nav flex ml-auto`}>
+            {/* stl.a ч/з Next */}
             <Link
-              className={`link ${pathname === "/" ? "active" : ""}`}
               href="/"
+              className={`link ${pathname === "/" ? "active" : ""}`}
             >
               <span>Home</span>
             </Link>
             <Link
-              className={`link ${pathname === "/examples" ? "active" : ""}`}
               href="/examples"
+              className={`link ${pathname === "/examples" ? "active" : ""}`}
             >
               <span>Exempl</span>
             </Link>
             <Link
-              className={`link ${pathname === "/blog" ? "active" : ""}`}
               href="/blog"
+              className={`link ${pathname === "/blog" ? "active" : ""}`}
             >
               <span>Blog</span>
             </Link>
             <Link
+              href="/about"
               className={`link ${
                 // ? раб.ток.на первый путь
                 pathname === ("/about" || "/about/team" || "/about/contacts")
                   ? "active"
                   : ""
               }`}
-              href="/about"
             >
               <span>About</span>
             </Link>
           </nav>
-        </Toolbar>
-      </AppBar>
-      {/* sideBar. боковое меню */}
-      <Drawer variant="permanent" open={isOpen} className="menu-vertical">
-        {/* иконка закр.бок.меню */}
-        <DrawerHeader className="menu-vertical__huis-1">
+        </div>
+      </header>
+      {/* Боковая Панель | Side Bar */}
+      <Drawer variant="permanent" open={isOpen} className="side-bar">
+        {/* область выкл.бок.панели */}
+        <DrawerHeader className="side-bar__close">
+          {/* иконка закр.бок.панель */}
           <IconButton
-            className="menu-vertical__huis-1-1"
+            className="side-bar-button close-button"
             onClick={handleDrawerClose}
             sx={{
               ...hoverStyle,
@@ -242,8 +241,8 @@ export default function Navbar() {
             )}
           </IconButton>
         </DrawerHeader>
-        {/* 1ый ul лист бок.меню */}
-        <ul className="menu-vertical__list">
+        {/* 1ый ul лист бок.панель */}
+        <ul>
           {/* масс.эл.li */}
           {/* // ^ отрисовка ч/з встроеный масс. (запись, аудио, скачать) */}
           {/* {["Закачать", "Треки", "Альбомы", "Плейлисты"].map((text, index) => */}
@@ -297,7 +296,6 @@ export default function Navbar() {
             </ListItem>
           ))}
         </ul>
-
         {/* Divider черта в MUI */}
         <hr
           className="hr" /* data-size="big" */
@@ -307,7 +305,7 @@ export default function Navbar() {
             borderWidth: "32px",
           }}
         />
-        {/* 2ой ul лист бок.меню */}
+        {/* 2ой ul лист бок.панель */}
         <ul>
           {["Почта", "Корзина", "ЛК"].map((text, index) => (
             <ListItem key={text} disablePadding sx={{ display: "block" }}>
