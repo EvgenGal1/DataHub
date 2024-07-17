@@ -42,6 +42,18 @@
       @include hover-el();
     }
 
+    // изо
+    svg.svg {
+      user-select: none;
+      width: 1em;
+      height: 1em;
+      display: inline-block;
+      fill: currentColor;
+      flex-shrink: 0;
+      transition: fill 200ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+      font-size: 1.5rem;
+    }
+
     // ввод
     input.inp {
       background-color: var(--Gray);
@@ -51,7 +63,6 @@
     }
 
     // кнп.закр.бок.панель
-    // .header {
     button {
       padding: 8px;
       margin-left: -12px;
@@ -62,19 +73,7 @@
       @media (min-width: 600px) {
         // margin-right: 40px;
       }
-
-      svg {
-        user-select: none;
-        width: 1em;
-        height: 1em;
-        display: inline-block;
-        fill: currentColor;
-        flex-shrink: 0;
-        transition: fill 200ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
-        font-size: 1.5rem;
-      }
     }
-    // }
 
     /* шапка, горизотн.меню */
     header.header/* .menu-top */ {
