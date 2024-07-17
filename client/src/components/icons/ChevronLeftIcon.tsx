@@ -1,7 +1,7 @@
 export default function ChevronLeftIcon() {
   return (
     <svg
-      className="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-i4bv87-MuiSvgIcon-root"
+      className="svg"
       focusable="false"
       aria-hidden="true"
       viewBox="0 0 24 24"

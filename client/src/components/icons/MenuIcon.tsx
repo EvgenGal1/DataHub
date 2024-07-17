@@ -1,7 +1,7 @@
 export default function MenuIcon() {
   return (
     <svg
-      className="qw"
+      className="svg"
       focusable="false"
       aria-hidden="true"
       viewBox="0 0 24 24"
