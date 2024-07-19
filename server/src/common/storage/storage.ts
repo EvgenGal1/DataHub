@@ -63,7 +63,7 @@ export const fileStorage = multer.diskStorage({
       '..',
       baseFolder,
       fileTarget,
-    ); // D:\Про\Творения\FullStack\music-platform_Next-Nest\server\static\audios\track
+    ); // D:\Про\Творения\FullStack\Data-Hub\server\static\audios\track
     // альтер.сохр.п./ф. // ! не раб. - file.buffer = undf
     // fs.writeFileSync(path.resolve(filePath, fileName), file.buffer)
 

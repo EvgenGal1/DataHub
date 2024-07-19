@@ -1,7 +1,7 @@
 {
-  "name": "server",
+  "name": "data-hub__server",
   "version": "0.0.1",
-  "description": "music-platform(Back__Nest)",
+  "description": "Data-Hub (Back__Nest)",
   "author": "EvGen Gal",
   "private": true,
   "license": "UNLICENSED",
