@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 export default async function Tracks() {
   return (
     <div className="tracks">
-      <h1>Tracks</h1>
+      <h1>Треки</h1>
       <p>Список треков</p>
     </div>
   );
