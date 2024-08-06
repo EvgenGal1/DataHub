@@ -10,9 +10,6 @@ import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
-import MailIcon from "@mui/icons-material/Mail";
-import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
-import PersonIcon from "@mui/icons-material/Person";
 // ^^ доп.иконки - https://v4.mui.com/ru/components/material-icons/
 // import PlaylistAddIcon from "@mui/icons-material/PlaylistAdd";
 // import PhotoLibraryIcon from '@material-ui/icons/PhotoLibrary';
@@ -26,6 +23,9 @@ import CloudDownloadIcon from "./icons/CloudDownloadIcon";
 import AlbumIcon from "./icons/AlbumIcon";
 import AudiotrackIcon from "./icons/AudiotrackIcon";
 import PlaylistPlayIcon from "./icons/PlaylistPlayIcon";
+import MailIcon from "./icons/MailIcon";
+import PersonIcon from "./icons/PersonIcon";
+import ShoppingCartIcon from "./icons/ShoppingCartIcon";
 
 // ^ БОКОВАЯ ПАНЕЛЬ | SIDE BAR
 // масс.верх.эл/путей бок.панель
@@ -111,8 +111,9 @@ export default function Navbar() {
             <Link
               href="/about"
               className={`link ${
-                // ? раб.ток.на первый путь
-                pathname === ("/about" || "/about/team" || "/about/contacts")
+                pathname === "/about" ||
+                pathname === "/about/team" ||
+                pathname === "/about/contacts"
                   ? "active"
                   : ""
               }`}
@@ -146,22 +147,15 @@ export default function Navbar() {
             {/* {["Закачать", "Треки", "Альбомы", "Плейлисты"].map((text, index) => */}
             {/* // ^ отрисовка ч/з перем.масс. */}
             {menuVerticalTopItems.map(({ text, href }, index) => (
-              // li
-              <ListItem
+              <li
                 key={href}
                 onClick={() => router.push(href)}
-                disablePadding
-                sx={{ display: "block" }}
                 className={`link ${pathname === href ? "active" : ""}`}
               >
                 {/* общ.div иконки/текста */}
-                <ListItemButton
+                <div
                   className="hover-el"
-                  sx={{
-                    minHeight: 48,
-                    justifyContent: isOpen ? "initial" : "center",
-                    px: 2.5,
-                  }}
+                  style={{ justifyContent: isOpen ? "initial" : "center" }}
                 >
                   {/* div иконки */}
                   <ListItemIcon
@@ -193,8 +187,8 @@ export default function Navbar() {
                     primary={text}
                     sx={{ opacity: isOpen ? 1 : 0 }}
                   />
-                </ListItemButton>
-              </ListItem>
+                </div>
+              </li>
             ))}
           </ul>
           <hr className="hr hr-big" />
