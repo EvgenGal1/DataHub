@@ -184,8 +184,11 @@
         overflow-x: hidden;
       }
       .side-bar-wrapper {
+        display: flex;
+        flex-direction: column;
         width: 58px + 1px;
         height: 100%;
+        height: 100vh;
         // flex: 1 0 auto;
         z-index: 1200;
         position: fixed;
@@ -226,6 +229,10 @@
         padding-top: 8px;
         padding-bottom: 8px;
         list-style: none;
+        &:last-of-type {
+          margin-top: auto;
+          margin-bottom: 116px;
+        }
         li {
           width: 100%;
           position: relative;
