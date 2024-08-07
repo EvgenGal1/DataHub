@@ -6,8 +6,8 @@ export const metadata: Metadata = {
   title: "Data Hub | About",
   icons: [
     {
-      url: "/images/icon/favicon_MusicBase(light).ico",
-      href: "/images/icon/favicon_MusicBase(light).ico",
+      url: "/images/icon/DataHub(light).ico",
+      href: "/images/icon/DataHub(light).ico",
     },
   ],
 };

@@ -24,13 +24,13 @@ export let metadata: Metadata = {
     icon: [
       {
         media: "(prefers-color-scheme: light)",
-        url: "/images/icon/favicon_MusicBase(light).ico",
-        href: "/images/icon/favicon_MusicBase(light).ico",
+        url: "/images/icon/DataHub(light).ico",
+        href: "/images/icon/DataHub(light).ico",
       },
       {
         media: "(prefers-color-scheme: dark)",
-        url: "/images/icon/favicon_MusicBase(dark).ico",
-        href: "/images/icon/favicon_MusicBase(dark).ico",
+        url: "/images/icon/DataHub(dark).ico",
+        href: "/images/icon/DataHub(dark).ico",
       },
     ],
   },
