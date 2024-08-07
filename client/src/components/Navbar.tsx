@@ -20,12 +20,12 @@ import ShoppingCartIcon from "./icons/ShoppingCartIcon";
 
 // ^ БОКОВАЯ ПАНЕЛЬ | SIDE BAR
 // масс.верх.эл/путей бок.панель
-const menuVerticalTopItems = [
-  { text: "Главная", href: "/" },
-  { text: "Закачать", href: "/download" },
-  { text: "Треки", href: "/tracks" },
-  { text: "Альбомы", href: "/albums" },
-  { text: "Плейлисты", href: "/playlists" },
+const sideBarTopItems = [
+  { text: "Главная", href: "/", elm: <InboxIcon /> },
+  { text: "Закачать", href: "/download", elm: <CloudDownloadIcon /> },
+  { text: "Треки", href: "/tracks", elm: <AudiotrackIcon /> },
+  { text: "Альбомы", href: "/albums", elm: <AlbumIcon /> },
+  { text: "Плейлисты", href: "/playlists", elm: <PlaylistPlayIcon /> },
 ];
 // интерф./объ.соответствий иконок нижней бок.панель
 interface IconMap {
@@ -125,10 +125,10 @@ export default function Navbar() {
           {/* 1ый ul лист бок.панель */}
           <ul>
             {/* масс.эл.li */}
-            {/* // ^ отрисовка ч/з встроеный масс. (запись, аудио, скачать) */}
+            {/* // ^ отрисовка ч/з встроеный масс. */}
             {/* {["Закачать", "Треки", "Альбомы", "Плейлисты"].map((text, index) => */}
             {/* // ^ отрисовка ч/з перем.масс. */}
-            {menuVerticalTopItems.map(({ text, href }, index) => (
+            {sideBarTopItems.map(({ text, href, elm }, index) => (
               <li
                 key={href}
                 onClick={() => router.push(href)}
@@ -145,17 +145,9 @@ export default function Navbar() {
                     {/* подход > 2х чёт не чёт */}
                     {/* {index % 2 === 0 ? <InboxIcon /> : <MailIcon />} */}
                     {/* подход > неск.услов.опер.index */}
-                    {index === 0 ? (
-                      <InboxIcon />
-                    ) : index === 1 ? (
-                      <CloudDownloadIcon />
-                    ) : index === 2 ? (
-                      <AudiotrackIcon />
-                    ) : index === 3 ? (
-                      <AlbumIcon />
-                    ) : (
-                      <PlaylistPlayIcon />
-                    )}
+                    {/* {index === 0 ? ( <InboxIcon /> ) : index === 1 ? ( <CloudDownloadIcon /> ) : index === 2 ? ( <AudiotrackIcon /> ) : index === 3 ? ( <AlbumIcon /> ) : ( <PlaylistPlayIcon /> )} */}
+                    {/* подход > общ.масс.эл */}
+                    {elm}
                   </div>
                   {/* текст */}
                   <div style={{ opacity: isOpen ? 1 : 0 }}>
