@@ -113,10 +113,7 @@ export default function Navbar() {
         </div>
       </header>
       {/* Боковая Панель | Side Bar */}
-      <div
-        className={`side-bar ${isOpen ? "isOpen" : ""}`}
-        data-open={isOpen ? "true" : "false"}
-      >
+      <div className="side-bar">
         <div className={`side-bar-wrapper ${isOpen ? "isOpen" : ""}`}>
           {/* область выкл.бок.панели */}
           <div className="side-bar__close">
@@ -131,49 +128,6 @@ export default function Navbar() {
             {/* // ^ отрисовка ч/з встроеный масс. (запись, аудио, скачать) */}
             {/* {["Закачать", "Треки", "Альбомы", "Плейлисты"].map((text, index) => */}
             {/* // ^ отрисовка ч/з перем.масс. */}
-            {/* {menuVerticalTopItems.map(({ text, href }, index) => (
-              <ListItem
-                key={href}
-                onClick={() => router.push(href)}
-                disablePadding
-                sx={{ display: "block" }}
-                className={`link ${pathname === href ? "active" : ""}`}
-              >
-                <ListItemButton
-                  className="hover-el"
-                  sx={{
-                    minHeight: 48,
-                    justifyContent: isOpen ? "initial" : "center",
-                    px: 20.5,
-                  }}
-                >
-                  <ListItemIcon
-                    sx={{
-                      minWidth: 0,
-                      mr: isOpen ? 3 : "auto",
-                      justifyContent: "center",
-                      color: "black",
-                    }}
-                  >
-                    {index === 0 ? (
-                      <InboxIcon />
-                    ) : index === 1 ? (
-                      <CloudDownloadIcon />
-                    ) : index === 2 ? (
-                      <AudiotrackIcon />
-                    ) : index === 3 ? (
-                      <AlbumIcon />
-                    ) : (
-                      <PlaylistPlayIcon />
-                    )}
-                  </ListItemIcon>
-                  <ListItemText
-                    primary={text}
-                    sx={{ opacity: isOpen ? 1 : 0 }}
-                  />
-                </ListItemButton>
-              </ListItem>
-            ))} */}
             {menuVerticalTopItems.map(({ text, href }, index) => (
               <li
                 key={href}
