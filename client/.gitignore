@@ -66,9 +66,11 @@ webpack*
 
 # ^ общ.врем.ИСКЛЮЧЁННЫЕ
 # папки 
+!/**/src/config/lang/
 !/**/src/config/lang/locales/
 # все.ф.в п. 
 # !/**/src/common/decorators/**
 # ф.
+!/**/src/config/lang/langConfig.ts
 !/**/src/config/lang/locales/ru.ts
 !/**/src/config/lang/locales/en.ts

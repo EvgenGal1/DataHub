@@ -5,8 +5,7 @@ import { headers } from "next/headers";
 import Navbar from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 // язык.настр.
-import metadataRu from "@/config/lang/locales/ru";
-import metadataEn from "@/config/lang/locales/en";
+import metadatalang from "@/config/lang/langConfig";
 // стили. нач.устан., готов.кл.настр., проекта
 import "./globals.css";
 import "../styles/styles.scss";
@@ -41,16 +40,13 @@ export let metadata: Metadata = {
 export default async function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
-  // язык по умолч., опред.языков пользователя
-  let defaultLang = "en";
+  // язык по умолчанию, опред.языка пользователя из настр.браузера
+  let defaultLang: "ru" | "en" = "en";
   const acceptLanguage = headers().get("accept-language");
-  if (acceptLanguage?.startsWith("ru")) {
-    defaultLang = "ru";
-    // добав.св-ва из metadataRu
-    metadata = { ...metadata, ...metadataRu };
-  }
-  // metadata EN логика.
-  else metadata = { ...metadata, ...metadataEn };
+  // измен.язык по умолчанию
+  if (acceptLanguage?.startsWith("ru")) defaultLang = "ru";
+  // объедин.metadata
+  metadata = { ...metadata, ...metadatalang[defaultLang] };
 
   return (
     <html lang={defaultLang}>
