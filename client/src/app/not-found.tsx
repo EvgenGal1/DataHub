@@ -21,28 +21,6 @@ export default function NotFound() {
 
   return (
     <>
-      {/* локал.use-clt стили CSS-in-JS в NextJS на `style jsx` */}
-      {/* <style jsx>{`
-        .main-screen {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          justify-content: center;
-        }
-        .notf__title {
-          display: inline-block;
-          margin: 0 20px 0 0;
-          padding: 0 23px 0 0;
-        }
-        .notf__message {
-          display: inline-block;
-        }
-        @media (prefers-color-scheme: dark) {
-          .notf__title {
-            border-right: 1px solid rgba(255, 255, 255, 0.3);
-          }
-        }
-      `}</style> */}
       <div className="main-screen dfrcc notf" style={styles.notf}>
         {/* авто переадрес на Главную ч/з 30 сек. */}
         <head>
@@ -52,14 +30,8 @@ export default function NotFound() {
           <h1 className="mr-5 pr-5">404</h1>
           <div>Страница не найдена</div>
         </div>
-        <div
-          className="notf__context w-100 df df-dc mt-3"
-          // style={styles.notfContext}
-        >
-          <p
-            className="notf__message"
-            // style={styles.notfMessage}
-          >
+        <div className="notf__context w-100 df df-dc mt-3">
+          <p className="notf__message">
             Проверьте URL, используйте окно поиска или ссылки ниже
           </p>
           <input
@@ -68,10 +40,7 @@ export default function NotFound() {
             className="inp mt-1"
           />
         </div>
-        <div
-          className="notf__control w-100 df df-aic df-jcsb mt-5"
-          // style={styles.notfControl}
-        >
+        <div className="notf__control w-100 df df-aic df-jcsb mt-5">
           <div>
             <span></span>
             <a href="javascript:history.back()" className="danger">

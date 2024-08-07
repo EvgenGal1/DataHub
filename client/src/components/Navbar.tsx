@@ -27,11 +27,11 @@ const menuVerticalTopItems = [
   { text: "Альбомы", href: "/albums" },
   { text: "Плейлисты", href: "/playlists" },
 ];
-// интерф./объ.соответствий иконок бок.м.
+// интерф./объ.соответствий иконок нижней бок.панель
 interface IconMap {
   [key: string]: JSX.Element;
 }
-// объ.соответствий
+// объ.соответствий нижней бок.панель
 const iconMap: IconMap = {
   Почта: <MailIcon />,
   Корзина: <ShoppingCartIcon />,

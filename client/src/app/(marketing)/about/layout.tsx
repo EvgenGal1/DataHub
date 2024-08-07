@@ -4,6 +4,12 @@ import Link from "next/link";
 // общ.объ.настр.метадаты > SEO
 export const metadata: Metadata = {
   title: "Data Hub | About",
+  icons: [
+    {
+      url: "/images/icon/favicon_MusicBase(light).ico",
+      href: "/images/icon/favicon_MusicBase(light).ico",
+    },
+  ],
 };
 
 export default function Aboutlayout({
