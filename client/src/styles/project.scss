@@ -62,20 +62,7 @@
       }
     }
 
-    // кнп.закр.бок.панель
-    button {
-      padding: 8px;
-      margin-left: -12px;
-      border-radius: 50%;
-
-      @include hover-el();
-
-      @media (min-width: 600px) {
-        // margin-right: 40px;
-      }
-    }
-
-    /* шапка, горизотн.меню */
+    // шапка, горизотн.меню
     header.header/* .menu-top */ {
       z-index: 1201;
       position: fixed;
@@ -121,7 +108,7 @@
         }
       }
 
-      /* название сайта */
+      // название сайта
       .name-site {
         width: 135px;
         padding: 0px 5px;
@@ -190,7 +177,7 @@
       }
     }
 
-    /* бок.панель */
+    // бок.панель
     div.side-bar {
       width: calc(56px + 1px);
       flex: 0 0 auto;
@@ -207,8 +194,9 @@
         width: calc(64px + 1px);
       }
       .side-bar-wrapper {
+        width: 58px + 1px;
         height: 100%;
-        /* flex: 1 0 auto; */
+        // flex: 1 0 auto;
         z-index: 1200;
         position: fixed;
         top: 0;
@@ -278,55 +266,70 @@
           }
 
           & > div {
-            align-items: center;
-            justify-content: center;
-            background-color: transparent;
-            cursor: pointer;
-            user-select: none;
-            vertical-align: middle;
-            text-decoration: none;
-            color: inherit;
             display: flex;
-            flex-grow: 1;
-            justify-content: flex-start;
             align-items: center;
-            position: relative;
-            text-decoration: none;
-            min-width: 0;
-            box-sizing: border-box;
-            text-align: left;
+            justify-content: flex-start;
             padding-top: 8px;
+            // padding-right: 16px;
             padding-bottom: 8px;
-            transition: background-color 150ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
             padding-left: 16px;
-            padding-right: 16px;
-            min-height: 48px;
-            justify-content: initial;
-            padding-left: 20px;
+            background-color: transparent;
+            transition: background-color 150ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+            cursor: pointer;
+            vertical-align: middle;
+            user-select: none;
+            @media (min-width: 600px) {
+              padding-left: 20px;
+            }
 
-            div {
-              min-width: 56px;
-              color: rgba(0, 0, 0, 0.54);
-              flex-shrink: 0;
+            & > div:first-child {
               display: inline-flex;
-              min-width: 0;
-              margin-right: auto;
               justify-content: center;
-              color: black;
+              // flex-shrink: 0;
+              // min-width: 0;
+              // margin-right: 24px;
+              // min-width: 56px;
+              // min-width: 0;
+            }
+            & > div:nth-child(2) {
+              flex: 1 1 auto;
+              min-width: 0;
+              margin-top: 4px;
+              margin-bottom: 4px;
+              span {
+                margin: 0;
+                font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+                font-weight: 400;
+                font-size: 1rem;
+                line-height: 1.5;
+                letter-spacing: 0.00938em;
+                display: block;
+              }
+            }
+            span.hz {
+              overflow: hidden;
+              pointer-events: none;
+              position: absolute;
+              z-index: 0;
+              top: 0;
+              right: 0;
+              bottom: 0;
+              left: 0;
+              border-radius: inherit;
             }
           }
         }
       }
     }
 
-    /* main. вр.stl отступ от Navbar.AppBar */
+    // main. вр.stl отступ от Navbar.AppBar
     .main-my {
       --hue: 235;
       color: hsl(var(--hue), 50%, 20%);
       background-color: hsl(var(--hue), 50%, 90%);
     }
 
-    /* подвал */
+    // подвал
     footer {
       z-index: 1201;
       position: absolute;
@@ -356,18 +359,33 @@
       }
     }
 
-    /* ^^ stl > вкл.совместной раб. NavBar,Main,Footer */
+    // ^^ stl > вкл.совместной раб. NavBar,Main,Footer
     .general-container {
       display: flex;
       flex-direction: column;
-      /* е/и в header data-open=true то в main-my... ч/з header не раб */
-      /* &:has(> header:has(button[data-open='true'])) > .main-my { */
+      // е/и в header data-open=true то в main-my... ч/з header не раб
+      // &:has(> header:has(button[data-open='true'])) > .main-my {
       &:has(button[data-open="true"]) > .main-my {
-        /* width: calc(100% - 175px); */
+        // width: calc(100% - 175px);
         margin-left: 175px;
         transition: 225ms cubic-bezier(0.4, 0, 0.6, 1) 0ms;
       }
-      /* заголовок */
+
+      // кнп.закр.бок.панель
+      button {
+        padding: 8px;
+        margin-left: -8px;
+        border-radius: 50%;
+
+        @include hover-el();
+
+        @media (min-width: 600px) {
+          margin-left: -12px;
+          // margin-right: 40px;
+        }
+      }
+
+      // заголовок
       header {
         button {
           margin-right: 20px;
@@ -376,11 +394,11 @@
           }
         }
       }
-      /* осн.бл. */
+      // осн.бл.
       .main-my {
-        /* height: 100vh; */
+        // height: 100vh;
         margin-bottom: 116px;
-        /* width: calc(100% - 56px); */
+        // width: calc(100% - 56px);
         margin-top: 56px;
         margin-left: 57px;
         padding: 16px;
@@ -390,7 +408,7 @@
           margin-left: 65px;
           padding: 24px;
         }
-        /* 1ый эл.по центру (учёт height.footer + margin-top.main + 2_padding.main) */
+        // 1ый эл.по центру (учёт height.footer + margin-top.main + 2_padding.main)
         & > div.main-screen:first-child,
         & > div.main-screen:nth-child(2),
         & > div:nth-child(3).main-screen {
@@ -399,18 +417,18 @@
             height: calc(100vh - (116px + 64px + 48px)) !important;
           }
         }
-        /* 2ой эл.вниз (учёт ниж.padding.main) */
+        // 2ой эл.вниз (учёт ниж.padding.main)
         & > div:nth-child(2) {
           margin-top: 24px;
         }
       }
       footer {
-        /* position: static; */
+        // position: static;
         position: fixed;
       }
     }
 
-    /* заглушка загрузки */
+    // заглушка загрузки
     @keyframes loading {
       0% {
         transform: translate(0, 0);
@@ -524,24 +542,24 @@
       }
     }
 
-    /* ^^ stl > учеб.Комп.MUI */
+    // ^^ stl > учеб.Комп.MUI
     .switch,
     .select-block {
       .text-center {
         cursor: pointer;
       }
-      /* откл.бл. */
+      // откл.бл.
       > div,
       br,
       hr,
       a {
         display: none;
       }
-      /* stl cl.open */
+      // stl cl.open
       .open {
         display: flex;
       }
-      /* вкл.бл. */
+      // вкл.бл.
       &:has(div[class*="open"]) {
         & > .flex,
         & > div .flex {

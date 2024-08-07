@@ -4,15 +4,6 @@ import React from "react";
 // логика,Комп.Next
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-// Комп.MaterialUI
-import { useTheme } from "@mui/material/styles";
-import ListItem from "@mui/material/ListItem";
-import ListItemButton from "@mui/material/ListItemButton";
-import ListItemIcon from "@mui/material/ListItemIcon";
-import ListItemText from "@mui/material/ListItemText";
-// ^^ доп.иконки - https://v4.mui.com/ru/components/material-icons/
-// import PlaylistAddIcon from "@mui/icons-material/PlaylistAdd";
-// import PhotoLibraryIcon from '@material-ui/icons/PhotoLibrary';
 
 // свои компоненты
 import MenuIcon from "./icons/MenuIcon";
@@ -50,8 +41,6 @@ const iconMap: IconMap = {
 export default function Navbar() {
   // сост.откр.бок.панель
   const [isOpen, setOpen] = React.useState(false);
-  // хук темы MUI
-  const theme = useTheme();
   // хук навигации NextJS
   const router = useRouter();
 
@@ -133,11 +122,7 @@ export default function Navbar() {
           <div className="side-bar__close">
             {/* иконка закр.бок.панель */}
             <button className="side-bar-button" onClick={handleDrawerClose}>
-              {theme.direction === "rtl" ? (
-                <ChevronLeftIcon />
-              ) : (
-                <ChevronRightIcon />
-              )}
+              {isOpen ? <ChevronLeftIcon /> : <ChevronRightIcon />}
             </button>
           </div>
           {/* 1ый ul лист бок.панель */}
@@ -146,6 +131,49 @@ export default function Navbar() {
             {/* // ^ отрисовка ч/з встроеный масс. (запись, аудио, скачать) */}
             {/* {["Закачать", "Треки", "Альбомы", "Плейлисты"].map((text, index) => */}
             {/* // ^ отрисовка ч/з перем.масс. */}
+            {/* {menuVerticalTopItems.map(({ text, href }, index) => (
+              <ListItem
+                key={href}
+                onClick={() => router.push(href)}
+                disablePadding
+                sx={{ display: "block" }}
+                className={`link ${pathname === href ? "active" : ""}`}
+              >
+                <ListItemButton
+                  className="hover-el"
+                  sx={{
+                    minHeight: 48,
+                    justifyContent: isOpen ? "initial" : "center",
+                    px: 20.5,
+                  }}
+                >
+                  <ListItemIcon
+                    sx={{
+                      minWidth: 0,
+                      mr: isOpen ? 3 : "auto",
+                      justifyContent: "center",
+                      color: "black",
+                    }}
+                  >
+                    {index === 0 ? (
+                      <InboxIcon />
+                    ) : index === 1 ? (
+                      <CloudDownloadIcon />
+                    ) : index === 2 ? (
+                      <AudiotrackIcon />
+                    ) : index === 3 ? (
+                      <AlbumIcon />
+                    ) : (
+                      <PlaylistPlayIcon />
+                    )}
+                  </ListItemIcon>
+                  <ListItemText
+                    primary={text}
+                    sx={{ opacity: isOpen ? 1 : 0 }}
+                  />
+                </ListItemButton>
+              </ListItem>
+            ))} */}
             {menuVerticalTopItems.map(({ text, href }, index) => (
               <li
                 key={href}
@@ -158,14 +186,7 @@ export default function Navbar() {
                   style={{ justifyContent: isOpen ? "initial" : "center" }}
                 >
                   {/* div иконки */}
-                  <ListItemIcon
-                    sx={{
-                      minWidth: 0,
-                      mr: isOpen ? 3 : "auto",
-                      justifyContent: "center",
-                      color: "black",
-                    }}
-                  >
+                  <div style={{ marginRight: isOpen ? 24 : "auto" }}>
                     {/* svg иконки */}
                     {/* подход > 2х чёт не чёт */}
                     {/* {index % 2 === 0 ? <InboxIcon /> : <MailIcon />} */}
@@ -181,12 +202,13 @@ export default function Navbar() {
                     ) : (
                       <PlaylistPlayIcon />
                     )}
-                  </ListItemIcon>
+                  </div>
                   {/* текст */}
-                  <ListItemText
-                    primary={text}
-                    sx={{ opacity: isOpen ? 1 : 0 }}
-                  />
+                  <div style={{ opacity: isOpen ? 1 : 0 }}>
+                    <span>{text}</span>
+                  </div>
+                  {/* обложка хз зачем */}
+                  <span className="hz"></span>
                 </div>
               </li>
             ))}
@@ -195,32 +217,20 @@ export default function Navbar() {
           {/* 2ой ul лист бок.панель */}
           <ul>
             {["Почта", "Корзина", "ЛК"].map((text, index) => (
-              <ListItem key={text} disablePadding sx={{ display: "block" }}>
-                <ListItemButton
+              <li key={text} style={{ display: "block" }}>
+                <div
                   className="hover-el"
-                  sx={{
-                    minHeight: 48,
-                    justifyContent: isOpen ? "initial" : "center",
-                    px: 2.5,
-                  }}
+                  style={{ justifyContent: isOpen ? "initial" : "center" }}
                 >
-                  <ListItemIcon
-                    sx={{
-                      minWidth: 0,
-                      mr: isOpen ? 3 : "auto",
-                      justifyContent: "center",
-                      color: "black",
-                    }}
-                  >
+                  <div style={{ marginRight: isOpen ? 24 : "auto" }}>
                     {/* подход ч/з объ.соответствий */}
                     {iconMap[text]}
-                  </ListItemIcon>
-                  <ListItemText
-                    primary={text}
-                    sx={{ opacity: isOpen ? 1 : 0 }}
-                  />
-                </ListItemButton>
-              </ListItem>
+                  </div>
+                  <div style={{ opacity: isOpen ? 1 : 0 }}>
+                    <span>{text}</span>
+                  </div>
+                </div>
+              </li>
             ))}
           </ul>
         </div>
