@@ -5,7 +5,7 @@ import { headers } from "next/headers";
 import Navbar from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 // язык.настр.
-import metadatalang from "@/config/lang/langConfig";
+import metadatalang from "@/configs/lang/langConfig";
 // стили. нач.устан., готов.кл.настр., проекта
 import "./globals.css";
 import "../styles/styles.scss";

@@ -1,6 +1,6 @@
 // объедин.metadata для разных языков
-import metadataRu from "@/config/lang/locales/ru";
-import metadataEn from "@/config/lang/locales/en";
+import metadataRu from "@/configs/lang/locales/ru";
+import metadataEn from "@/configs/lang/locales/en";
 
 type Language = "ru" | "en";
 

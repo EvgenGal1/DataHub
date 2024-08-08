@@ -62,15 +62,22 @@ webpack*
 # ^ общ.врем.ОТКЛ.
 **/static/**
 **/src/lang/**
-**/src/config/**
+**/src/configs/**
+**/src/data/**
+**/src/profile/**
+**/src/store/**
+**/src/signIn/**
+**/src/components/GoogleButton.tsx
+**/src/components/SignInForm.tsx
+**/src/components/Providers.tsx
 
 # ^ общ.врем.ИСКЛЮЧЁННЫЕ
 # папки 
-!/**/src/config/lang/
-!/**/src/config/lang/locales/
+!/**/src/configs/lang/
+!/**/src/configs/lang/locales/
 # все.ф.в п. 
 # !/**/src/common/decorators/**
 # ф.
-!/**/src/config/lang/langConfig.ts
-!/**/src/config/lang/locales/ru.ts
-!/**/src/config/lang/locales/en.ts
+!/**/src/configs/lang/langConfig.ts
+!/**/src/configs/lang/locales/ru.ts
+!/**/src/configs/lang/locales/en.ts
