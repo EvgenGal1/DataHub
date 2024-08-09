@@ -1,6 +1,5 @@
 "use client";
 
-import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -39,7 +38,12 @@ const Header: React.FC<{ isOpen: boolean; handleDrawerOpen: () => void }> = ({
             <Link
               key={href}
               href={href}
-              className={`link ${pathname === href ? "active" : ""}`}
+              // .active на всё кроме глав.стр.
+              className={`link ${
+                pathname === href || (pathname.startsWith(href) && href !== "/")
+                  ? "active"
+                  : ""
+              }`}
             >
               <span>{text}</span>
             </Link>
