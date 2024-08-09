@@ -210,7 +210,7 @@ body[data-theme="light"] {
     }
 
     // КНП
-    input.inp,
+    input.inpt,
       button.btn/* :not([class*="btn-primary"]) */ {
       border-color: var(--bord-hr) /* !important */;
       background-color: var(--act-bg);
@@ -255,7 +255,7 @@ body[data-theme="light"] {
     // ФОРМЫ
     form.frm {
       background-color: var(--ui-bg);
-      input.inp {
+      input.inpt {
         &:hover {
           background-color: var(--act-bg-hov);
         }

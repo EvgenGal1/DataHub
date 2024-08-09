@@ -31,8 +31,7 @@
 
     // наведение
     @mixin hover-el {
-      &:hover,
-      &:hover svg {
+      &:hover {
         color: $colHoverEl;
         background-color: $bgHoverEl;
         transition: $transHoverEl;
@@ -55,7 +54,7 @@
     }
 
     // ввод
-    input.inp {
+    input.inpt {
       background-color: var(--Gray);
       &:hover {
         background-color: var(--DullGray);
@@ -363,20 +362,23 @@
       }
 
       // кнп.закр.бок.панель
-      button {
-        padding: 8px;
-        margin-left: -8px;
-        border-radius: 50%;
+      .header,
+      .side-bar {
+        button {
+          padding: 8px;
+          margin-left: -8px;
+          border-radius: 50%;
 
-        @include hover-el();
+          @include hover-el();
 
-        @media (min-width: 600px) {
-          margin-left: -12px;
-          // margin-right: 40px;
+          @media (min-width: 600px) {
+            margin-left: -12px;
+            // margin-right: 40px;
+          }
         }
       }
 
-      // заголовок
+      // шапка
       header {
         button {
           margin-right: 20px;
