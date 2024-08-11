@@ -211,7 +211,8 @@ body[data-theme="light"] {
 
     // КНП
     input.inpt,
-      button.btn/* :not([class*="btn-primary"]) */ {
+    button.btn {
+      /* :not([class*="btn-primary"]) */
       border-color: var(--bord-hr) /* !important */;
       background-color: var(--act-bg);
       // transition: background-color 200ms linear;
