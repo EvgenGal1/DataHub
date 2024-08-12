@@ -8,19 +8,10 @@ html {
 ::-webkit-scrollbar {
   /* width: 150px; */
 }
-/* полоса */
-::-webkit-scrollbar-track {
-  /* background: var(--colActivBlue); */
-}
 /* бегунок */
 ::-webkit-scrollbar-thumb {
   /* background: var(--colBasicBlue);
   border-radius: 50px; */
-}
-/* кнп. */
-::-webkit-scrollbar-button {
-  /* background: var(--colBasicBlue); */
-  /*  */
 }
 
 .triangle-up,
@@ -69,60 +60,6 @@ html {
 ::-webkit-scrollbar-button:single-button:vertical:decrement {
   color: #f00;
 }
-* {
-  /* // "auto" или "thin"Ff */
-  scrollbar-width: thin;
-  scrollbar-color: var(--DarkRed) #333333;
-  body {
-    overflow-y: scroll;
-  }
-}
-
-/* // весь scrollbar */
-::-webkit-scrollbar {
-  height: 12px;
-  width: 12px;
-  min-width: 12px;
-}
-/* // кнопка верх/вниз */
-::-webkit-scrollbar-button {
-  background-image: url("https://yraaa.ru/_pu/24/59610063.png");
-  background-color: #ffcb17;
-  background-color: #555555;
-  background-position: center;
-  background-repeat: no-repeat;
-  content: "";
-  /* // width: 6px;
-    // height: 0px; */
-}
-/* // дорожка/трек */
-::-webkit-scrollbar-track {
-  background-color: #333333;
-  box-shadow: 0px 0px 3px #000 inset;
-}
-::-webkit-scrollbar-thumb {
-  -webkit-border-radius: 5px;
-  border-radius: 5px;
-  background-color: #ffcb17;
-  background-color: #333333;
-  box-shadow: 0px 1px 1px #fff inset;
-  background-image: url("https://yraaa.ru/_pu/24/59610063.png");
-  background-position: center;
-  background-repeat: no-repeat;
-}
-/* // изменение размеров в углу */
-::-webkit-resizer {
-  /* // background-image: url(""); */
-  background-repeat: no-repeat;
-  width: 7px;
-  height: 7px;
-}
-/* } */
-
-/* границы/рамки */
-::-webkit-scrollbar-corner {
-  background: var(--colActivBlue);
-}
 
 // <скроллбар(полоса прокрутки)>====================================================
 // !!! http://htmlbook.ru/blog/polzovatelskie-skrollbary-v-webkit
@@ -135,49 +72,54 @@ html {
   body {
     overflow-y: scroll;
   }
-
-  // весь scrollbar
-  ::-webkit-scrollbar {
-    height: 12px;
-    width: 12px;
-    min-width: 12px;
-  }
-  // кнопка верх/вниз
-  ::-webkit-scrollbar-button {
-    background-image: url("https://yraaa.ru/_pu/24/59610063.png");
-    background-color: #ffcb17;
-    background-color: #555555;
-    background-position: center;
-    background-repeat: no-repeat;
-    content: "";
-    // width: 6px;
-    // height: 0px;
-  }
-  // дорожка/трек
-  ::-webkit-scrollbar-track {
-    background-color: #333333;
-    box-shadow: 0px 0px 3px #000 inset;
-  }
-  // видимая часть трека
-  // ::-webkit-scrollbar-track-piece {
-  // background-color: blue;
-  // }
-  // бегунок/ползунок
-  ::-webkit-scrollbar-thumb {
-    -webkit-border-radius: 5px;
-    border-radius: 5px;
-    background-color: #ffcb17;
-    background-color: var(--DarkRed);
-    box-shadow: 0px 1px 1px #fff inset;
-    background-image: url("https://yraaa.ru/_pu/24/59610063.png");
-    background-position: center;
-    background-repeat: no-repeat;
-  }
-  // изменение размеров в углу
-  ::-webkit-resizer {
-    // background-image: url("");
-    background-repeat: no-repeat;
-    width: 7px;
-    height: 7px;
-  }
 }
+
+// весь scrollbar
+::-webkit-scrollbar {
+  height: 12px;
+  width: 12px;
+  min-width: 12px;
+}
+// кнопка верх/вниз
+::-webkit-scrollbar-button {
+  background-image: url("https://yraaa.ru/_pu/24/59610063.png");
+  background-color: #ffcb17;
+  background-color: #555555;
+  background-position: center;
+  background-repeat: no-repeat;
+  content: "";
+  // width: 6px;
+  // height: 0px;
+}
+// дорожка/трек
+::-webkit-scrollbar-track {
+  background-color: #333333;
+  box-shadow: 0px 0px 3px #000 inset;
+}
+// видимая часть трека
+::-webkit-scrollbar-track-piece {
+  background-color: blue;
+}
+// бегунок/ползунок
+::-webkit-scrollbar-thumb {
+  -webkit-border-radius: 5px;
+  border-radius: 5px;
+  background-color: #ffcb17;
+  background-color: var(--DarkRed);
+  box-shadow: 0px 1px 1px #fff inset;
+  background-image: url("https://yraaa.ru/_pu/24/59610063.png");
+  background-position: center;
+  background-repeat: no-repeat;
+}
+// изменение размеров в углу
+::-webkit-resizer {
+  // background-image: url("");
+  background-repeat: no-repeat;
+  width: 7px;
+  height: 7px;
+}
+// границы/рамки
+::-webkit-scrollbar-corner {
+  background: var(--colActivBlue);
+}
+// }
