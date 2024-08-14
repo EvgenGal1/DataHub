@@ -1,5 +1,7 @@
 "use client";
 
+// import React from "react";
+// import { useSession, signOut } from "next-auth/react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -49,6 +51,14 @@ const Header: React.FC<{ isOpen: boolean; handleDrawerOpen: () => void }> = ({
             </Link>
           ))}
         </nav>
+        {/* {session?.data && <Link href="/profile">Profile</Link>}
+        {session?.data ? (
+          <Link href="#" onClick={() => signOut({ callbackUrl: "/" })}>
+            Sign Out
+          </Link>
+        ) : (
+          <Link href="/signin">SignIn</Link>
+        )} */}
       </div>
     </header>
   );

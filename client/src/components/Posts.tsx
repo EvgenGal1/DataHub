@@ -1,3 +1,6 @@
+// import useSWR from "swr";
+// import { shallow } from "zustand/shallow";
+// import { usePosts } from "@/store";
 import Link from "next/link";
 
 import { Post } from "@/types/Post";
