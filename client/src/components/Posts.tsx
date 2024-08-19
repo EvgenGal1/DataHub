@@ -1,15 +1,12 @@
-// import useSWR from "swr";
-// import { shallow } from "zustand/shallow";
-// import { usePosts } from "@/store";
 import Link from "next/link";
 
-import { Post } from "@/types/Post";
-import type { Posts as PostsType } from "@/types/Posts";
+import { PostType } from "@/types/PostType";
+import type { PostsType as PostsType } from "@/types/PostsType";
 
 const Posts = ({ posts }: PostsType) => {
   return (
     <ul>
-      {posts.map((post: Post) => (
+      {posts.map((post: PostType) => (
         <li key={post.id}>
           <Link href={`/blog/${post.id}`}>{post.title}</Link>
         </li>

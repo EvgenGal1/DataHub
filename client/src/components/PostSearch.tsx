@@ -3,9 +3,9 @@
 import { FormEventHandler, useEffect, useState } from "react";
 
 import { getPostsBySearch } from "@/services/getPosts";
-import { Post } from "@/types/Post";
+import { PostType } from "@/types/PostType";
 
-type Props = { onSearch: (value: Post[]) => void };
+type Props = { onSearch: (value: PostType[]) => void };
 
 const PostSearch = ({ onSearch }: Props) => {
   // сост. поиск/чек.мгновенно
@@ -13,8 +13,8 @@ const PostSearch = ({ onSearch }: Props) => {
   const [instant, setInstant] = useState<boolean>(true);
 
   useEffect(() => {
+    // загр.посты е/и поиск пуст || "мгновенно"
     const searchPosts = async () => {
-      // загр.посты е/и поиск пуст || "мгновенно"
       if (search === "") {
         const allPosts = await getPostsBySearch("");
         onSearch(allPosts);
