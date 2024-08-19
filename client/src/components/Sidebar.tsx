@@ -57,7 +57,10 @@ const Sidebar: React.FC<{ isOpen: boolean; handleDrawerClose: () => void }> = ({
         </div>
         <ul>
           {sideBarTopItems.map(({ text, href, elm }) => (
+            // ! изменить архитек./stl на Link или нет. ! перезагрука при переходе на не сущ.стр. хотя тще-found должен раб.норм. - узнать точно
             <li
+              // ! изменить архитек./stl на Link или нет. ! перезагрука при переходе на не сущ.стр. хотя тще-found должен раб.норм. - узнать точно
+              // href={href}
               key={href}
               onClick={() => router.push(href)}
               className={`link ${pathname === href ? "active" : ""}`}
