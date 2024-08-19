@@ -20,6 +20,7 @@ import PersonIcon from "./icons/PersonIcon";
 
 // названия/пути/эл. пунктов боковой панели верх/середина/низ
 const sideBarTopItems = [
+  // { text: "Главная", href: "/", elm: <InboxIcon /> },
   { text: "Файлы", href: "/files", elm: <File /> },
   { text: "Треки", href: "/tracks", elm: <AudiotrackIcon /> },
   { text: "Книги", href: "/books", elm: <Book /> },
@@ -35,7 +36,6 @@ const sideBarBottomItems = [
   { text: "Почта", href: "/mail", elm: <MailIcon /> },
   { text: "Корзина", href: "/basket", elm: <ShoppingCartIcon /> },
   { text: "ЛК", href: "/personal", elm: <PersonIcon /> },
-  // { text: "Главная", href: "/", elm: <InboxIcon /> },
 ];
 
 const Sidebar: React.FC<{ isOpen: boolean; handleDrawerClose: () => void }> = ({
@@ -57,10 +57,7 @@ const Sidebar: React.FC<{ isOpen: boolean; handleDrawerClose: () => void }> = ({
         </div>
         <ul>
           {sideBarTopItems.map(({ text, href, elm }) => (
-            // ! изменить архитек./stl на Link или нет. ! перезагрука при переходе на не сущ.стр. хотя тще-found должен раб.норм. - узнать точно
             <li
-              // ! изменить архитек./stl на Link или нет. ! перезагрука при переходе на не сущ.стр. хотя тще-found должен раб.норм. - узнать точно
-              // href={href}
               key={href}
               onClick={() => router.push(href)}
               className={`link ${pathname === href ? "active" : ""}`}
