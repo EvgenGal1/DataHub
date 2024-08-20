@@ -6,12 +6,12 @@ import { NextResponse } from "next/server";
 import { postsFake } from "./postsFake";
 
 // назв.fn() по мтд.CRUD
-export async function GET(req: Request) {
+export async function GET() {
   // тест.баз.пример Postman с возвратом данн.на CLT
   return NextResponse.json(/* { message: "CLT NextJS" } */ postsFake);
 }
 
-// получение данн.
+// получение данн. req - объ запроса со всей инфо
 export async function POST(req: Request) {
   // сохр./парсим.в json
   const body = await req.json();

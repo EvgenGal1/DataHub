@@ -23,7 +23,6 @@ const PostSearch = ({ onSearch }: Props) => {
         onSearch(posts);
       }
     };
-
     searchPosts();
   }, [search, instant, onSearch]);
 
