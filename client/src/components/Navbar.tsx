@@ -1,31 +1,34 @@
-"use client";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 
-import React from "react";
-
-// свои компоненты
-import Header from "./Header";
-import Sidebar from "./Sidebar";
+// названия/пути/эл. пунктов шапки
+const navItems = [
+  { text: "Home", href: "/" },
+  { text: "Examples", href: "/examples" },
+  { text: "Blog", href: "/blog" },
+  { text: "About", href: "/about" },
+];
 
 // const Navbar: React.FC = () => {
 export default function Navbar() {
-  // сост.откр.бок.панель
-  const [isOpen, setOpen] = React.useState(false);
-
-  // откр.бок.панель
-  const handleDrawerOpen = () => {
-    setOpen(true);
-  };
-  // закр.бок.панель
-  const handleDrawerClose = () => {
-    setOpen(false);
-  };
+  const pathname = usePathname();
 
   return (
-    <>
-      {/* header. кнп.переключ/лого/навигация  */}
-      <Header isOpen={isOpen} handleDrawerOpen={handleDrawerOpen} />
-      {/* боковая панель. кнп.переключ/навигация  */}
-      <Sidebar isOpen={isOpen} handleDrawerClose={handleDrawerClose} />
-    </>
+    <nav className="nav flex ml-auto">
+      {navItems.map(({ text, href }) => (
+        <Link
+          key={href}
+          href={href}
+          // .active на всё кроме глав.стр.
+          className={`link ${
+            pathname === href || (pathname.startsWith(href) && href !== "/")
+              ? "active"
+              : ""
+          }`}
+        >
+          <span>{text}</span>
+        </Link>
+      ))}
+    </nav>
   );
 }

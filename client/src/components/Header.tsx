@@ -1,66 +1,32 @@
 "use client";
 
-// import React from "react";
-// import { useSession, signOut } from "next-auth/react";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+import React from "react";
 
-import MenuIcon from "./icons/MenuIcon";
+// свои компоненты
+import Headerbar from "./Headerbar";
+import Sidebar from "./Sidebar";
 
-// названия/пути/эл. пунктов шапки
-const navItems = [
-  { text: "Home", href: "/" },
-  { text: "Examples", href: "/examples" },
-  { text: "Blog", href: "/blog" },
-  { text: "About", href: "/about" },
-];
+// export default function Header() {
+const Header: React.FC = () => {
+  // сост.откр.бок.панель
+  const [isOpen, setOpen] = React.useState(false);
 
-const Header: React.FC<{ isOpen: boolean; handleDrawerOpen: () => void }> = ({
-  isOpen,
-  handleDrawerOpen,
-}) => {
-  const pathname = usePathname();
+  // откр.бок.панель
+  const handleDrawerOpen = () => {
+    setOpen(true);
+  };
+  // закр.бок.панель
+  const handleDrawerClose = () => {
+    setOpen(false);
+  };
 
   return (
-    <header className={`header ${isOpen ? "isOpen" : ""}`}>
-      <div className="header-wrapper">
-        <button
-          onClick={handleDrawerOpen}
-          style={{ display: isOpen ? "none" : "flex" }}
-          data-open={isOpen ? "true" : "false"}
-        >
-          <MenuIcon />
-        </button>
-        <div className="name-site">
-          <span>Центр Данных</span>
-          <span>Data Hub</span>
-        </div>
-        <nav className="nav flex ml-auto">
-          {navItems.map(({ text, href }) => (
-            <Link
-              key={href}
-              href={href}
-              // .active на всё кроме глав.стр.
-              className={`link ${
-                pathname === href || (pathname.startsWith(href) && href !== "/")
-                  ? "active"
-                  : ""
-              }`}
-            >
-              <span>{text}</span>
-            </Link>
-          ))}
-        </nav>
-        {/* {session?.data && <Link href="/profile">Profile</Link>}
-        {session?.data ? (
-          <Link href="#" onClick={() => signOut({ callbackUrl: "/" })}>
-            Sign Out
-          </Link>
-        ) : (
-          <Link href="/signin">SignIn</Link>
-        )} */}
-      </div>
-    </header>
+    <>
+      {/* header. кнп.переключ/лого/навигация  */}
+      <Headerbar isOpen={isOpen} handleDrawerOpen={handleDrawerOpen} />
+      {/* боковая панель. кнп.переключ/навигация  */}
+      <Sidebar isOpen={isOpen} handleDrawerClose={handleDrawerClose} />
+    </>
   );
 };
 

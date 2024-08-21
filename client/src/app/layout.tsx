@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import { headers } from "next/headers";
 
 // Компоненты
-import Navbar from "@/components/Navbar";
-import { Footer } from "@/components/Footer";
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
 // язык.настр.
 import metadatalang from "@/configs/lang/langConfig";
 // стили. нач.устан., готов.кл.настр., проекта
@@ -53,7 +53,7 @@ export default async function RootLayout({
       {/* <head></head> */}
       <body className={inter.className} data-theme="dark">
         <div className="general-container">
-          <Navbar />
+          <Header />
           <main className="main-my flex-grow">{children}</main>
           <Footer />
         </div>
