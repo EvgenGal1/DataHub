@@ -4,13 +4,23 @@ import { Metadata } from "next";
 
 // вспомог.fn получ.данн с парам.id. Отраб.на serv.
 async function getDate(id: string) {
+  const baseUrl =
+    process.env.NODE_ENV === "production"
+      ? process.env.PUBLIC_BASE_URL_PROD
+      : process.env.PUBLIC_BASE_URL_DEV;
+
   const response = await fetch(
-    `https://jsonplaceholder.typicode.com/posts/${id}`,
+    // ^ общ.доступные url
+    // `https://jsonplaceholder.typicode.com/posts/${id}`,
+    // ^ статич.данн.фейк БД
+    `${baseUrl}/api/posts/${id}`,
     { next: { revalidate: 3600 } }
   );
+
   if (!response.ok) {
     throw new Error("Пост не получен!");
   }
+
   return response.json();
 }
 
@@ -27,9 +37,10 @@ export async function generateMetadata({
 export default async function Post({ params: { id } }: Props) {
   // асинхр.загр.данн.
   const post = await getDate(id);
+
   return (
     <div className="post">
-      <h1>Post page {id}</h1>
+      <h1>Страница Поста № {id}</h1>
       <h3>{post.title}</h3>
       <p>{post.body}</p>
     </div>
