@@ -1,19 +1,19 @@
 import React from "react";
 import { usePathname, useRouter } from "next/navigation";
 
-import ChevronLeftIcon from "./icons/ChevronLeftIcon";
-import ChevronRightIcon from "./icons/ChevronRightIcon";
-import File from "./icons/File";
-import AudiotrackIcon from "./icons/AudiotrackIcon";
-import Book from "./icons/Book";
-import Image from "./icons/Image";
-import Video from "./icons/Video";
-import PlaylistPlayIcon from "./icons/PlaylistPlayIcon";
-import AlbumIcon from "./icons/AlbumIcon";
-import CloudDownloadIcon from "./icons/CloudDownloadIcon";
-import MailIcon from "./icons/MailIcon";
-import ShoppingCartIcon from "./icons/ShoppingCartIcon";
-import PersonIcon from "./icons/PersonIcon";
+import ChevronLeftIcon from "../icons/ChevronLeftIcon";
+import ChevronRightIcon from "../icons/ChevronRightIcon";
+import File from "../icons/File";
+import AudiotrackIcon from "../icons/AudiotrackIcon";
+import Book from "../icons/Book";
+import Image from "../icons/Image";
+import Video from "../icons/Video";
+import PlaylistPlayIcon from "../icons/PlaylistPlayIcon";
+import AlbumIcon from "../icons/AlbumIcon";
+import CloudDownloadIcon from "../icons/CloudDownloadIcon";
+import MailIcon from "../icons/MailIcon";
+import ShoppingCartIcon from "../icons/ShoppingCartIcon";
+import PersonIcon from "../icons/PersonIcon";
 // import InboxIcon from "./icons/InboxIcon";
 
 // названия/пути/эл. пунктов боковой панели верх/середина/низ

@@ -1,4 +1,4 @@
-import MenuIcon from "./icons/MenuIcon";
+import MenuIcon from "../icons/MenuIcon";
 import Navbar from "./Navbar";
 
 const Headerbar: React.FC<{

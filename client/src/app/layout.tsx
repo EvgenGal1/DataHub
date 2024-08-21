@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import { headers } from "next/headers";
 
 // Компоненты
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
+import Header from "@/components/basic/Header";
+import Footer from "@/components/basic/Footer";
 // язык.настр.
 import metadatalang from "@/configs/lang/langConfig";
 // стили. нач.устан., готов.кл.настр., проекта
