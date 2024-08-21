@@ -39,7 +39,7 @@ const PostSearch = ({ onSearch }: Props) => {
     <form className="df df-aic df-jcc m-3" onSubmit={handleSubmit}>
       <input
         type="search"
-        placeholder="search"
+        placeholder="поиск"
         value={search}
         onChange={(event) => setSearch(event.target.value)}
         className="inpt"

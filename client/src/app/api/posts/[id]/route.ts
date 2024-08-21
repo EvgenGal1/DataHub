@@ -1,7 +1,7 @@
 // логика работы с опред.постом по ID
 
 import { NextResponse } from "next/server";
-// import { headers, cookies /* , draftMode */ } from "next/headers";
+import { headers, cookies /* , draftMode */ } from "next/headers";
 // import { redirect } from "next/navigation";
 
 import { postsFake } from "../postsFake";
@@ -31,13 +31,20 @@ export async function DELETE(
   req: Request,
   { params }: { params: { id: string } }
 ) {
-  // id(парам.Respons),headers,cookies(next )
+  // id(от парам.Respons),headers,cookies(от next, только чтение)
   const id = params.id;
+
+  const headerList = headers();
+  const type = headerList.get("Content-Type");
+
+  const cookiesList = cookies();
+  const cook = cookiesList.get("Cookie_1")?.value;
 
   // логика удаления поста
 
   // редирект по стр.по завершению
   // redirect("/");
 
-  return NextResponse.json({ id });
+  // возвращ.для проверки в Postman
+  return NextResponse.json({ id, type, cook });
 }
