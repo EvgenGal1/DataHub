@@ -73,11 +73,13 @@ webpack*
 
 # ^ общ.врем.ИСКЛЮЧЁННЫЕ
 # папки 
+!/**/src/configs/auth/
 !/**/src/configs/lang/
 !/**/src/configs/lang/locales/
 # все.ф.в п. 
 # !/**/src/common/decorators/**
 # ф.
+!/**/src/configs/auth/auth.ts
 !/**/src/configs/lang/langConfig.ts
 !/**/src/configs/lang/locales/ru.ts
 !/**/src/configs/lang/locales/en.ts
