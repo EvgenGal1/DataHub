@@ -6,8 +6,8 @@ import { Metadata } from "next";
 async function getDate(id: string) {
   const baseUrl =
     process.env.NODE_ENV === "production"
-      ? process.env.PUBLIC_BASE_URL_PROD
-      : process.env.PUBLIC_BASE_URL_DEV;
+      ? process.env.NEXT_URL_PROD
+      : process.env.NEXT_URL_DEV;
 
   const response = await fetch(
     // ^ общ.доступные url
