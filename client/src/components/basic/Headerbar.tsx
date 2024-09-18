@@ -1,3 +1,5 @@
+// шапка
+
 import MenuIcon from "../icons/MenuIcon";
 import Navbar from "./Navbar";
 

@@ -1,3 +1,5 @@
+// шапка + боковая панель
+
 "use client";
 
 import React from "react";

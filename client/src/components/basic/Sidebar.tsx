@@ -1,3 +1,5 @@
+// боковая панель/вертикальное меню
+
 import React from "react";
 import { usePathname, useRouter } from "next/navigation";
 
