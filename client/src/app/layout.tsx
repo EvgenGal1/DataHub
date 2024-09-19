@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { headers } from "next/headers";
 
+// поставщики. обёртка
+import { Providers } from "@/components/auth/Providers";
 // Компоненты
 import Header from "@/components/basic/Header";
 import Footer from "@/components/basic/Footer";
@@ -51,13 +53,15 @@ export default async function RootLayout({
   return (
     <html lang={defaultLang}>
       {/* <head></head> */}
-      <body className={inter.className} data-theme="dark">
-        <div className="general-container">
-          <Header />
-          <main className="main-my flex-grow">{children}</main>
-          <Footer />
-        </div>
-      </body>
+      <Providers>
+        <body className={inter.className} data-theme="dark">
+          <div className="general-container">
+            <Header />
+            <main className="main-my flex-grow">{children}</main>
+            <Footer />
+          </div>
+        </body>
+      </Providers>
     </html>
   );
 }
