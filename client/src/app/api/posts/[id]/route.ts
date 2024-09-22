@@ -1,10 +1,11 @@
-// логика работы с опред.постом по ID
+// API логика работы с опред.постом по ID
 
 import { NextResponse } from "next/server";
 import { headers, cookies /* , draftMode */ } from "next/headers";
 // import { redirect } from "next/navigation";
 
-import { postsFake } from "../postsFake";
+// данн.фейк Постов
+import { postsFake } from "../../../../data/postsFake";
 
 // получение. req - объ запроса со всей инфо
 export async function GET(

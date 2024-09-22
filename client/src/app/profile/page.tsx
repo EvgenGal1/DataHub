@@ -20,8 +20,9 @@ export default async function Profile() {
           alt=""
           width={100}
           height={100}
-          objectFit="contain"
-          layout="intrinsic"
+          // objectFit="contain"
+          // layout="intrinsic"
+          priority
           style={{ maxWidth: "100%", width: "auto", height: "auto" }}
         />
       )}

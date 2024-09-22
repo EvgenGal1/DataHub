@@ -1,8 +1,11 @@
+// API поиск Постов
+
 import { NextResponse } from "next/server";
 
-import { postsFake } from "../postsFake";
+// данн.фейк Постов
+import { postsFake } from "../../../../data/postsFake";
 
-// поиск. GET с query парам. req - объ запроса со всей инфо
+// GET с query парам. req - объ запроса со всей инфо
 export async function GET(req: Request) {
   // парам.запроса из объ.URL
   const { searchParams } = new URL(req.url);

@@ -63,7 +63,6 @@ webpack*
 **/static/**
 **/src/lang/**
 **/src/configs/**
-**/src/data/**
 **/src/profile/**
 **/src/store/**
 **/src/signIn/**

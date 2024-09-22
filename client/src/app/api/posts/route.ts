@@ -2,8 +2,8 @@
 
 import { NextResponse } from "next/server";
 
-// имитация данных БД
-import { postsFake } from "./postsFake";
+// данн.фейк Постов
+import { postsFake } from "../../../data/postsFake";
 
 // назв.fn() по мтд.CRUD
 export async function GET() {
