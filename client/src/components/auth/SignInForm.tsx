@@ -27,8 +27,9 @@ const SignInForm = () => {
     });
 
     // логика Вход(редирект в profile) / ошб.(логи)
-    if (res && !res.error) router.push("/profile");
-    else {
+    if (res && !res.error) {
+      router.push("/profile");
+    } else {
       setErr(res?.error || "Неизвестная ошибка");
       console.log(res); // отраж на CLT
     }
@@ -57,8 +58,11 @@ const SignInForm = () => {
           required
           onChange={handleChange}
         />
-        <button type="submit" className="btn btn-primary">
-          Sign In
+        <button
+          type="submit"
+          className={`btn ${!err ? "btn-primary" : "btn-danger"}`}
+        >
+          {!err ? "Sign In" : "Errors"}
         </button>
         {err && <p style={{ color: "red" }}>Ошибка: {err}</p>}
       </form>

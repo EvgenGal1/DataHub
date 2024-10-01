@@ -9,11 +9,12 @@ import { authConfig } from "@/configs/auth/auth";
 export default async function Profile() {
   // получ.данн.сессии
   const session = await getServerSession(authConfig);
+  // console.log("session ", session); // отраж на SRV
 
   return (
     <div>
       {/* отрис.name и по услов.image */}
-      <h1>Profile of {session?.user?.name}</h1>
+      <h1>Профиль {session?.user?.name}</h1>
       {session?.user?.image && (
         <Image
           src={session.user.image}
@@ -26,6 +27,7 @@ export default async function Profile() {
           style={{ maxWidth: "100%", width: "auto", height: "auto" }}
         />
       )}
+      <div>Email: {session?.user?.email}</div>
     </div>
   );
 }

@@ -42,7 +42,7 @@ const Sidebar: React.FC<{ isOpen: boolean; handleDrawerClose: () => void }> = ({
   isOpen,
   handleDrawerClose,
 }) => {
-  // хук навигации NextJS
+  // нов.хук навигации NextJS
   const router = useRouter();
   // опред.актив.ссылок > .active
   const pathname = usePathname();
@@ -50,11 +50,13 @@ const Sidebar: React.FC<{ isOpen: boolean; handleDrawerClose: () => void }> = ({
   return (
     <div className={`side-bar ${isOpen ? "isOpen" : ""}`}>
       <div className="side-bar-wrapper">
+        {/* кнп.вкл.выкл бок.панели */}
         <div className="side-bar__close">
           <button className="side-bar-button" onClick={handleDrawerClose}>
             {isOpen ? <ChevronLeftIcon /> : <ChevronRightIcon />}
           </button>
         </div>
+        {/* верх.бок.панель */}
         <ul>
           {sideBarTopItems.map(({ text, href, elm }) => (
             <li
@@ -76,6 +78,7 @@ const Sidebar: React.FC<{ isOpen: boolean; handleDrawerClose: () => void }> = ({
           ))}
         </ul>
         <hr className="hr hr-big" />
+        {/* сред.,нижн.бок.панели */}
         <ul>
           {sideBarMiddleItems.map(({ text, href, elm }) => (
             <li
