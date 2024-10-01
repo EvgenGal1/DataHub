@@ -40,24 +40,31 @@ export default function Navbar() {
       ))}
       {/* Профиль при сессии */}
       {session?.data && (
-        <Link href="/profile" className="link">
-          Profile
+        <Link
+          href="/profile"
+          className={`link ${pathname === "/profile" ? "active" : ""}`}
+        >
+          <span>Profile</span>
         </Link>
       )}
       {/* вход/выход при сессии */}
       {session?.data ? (
-        // выход с редирект на гл.по клиик
+        // выход с редирект на гл.по клик
         <Link
           href="#"
           onClick={() => signOut({ callbackUrl: "/" })}
           className="link"
         >
-          Sign Out
+          <span>Sign Out</span>
         </Link>
       ) : (
-        // вход по стандарт.URL
-        <Link href="/api/auth/signin" className="link">
-          Sign In
+        // вход
+        <Link
+          // href="/api/auth/signin" // стандарт.URL
+          href="/signin" // стр.кастом.входа
+          className="link"
+        >
+          <span>Sign In</span>
         </Link>
       )}
     </nav>

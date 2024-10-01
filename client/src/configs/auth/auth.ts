@@ -8,7 +8,7 @@ import Credentials from "next-auth/providers/credentials";
 import { usersFake } from "@/data/usersFake";
 
 export const authConfig: AuthOptions = {
-  // провайдеры(обязат.парам.)
+  // провайдеры(обязат.парам.). Здесь google/форма/кастом (их МНОГО)
   providers: [
     // fn гугл.вход
     GoggleProvider({
@@ -16,7 +16,7 @@ export const authConfig: AuthOptions = {
       clientId: process.env.GOOGLE_CLIENT_ID as string,
       clientSecret: process.env.GOOGLE_SECRET!,
     }),
-    // fn вход по логин/пароль
+    // `Реквизиты для входа`. fn вход ч/з форму по логин/пароль
     Credentials({
       // поля eml/psw с указ.:обводки,типа,обязат.
       credentials: {
@@ -46,4 +46,8 @@ export const authConfig: AuthOptions = {
       },
     }),
   ],
+  // кастомн.стр.(редирект)
+  pages: {
+    signIn: "/signin",
+  },
 };
