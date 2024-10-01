@@ -61,14 +61,8 @@ webpack*
 
 # ^ общ.врем.ОТКЛ.
 **/static/**
-**/src/lang/**
 **/src/configs/**
-**/src/profile/**
 **/src/store/**
-**/src/signIn/**
-**/src/components/GoogleButton.tsx
-**/src/components/SignInForm.tsx
-**/src/components/Providers.tsx
 
 # ^ общ.врем.ИСКЛЮЧЁННЫЕ
 # папки 

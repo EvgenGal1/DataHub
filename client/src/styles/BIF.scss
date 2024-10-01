@@ -150,6 +150,17 @@ button::-moz-focus-inner {
     text-shadow: -1px -1px 0px #222;
   }
 }
+.stack {
+  display: grid;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: var(--sz3);
+}
+.login-form {
+  display: grid;
+  gap: var(--sz3);
+}
 
 // ВЫБОРКА ----------------------------------------------------------------------------------
 .select {
