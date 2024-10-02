@@ -41,32 +41,30 @@ const SignInForm = () => {
   };
 
   return (
-    <>
-      {/* форма с обязат.полями + кнп. */}
-      <form onSubmit={handleSubmit} className="login-form">
-        <input
-          type="email"
-          name="email"
-          placeholder="Email"
-          required
-          onChange={handleChange}
-        />
-        <input
-          type="password"
-          name="password"
-          placeholder="Password"
-          required
-          onChange={handleChange}
-        />
-        <button
-          type="submit"
-          className={`btn ${!err ? "btn-primary" : "btn-danger"}`}
-        >
-          {!err ? "Sign In" : "Errors"}
-        </button>
-        {err && <p style={{ color: "red" }}>Ошибка: {err}</p>}
-      </form>
-    </>
+    // форма с обязат.полями + кнп.
+    <form onSubmit={handleSubmit} className="login-form">
+      <input
+        type="email"
+        name="email"
+        placeholder="Email"
+        required
+        onChange={handleChange}
+      />
+      <input
+        type="password"
+        name="password"
+        placeholder="Password"
+        required
+        onChange={handleChange}
+      />
+      <button
+        type="submit"
+        className={`btn ${!err ? "btn-primary" : "btn-danger"}`}
+      >
+        {!err ? "Sign In" : "Errors"}
+      </button>
+      {err && <p style={{ color: "red" }}>Ошибка: {err}</p>}
+    </form>
   );
 };
 

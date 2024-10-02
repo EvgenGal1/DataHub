@@ -8,7 +8,7 @@ import ChevronRightIcon from "../icons/ChevronRightIcon";
 import File from "../icons/File";
 import AudiotrackIcon from "../icons/AudiotrackIcon";
 import Book from "../icons/Book";
-import Image from "../icons/Image";
+import Img from "../icons/Image";
 import Video from "../icons/Video";
 import PlaylistPlayIcon from "../icons/PlaylistPlayIcon";
 import AlbumIcon from "../icons/AlbumIcon";
@@ -24,7 +24,7 @@ const sideBarTopItems = [
   { text: "Файлы", href: "/files", elm: <File /> },
   { text: "Треки", href: "/tracks", elm: <AudiotrackIcon /> },
   { text: "Книги", href: "/books", elm: <Book /> },
-  { text: "Картинки", href: "/images", elm: <Image /> },
+  { text: "Картинки", href: "/images", elm: <Img /> },
   { text: "Видео", href: "/videos", elm: <Video /> },
 ];
 const sideBarMiddleItems = [
