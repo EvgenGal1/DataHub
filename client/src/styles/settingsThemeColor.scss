@@ -107,9 +107,9 @@ body[data-theme="light"] {
     background-color: var(--fon-dark);
 
     // цвет рамки для всех кроме ссылок и списков
-    *:not(a):not(ul) {
-      // border-color: var(--bord-hr) !important;
-    }
+    // *:not(a):not(ul) {
+    // border-color: var(--bord-hr) !important;
+    // }
     hr.hr {
       border-color: var(--bord-hr);
     }
@@ -264,9 +264,9 @@ body[data-theme="light"] {
       button.btn {
         color: var(--act-light);
         background-color: var(--act-dark);
-        &:hover {
-          // background-color: var(--act-bg-hov);
-        }
+        // &:hover {
+        // background-color: var(--act-bg-hov);
+        // }
       }
     }
 
