@@ -196,10 +196,9 @@ export class TrackController {
       offset,
     );
     const findAllTracks = await this.trackService.findAllTracks(
-      /* count || null, offset || null */
-      param === (undefined || null) ? null : param,
-      count === (undefined || null) ? null : count,
-      offset === (undefined || null) ? null : offset,
+      param ?? null,
+      count ?? null,
+      offset ?? null,
     );
     return findAllTracks;
   }

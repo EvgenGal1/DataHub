@@ -112,7 +112,7 @@ export class TracksService {
       }
 
       // перебор всех audios.track
-      for (const audioObj of audios?.track) {
+      for (const audioObj of audios?.track || []) {
         // `получить аудио метаданные`
         const audioMetaData = await this.basicUtils.getAudioMetaData(audioObj);
         // проверка `существующий Трек` с учётом deletedAt по title origName
@@ -146,7 +146,8 @@ export class TracksService {
         // ф.Трека(name,artist,text,genre) + savedFile(dto=obj<>num)
         if (
           typeof createTrackDto === 'object' ||
-          createTrackDto === (null || undefined)
+          createTrackDto === null ||
+          createTrackDto === undefined
         ) {
           // приведение к типу JSON обратно из строки odj<>str createTrackDto после track.cntrl.ApiBody.schema
           // trackDto = JSON.parse(createTrackDto['createTrackDto']);
@@ -323,14 +324,15 @@ export class TracksService {
         const basicTrackData = {
           ...trackDto,
           name: trackDto.name.includes('#')
-            ? audioMetaData?.title ?? `${trackDto?.name}_${smallestFreeId}`
-            : existingTrack?.name ?? `${trackDto?.name}_${smallestFreeId}`,
+            ? (audioMetaData?.title ?? `${trackDto?.name}_${smallestFreeId}`)
+            : (existingTrack?.name ?? `${trackDto?.name}_${smallestFreeId}`),
           genre: trackDto.genre.includes('#')
-            ? audioMetaData?.genre ?? `${trackDto?.genre}_${smallestFreeId}`
-            : existingTrack?.genre ?? `${trackDto?.genre}_${smallestFreeId}`,
+            ? (audioMetaData?.genre ?? `${trackDto?.genre}_${smallestFreeId}`)
+            : (existingTrack?.genre ?? `${trackDto?.genre}_${smallestFreeId}`),
           artist: trackDto.artist.includes('#')
-            ? audioMetaData?.artist ?? `${trackDto?.artist}_${smallestFreeId}`
-            : existingTrack?.artist ?? `${trackDto?.artist}_${smallestFreeId}`,
+            ? (audioMetaData?.artist ?? `${trackDto?.artist}_${smallestFreeId}`)
+            : (existingTrack?.artist ??
+              `${trackDto?.artist}_${smallestFreeId}`),
         };
         // объ.track созд./сохр./вернуть
         const track = /* this.tracksRepository.create( */ {
@@ -559,7 +561,9 @@ export class TracksService {
       // Удаление файлов из локального хранилища
       try {
         await fs.promises.unlink(pathSTR);
-      } catch (error) {}
+      } catch (error) {
+        console.log('error : ', error);
+      }
       // ID Обложки Альбома
       let albums_coverId;
       // удал.ф.Обложки и удал./обнов.Альбома и если не удал.уже

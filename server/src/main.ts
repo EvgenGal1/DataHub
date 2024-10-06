@@ -112,4 +112,6 @@ async function bootstrap(): Promise<any> {
     console.log('main e : ' + e);
   }
 }
-bootstrap();
+if (require.main === module) {
+  bootstrap();
+}
