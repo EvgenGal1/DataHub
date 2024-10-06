@@ -4,7 +4,7 @@ import * as path from 'path';
 import * as fs from 'fs';
 import { BadRequestException, NotFoundException } from '@nestjs/common';
 
-import { BasicUtils } from '../utils/basic.utils';
+import { BasicUtils } from '../../common/utils/basic.utils';
 
 // MW > сохр.неск.ф. `файловое хранилище` = `дисковое хранилище`
 export const fileStorage = multer.diskStorage({

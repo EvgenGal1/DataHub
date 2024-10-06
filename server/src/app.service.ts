@@ -6,7 +6,7 @@ import {
   isProduction,
   isDevelopment,
   isTotal,
-} from './common/envs/env.consts.js';
+} from './config/envs/env.consts.js';
 
 // декор.`инъекции`. (отметка кл.как Provider ч/з инъекции > подкл.в др.кл.)
 @Injectable()

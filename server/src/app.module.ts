@@ -14,16 +14,16 @@ import { TrackModule } from './modules/tracks/tracks.module.js';
 import { AlbumModule } from './modules/albums/albums.module.js';
 import { ReactionsModule } from './modules/reactions/reactions.module.js';
 // БД. config
-import { localhostConfig } from './common/envs/localhost.config.js';
-import { supabaseConfig } from './common/envs/supabase.config.js';
+import { localhostConfig } from './config/envs/localhost.config.js';
+import { supabaseConfig } from './config/envs/supabase.config.js';
 // логи
-import { WinstonLoggerProvider } from './common/config/winston-logger.config.js';
+import { WinstonLoggerProvider } from './config/winston-logger.config.js';
 // константы > команды запуска process.env.NODE_ENV
 import {
   isProduction,
   isDevelopment,
   isTotal,
-} from './common/envs/env.consts.js';
+} from './config/envs/env.consts.js';
 
 // декор.модуль. (организ.структуры области действ.> cntrl и provider)
 @Module({

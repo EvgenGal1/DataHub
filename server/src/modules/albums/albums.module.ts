@@ -13,12 +13,12 @@ import { UserEntity } from '../users/entities/user.entity';
 import { RoleEntity } from '../roles/entities/role.entity';
 import { BasicUtils } from '../../common/utils/basic.utils';
 import { DatabaseUtils } from '../../common/utils/database.utils';
-import { WinstonLoggerProvider } from '../../common/config/winston-logger.config';
+import { WinstonLoggerProvider } from '../../config/winston-logger.config';
 import {
   isProduction,
   isDevelopment,
   isTotal,
-} from '../../common/envs/env.consts';
+} from '../../config/envs/env.consts';
 
 @Module({
   imports: [

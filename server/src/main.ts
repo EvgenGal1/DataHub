@@ -11,7 +11,7 @@ import {
   isProduction,
   isDevelopment,
   isTotal,
-} from './common/envs/env.consts.js';
+} from './config/envs/env.consts.js';
 // фильтр исключ.
 import { HttpExceptionFilter } from './common/filters/http-exception.filter.js';
 

@@ -10,13 +10,13 @@ import { DatabaseUtils } from '../../common/utils/database.utils';
 import { TrackEntity } from '../tracks/entities/track.entity';
 import { AlbumEntity } from '../albums/entities/album.entity';
 // логи
-import { WinstonLoggerProvider } from '../../common/config/winston-logger.config';
+import { WinstonLoggerProvider } from '../../config/winston-logger.config';
 // константы > команды запуска process.env.NODE_ENV
 import {
   isDevelopment,
   isProduction,
   isTotal,
-} from '../../common/envs/env.consts';
+} from '../../config/envs/env.consts';
 
 @Module({
   // подкл.FileEntity ч/з TypeOrmModule в import для раб.с табл.files, users, roles, tracks

@@ -10,12 +10,12 @@ import { FileEntity } from '../files/entities/file.entity';
 import { TrackEntity } from '../tracks/entities/track.entity';
 import { AlbumEntity } from '../albums/entities/album.entity';
 import { DatabaseUtils } from '../../common/utils/database.utils';
-import { WinstonLoggerProvider } from '../../common/config/winston-logger.config';
+import { WinstonLoggerProvider } from '../../config/winston-logger.config';
 import {
   isProduction,
   isDevelopment,
   isTotal,
-} from '../../common/envs/env.consts';
+} from '../../config/envs/env.consts';
 
 @Module({
   imports: [

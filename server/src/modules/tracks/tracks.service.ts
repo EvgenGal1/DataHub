@@ -30,7 +30,7 @@ import {
   isProduction,
   isDevelopment,
   isTotal,
-} from '../../common/envs/env.consts';
+} from '../../config/envs/env.consts';
 
 @Injectable()
 export class TracksService {

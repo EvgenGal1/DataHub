@@ -16,13 +16,13 @@ import { BasicUtils } from '../../common/utils/basic.utils';
 // утилиты БД
 import { DatabaseUtils } from '../../common/utils/database.utils';
 // логи
-import { WinstonLoggerProvider } from '../../common/config/winston-logger.config';
+import { WinstonLoggerProvider } from '../../config/winston-logger.config';
 // константы > команды запуска process.env.NODE_ENV
 import {
   isProduction,
   isDevelopment,
   isTotal,
-} from '../../common/envs/env.consts';
+} from '../../config/envs/env.consts';
 
 @Module({
   imports: [
