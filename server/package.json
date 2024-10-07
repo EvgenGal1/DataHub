@@ -6,8 +6,8 @@
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
-    "build_": "nest build",
-    "build": "npm install --legacy-peer-deps && npm run build",
+    "build": "nest build",
+    "build___0": "npm install --legacy-peer-deps && npm run build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "cross-env NODE_ENV=production nest start",
     "start:dev0": "set \"NODE_ENV=development\" && nest start --watch",
@@ -32,7 +32,6 @@
     "@nestjs/mapped-types": "^2.0.5",
     "@nestjs/passport": "^10.0.3",
     "@nestjs/platform-express": "^10.4.4",
-    "@nestjs/serve-static": "^4.0.2",
     "@nestjs/swagger": "^7.4.2",
     "@nestjs/typeorm": "^10.0.2",
     "@supabase/supabase-js": "^2.42.7",

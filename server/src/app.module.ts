@@ -1,8 +1,9 @@
-// общ.модуль приложения
+import { Module, MiddlewareConsumer } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { ServeStaticModule } from '@nestjs/serve-static';
+// import { ServeStaticModule } from '@nestjs/serve-static';
+import * as express from 'express';
+import * as path from 'path';
 
 import { AppController, AppController2 } from './app.controller.js';
 import { AppService } from './app.service.js';
@@ -56,10 +57,11 @@ import {
         ]
       : []),
     // обслуж.статич.контент по путь/папка ч/з веб-сайт
-    ServeStaticModule.forRoot({
-      rootPath: `${__dirname}/../static`,
-      serveRoot: '/static',
-    }),
+    // ! ошб. при сборке VERCEL от -v @nestjs/(serve-static, common)
+    // ServeStaticModule.forRoot({
+    //   rootPath: `${__dirname}/../static`,
+    //   serveRoot: '/static',
+    // }),
     // подкл.использ.modulи
     // AuthModule,
     UsersModule,
@@ -75,4 +77,11 @@ import {
   providers: [AppService, WinstonLoggerProvider],
   exports: [WinstonLoggerProvider],
 })
-export class AppModule {}
+export class AppModule {
+  // ^ замена ServeStaticModule от ошб. при сборке VERCEL от -v @nestjs/(serve-static, common)
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(express.static(path.join(__dirname, '..', 'static')))
+      .forRoutes('*'); // Можно ограничить маршруты, если нужно
+  }
+}
