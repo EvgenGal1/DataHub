@@ -10,7 +10,7 @@
   },
   "builds": [
     {
-      "src": "src/main.ts",
+      "src": "dist/main.js",
       "use": "@vercel/node",
       "config": {
         "includeFiles": ["src/**/*", "package.json", "tsconfig.json"],
