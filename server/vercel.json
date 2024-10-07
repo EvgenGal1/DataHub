@@ -20,6 +20,10 @@
   ],
   "routes": [
     {
+      "src": "/api/(.*)",
+      "dest": "dist/main.js"
+    },
+    {
       "src": "/(.*)",
       "dest": "dist/main.js",
       "methods": ["GET", "HEAD", "PUT", "PATCH", "POST", "DELETE"]
