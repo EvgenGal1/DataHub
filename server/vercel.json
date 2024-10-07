@@ -13,7 +13,12 @@
       "src": "dist/main.js",
       "use": "@vercel/node",
       "config": {
-        "includeFiles": ["src/**/*", "package.json", "tsconfig.json"],
+        "includeFiles": [
+          "dist/**/*",
+          "src/**/*",
+          "package.json",
+          "tsconfig.json"
+        ],
         "installCommand": "npm install"
       }
     }
