@@ -24,6 +24,10 @@
       "dest": "dist/main.js"
     },
     {
+      "src": "/(favicon.ico|.*(jpg|jpeg|png|gif|css|js))",
+      "dest": "/public/$1"
+    },
+    {
       "src": "/(.*)",
       "dest": "dist/main.js",
       "methods": ["GET", "HEAD", "PUT", "PATCH", "POST", "DELETE"]
