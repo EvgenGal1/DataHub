@@ -8,7 +8,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { In, Repository } from 'typeorm';
-import { Logger } from 'winston';
+// import { Logger } from 'winston';
 
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -35,7 +35,7 @@ function createThrowError(message?: string): () => never {
 export class UsersService {
   constructor(
     // логи
-    @Inject('WINSTON_LOGGER') private readonly logger: Logger,
+    // @Inject('WINSTON_LOGGER') private readonly logger: Logger,
     // ч/з внедр.завис. + UserEntity и др. > раб.ч/з this с табл.users и др.
     // ^ подкл.неск.БД.
     // ^ репозитории только > БД SupaBase(SB)
@@ -66,9 +66,9 @@ export class UsersService {
   // СОЗД User + Role + связь
   async createUser(createUserDto: CreateUserDto) {
     // логи,перем.ошб.
-    this.logger.info(
-      `Запись Users в БД ${isProduction ? 'SB' : isDevelopment ? 'LH' : 'SB и LH'}`,
-    );
+    // this.logger.info(
+    //   `Запись Users в БД ${isProduction ? 'SB' : isDevelopment ? 'LH' : 'SB и LH'}`,
+    // );
     const err = `Users не сохранён в БД`;
     // `получить наименьший доступный идентификатор` из табл.БД
     const smallestFreeId =
@@ -88,7 +88,7 @@ export class UsersService {
     if (isProduction || isDevelopment) {
       const savedUser: UserEntity = await definiteUserRepository.save(user);
       if (!savedUser) {
-        this.logger.error(`Лог. ${err} ${isProduction ? 'SB' : 'LH'}`);
+        // this.logger.error(`Лог. ${err} ${isProduction ? 'SB' : 'LH'}`);
         createThrowError(`Ошб. ${err} ${isProduction ? 'SB' : 'LH'}`);
       }
       return savedUser;
@@ -99,7 +99,7 @@ export class UsersService {
       const savedUserSB = await this.userRepositorySB.save(user);
       const savedUserLH = await this.userRepository.save(user);
       if (!savedUserSB && !savedUserLH) {
-        this.logger.error(`Лог. ${err} SB и LH`);
+        // this.logger.error(`Лог. ${err} SB и LH`);
         createThrowError(`Ошб. ${err} SB и LH`);
       }
       const userSavedSB = { ...savedUserSB, source: 'DB_SB' };
@@ -116,9 +116,9 @@ export class UsersService {
     (UserEntity | (UserEntity & { source: string }))[]
   > {
     // логи,перем.ошб.
-    this.logger.info(
-      `Получение всех Users из БД ${isProduction ? 'SB' : isDevelopment ? 'LH' : 'SB и LH'}`,
-    );
+    // this.logger.info(
+    //   `Получение всех Users из БД ${isProduction ? 'SB' : isDevelopment ? 'LH' : 'SB и LH'}`,
+    // );
     const err = `Users нет в БД`;
     // условие > PROD или DEV. перем.,req.,лог.,ошб.
     if (isProduction || isDevelopment) {
@@ -127,7 +127,7 @@ export class UsersService {
         : this.userRepository;
       const users = await definiteUserRepository.find();
       if (!users) {
-        this.logger.error(`Лог. ${err} ${isProduction ? 'SB' : 'LH'}`);
+        // this.logger.error(`Лог. ${err} ${isProduction ? 'SB' : 'LH'}`);
         createThrowError(`Ошб. ${err} ${isProduction ? 'SB' : 'LH'}`);
       }
       return users;
@@ -143,7 +143,7 @@ export class UsersService {
       const usersSB: UserEntity[] = await this.userRepositorySB.find();
       const usersLH: UserEntity[] = await this.userRepository.find();
       if (usersSB && !usersLH) {
-        this.logger.error(`Лог. ${err} SB и LH`);
+        // this.logger.error(`Лог. ${err} SB и LH`);
         createThrowError(`Ошб. ${err} SB и LH`);
       }
       // перебор всех user из БД SB
@@ -174,9 +174,9 @@ export class UsersService {
   // ОДИН user.по id
   async findOneUser(id: number): Promise<UserEntity> {
     // логи,перем.ошб.
-    this.logger.info(
-      `Получение User по ID ${id} из ${isProduction ? 'SB' : isDevelopment ? 'LH' : 'SB и LH'}`,
-    );
+    // this.logger.info(
+    //   `Получение User по ID ${id} из ${isProduction ? 'SB' : isDevelopment ? 'LH' : 'SB и LH'}`,
+    // );
     const err = `User с ID ${id} нет в БД`;
     // условие > PROD и DEV. перем.,req.,лог.,ошб.
     if (isProduction || isDevelopment) {
@@ -185,7 +185,7 @@ export class UsersService {
         : this.userRepository;
       const user = await definiteUserRepository.findOneBy({ id });
       if (!user) {
-        this.logger.error(`Лог. ${err} ${isProduction ? 'SB' : 'LH'}`);
+        // this.logger.error(`Лог. ${err} ${isProduction ? 'SB' : 'LH'}`);
         createThrowError(`Ошб. ${err} ${isProduction ? 'SB' : 'LH'}`);
       }
       return user;
@@ -196,7 +196,7 @@ export class UsersService {
       const userLH = await this.userRepository.findOneBy({ id });
       // логг./ошб. е/и нет 2х
       if (!userSB && !userLH) {
-        this.logger.error(`Лог. ${err} SB и LH`);
+        // this.logger.error(`Лог. ${err} SB и LH`);
         createThrowError(`Ошб. ${err} SB и LH`);
       }
       // возврат е/и есть 1
@@ -221,9 +221,9 @@ export class UsersService {
   // ! переделать под получ roles tracks user_roles в завис.от парам. и пр.
   async findUserByParam(param: string) {
     // логи,перем.ошб.
-    this.logger.info(
-      `Получение User по Param ${param} из ${isProduction ? 'SB' : isDevelopment ? 'LH' : 'SB и LH'}`,
-    );
+    // this.lgger.info(
+    //   `Получение User по Param ${param} из ${isProduction ? 'SB' : isDevelopment ? 'LH' : 'SB и LH'}`,
+    // );o
     const err = `User с Param ${param} нет в БД`;
     // ^^ fn для неск.id
     // if (usersIds) {

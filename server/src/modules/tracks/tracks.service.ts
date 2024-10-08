@@ -7,7 +7,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, ILike, ObjectId } from 'typeorm';
-import { Logger } from 'winston';
+// import { Logger } from 'winston';
 import * as fs from 'fs';
 
 import { CreateTrackDto } from './dto/create-track.dto';
@@ -36,7 +36,7 @@ import {
 export class TracksService {
   constructor(
     // логи
-    @Inject('WINSTON_LOGGER') private readonly logger: Logger,
+    // @Inject('WINSTON_LOGGER') private readonly logger: Logger,
     // ч/з внедр.завис. + TrackEntity,ReactionEntity,UserEntity > раб.ч/з this с табл.track,reaction,user
     // ^ подкл.неск.БД.
     // ^ репозитории только > БД SupaBase(SB)
@@ -93,9 +93,9 @@ export class TracksService {
       createTrackDto,
     );
     // логи,перем.ошб.
-    this.logger.info(
-      `Запись Audio в БД ${isProduction ? 'SB' : isDevelopment ? 'LH' : 'SB и LH'}`,
-    );
+    // this.logger.info(
+    //   `Запись Audio в БД ${isProduction ? 'SB' : isDevelopment ? 'LH' : 'SB и LH'}`,
+    // );
     const err = `Audio не сохранён в БД`;
     // перем.сохр. Track File Album
     let savedFile,
@@ -401,9 +401,9 @@ export class TracksService {
   ): Promise<TrackEntity[]> {
     console.log('fAl t.s. fAl param count offset: ', param, count, offset);
     // логи,перем.ошб.
-    this.logger.info(
-      `Получение всех Audios из БД ${isProduction ? 'SB' : isDevelopment ? 'LH' : 'SB и LH'}`,
-    );
+    // this.logger.info(
+    //   `Получение всех Audios из БД ${isProduction ? 'SB' : isDevelopment ? 'LH' : 'SB и LH'}`,
+    // );
     const err = `Audios нет в БД`;
     // без парам.вернуть всё
     if (!param && count === 10 && offset === 0) {
@@ -435,9 +435,9 @@ export class TracksService {
   // ОДИН Трек по ID
   async findOneTrack(param: string): Promise<TrackEntity | TrackEntity[]> {
     // логи,перем.ошб.
-    this.logger.info(
-      `Получение Audio по PARAM ${param} из ${isProduction ? 'SB' : isDevelopment ? 'LH' : 'SB и LH'}`,
-    );
+    // this.logger.info(
+    //   `Получение Audio по PARAM ${param} из ${isProduction ? 'SB' : isDevelopment ? 'LH' : 'SB и LH'}`,
+    // );
     const err = `Audio с PARAM ${param} нет в БД`;
     const whereCondition: any = {};
     // условия res. id/num|eml/@|fullname/str

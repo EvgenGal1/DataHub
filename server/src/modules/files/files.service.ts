@@ -7,7 +7,7 @@ import {
   NotFoundException,
   Optional,
 } from '@nestjs/common';
-import { Logger } from 'winston';
+// import { Logger } from 'winston';
 
 import { FileType, FileEntity, fileTypesAllowed } from './entities/file.entity';
 import { UpdateFileDto } from './dto/update-file.dto';
@@ -24,7 +24,7 @@ import {
 export class FilesService {
   constructor(
     // логи
-    @Inject('WINSTON_LOGGER') private readonly logger: Logger,
+    // @Inject('WINSTON_LOGGER') private readonly logger: Logger,
     // ^ подкл.неск.БД.
     // ^ репозитории только > БД SupaBase(SB)
     @Optional()
@@ -54,9 +54,9 @@ export class FilesService {
       fileType,
     );
     // логи,перем.ошб.
-    this.logger.info(
-      `Запись File в БД ${isProduction ? 'SB' : isDevelopment ? 'LH' : 'SB и LH'}`,
-    );
+    // this.logger.info(
+    //   `Запись File в БД ${isProduction ? 'SB' : isDevelopment ? 'LH' : 'SB и LH'}`,
+    // );
     const err = `File не сохранён в БД`;
 
     // перем.сохр.File
@@ -105,9 +105,9 @@ export class FilesService {
   async findAllFiles(userId: number, fileTypes: any /* FileType[] */) {
     console.log('f.serv. userId fileTypes:', userId, fileTypes);
     // логи,перем.ошб.
-    this.logger.info(
-      `Получение всех Files из БД ${isProduction ? 'SB' : isDevelopment ? 'LH' : 'SB и LH'}`,
-    );
+    // this.logger.info(
+    //   `Получение всех Files из БД ${isProduction ? 'SB' : isDevelopment ? 'LH' : 'SB и LH'}`,
+    // );
     const err = `Files нет в БД`;
 
     // `допустимые типы`. Сравнение входа(fileTypes) с `разрешенными типами ф.`(fileTypesAllowed)
@@ -155,9 +155,9 @@ export class FilesService {
 
   async findOneFile(id: number) {
     // логи,перем.ошб.
-    this.logger.info(
-      `Получение File по ID ${id} из ${isProduction ? 'SB' : isDevelopment ? 'LH' : 'SB и LH'}`,
-    );
+    // this.logger.info(
+    //   `Получение File по ID ${id} из ${isProduction ? 'SB' : isDevelopment ? 'LH' : 'SB и LH'}`,
+    // );
     const err = `File с ID ${id} нет в БД`;
     return this.filesRepository.findOneBy({ id });
   }

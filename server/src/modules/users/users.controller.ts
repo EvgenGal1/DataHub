@@ -28,7 +28,7 @@ import {
   // FileFieldsInterceptor,
 } from '@nestjs/platform-express';
 // логи
-import { Logger } from 'winston';
+// import { Logger } from 'winston';
 
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -47,7 +47,7 @@ export class UsersController {
   // ч/з внедр.завис. + UsersService > раб.ч/з this с serv.users
   constructor(
     // логи
-    @Inject('WINSTON_LOGGER') private readonly logger: Logger,
+    // @Inject('WINSTON_LOGGER') private readonly logger: Logger,
     // private readonly authService: AuthService,
     private readonly usersService: UsersService,
   ) {}
@@ -65,7 +65,7 @@ export class UsersController {
   // получ.объ из запроса ч/з @Body
   async createUser(@Body() createUserDto: CreateUserDto) {
     // логи
-    this.logger.info(`create user`);
+    // this.logger.info(`create user`);
     // объ передаём в мтд.create в users.serv
     return await this.usersService.createUser(createUserDto);
   }
@@ -75,7 +75,7 @@ export class UsersController {
   // @Roles('ADMIN')
   // @UseGuards(RolesGuard)
   async findAllUsers() {
-    this.logger.info(`ALL.users`);
+    // this.logger.info(`ALL.users`);
     return await this.usersService.findAllUsers();
   }
 
@@ -84,7 +84,7 @@ export class UsersController {
   @ApiOperation({ summary: 'Получить по ID' })
   // @ApiCreatedResponse({ description: 'Описание findOne' })
   async findOneUser(@Param('id') id: string /* ObjectId */) {
-    this.logger.info(`res.user ID: ${id}`);
+    // this.logger.info(`res.user ID: ${id}`);
     return await this.usersService.findOneUser(+id);
   }
 

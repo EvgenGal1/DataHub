@@ -7,7 +7,7 @@ import {
   Optional,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Logger } from 'winston';
+// import { Logger } from 'winston';
 
 import { CreateRoleDto } from './dto/create-role.dto';
 import { UpdateRoleDto } from './dto/update-role.dto';
@@ -25,7 +25,7 @@ import {
 @Injectable()
 export class RolesService {
   constructor(
-    @Inject('WINSTON_LOGGER') private readonly logger: Logger,
+    // @Inject('WINSTON_LOGGER') private readonly logger: Logger,
     //
     @Optional()
     @InjectRepository(UserEntity, 'supabase')
@@ -52,9 +52,9 @@ export class RolesService {
 
   async createRole(createRoleDto: CreateRoleDto) {
     // логи,перем.ошб.
-    this.logger.info(
-      `Запись Role в БД ${isProduction ? 'SB' : isDevelopment ? 'LH' : 'SB и LH'}`,
-    );
+    // this.logger.info(
+    //   `Запись Role в БД ${isProduction ? 'SB' : isDevelopment ? 'LH' : 'SB и LH'}`,
+    // );
     const err = `Role не сохранён в БД`;
     // `получить наименьший доступный идентификатор` из БД > табл.role
     const smallestFreeId =
