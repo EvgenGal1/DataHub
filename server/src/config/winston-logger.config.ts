@@ -13,7 +13,7 @@ export const WinstonLoggerProvider = {
   useFactory: () => {
     // перем.transport > нес.кмд.запуска
     const transportsArray: transport[] = [new transports.Console()];
-    // опред.мкд.запуск
+    // опред.кмд.запуска
     if (isDevelopment || isTotal) {
       transportsArray.push(
         // new FileRotateTransport // настр. > Elasticsearch + Kibana

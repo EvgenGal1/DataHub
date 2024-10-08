@@ -2,6 +2,7 @@
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { NestExpressApplication } from '@nestjs/platform-express';
+import { ConsoleLogger } from '@nestjs/common';
 import * as path from 'path';
 import * as fs from 'fs';
 
@@ -23,21 +24,23 @@ async function bootstrap(): Promise<any> {
     });
 
     // логи
-    // const logger = app.get('WINSTON_LOGGER');
-    // app.useLogger(logger);
-    // if (isDevelopment || isTotal) {
-    //   // созд.п. > логи
-    //   const tmpDir = path.join(process.cwd(), 'tmp');
-    //   if (!fs.existsSync(tmpDir)) {
-    //     console.log('123 : ' + 123);
-    //     fs.mkdirSync(tmpDir, { recursive: true });
-    //   }
-    //   const logDir = path.join(tmpDir, 'logs');
-    //   if (!fs.existsSync(logDir)) {
-    //     console.log('345 : ' + 345);
-    //     fs.mkdirSync(logDir, { recursive: true });
-    //   }
-    // }
+    const logger = app.get('WINSTON_LOGGER');
+    if (isDevelopment || isTotal) {
+      app.useLogger(logger);
+      // созд.п. > логи
+      const tmpDir = path.join(process.cwd(), 'tmp');
+      if (!fs.existsSync(tmpDir)) {
+        console.log('123 : ' + 123);
+        fs.mkdirSync(tmpDir, { recursive: true });
+      }
+      const logDir = path.join(tmpDir, 'logs');
+      if (!fs.existsSync(logDir)) {
+        console.log('345 : ' + 345);
+        fs.mkdirSync(logDir, { recursive: true });
+      }
+    } else if (isProduction) {
+      app.useLogger(new ConsoleLogger());
+    }
 
     // обраб.ошб.ч/з глобал.обраб.исключений
     app.useGlobalFilters(new HttpExceptionFilter());
