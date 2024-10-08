@@ -10,22 +10,18 @@
   },
   "builds": [
     {
-      "src": "dist/main.js",
+      "src": "src/main.ts",
       "use": "@vercel/node",
       "config": {
-        "includeFiles": ["dist/**/*", "package.json", "tsconfig.json"],
+        "includeFiles": ["src/**/*", "package.json", "tsconfig.json"],
         "installCommand": "npm install"
       }
     }
   ],
   "routes": [
     {
-      "src": "/api/(.*)",
-      "dest": "/dist/main.js"
-    },
-    {
       "src": "/(.*)",
-      "dest": "/dist/main.js",
+      "dest": "src/main.ts",
       "methods": ["GET", "HEAD", "PUT", "PATCH", "POST", "DELETE"]
     }
   ]

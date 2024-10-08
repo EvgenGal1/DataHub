@@ -9,7 +9,7 @@
     "build_1": "tsc",
     "build": "nest build",
     "start_1": "node dist/main.js",
-    "start": "cross-env NODE_ENV=production node dist/main.js",
+    "start": "cross-env NODE_ENV=production nest start",
     "build_0": "nest build",
     "build___0": "npm install --legacy-peer-deps && npm run build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
