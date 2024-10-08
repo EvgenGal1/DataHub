@@ -86,8 +86,7 @@ async function bootstrap(): Promise<any> {
 
     let url: string;
     // прослуш.PORT и fn()callback с cg на Запуск
-    /* return */ await app.listen(
-      PORT /* , () => {
+    /* return */ await app.listen(PORT, () => {
       // console.log(`Запуск Сервер > PORT ${PORT}`);
       // ^ вывод подкл.к БД от NODE_ENV. производство(БД SB) <> разработка (dev БД SB, total БД SB, LH)
       let srt: string, port: string, source: string;
@@ -109,8 +108,7 @@ async function bootstrap(): Promise<any> {
         url = process.env.VERCEL_URL;
       }
       console.log(`${srt}. БД: ${port}, SRV: '${source}' - ${url}`);
-    } */,
-    );
+    });
     if (logger && isDevelopment)
       logger.info(`Приложение работает на: ${/* await app.getUrl() */ url}`);
   } catch (e) {
