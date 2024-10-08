@@ -24,39 +24,32 @@ async function bootstrap(): Promise<any> {
     });
 
     // логи
-    const logger = app.get('WINSTON_LOGGER');
+    let logger;
     if (isDevelopment || isTotal) {
+      logger = app.get('WINSTON_LOGGER');
       app.useLogger(logger);
+
       // созд.п. > логи
       const tmpDir = path.join(process.cwd(), 'tmp');
-      if (!fs.existsSync(tmpDir)) {
-        console.log('123 : ' + 123);
-        fs.mkdirSync(tmpDir, { recursive: true });
-      }
+      if (!fs.existsSync(tmpDir)) fs.mkdirSync(tmpDir, { recursive: true });
       const logDir = path.join(tmpDir, 'logs');
-      if (!fs.existsSync(logDir)) {
-        console.log('345 : ' + 345);
-        fs.mkdirSync(logDir, { recursive: true });
-      }
+      if (!fs.existsSync(logDir)) fs.mkdirSync(logDir, { recursive: true });
     } else if (isProduction) {
-      app.useLogger(new ConsoleLogger());
+      logger = new ConsoleLogger();
+      app.useLogger(logger);
     }
 
     // обраб.ошб.ч/з глобал.обраб.исключений
     app.useGlobalFilters(new HttpExceptionFilter());
 
-    // PORT Запуска
-    // const PORT = process.env.PORT || 5000;
+    // PORT Запуска SRV
     let PORT: number;
-    if (isDevelopment || isTotal) {
-      PORT = +process.env.PORT || 3000;
-    } else if (isProduction) {
-      PORT = +process.env.SB_PG_PORT || 3000;
-    }
+    if (isDevelopment || isTotal) PORT = +process.env.PORT || 3000;
+    else if (isProduction) PORT = +process.env.SB_PG_PORT || 3000;
 
     // настр.док.swagger(swg)
-    // const configSwagger = new DocumentBuilder()
-    const config = new DocumentBuilder()
+    const configSwagger = new DocumentBuilder()
+      // const config = new DocumentBuilder()
       .setTitle('Центр Данных - Data Hub')
       .setDescription('Описание API Центра Данных')
       .setVersion('1.0')
@@ -77,7 +70,7 @@ async function bootstrap(): Promise<any> {
     //   config.addServer(process.env.VERCEL_URL);
     // }
     // const configSwagger = config.addTag('app').build();
-    const configSwagger = config;
+    // const configSwagger = config;
 
     // созд.док.swg(экземп.прилож., объ.парам., специф.доступа(3ий не обязат.парам.))
     const document = SwaggerModule.createDocument(app, configSwagger);
@@ -115,10 +108,11 @@ async function bootstrap(): Promise<any> {
         source = 'VERCEL';
         url = process.env.VERCEL_URL;
       }
-      console.log(`${srt}. Сервер - ${port}, подключён '${source}' - ${url}`);
+      console.log(`${srt}. БД: ${port}, SRV: '${source}' - ${url}`);
     } */,
     );
-    // if (isDevelopment)logger.info(`Приложение работает на: ${/* await app.getUrl() */ url}`);
+    if (logger && isDevelopment)
+      logger.info(`Приложение работает на: ${/* await app.getUrl() */ url}`);
   } catch (e) {
     console.log('main e : ' + e);
   }
