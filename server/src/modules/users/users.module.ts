@@ -13,7 +13,7 @@ import { AlbumEntity } from '../albums/entities/album.entity';
 // утилиты БД
 import { DatabaseUtils } from '../../common/utils/database.utils';
 // логи
-import { WinstonLoggerProvider } from '../../config/winston-logger.config';
+// import { WinstonLoggerProvider } from '../../config/winston-logger.config';
 // константы > команды запуска process.env.NODE_ENV
 import {
   isProduction,
@@ -62,7 +62,7 @@ import {
     // forwardRef(() => AuthModule),
   ],
   controllers: [UsersController],
-  providers: [UsersService, DatabaseUtils, WinstonLoggerProvider],
+  providers: [UsersService, DatabaseUtils /* , WinstonLoggerProvider */],
   // exp. UsersService для видимости вне modulя (напр.в AuthService)
   exports: [UsersService],
 })

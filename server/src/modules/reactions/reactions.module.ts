@@ -14,7 +14,7 @@ import { TrackEntity } from '../tracks/entities/track.entity';
 import { AlbumEntity } from '../albums/entities/album.entity';
 // import { DatabaseUtils } from '../utils/database.utils';
 // логи
-import { WinstonLoggerProvider } from '../../config/winston-logger.config';
+// import { WinstonLoggerProvider } from '../../config/winston-logger.config';
 // константы > команды запуска process.env.NODE_ENV
 import {
   isProduction,
@@ -63,6 +63,6 @@ import {
     // forwardRef(() => AuthModule),
   ],
   controllers: [ReactionsController],
-  providers: [ReactionsService, WinstonLoggerProvider],
+  providers: [ReactionsService /* , WinstonLoggerProvider */],
 })
 export class ReactionsModule {}

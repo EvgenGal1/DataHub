@@ -18,7 +18,7 @@ import { ReactionsModule } from './modules/reactions/reactions.module.js';
 import { localhostConfig } from './config/envs/localhost.config.js';
 import { supabaseConfig } from './config/envs/supabase.config.js';
 // логи
-import { WinstonLoggerProvider } from './config/winston-logger.config.js';
+// import { WinstonLoggerProvider } from './config/winston-logger.config.js';
 // константы > команды запуска process.env.NODE_ENV
 import {
   isProduction,
@@ -74,8 +74,8 @@ import {
   // подкл.cnrtl данного модуля
   controllers: [AppController, AppController2],
   // подкл.serv данного модуля
-  providers: [AppService, WinstonLoggerProvider],
-  exports: [WinstonLoggerProvider],
+  providers: [AppService /* , WinstonLoggerProvider */],
+  // exports: [WinstonLoggerProvider],
 })
 export class AppModule {
   // ^ замена ServeStaticModule от ошб. при сборке VERCEL от -v @nestjs/(serve-static, common)

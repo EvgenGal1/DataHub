@@ -16,7 +16,7 @@ import { BasicUtils } from '../../common/utils/basic.utils';
 // утилиты БД
 import { DatabaseUtils } from '../../common/utils/database.utils';
 // логи
-import { WinstonLoggerProvider } from '../../config/winston-logger.config';
+// import { WinstonLoggerProvider } from '../../config/winston-logger.config';
 // константы > команды запуска process.env.NODE_ENV
 import {
   isProduction,
@@ -67,7 +67,7 @@ import {
     FilesService,
     DatabaseUtils,
     BasicUtils,
-    WinstonLoggerProvider,
+    // WinstonLoggerProvider,
   ],
   exports: [TracksService],
 })
