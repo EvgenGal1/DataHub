@@ -8,14 +8,14 @@ import { TrackEntity } from '../../modules/tracks/entities/track.entity';
 import { AlbumEntity } from '../../modules/albums/entities/album.entity';
 import { ReactionEntity } from '../../modules/reactions/entities/reaction.entity';
 
-export /* default */ const supabaseConfig = (): TypeOrmModuleOptions => ({
+export const supabaseConfig = (): TypeOrmModuleOptions => ({
   name: 'supabase',
   type: 'postgres',
-  host: process.env.SB_PG_HOST,
-  port: /* + */ Number(process.env.SB_PG_PORT),
-  database: process.env.SB_PG_DBN,
-  username: process.env.SB_PG_USER,
-  password: process.env.SB_PG_PSW,
+  host: process.env.DB_SB_HOST,
+  port: Number(process.env.DB_SB_PORT),
+  database: process.env.DB_SB_NAME,
+  username: process.env.DB_SB_USER,
+  password: process.env.DB_SB_PSW,
   entities: [
     UserEntity,
     RoleEntity,

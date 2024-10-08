@@ -24,24 +24,21 @@ export class AppService {
   }
 
   getHello(): string {
-    let srt: string, port: string, url: string, source: string;
+    let mod: string, db: string, srv: string;
     if (isProduction) {
-      srt = 'PROD';
-      port = process.env.SB_PG_PORT + '(SUPABASE)';
-      source = 'VERCEL';
-      url = process.env.VERCEL_URL;
-    } else if (isTotal) {
-      srt = 'DEV + PROD';
-      source = 'LocalHost++';
-      port = `${process.env.LH_PG_PORT}(${source})`;
-      source = 'LocalHost + SupaBase';
-      url = process.env.PROTOCOL + process.env.PORT;
+      mod = 'PROD';
+      db = process.env.DB_SB_PORT;
+      srv = process.env.SRV_VL_URL;
     } else if (isDevelopment) {
-      srt = 'DEV';
-      source = 'localhost';
-      port = `${process.env.LH_PG_PORT}(${source})`;
-      url = process.env.PROTOCOL + process.env.PORT;
+      mod = 'DEV';
+      db = process.env.LH_DB_PORT;
+      srv = process.env.LH_SRV_URL + process.env.LH_SRV_PORT;
+    } else if (isTotal) {
+      mod = 'DEV + PROD';
+      db = process.env.LH_DB_PORT;
+      srv = process.env.LH_SRV_URL + process.env.LH_SRV_PORT;
     }
-    return `${srt}. Сервер - ${port}, подключён '${source}' - ${url}`;
+    console.log(`${mod}.a.serv.  SRV: '${srv}  DB: ${db}`);
+    return `${mod}.a.serv.  SRV: '${srv}  DB: ${db}`;
   }
 }

@@ -8,14 +8,14 @@ import { TrackEntity } from '../../modules/tracks/entities/track.entity';
 import { AlbumEntity } from '../../modules/albums/entities/album.entity';
 import { ReactionEntity } from '../../modules/reactions/entities/reaction.entity';
 
-export /* default */ const localhostConfig = (): TypeOrmModuleOptions => ({
+export const localhostConfig = (): TypeOrmModuleOptions => ({
   name: 'localhost',
   type: 'postgres',
-  host: process.env.LH_PG_HOST,
-  port: parseInt(process.env.LH_PG_PORT, 10) || 5432,
-  database: process.env.LH_PG_DBN,
-  username: process.env.LH_PG_USER,
-  password: process.env.LH_PG_PSW,
+  host: process.env.LH_DB_HOST,
+  port: parseInt(process.env.LH_DB_PORT, 10) || 5432,
+  database: process.env.LH_DB_NAME,
+  username: process.env.LH_DB_USER,
+  password: process.env.LH_DB_PSW,
   entities: [
     UserEntity,
     RoleEntity,

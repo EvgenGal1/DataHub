@@ -25,59 +25,47 @@ async function bootstrap(): Promise<any> {
 
     // логи
     let logger;
-    if (isDevelopment || isTotal) {
-      logger = app.get('WINSTON_LOGGER');
-      app.useLogger(logger);
-
+    if (isProduction) app.useLogger(new ConsoleLogger());
+    else if (isDevelopment || isTotal) {
+      app.useLogger(app.get('WINSTON_LOGGER'));
       // созд.п. > логи
       const tmpDir = path.join(process.cwd(), 'tmp');
       if (!fs.existsSync(tmpDir)) fs.mkdirSync(tmpDir, { recursive: true });
       const logDir = path.join(tmpDir, 'logs');
       if (!fs.existsSync(logDir)) fs.mkdirSync(logDir, { recursive: true });
-    } else if (isProduction) {
-      logger = new ConsoleLogger();
-      app.useLogger(logger);
     }
 
     // обраб.ошб.ч/з глобал.обраб.исключений
     app.useGlobalFilters(new HttpExceptionFilter());
 
     // PORT Запуска SRV
-    let PORT: number;
-    if (isDevelopment || isTotal) PORT = +process.env.PORT || 3000;
-    else if (isProduction) PORT = +process.env.SB_PG_PORT || 3000;
+    const PORT: number = isProduction
+      ? +process.env.DB_SB_PORT || 3000
+      : +process.env.LH_SRV_PORT || 3000;
 
     // настр.док.swagger(swg)
     const configSwagger = new DocumentBuilder()
       // const config = new DocumentBuilder()
-      .setTitle('Центр Данных - Data Hub')
-      .setDescription('Описание API Центра Данных')
-      .setVersion('1.0')
+      .setTitle('Data Hub | Центр Данных')
+      .setDescription('Описание интегр.мтд.API')
+      .setVersion('1.1')
       // настр.для использ.jwt.Токен в swagger
       .addBearerAuth()
       // Указ.URL Своёго сервера (localhost | VERCEL)
-      // .addServer(`${process.env.PROTOCOL}${PORT}` | VERCEL_URL)
       .addServer(
         isProduction
-          ? process.env.VERCEL_URL
-          : `${process.env.PROTOCOL}${PORT}`,
+          ? process.env.SRV_VL_URL
+          : `${process.env.LH_SRV_URL}${process.env.LH_SRV_PORT}`,
       )
       .addTag('app')
       .build();
-    // if (isDevelopment || isTotal) {
-    //   config.addServer(`${process.env.PROTOCOL}${PORT}`);
-    // } else if (isProduction) {
-    //   config.addServer(process.env.VERCEL_URL);
-    // }
-    // const configSwagger = config.addTag('app').build();
-    // const configSwagger = config;
 
     // созд.док.swg(экземп.прилож., объ.парам., специф.доступа(3ий не обязат.парам.))
     const document = SwaggerModule.createDocument(app, configSwagger);
     // настр.путей swg(путь устан.swg, экземп.прилож., объ.док.)
     SwaggerModule.setup('swagger', app, document, {
       // Название страницы Swagger
-      customSiteTitle: 'Центр Данных - Data Hub (swg)',
+      customSiteTitle: 'Data Hub | Центр Данных (swg)',
       swaggerOptions: {
         // `постоянное разрешение`настр.для использ.jwt.Токен в swagger
         persistAuthorization: true,
@@ -86,28 +74,23 @@ async function bootstrap(): Promise<any> {
 
     let url: string;
     // прослуш.PORT и fn()callback с cg на Запуск
-    /* return */ await app.listen(PORT, () => {
-      // console.log(`Запуск Сервер > PORT ${PORT}`);
+    await app.listen(PORT, () => {
       // ^ вывод подкл.к БД от NODE_ENV. производство(БД SB) <> разработка (dev БД SB, total БД SB, LH)
-      let srt: string, port: string, source: string;
-      if (isDevelopment) {
-        srt = 'DEV';
-        source = 'LocalHost';
-        port = `${process.env.LH_PG_PORT}(${source})`;
-        url = process.env.PROTOCOL + process.env.PORT;
+      let mod: string, db: string, srv: string;
+      if (isProduction) {
+        mod = 'PROD';
+        db = process.env.DB_SB_URL;
+        srv = process.env.SRV_VL_URL;
+      } else if (isDevelopment) {
+        mod = 'DEV';
+        db = `${process.env.LH_DB_NAME}_${process.env.LH_DB_USER}:${process.env.LH_DB_PORT}`;
+        srv = process.env.LH_SRV_URL + process.env.LH_SRV_PORT;
       } else if (isTotal) {
-        srt = 'DEV + PROD';
-        source = 'LocalHost++';
-        port = `${process.env.LH_PG_PORT}(${source})`;
-        source = 'LocalHost + SupaBase';
-        url = process.env.PROTOCOL + process.env.PORT;
-      } else if (isProduction) {
-        srt = 'PROD';
-        port = process.env.SB_PG_PORT + '(SupaBase)';
-        source = 'VERCEL';
-        url = process.env.VERCEL_URL;
+        mod = 'DEV + PROD';
+        db = `${process.env.LH_DB_NAME}_${process.env.LH_DB_USER}:${process.env.LH_DB_PORT}`;
+        srv = process.env.LH_SRV_URL + process.env.LH_SRV_PORT;
       }
-      console.log(`${srt}. БД: ${port}, SRV: '${source}' - ${url}`);
+      console.log(`${mod}.m.  SRV: ${srv}  DB: ${db}  `);
     });
     if (logger && isDevelopment)
       logger.info(`Приложение работает на: ${/* await app.getUrl() */ url}`);
@@ -115,7 +98,4 @@ async function bootstrap(): Promise<any> {
     console.log('main e : ' + e);
   }
 }
-// if (require.main === module) {
 bootstrap();
-// }
-// export default bootstrap;
