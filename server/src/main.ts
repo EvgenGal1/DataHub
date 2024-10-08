@@ -46,9 +46,9 @@ async function bootstrap(): Promise<any> {
     // const PORT = process.env.PORT || 5000;
     let PORT: number;
     if (isDevelopment || isTotal) {
-      PORT = +process.env.PORT;
+      PORT = +process.env.PORT || 3000;
     } else if (isProduction) {
-      PORT = +process.env.SB_PG_PORT;
+      PORT = +process.env.SB_PG_PORT || 3000;
     }
 
     // настр.док.swagger(swg)
@@ -58,17 +58,23 @@ async function bootstrap(): Promise<any> {
       .setDescription('Описание API Центра Данных')
       .setVersion('1.0')
       // настр.для использ.jwt.Токен в swagger
-      .addBearerAuth();
-    // Указ.URL Своёго сервера (localhost | VERCEL)
-    // .addServer(`${process.env.PROTOCOL}${PORT}`)
-    // .addServer(`${process.env.VERCEL_URL}`)
-    // .addTag('app') .build();
-    if (isDevelopment || isTotal) {
-      config.addServer(`${process.env.PROTOCOL}${PORT}`);
-    } else if (isProduction) {
-      config.addServer(process.env.VERCEL_URL);
-    }
-    const configSwagger = config.addTag('app').build();
+      .addBearerAuth()
+      // Указ.URL Своёго сервера (localhost | VERCEL)
+      // .addServer(`${process.env.PROTOCOL}${PORT}` | VERCEL_URL)
+      .addServer(
+        isProduction
+          ? process.env.VERCEL_URL
+          : `${process.env.PROTOCOL}${PORT}`,
+      )
+      .addTag('app')
+      .build();
+    // if (isDevelopment || isTotal) {
+    //   config.addServer(`${process.env.PROTOCOL}${PORT}`);
+    // } else if (isProduction) {
+    //   config.addServer(process.env.VERCEL_URL);
+    // }
+    // const configSwagger = config.addTag('app').build();
+    const configSwagger = config;
 
     // созд.док.swg(экземп.прилож., объ.парам., специф.доступа(3ий не обязат.парам.))
     const document = SwaggerModule.createDocument(app, configSwagger);

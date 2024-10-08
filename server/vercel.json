@@ -13,12 +13,7 @@
       "src": "dist/main.js",
       "use": "@vercel/node",
       "config": {
-        "includeFiles": [
-          "dist/**/*",
-          "src/**/*",
-          "package.json",
-          "tsconfig.json"
-        ],
+        "includeFiles": ["dist/**/*", "package.json", "tsconfig.json"],
         "installCommand": "npm install"
       }
     }
@@ -26,15 +21,11 @@
   "routes": [
     {
       "src": "/api/(.*)",
-      "dest": "dist/main.js"
-    },
-    {
-      "src": "/(favicon.ico|.*(jpg|jpeg|png|gif|css|js))",
-      "dest": "/public/$1"
+      "dest": "/dist/main.js"
     },
     {
       "src": "/(.*)",
-      "dest": "dist/main.js",
+      "dest": "/dist/main.js",
       "methods": ["GET", "HEAD", "PUT", "PATCH", "POST", "DELETE"]
     }
   ]
