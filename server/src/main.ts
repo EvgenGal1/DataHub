@@ -121,6 +121,6 @@ async function bootstrap(): Promise<any> {
   }
 }
 // if (require.main === module) {
-//   bootstrap();
+bootstrap();
 // }
-export default bootstrap;
+// export default bootstrap;
