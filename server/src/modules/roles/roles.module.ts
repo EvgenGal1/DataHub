@@ -10,7 +10,7 @@ import { FileEntity } from '../files/entities/file.entity';
 import { TrackEntity } from '../tracks/entities/track.entity';
 import { AlbumEntity } from '../albums/entities/album.entity';
 import { DatabaseUtils } from '../../common/utils/database.utils';
-// import { WinstonLoggerProvider } from '../../config/winston-logger.config';
+import { WinstonLoggerProvider } from '../../config/winston-logger.config';
 import {
   isProduction,
   isDevelopment,
@@ -51,7 +51,7 @@ import {
       : []),
   ],
   controllers: [RolesController],
-  providers: [RolesService, DatabaseUtils /* , WinstonLoggerProvider */],
+  providers: [RolesService, DatabaseUtils, WinstonLoggerProvider],
   exports: [RolesService],
 })
 export class RolesModule {}
