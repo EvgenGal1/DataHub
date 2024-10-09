@@ -11,14 +11,25 @@ const { timestamp, combine, json, errors } = format;
 export const WinstonLoggerProvider = {
   provide: 'WINSTON_LOGGER',
   useFactory: () => {
-    // перем.transport > нес.кмд.запуска
-    const transportsArray: transport[] = [new transports.Console()];
-    // опред.кмд.запуска
+    // масс.кмд.запуска/транспорт > лог-ия
+    const transportsArray: transport[] = [
+      // консол.транспорт > всех окружений
+      new transports.Console({
+        level: isDevelopment ? 'debug' : 'info',
+        format: combine(
+          timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
+          errors({ stack: true }),
+          json(),
+        ),
+      }),
+    ];
+    // DEV|TOTAL + доп.кмд. (ф.)
     if (isDevelopment || isTotal) {
+      // файлы для dev и total
       transportsArray.push(
         // new FileRotateTransport // настр. > Elasticsearch + Kibana
         // ! ошб.врем.откл. - ошб.vercel - read-only file system, mkdir '/var/task/' | '/var/logs/'
-        // дател.гастр.ф. > кажд.день
+        // детал.настр.ф. > кажд.день
         new transports.DailyRotateFile({
           filename: 'app(DailyRotate)-%DATE%.log',
           datePattern: 'YYYY-MM-DD',
@@ -32,6 +43,7 @@ export const WinstonLoggerProvider = {
             '/tmp/logs',
           ),
         }),
+        // доп.ф. > обычн.лог.
         new transports.File({
           filename: 'app(File)-%DATE%.log',
           zippedArchive: true,
@@ -40,6 +52,7 @@ export const WinstonLoggerProvider = {
       );
     }
 
+    // созд.логгера с настр. формата/уровня > dev/prod
     return createLogger({
       // levels: config.npm.levels,
       level: isDevelopment ? 'debug' : 'info',
