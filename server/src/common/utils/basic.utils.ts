@@ -45,6 +45,25 @@ export class BasicUtils {
     }
   }
 
+  // опред.типа ошб.
+  async hendlerTypesErrors(error: unknown) {
+    if (error instanceof Error) {
+      // ошб.смс
+      return error.message;
+    } else if (typeof error === 'string') {
+      // стр.
+      return error;
+    } else if (Array.isArray(error)) {
+      // масс.
+      return JSON.stringify(error);
+    } else if (typeof error === 'object' && error !== null) {
+      // объ.
+      return JSON.stringify(error);
+    } else {
+      return 'Неизвестная ошибка';
+    }
+  }
+
   // вычисление общего времени в фомате минуты:секунды
   async sumDurations(duration1, duration2) {
     const [min1, sec1] = duration1.split(':').map(Number);
