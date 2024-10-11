@@ -96,10 +96,6 @@ export class AlbumsService {
           coverObj,
           totalAlbumData,
         );
-
-      this.logger.error(
-        `!Ошб. + Album: ${await this.basicUtils.hendlerTypesErrors(error)}`,
-      );
       throw error;
     }
   }
@@ -312,10 +308,6 @@ export class AlbumsService {
           totalAlbumDto,
           param,
         );
-
-      this.logger.error(
-        `!Ошб. # Album: ${await this.basicUtils.hendlerTypesErrors(error)}`,
-      );
       throw error;
     }
   }
