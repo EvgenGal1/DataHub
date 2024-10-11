@@ -2,9 +2,15 @@
 import * as fs from 'fs';
 import * as mm from 'music-metadata';
 import iconv from 'iconv-lite';
+import { Logger } from 'winston';
+import { Inject } from '@nestjs/common';
 
 // @Injectable()
 export class BasicUtils {
+  constructor(
+    // логгер
+    @Inject('WINSTON_LOGGER') private readonly logger: Logger,
+  ) {}
   // опред.сохр.пути по передан.типу
   static fileTargets(fileType: string): string {
     console.log('BasicUtils fileTargets fileType : ' + fileType);
@@ -43,6 +49,20 @@ export class BasicUtils {
       default:
         return 'other';
     }
+  }
+
+  async logDebugDev(...args: any[]) {
+    // лог.в консоль
+    console.log(...args);
+
+    // формир.объ.лог
+    const logObject = {};
+    args.forEach((arg, index) => {
+      logObject[`arg${index + 1}`] = arg;
+    });
+
+    // лог.logger
+    this.logger.debug(`logger : ${JSON.stringify(logObject)}`);
   }
 
   // опред.типа ошб.
