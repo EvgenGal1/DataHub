@@ -47,7 +47,7 @@ export class AlbumController {
     @UserId() userId: number,
   ) {
     try {
-      this.logger.info(`res + Alb ID: ${userId}`);
+      this.logger.info(`req + Alb ID: ${userId}`);
       return await this.albumsService.createAlbum(createAlbumDto, userId);
     } catch (error) {
       throw new HttpException(
@@ -61,7 +61,7 @@ export class AlbumController {
   @ApiOperation({ summary: 'Получить Все Альбомы' })
   async findAllAlbum() {
     try {
-      this.logger.info(`res < Alb All`);
+      this.logger.info(`req < Alb All`);
       return this.albumsService.findAllAlbums();
     } catch (error) {
       throw new HttpException(
@@ -75,7 +75,7 @@ export class AlbumController {
   @ApiOperation({ summary: 'Получить Альбом' })
   async findOneAlbum(@Param('id') id: string) {
     try {
-      this.logger.info(`res < Alb ID ${id}`);
+      this.logger.info(`req < Alb ID ${id}`);
       return this.albumsService.findOneAlbum(+id);
     } catch (error) {
       throw new HttpException(
@@ -92,7 +92,7 @@ export class AlbumController {
     @Body() updateAlbumDto: UpdateAlbumDto,
   ) {
     try {
-      this.logger.info(`res # Alb ID ${id}`);
+      this.logger.info(`req # Alb ID ${id}`);
       return this.albumsService.updateAlbum(+id, updateAlbumDto);
     } catch (error) {
       throw new HttpException(
@@ -106,7 +106,7 @@ export class AlbumController {
   @ApiOperation({ summary: 'Удалить Альбом/ы' })
   async removeAlbum(@Param('id') id: string) {
     try {
-      this.logger.info(`res - Alb ID ${id}`);
+      this.logger.info(`req - Alb ID ${id}`);
       return this.albumsService.removeAlbum(+id);
     } catch (error) {
       throw new HttpException(
@@ -128,7 +128,7 @@ export class AlbumController {
     /* @Param // возвращ.всё */ @Query('author') authorName: string,
   ) /* : Promise<Album[]> // надо ли тип.возврат. */ {
     try {
-      this.logger.info(`res < Alb.Author ${authorName}`);
+      this.logger.info(`req < Alb.Author ${authorName}`);
       return this.albumsService.searchByAuthor(authorName);
     } catch (error) {
       throw new HttpException(
@@ -145,7 +145,7 @@ export class AlbumController {
   @ApiOperation({ summary: 'Поиск Альбома по Названию' })
   async searchByAlbumName(@Query('album') albumName: string) {
     try {
-      this.logger.info(`res < Alb.Name ${albumName}`);
+      this.logger.info(`req < Alb.Name ${albumName}`);
       return this.albumsService.searchByAlbumName(albumName);
     } catch (error) {
       throw new HttpException(
@@ -169,10 +169,10 @@ export class AlbumController {
     try {
       switch (searchBy) {
         case 'название':
-          this.logger.info(`res < Track.count Alb.Name ${value}`);
+          this.logger.info(`req < Track.count Alb.Name ${value}`);
           return this.albumsService.getTrackCountByAlbumName(value);
         case 'id':
-          this.logger.info(`res < Track.count Alb.ID ${value}`);
+          this.logger.info(`req < Track.count Alb.ID ${value}`);
           return this.albumsService.getTrackCountByAlbumId(Number(value));
         // ^ Добавьте обработку других вариантов поиска по своим требованиям
         default:
@@ -202,7 +202,7 @@ export class AlbumController {
     try {
       const props = {};
       props[field] = value;
-      this.logger.info(`res < Alb.Param ${value}`);
+      this.logger.info(`req < Alb.Param ${value}`);
       return this.albumsService.getAlbumByProps(props);
     } catch (error) {
       throw new HttpException(
