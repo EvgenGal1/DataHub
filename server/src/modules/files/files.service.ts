@@ -127,7 +127,7 @@ export class FilesService {
 
     // Если переданы все типы файлов или не указано значение, возвращаем все файлы
     // ! Аргумент типа ""all"" нельзя назначить параметру типа "FileType" (вход.props)
-    if (validTypes.includes('all') || validTypes.length == 0) {
+    if (validTypes.includes('all') || validTypes.length === 0) {
       console.log('Возвращение всех файлов');
       return qb.getMany();
     }

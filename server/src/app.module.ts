@@ -15,8 +15,8 @@ import { TrackModule } from './modules/tracks/tracks.module.js';
 import { AlbumModule } from './modules/albums/albums.module.js';
 import { ReactionsModule } from './modules/reactions/reactions.module.js';
 // БД. config
-import { localhostConfig } from './config/envs/localhost.config.js';
-import { supabaseConfig } from './config/envs/supabase.config.js';
+import { localhostConfig } from './config/localhost.config.js';
+import { supabaseConfig } from './config/supabase.config.js';
 // логи
 import { WinstonLoggerProvider } from './config/winston-logger.config.js';
 // константы > команды запуска process.env.NODE_ENV

@@ -583,7 +583,7 @@ export class TracksService {
         // ID Обложки Альбома
         albums_coverId = albumGet.albums_coverId;
 
-        albumGet.albums_total_tracks == 1
+        albumGet.albums_total_tracks === 1
           ? // удал.Альбома
             await this.albumsService.deleteAlbum(
               albumId,
