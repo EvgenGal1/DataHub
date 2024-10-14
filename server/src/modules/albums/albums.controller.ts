@@ -47,7 +47,7 @@ export class AlbumController {
     @UserId() userId: number,
   ) {
     try {
-      this.logger.info(`req + Alb ID: ${userId}`);
+      this.logger.info(`req + Alb User.ID: ${userId}`);
       return await this.albumsService.createAlbum(createAlbumDto, userId);
     } catch (error) {
       throw new HttpException(

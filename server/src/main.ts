@@ -32,7 +32,8 @@ async function bootstrap(): Promise<any> {
     let logger;
     if (isProduction) app.useLogger(new ConsoleLogger());
     else if (isDevelopment || isTotal) {
-      app.useLogger(app.get('WINSTON_LOGGER'));
+      logger = app.get('WINSTON_LOGGER');
+      app.useLogger(logger);
       // созд.п. > логи
       const tmpDir = path.join(process.cwd(), 'tmp');
       if (!fs.existsSync(tmpDir)) fs.mkdirSync(tmpDir, { recursive: true });
