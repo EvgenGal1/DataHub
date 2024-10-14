@@ -6,5 +6,5 @@
 
 ### Deploy Vercel
 
-- [Deploy Frontend](https://music-platform-clt-next.vercel.app/)
-- [Deploy Backend](https://Data-Hub-serv-nest.vercel.app/)
+- [Deploy Frontend](https://Data-Hub-clt-next.vercel.app/)
+- [Deploy Backend](https://Data-Hub-srv-nest.vercel.app/)
