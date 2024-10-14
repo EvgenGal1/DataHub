@@ -99,6 +99,7 @@ webpack*
 !/**/src/common/filters/
 !/**/src/common/pipes/
 !/**/src/services/storage/
+!/**/src/services/logging/
 !/**/src/common/utils/
 # все.ф.в п. 
 # !/**/src/common/decorators/**
@@ -115,5 +116,6 @@ webpack*
 !/**/src/common/utils/basic.utils.ts
 !/**/src/common/utils/database.utils.ts
 !/**/src/services/storage/storage.ts
+!/**/src/services/logging/logging.winston.ts
 # !/**/src/config/envs/elephant.config.ts
 # !/**/src/config/envs/configurationLocalhost.ts

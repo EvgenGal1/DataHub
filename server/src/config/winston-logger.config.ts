@@ -45,7 +45,7 @@ export const WinstonLoggerProvider = {
         }),
         // доп.ф. > обычн.лог.
         new transports.File({
-          filename: 'app(File)-%DATE%.log',
+          filename: `app(File)-ALL.log`,
           zippedArchive: true,
           dirname: path.join(process.cwd(), '/tmp/logs'),
         }),

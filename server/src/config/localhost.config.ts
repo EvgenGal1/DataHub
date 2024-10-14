@@ -28,5 +28,5 @@ export const localhostConfig = (): TypeOrmModuleOptions => ({
     // `../../*/entities/*.entity.ts`, `src/*/entities/*.entity{.ts,.js}`, `src/**/*.entity.ts`, `*/entities/**.entity{.ts}`, path.join(__dirname, 'src', '**', 'entities', '*.entity.{ts,js}'),
   ],
   synchronize: true,
-  logging: true,
+  // logging: true,
 });
