@@ -13,7 +13,7 @@ import { UserEntity } from '../users/entities/user.entity';
 import { RoleEntity } from '../roles/entities/role.entity';
 import { BasicUtils } from '../../common/utils/basic.utils';
 import { DatabaseUtils } from '../../common/utils/database.utils';
-import { WinstonLoggerProvider } from '../../config/winston-logger.config';
+import { LoggingWinston } from '../../services/logging/logging.winston';
 import {
   isProduction,
   isDevelopment,
@@ -60,7 +60,7 @@ import {
     FilesService,
     DatabaseUtils,
     BasicUtils,
-    WinstonLoggerProvider,
+    LoggingWinston,
   ],
   exports: [AlbumsService],
 })

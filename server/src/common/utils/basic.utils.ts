@@ -2,14 +2,15 @@
 import * as fs from 'fs';
 import * as mm from 'music-metadata';
 import iconv from 'iconv-lite';
-import { Logger } from 'winston';
-import { Inject } from '@nestjs/common';
+
+// логгирование LH
+import { LoggingWinston } from '../../services/logging/logging.winston';
 
 // @Injectable()
 export class BasicUtils {
   constructor(
     // логгер
-    @Inject('WINSTON_LOGGER') private readonly logger: Logger,
+    private readonly logger: LoggingWinston,
   ) {}
   // опред.сохр.пути по передан.типу
   static fileTargets(fileType: string): string {

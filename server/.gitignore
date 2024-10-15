@@ -105,7 +105,6 @@ webpack*
 # !/**/src/common/decorators/**
 # ф.
 !/**/src/config/
-!/**/src/config/winston-logger.config.ts
 !/**/src/common/decorators/user-id.decorator.ts
 !/**/src/config/localhost.config.ts
 !/**/src/config/envs/env.consts.ts
@@ -116,6 +115,7 @@ webpack*
 !/**/src/common/utils/basic.utils.ts
 !/**/src/common/utils/database.utils.ts
 !/**/src/services/storage/storage.ts
+!/**/src/services/logging/winston-logger.config.ts
 !/**/src/services/logging/logging.winston.ts
 # !/**/src/config/envs/elephant.config.ts
 # !/**/src/config/envs/configurationLocalhost.ts

@@ -1,13 +1,6 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */ // ^^ от ошб. - Св-во объяв., но знач.не прочитано.
-import {
-  Inject,
-  Injectable,
-  NotFoundException,
-  Optional,
-} from '@nestjs/common';
+import { Injectable, NotFoundException, Optional } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Logger } from 'winston';
 
 import { CreateAlbumDto } from './dto/create-album.dto';
 import { UpdateAlbumDto } from './dto/update-album.dto';
@@ -19,6 +12,7 @@ import { FilesService } from '../files/files.service';
 import { TotalAlbumDto } from './dto/total-album.dto';
 import { DatabaseUtils } from '../../common/utils/database.utils';
 import { BasicUtils } from '../../common/utils/basic.utils';
+import { LoggingWinston } from '../../services/logging/logging.winston';
 import {
   isProduction,
   isDevelopment,
@@ -29,7 +23,7 @@ import {
 export class AlbumsService {
   constructor(
     // логгер
-    @Inject('WINSTON_LOGGER') private readonly logger: Logger,
+    private readonly logger: LoggingWinston,
     // БД SB
     @Optional()
     @InjectRepository(AlbumEntity, 'supabase')
@@ -447,7 +441,7 @@ export class AlbumsService {
       const albAthr = await this.albumsRepository.find({
         where: { author },
       });
-      this.logger.info('alb.s Alb.ATHR : ', albAthr[0].author);
+      this.logger.info(`alb.s Alb.ATHR : ${albAthr[0].author}`);
       return albAthr;
     } catch (error) {
       this.logger.error(
@@ -464,7 +458,7 @@ export class AlbumsService {
       const albNam = await this.albumsRepository.find({
         where: { title: albumName },
       });
-      this.logger.info('alb.s Alb.TITL : ', albNam[0].title);
+      this.logger.info(`alb.s Alb.TITL : ${albNam[0].title}`);
       return albNam;
     } catch (error) {
       this.logger.error(
@@ -483,7 +477,7 @@ export class AlbumsService {
         },
       });
       const totalTracks = album ? album.total_tracks : 0;
-      this.logger.info('alb.s Alb.name count Track : ', totalTracks);
+      this.logger.info(`alb.s Alb.name count Track : ${totalTracks}`);
       return totalTracks;
     } catch (error) {
       this.logger.error(
@@ -502,7 +496,7 @@ export class AlbumsService {
         },
       });
       const totalTracks = album ? album.total_tracks : 0;
-      this.logger.info('alb.s Alb.ID count Track : ', totalTracks);
+      this.logger.info(`alb.s Alb.ID count Track : ${totalTracks}`);
       return totalTracks;
     } catch (error) {
       this.logger.error(

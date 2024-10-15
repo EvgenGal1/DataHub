@@ -12,9 +12,8 @@ import { UserRolesEntity } from '../roles/entities/user-roles.entity';
 import { FileEntity } from '../files/entities/file.entity';
 import { TrackEntity } from '../tracks/entities/track.entity';
 import { AlbumEntity } from '../albums/entities/album.entity';
-// import { DatabaseUtils } from '../utils/database.utils';
-// логи
-import { WinstonLoggerProvider } from '../../config/winston-logger.config';
+// логгирование LH
+import { LoggingWinston } from '../../services/logging/logging.winston';
 // константы > команды запуска process.env.NODE_ENV
 import {
   isProduction,
@@ -63,6 +62,6 @@ import {
     // forwardRef(() => AuthModule),
   ],
   controllers: [ReactionsController],
-  providers: [ReactionsService, WinstonLoggerProvider],
+  providers: [ReactionsService, LoggingWinston],
 })
 export class ReactionsModule {}

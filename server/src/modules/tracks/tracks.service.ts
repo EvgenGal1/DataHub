@@ -1,13 +1,6 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */ // ^^ от ошб. - Св-во объяв., но знач.не прочитано.
-import {
-  Inject,
-  Injectable,
-  NotFoundException,
-  Optional,
-} from '@nestjs/common';
+import { Injectable, NotFoundException, Optional } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, ILike, ObjectId } from 'typeorm';
-// import { Logger } from 'winston';
 import * as fs from 'fs';
 
 import { CreateTrackDto } from './dto/create-track.dto';
@@ -25,6 +18,8 @@ import { FileEntity } from '../files/entities/file.entity';
 import { BasicUtils } from '../../common/utils/basic.utils';
 // утилиты БД
 import { DatabaseUtils } from '../../common/utils/database.utils';
+// логгирование LH
+import { LoggingWinston } from '../../services/logging/logging.winston';
 // константы > команды запуска process.env.NODE_ENV
 import {
   isProduction,
@@ -36,7 +31,7 @@ import {
 export class TracksService {
   constructor(
     // логи
-    // @Inject('WINSTON_LOGGER') private readonly logger: Logger,
+    private readonly logger: LoggingWinston,
     // ч/з внедр.завис. + TrackEntity,ReactionEntity,UserEntity > раб.ч/з this с табл.track,reaction,user
     // ^ подкл.неск.БД.
     // ^ репозитории только > БД SupaBase(SB)

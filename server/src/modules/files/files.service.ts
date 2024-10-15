@@ -1,18 +1,13 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */ // ^^ от ошб. - Св-во объяв., но знач.не прочитано.
 import { ILike, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
-import {
-  Inject,
-  Injectable,
-  NotFoundException,
-  Optional,
-} from '@nestjs/common';
-// import { Logger } from 'winston';
+import { Injectable, NotFoundException, Optional } from '@nestjs/common';
 
 import { FileType, FileEntity, fileTypesAllowed } from './entities/file.entity';
 import { UpdateFileDto } from './dto/update-file.dto';
 // утилиты БД
 import { DatabaseUtils } from '../../common/utils/database.utils';
+// логгирование LH
+import { LoggingWinston } from '../../services/logging/logging.winston';
 // константы > команды запуска process.env.NODE_ENV
 import {
   isProduction,
@@ -24,7 +19,7 @@ import {
 export class FilesService {
   constructor(
     // логи
-    // @Inject('WINSTON_LOGGER') private readonly logger: Logger,
+    private readonly logger: LoggingWinston,
     // ^ подкл.неск.БД.
     // ^ репозитории только > БД SupaBase(SB)
     @Optional()

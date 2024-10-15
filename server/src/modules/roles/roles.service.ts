@@ -1,13 +1,6 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */ // ^^ от ошб. - Св-во объяв., но знач.не прочитано.
 import { In, Repository } from 'typeorm';
-import {
-  Inject,
-  Injectable,
-  NotFoundException,
-  Optional,
-} from '@nestjs/common';
+import { Injectable, NotFoundException, Optional } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-// import { Logger } from 'winston';
 
 import { CreateRoleDto } from './dto/create-role.dto';
 import { UpdateRoleDto } from './dto/update-role.dto';
@@ -16,16 +9,17 @@ import { RoleEntity } from './entities/role.entity';
 import { UserRolesEntity } from './entities/user-roles.entity';
 import { AddingRolesToUsersDto } from './dto/add-roles-to-users.dto';
 import { DatabaseUtils } from '../../common/utils/database.utils';
+import { LoggingWinston } from '../../services/logging/logging.winston';
 import {
   isProduction,
   isDevelopment,
-  // isTotal,
+  isTotal,
 } from '../../config/envs/env.consts';
 
 @Injectable()
 export class RolesService {
   constructor(
-    // @Inject('WINSTON_LOGGER') private readonly logger: Logger,
+    private readonly logger: LoggingWinston,
     //
     @Optional()
     @InjectRepository(UserEntity, 'supabase')

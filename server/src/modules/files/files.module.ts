@@ -6,11 +6,12 @@ import { FilesService } from './files.service';
 import { FileEntity } from './entities/file.entity';
 import { UserEntity } from '../users/entities/user.entity';
 import { RoleEntity } from '../roles/entities/role.entity';
-import { DatabaseUtils } from '../../common/utils/database.utils';
 import { TrackEntity } from '../tracks/entities/track.entity';
 import { AlbumEntity } from '../albums/entities/album.entity';
-// логи
-import { WinstonLoggerProvider } from '../../config/winston-logger.config';
+// утилиты БД
+import { DatabaseUtils } from '../../common/utils/database.utils';
+// логгирование LH
+import { LoggingWinston } from '../../services/logging/logging.winston';
 // константы > команды запуска process.env.NODE_ENV
 import {
   isDevelopment,
@@ -41,7 +42,7 @@ import {
       : []),
   ],
   controllers: [FilesController],
-  providers: [FilesService, DatabaseUtils, WinstonLoggerProvider],
+  providers: [FilesService, DatabaseUtils, LoggingWinston],
   exports: [FilesService],
 })
 export class FilesModule {}

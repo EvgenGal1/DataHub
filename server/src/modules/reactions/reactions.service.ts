@@ -1,9 +1,8 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-import { Inject, Injectable } from '@nestjs/common';
-// import { Logger } from 'winston';
+import { Injectable } from '@nestjs/common';
 
 import { CreateReactionDto } from './dto/create-reaction.dto';
 import { UpdateReactionDto } from './dto/update-reaction.dto';
+import { LoggingWinston } from '../../services/logging/logging.winston';
 import {
   isProduction,
   isDevelopment,
@@ -12,9 +11,7 @@ import {
 
 @Injectable()
 export class ReactionsService {
-  constructor() // логи
-  // @Inject('WINSTON_LOGGER') private readonly logger: Logger,
-  {}
+  constructor(private readonly logger: LoggingWinston) {}
 
   create(createReactionDto: CreateReactionDto) {
     // логи,перем.ошб.

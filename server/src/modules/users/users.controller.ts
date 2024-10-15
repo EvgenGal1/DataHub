@@ -12,7 +12,8 @@ import {
   ParseFilePipe,
   MaxFileSizeValidator,
   FileTypeValidator,
-  Inject,
+  HttpStatus,
+  HttpException,
 } from '@nestjs/common';
 import {
   ApiBody,
@@ -27,8 +28,6 @@ import {
   FileInterceptor,
   // FileFieldsInterceptor,
 } from '@nestjs/platform-express';
-// логи
-// import { Logger } from 'winston';
 
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -36,6 +35,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { AddingRolesToUsersDto } from '../roles/dto/add-roles-to-users.dto';
 import { UserId } from '../../common/decorators/user-id.decorator';
 import { fileStorage } from '../../services/storage/storage';
+import { LoggingWinston } from '../../services/logging/logging.winston';
 // import { UserEntity } from './entities/user.entity';
 
 @Controller('users')
@@ -46,10 +46,10 @@ import { fileStorage } from '../../services/storage/storage';
 export class UsersController {
   // ч/з внедр.завис. + UsersService > раб.ч/з this с serv.users
   constructor(
-    // логи
-    // @Inject('WINSTON_LOGGER') private readonly logger: Logger,
     // private readonly authService: AuthService,
     private readonly usersService: UsersService,
+    // логи
+    private readonly logger: LoggingWinston,
   ) {}
   // URL_SERVER > доп.мтд.
   // SERVER_URL: string = `http://localhost:${process.env.PORT}/`;

@@ -1,14 +1,12 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */ // ^^ от ошб. - Св-во объяв., но знач.не прочитано.
-// логика(бизнес,)
 import {
-  Inject,
   Injectable,
+  InternalServerErrorException,
   NotFoundException,
   Optional,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { In, Repository } from 'typeorm';
-// import { Logger } from 'winston';
 
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -19,6 +17,8 @@ import { UserRolesEntity } from '../roles/entities/user-roles.entity';
 import { AddingRolesToUsersDto } from '../roles/dto/add-roles-to-users.dto';
 // утилиты БД
 import { DatabaseUtils } from '../../common/utils/database.utils';
+// логгирование LH
+import { LoggingWinston } from '../../services/logging/logging.winston';
 // константы > команды запуска process.env.NODE_ENV
 import {
   isProduction,
@@ -35,7 +35,7 @@ function createThrowError(message?: string): () => never {
 export class UsersService {
   constructor(
     // логи
-    // @Inject('WINSTON_LOGGER') private readonly logger: Logger,
+    private readonly logger: LoggingWinston,
     // ч/з внедр.завис. + UserEntity и др. > раб.ч/з this с табл.users и др.
     // ^ подкл.неск.БД.
     // ^ репозитории только > БД SupaBase(SB)

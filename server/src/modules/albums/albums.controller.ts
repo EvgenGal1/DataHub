@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import {
   Controller,
   Get,
@@ -10,7 +9,6 @@ import {
   Query,
   HttpException,
   HttpStatus,
-  Inject,
 } from '@nestjs/common';
 import {
   /* ApiBearerAuth, */ ApiOperation,
@@ -18,13 +16,13 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { Logger } from 'winston';
 
 import { AlbumsService } from './albums.service';
 import { CreateAlbumDto } from './dto/create-album.dto';
 import { UpdateAlbumDto } from './dto/update-album.dto';
 import { AlbumEntity } from './entities/album.entity';
 import { UserId } from '../../common/decorators/user-id.decorator';
+import { LoggingWinston } from '../../services/logging/logging.winston';
 
 @Controller('/albums')
 // групп.мтд.cntrl tracks > swagger
@@ -33,9 +31,9 @@ import { UserId } from '../../common/decorators/user-id.decorator';
 // @ApiBearerAuth()
 export class AlbumController {
   constructor(
-    @Inject('WINSTON_LOGGER') private readonly logger: Logger,
     // private readonly authService: AuthService,
     private readonly albumsService: AlbumsService,
+    private readonly logger: LoggingWinston,
   ) {}
 
   // ^^ МТД.CRUD

@@ -8,14 +8,16 @@ import * as path from 'path';
 import * as fs from 'fs';
 
 import { AppModule } from './app.module.js';
+// фильтр исключ.
+import { HttpExceptionFilter } from './common/filters/http-exception.filter.js';
+// логирование LH
+import { LoggingWinston } from './services/logging/logging.winston.js';
 // константы > команды запуска process.env.NODE_ENV
 import {
   isProduction,
   isDevelopment,
   isTotal,
 } from './config/envs/env.consts.js';
-// фильтр исключ.
-import { HttpExceptionFilter } from './common/filters/http-exception.filter.js';
 
 // загр.перем.окруж.от кмд.NODE_ENV
 if (isDevelopment) config({ path: '.env.development' });
@@ -32,7 +34,7 @@ async function bootstrap(): Promise<any> {
     let logger;
     if (isProduction) app.useLogger(new ConsoleLogger());
     else if (isDevelopment || isTotal) {
-      logger = app.get('WINSTON_LOGGER');
+      logger = app.get(LoggingWinston);
       app.useLogger(logger);
       // созд.п. > логи
       const tmpDir = path.join(process.cwd(), 'tmp');
