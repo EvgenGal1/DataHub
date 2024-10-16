@@ -15,6 +15,8 @@ import { RoleEntity } from '../roles/entities/role.entity';
 import { RolesService } from '../roles/roles.service';
 import { UserRolesEntity } from '../roles/entities/user-roles.entity';
 import { AddingRolesToUsersDto } from '../roles/dto/add-roles-to-users.dto';
+// утилиты Общие
+import { BasicUtils } from '../../common/utils/basic.utils';
 // утилиты БД
 import { DatabaseUtils } from '../../common/utils/database.utils';
 // логгирование LH
@@ -51,6 +53,7 @@ export class UsersService {
     // ^ общ.репозит.настр.
     private roleService: RolesService,
     private dataBaseUtils: DatabaseUtils,
+    private basicUtils: BasicUtils,
     // ^ доп.необязат.репозит(Optional) > БД LocalHost(LH)
     @Optional()
     @InjectRepository(UserEntity, 'localhost')
@@ -65,49 +68,60 @@ export class UsersService {
 
   // СОЗД User + Role + связь
   async createUser(createUserDto: CreateUserDto) {
-    // логи,перем.ошб.
-    // this.logger.info(
-    //   `Запись Users в БД ${isProduction ? 'SB' : isDevelopment ? 'LH' : 'SB и LH'}`,
-    // );
-    const err = `Users не сохранён в БД`;
-    // `получить наименьший доступный идентификатор` из табл.БД
-    const smallestFreeId =
-      await this.dataBaseUtils.getSmallestIDAvailable('user');
-    // созд.репоз./объ.user взависимости от process.env.NODE_ENV
-    const definiteUserRepository = isProduction
-      ? this.userRepositorySB
-      : this.userRepository;
-    const user = definiteUserRepository.create({
-      ...createUserDto,
-      id: smallestFreeId,
-    });
+    try {
+      // логи,перем.ошб.
+      this.logger.info(
+        `+ Users в БД ${isProduction ? 'SB' : isDevelopment ? 'LH' : 'SB и LH'}`,
+      );
+      const err = `Users не сохранён в БД`;
+      // `получить наименьший доступный идентификатор` из табл.БД
+      const smallestFreeId =
+        await this.dataBaseUtils.getSmallestIDAvailable('user');
+      // созд.репоз./объ.user взависимости от process.env.NODE_ENV
+      const definiteUserRepository = isProduction
+        ? this.userRepositorySB
+        : this.userRepository;
+      const user = definiteUserRepository.create({
+        ...createUserDto,
+        id: smallestFreeId,
+      });
 
-    // ^ будущ.запись Роли,Уровня Роли,psw,token и др.
+      // ^ будущ.запись Роли,Уровня Роли,psw,token и др.
 
-    // условие > PROD и DEV. перем.,req.,лог.,ошб.
-    if (isProduction || isDevelopment) {
-      const savedUser: UserEntity = await definiteUserRepository.save(user);
-      if (!savedUser) {
-        // this.logger.error(`Лог. ${err} ${isProduction ? 'SB' : 'LH'}`);
-        createThrowError(`Ошб. ${err} ${isProduction ? 'SB' : 'LH'}`);
+      // условие > PROD и DEV. перем.,req.,лог.,ошб.
+      if (isProduction || isDevelopment) {
+        const savedUser: UserEntity = await definiteUserRepository.save(user);
+        if (!savedUser) {
+          // this.logger.error(`Лог. ${err} ${isProduction ? 'SB' : 'LH'}`);
+          createThrowError(`Ошб. ${err} ${isProduction ? 'SB' : 'LH'}`);
+        }
+
+        return savedUser;
       }
-      return savedUser;
-    }
-    // условие > TOTAL. PROD + DEV. запись данн.в SB и LH
-    if (isTotal) {
-      // получ.данн.обеих БД
-      const savedUserSB = await this.userRepositorySB.save(user);
-      const savedUserLH = await this.userRepository.save(user);
-      if (!savedUserSB && !savedUserLH) {
-        // this.logger.error(`Лог. ${err} SB и LH`);
-        createThrowError(`Ошб. ${err} SB и LH`);
+      // условие > TOTAL. PROD + DEV. запись данн.в SB и LH
+      if (isTotal) {
+        // получ.данн.обеих БД
+        const savedUserSB = await this.userRepositorySB.save(user);
+        const savedUserLH = await this.userRepository.save(user);
+        if (!savedUserSB && !savedUserLH) {
+          // this.logger.error(`Лог. ${err} SB и LH`);
+          createThrowError(`Ошб. ${err} SB и LH`);
+        }
+        const userSavedSB = { ...savedUserSB, source: 'DB_SB' };
+        const userSavedLH = { ...savedUserLH, source: 'DB_LH' };
+        return {
+          ...userSavedSB,
+          [`userLH_${userSavedLH.id}`]: userSavedLH,
+        };
       }
-      const userSavedSB = { ...savedUserSB, source: 'DB_SB' };
-      const userSavedLH = { ...savedUserLH, source: 'DB_LH' };
-      return {
-        ...userSavedSB,
-        [`userLH_${userSavedLH.id}`]: userSavedLH,
-      };
+    } catch (error) {
+      // DEV лог.debug
+      if (!isProduction && (isDevelopment || isTotal))
+        this.basicUtils.logDebugDev(
+          'usr.s. CRE createUserDto : ',
+          createUserDto,
+        );
+      throw error;
     }
   }
 
