@@ -76,11 +76,21 @@ export class AlbumsService {
         cover: coverObj,
         ...totalAlbumData,
       });
-
+      if (isDevelopment)
+        this.logger.info(
+          `req + Alb User.ID ${userId}: ${JSON.stringify({
+            createAlbumDto,
+            coverObj,
+            totalAlbumData,
+          })}`,
+        );
       const savedAlbum = await this.albumsRepository.save(album);
       this.logger.info(`+ Album ID: ${savedAlbum.id}`);
       return savedAlbum;
     } catch (error) {
+      this.logger.error(
+        `!Ошб. + Album: ${await this.basicUtils.hendlerTypesErrors(error)}`,
+      );
       // DEV лог.debug
       if (!isProduction && (isDevelopment || isTotal))
         this.basicUtils.logDebugDev(
@@ -96,10 +106,11 @@ export class AlbumsService {
 
   async findAllAlbums() {
     try {
+      if (isDevelopment) this.logger.info(`req < Alb All`);
       const allAlb = await this.albumsRepository.find();
       // логи,перем.ошб.
       this.logger.info(
-        `Albums All ${allAlb?.length} < ${isProduction ? 'SB' : isDevelopment ? 'LH' : 'SB и LH'}`,
+        `Albums All length ${allAlb?.length} < ${isProduction ? 'SB' : isDevelopment ? 'LH' : 'SB и LH'}`,
       );
       return allAlb;
     } catch (error) {
@@ -113,9 +124,10 @@ export class AlbumsService {
   async findOneAlbum(id: number) {
     // логи,перем.ошб.
     try {
-      const alb = await this.albumsRepository.find({ where: { id: id } });
+      if (isDevelopment) this.logger.info(`req < Alb ID ${id}`);
+      const alb = await this.albumsRepository.findOne({ where: { id: id } });
       this.logger.info(
-        `Album ID ${id} < ${isProduction ? 'SB' : isDevelopment ? 'LH' : 'SB и LH'}`,
+        `Album ID ${alb?.id} < ${isProduction ? 'SB' : isDevelopment ? 'LH' : 'SB и LH'}`,
       );
       return alb;
     } catch (error) {
@@ -290,9 +302,14 @@ export class AlbumsService {
         Object.assign(album, updateAlbumDto);
       }
 
-      this.logger.info(`# Album ${album}`);
-      await this.albumsRepository.save(album);
+      if (isDevelopment) this.logger.info(`req # Album ${album}`);
+      const albUpd = await this.albumsRepository.save(album);
+      this.logger.info(`# Album ${album.id}`);
+      return albUpd;
     } catch (error) {
+      this.logger.error(
+        `!Ошб. # Album: ${await this.basicUtils.hendlerTypesErrors(error)}`,
+      );
       // DEV лог.debug
       if (!isProduction && (isDevelopment || isTotal))
         this.basicUtils.logDebugDev(
@@ -309,7 +326,7 @@ export class AlbumsService {
   // пометка Удаления
   async removeAlbum(id: number) {
     try {
-      this.logger.info(`DEL Alb ID ${id}`);
+      if (isDevelopment) this.logger.info(`req - Alb ID ${id}`);
       return `DEL Alb ID ${id}`;
     } catch (error) {
       this.logger.error(
@@ -371,7 +388,11 @@ export class AlbumsService {
       for (const albumOne of qbAlbumsGet) {
         // const albumOne = qbAlbumsGet[i];
         // `мягк.удал.`ф. при парам.
+
+        let albDel;
         if (param === 'del') {
+          if (isDevelopment) this.logger.info(`req - Alb ID ${ids}`);
+
           // е/и в Альбоме 1 Трек
           if (albumOne.albums_total_tracks === 1) {
             // удал.ф.Обложки из табл.File по fileId
@@ -391,14 +412,16 @@ export class AlbumsService {
               `DEL Alb ID ${await this.basicUtils.hendlerTypesErrors(ids)}`,
             );
             // мягк.удал.
-            return await qbAlbums.softDelete().execute();
+            albDel = await qbAlbums.softDelete().execute();
             // .where('id IN (:...ids)', { ids: idsArray })
           } else {
             this.logger.info(
               `DEL Alb ID ${await this.basicUtils.hendlerTypesErrors(ids)}`,
             );
-            return await this.updateAlbum(ids, null, totalAlbumDto, param);
+            albDel = await this.updateAlbum(ids, null, totalAlbumDto, param);
           }
+          this.logger.info(`- Alb ${ids}`);
+          return albDel;
         }
       }
 
@@ -438,10 +461,11 @@ export class AlbumsService {
   // Alb по автору
   async searchByAuthor(author: string): Promise<AlbumEntity[]> {
     try {
+      if (isDevelopment) this.logger.info(`req ? Alb.ATHR : ${author}`);
       const albAthr = await this.albumsRepository.find({
         where: { author },
       });
-      this.logger.info(`alb.s Alb.ATHR : ${albAthr[0].author}`);
+      this.logger.info(`? Alb.ATHR ${author} title : ${albAthr[0].title}`);
       return albAthr;
     } catch (error) {
       this.logger.error(
@@ -455,10 +479,11 @@ export class AlbumsService {
   // Alb по назв.
   async searchByAlbumName(albumName: string): Promise<AlbumEntity[]> {
     try {
+      if (isDevelopment) this.logger.info(`req ? Alb.TITL : ${albumName}`);
       const albNam = await this.albumsRepository.find({
         where: { title: albumName },
       });
-      this.logger.info(`alb.s Alb.TITL : ${albNam[0].title}`);
+      this.logger.info(`? Alb.TITL ${albumName} author : ${albNam[0].author}`);
       return albNam;
     } catch (error) {
       this.logger.error(
@@ -471,13 +496,14 @@ export class AlbumsService {
   // кол-во по назв.Alb
   async getTrackCountByAlbumName(albumName: string): Promise<number> {
     try {
+      if (isDevelopment) this.logger.info(`req +? Alb.name : ${albumName}`);
       const album = await this.albumsRepository.findOne({
         where: {
           title: albumName,
         },
       });
       const totalTracks = album ? album.total_tracks : 0;
-      this.logger.info(`alb.s Alb.name count Track : ${totalTracks}`);
+      this.logger.info(`Alb.name ${albumName} count Track : ${totalTracks}`);
       return totalTracks;
     } catch (error) {
       this.logger.error(
@@ -490,13 +516,14 @@ export class AlbumsService {
   // кол-во по id.Alb
   async getTrackCountByAlbumId(albumId: number): Promise<number> {
     try {
+      if (isDevelopment) this.logger.info(`req +? Alb.id : ${albumId}`);
       const album = await this.albumsRepository.findOne({
         where: {
           id: albumId,
         },
       });
       const totalTracks = album ? album.total_tracks : 0;
-      this.logger.info(`alb.s Alb.ID count Track : ${totalTracks}`);
+      this.logger.info(`Alb.ID ${albumId} count Track : ${totalTracks}`);
       return totalTracks;
     } catch (error) {
       this.logger.error(
@@ -515,9 +542,10 @@ export class AlbumsService {
       // return this.albumsRepository.find({ where: { album: props } });
       // return this.albumsRepository.find({ where: { [var1]: var2 } });
 
+      if (isDevelopment) this.logger.info(`req ??? ALBOM парам.: ${props}`);
       const albProp = await this.albumsRepository.find({ where: [props] });
       this.logger.info(
-        `alb.s Alb props : ${await this.basicUtils.hendlerTypesErrors(albProp)}`,
+        `Alb props : ${await this.basicUtils.hendlerTypesErrors(albProp)}`,
       );
       return albProp;
     } catch (error) {

@@ -44,43 +44,22 @@ export class AlbumController {
     @Body() createAlbumDto: CreateAlbumDto,
     @UserId() userId: number,
   ) {
-    try {
-      this.logger.info(`req + Alb User.ID: ${userId}`);
-      return await this.albumsService.createAlbum(createAlbumDto, userId);
-    } catch (error) {
-      throw new HttpException(
-        'Ошибка при создании Альбома',
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
-    }
+    this.logger.info(`req + Alb User.ID: ${userId}`);
+    return await this.albumsService.createAlbum(createAlbumDto, userId);
   }
 
   @Get()
   @ApiOperation({ summary: 'Получить Все Альбомы' })
   async findAllAlbum() {
-    try {
-      this.logger.info(`req < Alb All`);
-      return this.albumsService.findAllAlbums();
-    } catch (error) {
-      throw new HttpException(
-        'Ошибка Получить Все Альбомы',
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
-    }
+    this.logger.info(`req < Alb All`);
+    return this.albumsService.findAllAlbums();
   }
 
   @Get(':id')
   @ApiOperation({ summary: 'Получить Альбом' })
   async findOneAlbum(@Param('id') id: string) {
-    try {
-      this.logger.info(`req < Alb ID ${id}`);
-      return this.albumsService.findOneAlbum(+id);
-    } catch (error) {
-      throw new HttpException(
-        'Ошибка Получить Альбом',
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
-    }
+    this.logger.info(`req < Alb ID ${id}`);
+    return this.albumsService.findOneAlbum(+id);
   }
 
   @Patch(':id')
@@ -89,29 +68,15 @@ export class AlbumController {
     @Param('id') id: string,
     @Body() updateAlbumDto: UpdateAlbumDto,
   ) {
-    try {
-      this.logger.info(`req # Alb ID ${id}`);
-      return this.albumsService.updateAlbum(+id, updateAlbumDto);
-    } catch (error) {
-      throw new HttpException(
-        'Ошибка Обновить Альбом',
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
-    }
+    this.logger.info(`req # Alb ID ${id}`);
+    return this.albumsService.updateAlbum(+id, updateAlbumDto);
   }
 
   @Delete(':id')
   @ApiOperation({ summary: 'Удалить Альбом/ы' })
   async removeAlbum(@Param('id') id: string) {
-    try {
-      this.logger.info(`req - Alb ID ${id}`);
-      return this.albumsService.removeAlbum(+id);
-    } catch (error) {
-      throw new HttpException(
-        'Ошибка Удалить Альбом',
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
-    }
+    this.logger.info(`req - Alb ID ${id}`);
+    return this.albumsService.removeAlbum(+id);
   }
 
   // ^^ ДОП.МТД.
@@ -125,15 +90,8 @@ export class AlbumController {
   async searchByAuthor(
     /* @Param // возвращ.всё */ @Query('author') authorName: string,
   ) /* : Promise<Album[]> // надо ли тип.возврат. */ {
-    try {
-      this.logger.info(`req < Alb.Author ${authorName}`);
-      return this.albumsService.searchByAuthor(authorName);
-    } catch (error) {
-      throw new HttpException(
-        'Ошибка Поиск Альбома по Автору',
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
-    }
+    this.logger.info(`req < Alb.Author ${authorName}`);
+    return this.albumsService.searchByAuthor(authorName);
   }
 
   // поиск по назв.альбома // ~ не верн. возвращ.по мтд. Author все альбомы
@@ -142,15 +100,8 @@ export class AlbumController {
   // @Get('/:album_Name')
   @ApiOperation({ summary: 'Поиск Альбома по Названию' })
   async searchByAlbumName(@Query('album') albumName: string) {
-    try {
-      this.logger.info(`req < Alb.Name ${albumName}`);
-      return this.albumsService.searchByAlbumName(albumName);
-    } catch (error) {
-      throw new HttpException(
-        'Ошибка Поиск Альбома по Названию',
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
-    }
+    this.logger.info(`req < Alb.Name ${albumName}`);
+    return this.albumsService.searchByAlbumName(albumName);
   }
 
   // кол-во Треков по Альбому
@@ -164,23 +115,16 @@ export class AlbumController {
     @Query('searchBy') searchBy: string,
     @Query('value') value: string,
   ): Promise<number> {
-    try {
-      switch (searchBy) {
-        case 'название':
-          this.logger.info(`req < Track.count Alb.Name ${value}`);
-          return this.albumsService.getTrackCountByAlbumName(value);
-        case 'id':
-          this.logger.info(`req < Track.count Alb.ID ${value}`);
-          return this.albumsService.getTrackCountByAlbumId(Number(value));
-        // ^ Добавьте обработку других вариантов поиска по своим требованиям
-        default:
-          throw new Error('Неверный вариант поиска');
-      }
-    } catch (error) {
-      throw new HttpException(
-        'Ошибка Удалить Альбом',
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
+    switch (searchBy) {
+      case 'название':
+        this.logger.info(`req < Track.count Alb.Name ${value}`);
+        return this.albumsService.getTrackCountByAlbumName(value);
+      case 'id':
+        this.logger.info(`req < Track.count Alb.ID ${value}`);
+        return this.albumsService.getTrackCountByAlbumId(Number(value));
+      // ^ Добавьте обработку других вариантов поиска по своим требованиям
+      default:
+        throw new Error('Неверный вариант поиска');
     }
   }
 
@@ -197,16 +141,9 @@ export class AlbumController {
     @Query('field') field: string,
     @Query('value') value: string,
   ) /* : Promise<Album> */ {
-    try {
-      const props = {};
-      props[field] = value;
-      this.logger.info(`req < Alb.Param ${value}`);
-      return this.albumsService.getAlbumByProps(props);
-    } catch (error) {
-      throw new HttpException(
-        'Ошибка Удалить Альбом',
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
-    }
+    const props = {};
+    props[field] = value;
+    this.logger.info(`req < Alb.Param ${value}`);
+    return this.albumsService.getAlbumByProps(props);
   }
 }
