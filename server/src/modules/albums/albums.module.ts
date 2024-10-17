@@ -1,16 +1,16 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
-import { AlbumController } from './albums.controller';
-import { AlbumsService } from './albums.service';
-import { AlbumEntity } from './entities/album.entity';
-import { TrackEntity } from '../tracks/entities/track.entity';
-import { ReactionEntity } from '../reactions/entities/reaction.entity';
-import { FileEntity } from '../files/entities/file.entity';
-import { TracksService } from '../tracks/tracks.service';
-import { FilesService } from '../files/files.service';
 import { UserEntity } from '../users/entities/user.entity';
 import { RoleEntity } from '../roles/entities/role.entity';
+import { FileEntity } from '../files/entities/file.entity';
+import { FilesService } from '../files/files.service';
+import { TrackEntity } from '../tracks/entities/track.entity';
+import { TracksService } from '../tracks/tracks.service';
+import { AlbumEntity } from './entities/album.entity';
+import { AlbumController } from './albums.controller';
+import { AlbumsService } from './albums.service';
+import { ReactionEntity } from '../reactions/entities/reaction.entity';
 import { BasicUtils } from '../../common/utils/basic.utils';
 import { DatabaseUtils } from '../../common/utils/database.utils';
 import { LoggingWinston } from '../../services/logging/logging.winston';
@@ -26,12 +26,12 @@ import {
       ? [
           TypeOrmModule.forFeature(
             [
-              TrackEntity,
               UserEntity,
-              ReactionEntity,
-              AlbumEntity,
-              FileEntity,
               RoleEntity,
+              FileEntity,
+              TrackEntity,
+              AlbumEntity,
+              ReactionEntity,
             ],
             'supabase',
           ),
@@ -41,12 +41,12 @@ import {
       ? [
           TypeOrmModule.forFeature(
             [
-              TrackEntity,
               UserEntity,
-              ReactionEntity,
-              AlbumEntity,
-              FileEntity,
               RoleEntity,
+              FileEntity,
+              TrackEntity,
+              AlbumEntity,
+              ReactionEntity,
             ],
             'localhost',
           ),
@@ -55,11 +55,11 @@ import {
   ],
   controllers: [AlbumController],
   providers: [
-    AlbumsService,
-    TracksService,
     FilesService,
-    DatabaseUtils,
+    TracksService,
+    AlbumsService,
     BasicUtils,
+    DatabaseUtils,
     LoggingWinston,
   ],
   exports: [AlbumsService],

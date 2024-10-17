@@ -57,10 +57,11 @@ export class BasicUtils {
     console.log(...args);
 
     // формир.объ.лог
-    const logObject = {};
-    args.forEach((arg, index) => {
-      logObject[`arg${index + 1}`] = arg;
-    });
+    const logObject = await Promise.all(
+      args.map(async (arg, index) => {
+        return { [`arg${index + 1}`]: await this.hendlerTypesErrors(arg) };
+      }),
+    );
 
     // лог.logger
     this.logger.debug(`logger : ${JSON.stringify(logObject)}`);
