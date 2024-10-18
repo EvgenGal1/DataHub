@@ -84,7 +84,7 @@ async function bootstrap(): Promise<any> {
       },
     });
 
-    app.use('/swagger', express.static('node_modules/swagger-ui-dist'));
+    // app.use('/swagger', express.static('node_modules/swagger-ui-dist'));
 
     let mod: string, db: string, srv: string;
     // прослуш.PORT и fn()callback с cg на Запуск
