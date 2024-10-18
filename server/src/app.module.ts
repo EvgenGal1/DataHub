@@ -38,24 +38,10 @@ import {
       // глоб.видим.
       isGlobal: true,
     }),
-    // подкл.к БД Supabase всегда
-    ...(isProduction || isTotal
-      ? [
-          TypeOrmModule.forRootAsync({
-            name: 'supabase',
-            useFactory: supabaseConfig,
-          }),
-        ]
-      : []),
-    // ^ доп.подкл.к локал.БД > разработки (dev БД SB, total БД SB, LH)
-    ...(isDevelopment || isTotal
-      ? [
-          TypeOrmModule.forRootAsync({
-            name: 'localhost',
-            useFactory: localhostConfig,
-          }),
-        ]
-      : []),
+    TypeOrmModule.forRootAsync({
+      name: isProduction ? 'supabase' : 'localhost',
+      useFactory: isProduction ? supabaseConfig : localhostConfig,
+    }),
     // обслуж.статич.контент по путь/папка ч/з веб-сайт
     // ! ошб. при сборке VERCEL от -v @nestjs/(serve-static, common). ~ замена ниже в export
     // ServeStaticModule.forRoot({
