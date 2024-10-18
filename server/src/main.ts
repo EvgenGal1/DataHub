@@ -4,6 +4,8 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 // import * as SwaggerUIStandalonePreset from 'swagger-ui-standalone-preset';
 // import SwaggerUI from 'swagger-ui-dist/swagger-ui.min.js';
 // import 'swagger-ui-dist/swagger-ui.css';
+// import swaggerUI from "swagger-ui-express";
+// import swaggerJsDoc from "swagger-jsdoc";
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { ConsoleLogger } from '@nestjs/common';
 import { config } from 'dotenv';
@@ -55,6 +57,17 @@ async function bootstrap(): Promise<any> {
       ? +process.env.DB_SB_PORT || 3000
       : +process.env.LH_SRV_PORT || 3000;
 
+    //  ----------------------------------------------------------------------------------
+
+    // статич.ф.swg
+    // app.use('/swagger', express.static('node_modules/swagger-ui-dist'));
+    app.use(
+      '/swagger',
+      express.static(path.join(__dirname, '../node_modules/swagger-ui-dist')),
+    );
+
+    //  ----------------------------------------------------------------------------------
+
     // настр.док.swagger(swg)
     const configSwagger = new DocumentBuilder()
       // const config = new DocumentBuilder()
@@ -89,14 +102,21 @@ async function bootstrap(): Promise<any> {
       // }
     );
 
+    //  ----------------------------------------------------------------------------------
     // сохр.док.swg в п. public/swagger
     // fs.writeFileSync(
     //   path.join(__dirname, '../public/swagger/swagger.json'),
     //   JSON.stringify(document),
     // );
 
-    // статич.ф.swg
-    app.use('/swagger', express.static('node_modules/swagger-ui-dist'));
+    //  ----------------------------------------------------------------------------------
+
+    // const outputPath = path.resolve(process.cwd(), 'swagger.json');
+    // writeFileSync(outputPath, JSON.stringify(document), { encoding: 'utf8'});
+
+    // await app.close();
+
+    //  ----------------------------------------------------------------------------------
 
     let mod: string, db: string, srv: string;
     // прослуш.PORT и fn()callback с cg на Запуск
