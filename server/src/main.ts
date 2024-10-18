@@ -7,6 +7,7 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { ConsoleLogger } from '@nestjs/common';
 import { config } from 'dotenv';
+import * as express from 'express';
 import * as path from 'path';
 import * as fs from 'fs';
 
@@ -64,11 +65,11 @@ async function bootstrap(): Promise<any> {
       // настр.для использ.jwt.Токен в swagger
       // .addBearerAuth()
       // Указ.URL Своёго сервера (localhost | VERCEL)
-      .addServer(
-        isProduction
-          ? `${process.env.SRV_VL_URL}`
-          : `${process.env.LH_SRV_URL}${process.env.LH_SRV_PORT}`,
-      )
+      // .addServer(
+      //   isProduction
+      //     ? `${process.env.SRV_VL_URL}`
+      //     : `${process.env.LH_SRV_URL}${process.env.LH_SRV_PORT}`,
+      // )
       .build();
 
     // созд.док.swg(экземп.прилож., объ.парам., специф.доступа(3ий не обязат.парам.))
@@ -94,7 +95,7 @@ async function bootstrap(): Promise<any> {
     //   JSON.stringify(document),
     // );
 
-    // app.use('/swagger', express.static('node_modules/swagger-ui-dist'));
+    app.use('/swagger', express.static('node_modules/swagger-ui-dist'));
 
     let mod: string, db: string, srv: string;
     // прослуш.PORT и fn()callback с cg на Запуск
