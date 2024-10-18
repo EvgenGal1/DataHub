@@ -18,7 +18,8 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json"
+    "test:e2e": "jest --config ./test/jest-e2e.json",
+    "test:i": "cross-env CI=true jest --config ./test/jest-integration.json"
   },
   "dependencies": {
     "@nestjs/axios": "^3.0.3",
@@ -64,6 +65,7 @@
     "@types/multer": "^1.4.11",
     "@types/node": "^20.12.11",
     "@types/supertest": "^2.0.12",
+    "@types/swagger-ui-dist": "^3.30.5",
     "@typescript-eslint/eslint-plugin": "^6.0.0",
     "@typescript-eslint/parser": "^6.0.0",
     "eslint": "^8.42.0",

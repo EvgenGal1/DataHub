@@ -26,6 +26,10 @@
     {
       "src": "/swagger/(.*)",
       "dest": "dist/swagger/index.html"
+    },
+    {
+      "src": "/swagger/(.*).css",
+      "dest": "dist/swagger/$1.css"
     }
   ]
 }

@@ -1,6 +1,9 @@
 // точка входа, запуск приложения
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import * as SwaggerUIStandalonePreset from 'swagger-ui-standalone-preset';
+import SwaggerUI from 'swagger-ui-dist/swagger-ui.min.js';
+import 'swagger-ui-dist/swagger-ui.css';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { ConsoleLogger } from '@nestjs/common';
 import { config } from 'dotenv';
@@ -62,7 +65,7 @@ async function bootstrap(): Promise<any> {
       // Указ.URL Своёго сервера (localhost | VERCEL)
       .addServer(
         isProduction
-          ? process.env.SRV_VL_URL
+          ? `${process.env.SRV_VL_URL}`
           : `${process.env.LH_SRV_URL}${process.env.LH_SRV_PORT}`,
       )
       .addTag('app')
