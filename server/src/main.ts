@@ -7,7 +7,6 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { ConsoleLogger } from '@nestjs/common';
 import { config } from 'dotenv';
-import * as express from 'express';
 import * as path from 'path';
 import * as fs from 'fs';
 
@@ -75,14 +74,25 @@ async function bootstrap(): Promise<any> {
     // созд.док.swg(экземп.прилож., объ.парам., специф.доступа(3ий не обязат.парам.))
     const document = SwaggerModule.createDocument(app, configSwagger);
     // настр.путей swg(путь устан.swg, экземп.прилож., объ.док.)
-    SwaggerModule.setup('swagger', app, document, {
-      // Название страницы Swagger
-      customSiteTitle: 'Data Hub | Центр Данных (swg)',
-      swaggerOptions: {
-        // `постоянное разрешение`настр.для использ.jwt.Токен в swagger
-        persistAuthorization: true,
-      },
-    });
+    SwaggerModule.setup(
+      'swagger',
+      app,
+      document,
+      // ,{
+      //   // Название страницы Swagger
+      //   customSiteTitle: 'Data Hub | Центр Данных (swg)',
+      //   swaggerOptions: {
+      //     // `постоянное разрешение`настр.для использ.jwt.Токен в swagger
+      //     persistAuthorization: true,
+      //   },
+      // }
+    );
+
+    // сохр.док.swg в п. public/swagger
+    fs.writeFileSync(
+      path.join(__dirname, '../public/swagger/swagger.json'),
+      JSON.stringify(document),
+    );
 
     // app.use('/swagger', express.static('node_modules/swagger-ui-dist'));
 

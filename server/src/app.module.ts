@@ -1,8 +1,6 @@
 import { Module, MiddlewareConsumer } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
-import { ServeStaticModule } from '@nestjs/serve-static';
-import { join } from 'path';
 import * as express from 'express';
 import * as path from 'path';
 
@@ -45,10 +43,10 @@ import {
     }),
     // обслуж.статич.контент по путь/папка ч/з веб-сайт
     // ! ошб. при сборке VERCEL от -v @nestjs/(serve-static, common). ~ замена ниже в export
-    ServeStaticModule.forRoot({
-      rootPath: join(__dirname, '..', 'static'),
-      // serveRoot: '/static',
-    }),
+    // ServeStaticModule.forRoot({
+    //   rootPath: join(__dirname, '..', 'public '),
+    //   // serveRoot: '/static',
+    // }),
     // подкл.использ.modulи
     // AuthModule,
     UsersModule,
@@ -68,7 +66,7 @@ export class AppModule {
   // ^ замена ServeStaticModule от ошб. при сборке VERCEL от -v @nestjs/(serve-static, common)
   configure(consumer: MiddlewareConsumer) {
     consumer
-      .apply(express.static(path.join(__dirname, '..', 'static')))
-      .forRoutes('*'); // Можно ограничить маршруты, если нужно
+      .apply(express.static(path.join(__dirname, '..', 'public')))
+      .forRoutes('*'); // все маршруты
   }
 }
