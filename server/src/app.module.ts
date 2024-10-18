@@ -46,7 +46,6 @@ import {
     // обслуж.статич.контент по путь/папка ч/з веб-сайт
     // ! ошб. при сборке VERCEL от -v @nestjs/(serve-static, common). ~ замена ниже в export
     ServeStaticModule.forRoot({
-      // rootPath: `${__dirname}/../static`,
       rootPath: join(__dirname, '..', 'static'),
       // serveRoot: '/static',
     }),
