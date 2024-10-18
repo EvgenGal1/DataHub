@@ -7,8 +7,6 @@ import {
   Param,
   Delete,
   Query,
-  HttpException,
-  HttpStatus,
 } from '@nestjs/common';
 import {
   /* ApiBearerAuth, */ ApiOperation,
@@ -45,7 +43,7 @@ export class AlbumController {
     @UserId() userId: number,
   ) {
     this.logger.info(`req + Alb User.ID: ${userId}`);
-    return await this.albumsService.createAlbum(createAlbumDto, userId);
+    return this.albumsService.createAlbum(createAlbumDto, userId);
   }
 
   @Get()

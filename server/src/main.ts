@@ -86,16 +86,16 @@ async function bootstrap(): Promise<any> {
       // ^ вывод подкл.к БД от NODE_ENV. производство(БД SB) <> разработка (dev БД SB, total БД SB, LH)
       if (isProduction) {
         mod = 'PROD';
-        db = process.env.DB_SB_URL;
         srv = process.env.SRV_VL_URL;
+        db = process.env.DB_SB_URL;
       } else if (isDevelopment) {
         mod = 'DEV';
-        db = `${process.env.LH_DB_NAME}_${process.env.LH_DB_USER}:${process.env.LH_DB_PORT}`;
         srv = process.env.LH_SRV_URL + process.env.LH_SRV_PORT;
+        db = `${process.env.LH_DB_NAME}_${process.env.LH_DB_USER}:${process.env.LH_DB_PORT}`;
       } else if (isTotal) {
         mod = 'DEV + PROD';
-        db = `${process.env.LH_DB_NAME}_${process.env.LH_DB_USER}:${process.env.LH_DB_PORT}`;
         srv = process.env.LH_SRV_URL + process.env.LH_SRV_PORT;
+        db = `${process.env.LH_DB_NAME}_${process.env.LH_DB_USER}:${process.env.LH_DB_PORT}`;
       }
       console.log(`${mod}.m.  SRV: ${srv}  DB: ${db}`);
     });

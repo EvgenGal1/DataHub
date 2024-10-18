@@ -12,8 +12,6 @@ import {
   ParseFilePipe,
   MaxFileSizeValidator,
   FileTypeValidator,
-  HttpStatus,
-  HttpException,
 } from '@nestjs/common';
 import {
   ApiBody,
@@ -24,35 +22,35 @@ import {
   // ApiBearerAuth,
   // ApiResponse,
 } from '@nestjs/swagger';
-import {
-  FileInterceptor,
-  // FileFieldsInterceptor,
-} from '@nestjs/platform-express';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { AddingRolesToUsersDto } from '../roles/dto/add-roles-to-users.dto';
-import { UserId } from '../../common/decorators/user-id.decorator';
-import { fileStorage } from '../../services/storage/storage';
-import { LoggingWinston } from '../../services/logging/logging.winston';
 // import { UserEntity } from './entities/user.entity';
+// декор.получ. User.ID
+import { UserId } from '../../common/decorators/user-id.decorator';
+// локал.ф.хран-ще
+import { fileStorage } from '../../services/storage/storage';
+// логгирование LH
+import { LoggingWinston } from '../../services/logging/logging.winston';
 
 @Controller('users')
-// спец.тег swagger ч/з декоратор ApiTags для групп.мтд.cntrl users
+// групп.мтд.cntrl users
 @ApiTags('Пользователи')
-// оборач.чтоб swagger знал что req на files защищены jwt Токеном
+// обёртка защиты JWT > swg
 // @ApiBearerAuth()
 export class UsersController {
   // ч/з внедр.завис. + UsersService > раб.ч/з this с serv.users
   constructor(
     // private readonly authService: AuthService,
     private readonly usersService: UsersService,
-    // логи
+    // логгер
     private readonly logger: LoggingWinston,
   ) {}
-  // URL_SERVER > доп.мтд.
-  // SERVER_URL: string = `http://localhost:${process.env.PORT}/`;
+
+  // ^^ МТД.CRUD
 
   @Post()
   @ApiOperation({ summary: 'Создание Пользователя' })
@@ -64,55 +62,56 @@ export class UsersController {
   // })
   // получ.объ из запроса ч/з @Body
   async createUser(@Body() createUserDto: CreateUserDto) {
-    // логи
-    // this.logger.info(`create user`);
-    // объ передаём в мтд.create в users.serv
-    return await this.usersService.createUser(createUserDto);
+    this.logger.info(`req + User: ${JSON.stringify(createUserDto)}`);
+    return this.usersService.createUser(createUserDto);
   }
 
   @Get()
-  @ApiOperation({ summary: 'Получить всех Пользователей' })
+  @ApiOperation({ summary: 'Получить Всех Пользователей' })
   // @Roles('ADMIN')
   // @UseGuards(RolesGuard)
   async findAllUsers() {
-    // this.logger.info(`ALL.users`);
-    return await this.usersService.findAllUsers();
+    this.logger.info(`req < Users All`);
+    return this.usersService.findAllUsers();
   }
 
   // ОДИН user.по id
   @Get(':id')
-  @ApiOperation({ summary: 'Получить по ID' })
-  // @ApiCreatedResponse({ description: 'Описание findOne' })
-  async findOneUser(@Param('id') id: string /* ObjectId */) {
-    // this.logger.info(`res.user ID: ${id}`);
-    return await this.usersService.findOneUser(+id);
+  @ApiOperation({ summary: 'Получить Пользователя' })
+  async findOneUser(@Param('id') id: string) {
+    this.logger.info(`req < User.ID: ${id}`);
+    return this.usersService.findOneUser(+id);
   }
 
   // ОДИН user.по параметрам ID <> Email <> FullName
   @Get('param/:param')
   @ApiOperation({ summary: 'Получить Usera по ID <> Email <> FullName' })
   async findUserByParam(@Param('param') param: string) {
-    return await this.usersService.findUserByParam(param);
+    this.logger.info(`req < User.Param: ${param}`);
+    return this.usersService.findUserByParam(param);
   }
 
   @Patch(':id')
-  @ApiOperation({ summary: 'Обновление Пользователя' })
+  @ApiOperation({ summary: 'Обновить Пользователя' })
   async updateUser(
     @Param('id') id: string,
     @Body() updateUserDto: UpdateUserDto,
   ) {
-    return await this.usersService.updateUser(+id, updateUserDto);
+    this.logger.info(`req # User.ID: ${id}`);
+    return this.usersService.updateUser(+id, updateUserDto);
   }
 
   @Delete(':id')
-  @ApiOperation({ summary: 'Удаление Пользователя' })
+  @ApiOperation({ summary: 'Удалить Пользователя' })
   async removeUser(@Param('id') id: string) {
-    return await this.usersService.removeUser(+id);
+    this.logger.info(`req - User.ID: ${id}`);
+    return this.usersService.removeUser(+id);
   }
+
   // @Delete(':id')
   // @ApiOperation({ summary: 'Востановить Пользователя' })
   // restoreUser(@Param('id') id: string) {
-  //   return await this.usersService.restoreUser(+id);
+  //   return  this.usersService.restoreUser(+id);
   // }
 
   // ^^ мтд.> ADMIN ----------------------------------------------------------------------------------
@@ -122,9 +121,10 @@ export class UsersController {
   async createUserRoles(
     @Body() addingRolesToUsersDto: AddingRolesToUsersDto,
   ): Promise<void> {
-    console.log('addingRolesToUsersDto : ' + addingRolesToUsersDto);
-    console.log(addingRolesToUsersDto);
-    // await this.usersService.addingRolesToUsers(addingRolesToUsersDto);
+    this.logger.info(
+      `req + Role > User: ${JSON.stringify(addingRolesToUsersDto)}`,
+    );
+    this.usersService.addingRolesToUsers(addingRolesToUsersDto);
   }
 
   // ^^ Расшир.мтд. ----------------------------------------------------------------------------
@@ -133,13 +133,8 @@ export class UsersController {
   @Get(':userid/avatar/:fileId')
   @ApiOperation({ summary: 'Открыть Аватар' })
   // из @`парам` взять id ф., возврат ответа
-  async serveAvatar(
-    @Param('fileId') fileId /* : string - не нужн.загр.добавляет */,
-    @Res() res,
-  ): Promise<any> {
-    // id Изо, п.хран.Изо
-    // в @`ответ`.`отправить файл`(с ф.id, {из п.хран.ф. './../..'})
-    console.log('u.cntrl ava fileId : ' + fileId);
+  async serveAvatar(@Param('fileId') fileId: string, @Res() res): Promise<any> {
+    this.logger.info(`req < Ava User.fileId: ${fileId}`);
     // ^^ дораб.чтоб м/у users/ и /avatar встал userId
     res.sendFile(fileId, { root: 'static/users/avatar' });
   }
@@ -153,18 +148,13 @@ export class UsersController {
     schema: {
       type: 'object',
       properties: {
-        avatar /* file */: {
+        avatar: {
           type: 'string',
           format: 'binary',
         },
       },
     },
   })
-  // данн.выбора req swagger
-  // @ApiQuery({
-  //   name: 'fileType',
-  //   enum: 'avatar',
-  // })
   // свой перехват > сохр.ф.с нов.name
   @UseInterceptors(FileInterceptor('avatar', { storage: fileStorage }))
   async uploadAvatar(
@@ -180,26 +170,15 @@ export class UsersController {
         ],
       }),
     )
-    avatar /* file */ : Express.Multer.File,
-    // user id ч/з @Param || @UserId
-    /* @Param('userid') userId */ @UserId() userId: number,
+    avatar: Express.Multer.File,
+    @UserId() userId: number,
   ) {
-    // console.log('file : ', file);
-    // console.log(file);
-    console.log('avatar : ', avatar);
-    console.log(avatar);
-    // сохр./обнов. путь к аватару
-    // this.usersService.setAvatar(
-    //   Number(userId),
-    //   `${this.SERVER_URL}${file.path}`,
-    // );
-    console.log('avatar.destination : ' + avatar.destination);
-    let avatarUrl =
-      /* this.SERVER_URL + */
-      avatar.destination.replace(/^\.\/static\/users\//g, `users/${userId}/`);
-    console.log('avatarUrl 1 : ' + avatarUrl);
+    this.logger.info(`req # Ava User.ID ${userId}`);
+    let avatarUrl = avatar.destination.replace(
+      /^\.\/static\/users\//g,
+      `users/${userId}/`,
+    );
     avatarUrl = avatarUrl.replace(/\/$/, '');
-    console.log('avatarUrl 2 : ' + avatarUrl);
     this.usersService.setAvatar(userId, avatarUrl);
   }
 
