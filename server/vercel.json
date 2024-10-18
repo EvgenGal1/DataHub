@@ -25,15 +25,7 @@
     },
     {
       "src": "/swagger/(.*)",
-      "dest": "dist/swagger/index.html"
-    },
-    {
-      "src": "/swagger/(.*).css",
-      "dest": "dist/swagger/$1.css"
-    },
-    {
-      "src": "/swagger/(.*).js",
-      "dest": "dist/swagger/$1.js"
+      "dest": "node_modules/swagger-ui-dist/$1"
     }
   ]
 }

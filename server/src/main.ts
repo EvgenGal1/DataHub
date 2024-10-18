@@ -90,11 +90,12 @@ async function bootstrap(): Promise<any> {
     );
 
     // сохр.док.swg в п. public/swagger
-    // fs.writeFileSync(
-    //   path.join(__dirname, '../public/swagger/swagger.json'),
-    //   JSON.stringify(document),
-    // );
+    fs.writeFileSync(
+      path.join(__dirname, '../public/swagger/swagger.json'),
+      JSON.stringify(document),
+    );
 
+    // статич.ф.swg
     app.use('/swagger', express.static('node_modules/swagger-ui-dist'));
 
     let mod: string, db: string, srv: string;
