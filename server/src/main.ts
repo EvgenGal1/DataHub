@@ -60,15 +60,15 @@ async function bootstrap(): Promise<any> {
       .setTitle('Data Hub | Центр Данных')
       .setDescription('Описание интегр.мтд.API')
       .setVersion('1.1')
+      // .addTag('app')
       // настр.для использ.jwt.Токен в swagger
-      .addBearerAuth()
+      // .addBearerAuth()
       // Указ.URL Своёго сервера (localhost | VERCEL)
       .addServer(
         isProduction
           ? `${process.env.SRV_VL_URL}`
           : `${process.env.LH_SRV_URL}${process.env.LH_SRV_PORT}`,
       )
-      .addTag('app')
       .build();
 
     // созд.док.swg(экземп.прилож., объ.парам., специф.доступа(3ий не обязат.парам.))
@@ -89,10 +89,10 @@ async function bootstrap(): Promise<any> {
     );
 
     // сохр.док.swg в п. public/swagger
-    fs.writeFileSync(
-      path.join(__dirname, '../public/swagger/swagger.json'),
-      JSON.stringify(document),
-    );
+    // fs.writeFileSync(
+    //   path.join(__dirname, '../public/swagger/swagger.json'),
+    //   JSON.stringify(document),
+    // );
 
     // app.use('/swagger', express.static('node_modules/swagger-ui-dist'));
 
