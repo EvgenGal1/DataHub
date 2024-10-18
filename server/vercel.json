@@ -30,6 +30,10 @@
     {
       "src": "/swagger/(.*).css",
       "dest": "dist/swagger/$1.css"
+    },
+    {
+      "src": "/swagger/(.*).js",
+      "dest": "dist/swagger/$1.js"
     }
   ]
 }
