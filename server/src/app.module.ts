@@ -64,9 +64,9 @@ import {
 })
 export class AppModule {
   // ^ замена ServeStaticModule от ошб. при сборке VERCEL от -v @nestjs/(serve-static, common)
-  configure(consumer: MiddlewareConsumer) {
-    consumer
-      .apply(express.static(path.join(__dirname, '..', 'public')))
-      .forRoutes('*'); // все маршруты
-  }
+  // configure(consumer: MiddlewareConsumer) {
+  //   consumer
+  //     .apply(express.static(path.join(__dirname, '..', 'public')))
+  //     .forRoutes('*'); // все маршруты
+  // }
 }
