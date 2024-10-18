@@ -20,8 +20,12 @@
       "dest": "src/main.ts"
     },
     {
-      "src": "/swagger/(.*)",
+      "src": "/api/(.*)",
       "dest": "src/main.ts"
+    },
+    {
+      "src": "/swagger/(.*)",
+      "dest": "dist/swagger/index.html"
     }
   ]
 }
