@@ -135,7 +135,7 @@ async function bootstrap(): Promise<any> {
     // статич.ф.swg
     // app.use('/swagger', express.static('node_modules/swagger-ui-dist'));
     // app.use('/swagger', express.static(path.join(__dirname, 'public/swagger')));
-    app.useStaticAssets(path.join(__dirname, '..', 'public'));
+    // app.useStaticAssets(path.join(__dirname, '..', 'public'));
 
     //  ----------------------------------------------------------------------------------
 
