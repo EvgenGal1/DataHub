@@ -1,0 +1,24 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Swagger UI</title>
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.1.3/swagger-ui.css"
+    />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.1.3/swagger-ui-bundle.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.1.3/swagger-ui-standalone-preset.js"></script>
+  </head>
+  <body>
+    <div id="swagger-ui"></div>
+    <script>
+      const ui = SwaggerUIBundle({
+        url: '/swagger/swagger.json', // Укажите путь к вашему Swagger файлу
+        dom_id: '#swagger-ui',
+        presets: [SwaggerUIStandalonePreset, SwaggerUIBundle.presets.apis],
+        layout: 'StandaloneLayout',
+      });
+    </script>
+  </body>
+</html>
