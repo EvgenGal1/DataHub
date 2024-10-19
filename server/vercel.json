@@ -20,12 +20,12 @@
       "dest": "src/main.ts"
     },
     {
-      "src": "/src/(.*)",
+      "src": "/api/(.*)",
       "dest": "src/main.ts"
     },
     {
-      "src": "src/swagger/(.*)",
-      "dest": "src/public/swagger/$1"
+      "src": "/swagger/(.*)",
+      "dest": "node_modules/swagger-ui-dist/$1"
     }
   ]
 }
