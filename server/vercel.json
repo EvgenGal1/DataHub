@@ -17,7 +17,7 @@
   "routes": [
     {
       "src": "/swagger/(.*)",
-      "dest": "node_modules/swagger-ui-dist/$1"
+      "dest": "public/swagger/"
     },
     {
       "src": "/public/(.*)",
