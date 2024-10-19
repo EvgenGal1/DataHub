@@ -16,16 +16,16 @@
   ],
   "routes": [
     {
-      "src": "/swagger/(.*)",
-      "dest": "public/swagger/$1"
+      "src": "/(.*)",
+      "dest": "src/main.ts"
     },
     {
       "src": "/public/(.*)",
       "dest": "public/$1"
     },
     {
-      "src": "/(.*)",
-      "dest": "src/main.ts"
+      "src": "/swagger/(.*)",
+      "dest": "public/swagger/$1"
     }
   ]
 }
