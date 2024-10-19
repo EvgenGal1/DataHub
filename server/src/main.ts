@@ -58,13 +58,27 @@ async function bootstrap(): Promise<any> {
       : +process.env.LH_SRV_PORT || 3000;
 
     //  ----------------------------------------------------------------------------------
+    // "dependencies": {
+    //   "swagger-ui-express": "^4.1.6", // или более новая версия
+    //   "swagger-jsdoc": "^6.1.0" // если используете для генерации Swagger документации
+    // }
 
-    // статич.ф.swg
-    // app.use('/swagger', express.static('node_modules/swagger-ui-dist'));
-    // app.use(
-    //   '/swagger',
-    //   express.static(path.join(__dirname, '../node_modules/swagger-ui-dist')),
-    // );
+    // const express = require('express');
+    // const swaggerUi = require('swagger-ui-express');
+    // const swaggerJsDoc = require('swagger-jsdoc');
+    // const app = express();
+    // const swaggerOptions = {
+    //   swaggerDefinition: {
+    //     openapi: '3.0.0',
+    //     info: {
+    //       title: 'My API',
+    //       version: '1.0.0',
+    //     },
+    //   },
+    //   apis: ['./src/routes/*.js'], // путь к вашим API файлам
+    // };
+    // const swaggerDocs = swaggerJsDoc(swaggerOptions);
+    // app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
     //  ----------------------------------------------------------------------------------
 
@@ -74,7 +88,7 @@ async function bootstrap(): Promise<any> {
       .setTitle('Data Hub | Центр Данных')
       .setDescription('Описание интегр.мтд.API')
       .setVersion('1.1')
-      // .addTag('app')
+      .addTag('app')
       // настр.для использ.jwt.Токен в swagger
       // .addBearerAuth()
       // Указ.URL Своёго сервера (localhost | VERCEL)
@@ -115,6 +129,13 @@ async function bootstrap(): Promise<any> {
     // writeFileSync(outputPath, JSON.stringify(document), { encoding: 'utf8'});
 
     // await app.close();
+
+    //  ----------------------------------------------------------------------------------
+
+    // статич.ф.swg
+    // app.use('/swagger', express.static('node_modules/swagger-ui-dist'));
+    // app.use('/swagger', express.static(path.join(__dirname, 'public/swagger')));
+    app.useStaticAssets(path.join(__dirname, '..', 'public'));
 
     //  ----------------------------------------------------------------------------------
 
