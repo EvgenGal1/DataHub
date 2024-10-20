@@ -10,7 +10,7 @@ import { FileEntity } from '../files/entities/file.entity';
 import { TrackEntity } from '../tracks/entities/track.entity';
 import { AlbumEntity } from '../albums/entities/album.entity';
 import { DatabaseUtils } from '../../common/utils/database.utils';
-import { LoggingWinston } from '../../services/logging/logging.winston';
+import { LoggingWinston } from '../../config/logging/log_winston.config';
 import {
   isProduction,
   isDevelopment,

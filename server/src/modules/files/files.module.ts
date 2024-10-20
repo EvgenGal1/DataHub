@@ -11,7 +11,7 @@ import { AlbumEntity } from '../albums/entities/album.entity';
 // утилиты БД
 import { DatabaseUtils } from '../../common/utils/database.utils';
 // логгирование LH
-import { LoggingWinston } from '../../services/logging/logging.winston';
+import { LoggingWinston } from '../../config/logging/log_winston.config';
 // константы > команды запуска process.env.NODE_ENV
 import {
   isDevelopment,

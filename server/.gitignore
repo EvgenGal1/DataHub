@@ -95,27 +95,30 @@ webpack*
 # папки 
 !/**/src/common/decorators/
 !/**/src/config/
+!/**/src/config/database/
+!/**/src/config/documents/
 !/**/src/config/envs/
+!/**/src/config/logging/
 !/**/src/common/filters/
 !/**/src/common/pipes/
 !/**/src/services/storage/
-!/**/src/services/logging/
 !/**/src/common/utils/
 # все.ф.в п. 
 # !/**/src/common/decorators/**
 # ф.
 !/**/src/config/
+!/**/src/config/database/db_localhost.config.ts
+!/**/src/config/database/db_supabase.config.ts
+!/**/src/config/documents/doc_swagger.config.ts
 !/**/src/common/decorators/user-id.decorator.ts
-!/**/src/config/localhost.config.ts
 !/**/src/config/envs/env.consts.ts
-!/**/src/config/supabase.config.ts
+!/**/src/config/logging/winston-logger.config.ts
+!/**/src/config/logging/log_winston.config.ts
 !/**/src/common/filters/http-exception.filter.ts
 !/**/src/common/storage/storage.ts
 !/**/src/common/pipes/fileTypeValidation.pipe.ts
 !/**/src/common/utils/basic.utils.ts
 !/**/src/common/utils/database.utils.ts
 !/**/src/services/storage/storage.ts
-!/**/src/services/logging/winston-logger.config.ts
-!/**/src/services/logging/logging.winston.ts
 # !/**/src/config/envs/elephant.config.ts
 # !/**/src/config/envs/configurationLocalhost.ts

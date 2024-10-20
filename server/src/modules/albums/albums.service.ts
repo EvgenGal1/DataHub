@@ -12,7 +12,7 @@ import { FilesService } from '../files/files.service';
 import { TotalAlbumDto } from './dto/total-album.dto';
 import { DatabaseUtils } from '../../common/utils/database.utils';
 import { BasicUtils } from '../../common/utils/basic.utils';
-import { LoggingWinston } from '../../services/logging/logging.winston';
+import { LoggingWinston } from '../../config/logging/log_winston.config';
 import {
   isProduction,
   isDevelopment,

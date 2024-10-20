@@ -7,10 +7,7 @@ import * as path from 'path';
 // import { ExceptionLogger } from 'nest-exceptions';
 
 // константы > команды запуска process.env.NODE_ENV, winston
-import {
-  /* isProduction, */ isDevelopment,
-  isTotal,
-} from '../../config/envs/env.consts';
+import { isDevelopment, isTotal } from '../envs/env.consts';
 const { colorize, timestamp, combine, json, printf, errors } = format;
 
 // уровни логирования

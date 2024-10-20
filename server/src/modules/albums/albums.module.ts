@@ -13,7 +13,7 @@ import { AlbumsService } from './albums.service';
 import { ReactionEntity } from '../reactions/entities/reaction.entity';
 import { BasicUtils } from '../../common/utils/basic.utils';
 import { DatabaseUtils } from '../../common/utils/database.utils';
-import { LoggingWinston } from '../../services/logging/logging.winston';
+import { LoggingWinston } from '../../config/logging/log_winston.config';
 import {
   isProduction,
   isDevelopment,

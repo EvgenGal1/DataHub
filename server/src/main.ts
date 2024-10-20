@@ -1,6 +1,5 @@
 // точка входа, запуск приложения
 import { NestFactory } from '@nestjs/core';
-import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 // import * as SwaggerUIStandalonePreset from 'swagger-ui-standalone-preset';
 // import SwaggerUI from 'swagger-ui-dist/swagger-ui.min.js';
 // import 'swagger-ui-dist/swagger-ui.css';
@@ -9,15 +8,16 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { ConsoleLogger } from '@nestjs/common';
 import { config } from 'dotenv';
-import * as express from 'express';
 import * as path from 'path';
 import * as fs from 'fs';
 
 import { AppModule } from './app.module.js';
 // фильтр исключ.
 import { HttpExceptionFilter } from './common/filters/http-exception.filter.js';
-// логирование LH
-import { LoggingWinston } from './services/logging/logging.winston.js';
+// логирование LH Winston
+import { LoggingWinston } from './config/logging/log_winston.config.js';
+// документирование Swagger
+import { DocumentSwagger } from './config/documents/doc_swagger.config.js';
 // константы > команды запуска process.env.NODE_ENV
 import {
   isProduction,
@@ -31,12 +31,25 @@ else if (isProduction) config({ path: '.env.production' });
 
 async function bootstrap(): Promise<any> {
   try {
+    // PORT Запуска SRV
+    const PORT: number = isProduction
+      ? +process.env.DB_SB_PORT || 3000
+      : +process.env.LH_SRV_PORT || 3000;
+
     // в перем.app асинхр.созд.экзепл.приложения ч/з кл.NestFactory с передачей в парам.modul входа и пр.настр.
     const app = await NestFactory.create<NestExpressApplication>(AppModule, {
       cors: true,
     });
 
-    // логи
+    // п.статич.ф.
+    app.useStaticAssets(path.join(__dirname, '..', 'public'), {
+      prefix: '/public/',
+    });
+
+    // обраб.ошб.ч/з глобал.обраб.исключений
+    app.useGlobalFilters(new HttpExceptionFilter());
+
+    // логгирование (Winston)
     let logger;
     if (isProduction) app.useLogger(new ConsoleLogger());
     else if (isDevelopment || isTotal) {
@@ -49,98 +62,11 @@ async function bootstrap(): Promise<any> {
       if (!fs.existsSync(logDir)) fs.mkdirSync(logDir, { recursive: true });
     }
 
-    // обраб.ошб.ч/з глобал.обраб.исключений
-    app.useGlobalFilters(new HttpExceptionFilter());
+    // документирование (Swagger)
+    DocumentSwagger(app);
 
-    // PORT Запуска SRV
-    const PORT: number = isProduction
-      ? +process.env.DB_SB_PORT || 3000
-      : +process.env.LH_SRV_PORT || 3000;
-
-    //  ----------------------------------------------------------------------------------
-    // "dependencies": {
-    //   "swagger-ui-express": "^4.1.6", // или более новая версия
-    //   "swagger-jsdoc": "^6.1.0" // если используете для генерации Swagger документации
-    // }
-
-    // const express = require('express');
-    // const swaggerUi = require('swagger-ui-express');
-    // const swaggerJsDoc = require('swagger-jsdoc');
-    // const app = express();
-    // const swaggerOptions = {
-    //   swaggerDefinition: {
-    //     openapi: '3.0.0',
-    //     info: {
-    //       title: 'My API',
-    //       version: '1.0.0',
-    //     },
-    //   },
-    //   apis: ['./src/routes/*.js'], // путь к вашим API файлам
-    // };
-    // const swaggerDocs = swaggerJsDoc(swaggerOptions);
-    // app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
-
-    //  ----------------------------------------------------------------------------------
-
-    // настр.док.swagger(swg)
-    const configSwagger = new DocumentBuilder()
-      // const config = new DocumentBuilder()
-      .setTitle('Data Hub | Центр Данных')
-      .setDescription('Описание интегр.мтд.API')
-      .setVersion('1.1')
-      .addTag('app')
-      // настр.для использ.jwt.Токен в swagger
-      // .addBearerAuth()
-      // Указ.URL Своёго сервера (localhost | VERCEL)
-      // .addServer(
-      //   isProduction
-      //     ? `${process.env.SRV_VL_URL}`
-      //     : `${process.env.LH_SRV_URL}${process.env.LH_SRV_PORT}`,
-      // )
-      .build();
-
-    // созд.док.swg(экземп.прилож., объ.парам., специф.доступа(3ий не обязат.парам.))
-    const document = SwaggerModule.createDocument(app, configSwagger);
-    // настр.путей swg(путь устан.swg, экземп.прилож., объ.док.)
-    SwaggerModule.setup(
-      'swagger',
-      app,
-      document,
-      // ,{
-      //   // Название страницы Swagger
-      //   customSiteTitle: 'Data Hub | Центр Данных (swg)',
-      //   swaggerOptions: {
-      //     // `постоянное разрешение`настр.для использ.jwt.Токен в swagger
-      //     persistAuthorization: true,
-      //   },
-      // }
-    );
-
-    //  ----------------------------------------------------------------------------------
-    // сохр.док.swg в п. public/swagger
-    // fs.writeFileSync(
-    //   path.join(__dirname, '../public/swagger/swagger.json'),
-    //   JSON.stringify(document),
-    // );
-
-    //  ----------------------------------------------------------------------------------
-
-    // const outputPath = path.resolve(process.cwd(), 'swagger.json');
-    // writeFileSync(outputPath, JSON.stringify(document), { encoding: 'utf8'});
-
-    // await app.close();
-
-    //  ----------------------------------------------------------------------------------
-
-    // статич.ф.swg
-    // app.use('/swagger', express.static('node_modules/swagger-ui-dist'));
-    // app.use('/swagger', express.static(path.join(__dirname, 'public/swagger')));
-    app.useStaticAssets(path.join(__dirname, '..', 'public'));
-
-    //  ----------------------------------------------------------------------------------
-
+    // прослуш.PORT и fn()callback с log на Запуск
     let mod: string, db: string, srv: string;
-    // прослуш.PORT и fn()callback с cg на Запуск
     await app.listen(PORT, () => {
       // ^ вывод подкл.к БД от NODE_ENV. производство(БД SB) <> разработка (dev БД SB, total БД SB, LH)
       if (isProduction) {
@@ -164,4 +90,5 @@ async function bootstrap(): Promise<any> {
     console.log('main e : ' + e);
   }
 }
+
 bootstrap();

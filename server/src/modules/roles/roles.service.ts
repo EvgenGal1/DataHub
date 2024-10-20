@@ -9,7 +9,7 @@ import { RoleEntity } from './entities/role.entity';
 import { UserRolesEntity } from './entities/user-roles.entity';
 import { AddingRolesToUsersDto } from './dto/add-roles-to-users.dto';
 import { DatabaseUtils } from '../../common/utils/database.utils';
-import { LoggingWinston } from '../../services/logging/logging.winston';
+import { LoggingWinston } from '../../config/logging/log_winston.config';
 import {
   isProduction,
   isDevelopment,

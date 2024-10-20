@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 
 import { CreateReactionDto } from './dto/create-reaction.dto';
 import { UpdateReactionDto } from './dto/update-reaction.dto';
-import { LoggingWinston } from '../../services/logging/logging.winston';
+import { LoggingWinston } from '../../config/logging/log_winston.config';
 import {
   isProduction,
   isDevelopment,

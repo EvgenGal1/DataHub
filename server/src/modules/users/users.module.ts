@@ -15,7 +15,7 @@ import { BasicUtils } from '../../common/utils/basic.utils';
 // утилиты БД
 import { DatabaseUtils } from '../../common/utils/database.utils';
 // логгирование LH
-import { LoggingWinston } from '../../services/logging/logging.winston';
+import { LoggingWinston } from '../../config/logging/log_winston.config';
 // константы > команды запуска process.env.NODE_ENV
 import {
   isProduction,
@@ -26,39 +26,18 @@ import {
 @Module({
   imports: [
     // ч/з TypeOrmModule.`для функции` подкл.UserEntity и пр. для раб.с табл.users и пр.
-    // ^ подкл.неск.БД.
-    // ^ PROD или Total > БД SupaBase
-    ...(isProduction || isTotal
-      ? [
-          TypeOrmModule.forFeature(
-            [
-              UserEntity,
-              RoleEntity,
-              UserRolesEntity,
-              FileEntity,
-              TrackEntity,
-              AlbumEntity,
-            ],
-            'supabase',
-          ),
-        ]
-      : []),
-    // ^ DEV или Total > БД LocalHost
-    ...(isDevelopment || isTotal
-      ? [
-          TypeOrmModule.forFeature(
-            [
-              UserEntity,
-              RoleEntity,
-              UserRolesEntity,
-              FileEntity,
-              TrackEntity,
-              AlbumEntity,
-            ],
-            'localhost',
-          ),
-        ]
-      : []),
+    // ^ подкл.неск.БД. PROD или DEV
+    TypeOrmModule.forFeature(
+      [
+        UserEntity,
+        RoleEntity,
+        UserRolesEntity,
+        FileEntity,
+        TrackEntity,
+        AlbumEntity,
+      ],
+      isProduction ? 'supabase' : 'localhost',
+    ),
     // подкл.использ.modulи
     RolesModule,
     // forwardRef(() => AuthModule),

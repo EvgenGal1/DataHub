@@ -1,10 +1,11 @@
-// ^^ различные/помошники
+// ^ различные/помошники
+
 import * as fs from 'fs';
 import * as mm from 'music-metadata';
 import iconv from 'iconv-lite';
 
 // логгирование LH
-import { LoggingWinston } from '../../services/logging/logging.winston';
+import { LoggingWinston } from '../../config/logging/log_winston.config';
 
 // @Injectable()
 export class BasicUtils {

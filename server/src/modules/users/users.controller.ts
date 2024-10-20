@@ -34,7 +34,7 @@ import { UserId } from '../../common/decorators/user-id.decorator';
 // локал.ф.хран-ще
 import { fileStorage } from '../../services/storage/storage';
 // логгирование LH
-import { LoggingWinston } from '../../services/logging/logging.winston';
+import { LoggingWinston } from '../../config/logging/log_winston.config';
 
 @Controller('users')
 // групп.мтд.cntrl users

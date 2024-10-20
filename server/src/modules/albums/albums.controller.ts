@@ -20,7 +20,7 @@ import { CreateAlbumDto } from './dto/create-album.dto';
 import { UpdateAlbumDto } from './dto/update-album.dto';
 import { AlbumEntity } from './entities/album.entity';
 import { UserId } from '../../common/decorators/user-id.decorator';
-import { LoggingWinston } from '../../services/logging/logging.winston';
+import { LoggingWinston } from '../../config/logging/log_winston.config';
 
 @Controller('/albums')
 // групп.мтд.cntrl tracks > swagger
