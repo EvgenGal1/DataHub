@@ -53,7 +53,10 @@ export const DocumentSwagger = (app: NestExpressApplication) => {
     ],
   });
   // путь сохр.док.swg
-  const swaggerPath = path.join(__dirname, '../public/swagger/swagger.json');
+  const swaggerPath = path.join(
+    __dirname,
+    '../../../public/swagger/swagger.json',
+  );
   // проверка/созд.п.
   const dir = path.dirname(swaggerPath);
   if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
