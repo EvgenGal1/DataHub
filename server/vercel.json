@@ -19,6 +19,26 @@
       "src": "/(.*)",
       "dest": "src/main.ts",
       "methods": ["GET", "POST", "PUT", "PATCH", "DELETE"]
+    },
+    {
+      "src": "/api/(.*)",
+      "dest": "src/main.ts"
+    },
+    {
+      "src": "/swagger/(.*)",
+      "dest": "src/public/swagger/$1"
+    },
+    {
+      "src": "/swagger/(.*)",
+      "dest": "src/public/swagger/swagger.json"
+    },
+    {
+      "src": "/api/(.*)",
+      "dest": "src/main.ts"
+    },
+    {
+      "src": "/swagger/(.*)",
+      "dest": "node_modules/swagger-ui-dist/$1"
     }
   ]
 }
