@@ -43,7 +43,7 @@ async function bootstrap(): Promise<any> {
 
     // п.статич.ф.
     app.useStaticAssets(path.join(__dirname, '..', 'public'), {
-      prefix: '/public/',
+      prefix: '/doc-swg/',
     });
 
     // обраб.ошб.ч/з глобал.обраб.исключений
