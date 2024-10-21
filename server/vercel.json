@@ -16,17 +16,17 @@
   ],
   "routes": [
     {
-      "src": "/doc-swg/(.*)",
-      "dest": "/public/swagger/$1"
+      "src": "/(.*)",
+      "dest": "src/main.ts",
+      "methods": ["GET", "POST", "PUT", "PATCH", "DELETE"]
     },
     {
       "src": "/public/(.*)",
       "dest": "/public/$1"
     },
     {
-      "src": "/(.*)",
-      "dest": "src/main.ts",
-      "methods": ["GET", "POST", "PUT", "PATCH", "DELETE"]
+      "src": "/doc-swg/(.*)",
+      "dest": "/public/swagger/$1"
     }
   ]
 }
