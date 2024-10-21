@@ -25,7 +25,7 @@
       "dest": "/public/$1"
     },
     {
-      "src": "/doc-swg/(.*)",
+      "src": "/swagger/(.*)",
       "dest": "/public/swagger/$1"
     }
   ]
