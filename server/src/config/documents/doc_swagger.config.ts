@@ -37,7 +37,7 @@ export const DocumentSwagger = (app: NestExpressApplication) => {
     customfavIcon:
       // 'http://localhost:5791/public/img/ico/DataHub(dark).ico',
       isProduction
-        ? `${process.env.SRV_VL_URL}/img/ico/icon.ico`
+        ? `${process.env.SRV_VL_URL}/public/img/ico/icon.ico`
         : // `${process.env.LH_SRV_URL}${process.env.LH_SRV_PORT}/img/icon.ico`
           `http://localhost:5791/public/img/ico/icon.ico`,
     // кастом ф.JS (для отраб.статич.ф.на PROD - Vercel)
