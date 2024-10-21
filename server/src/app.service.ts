@@ -15,15 +15,11 @@ export class AppService {
   // constructor(private readonly configService: ConfigService) {}
 
   // мтд.обраб.данн.
-  getUsers(): string {
+  getHello(): string {
     return 'Главная Страница';
   }
 
-  getUsers2(): string {
-    return 'Страница по Api';
-  }
-
-  getHello(): string {
+  getDetails(): string {
     let mod: string, db: string, srv: string;
     if (isProduction) {
       mod = 'PROD';

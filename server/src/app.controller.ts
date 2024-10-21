@@ -1,7 +1,14 @@
 // общ.контроллер приложения (обраб.маршр.,req|res CRUD, взаимодейств.>тип,тело,парам.req|res)
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, Res } from '@nestjs/common';
 import { AppService } from './app.service.js';
+import { ApiTags } from '@nestjs/swagger';
+import { Response } from 'express';
 
+// константы > команды запуска process.env.NODE_ENV
+import { isProduction } from './config/envs/env.consts.js';
+
+// групп.мтд.cntrl app
+@ApiTags('app')
 // декор.контроллер(маршр.req). (обраб.маршр.req|res CRUD)
 @Controller('/')
 export class AppController {
@@ -12,25 +19,19 @@ export class AppController {
 
   // декоратор.маршр.req
   @Get()
-  // мтд.получ.данн.
-  getUsers(): string {
+  // декор.ответа
+  getHello(@Res() res: Response): void {
     // после внедр.завис. обращ.к serv ч/з this
-    return this.appService.getUsers();
+    // return this.appService.getHello();
+    // возвращ.ф.HTML по пути из раб.п.
+    res.sendFile('src/views/pages/welcome.html', { root: process.cwd() });
   }
 
-  @Get('/api/hello')
-  getHello(): string {
-    return this.appService.getHello();
-  }
-}
-
-// альтер.декор.маршр.req
-@Controller('/api')
-export class AppController2 {
-  constructor(private readonly appService: AppService) {}
-
-  @Get(/*    */)
-  getUsers2(): string {
-    return this.appService.getUsers2();
+  @Get('/details')
+  getDetails(): string {
+    // return this.appService.getDetails();
+    const connectionDetails = `${isProduction ? 'PROD' : 'DEV'}.a.c.  SRV: ${isProduction ? process.env.SRV_VL_URL : `${process.env.LH_SRV_URL}${process.env.LH_SRV_PORT}`}  DB: ${isProduction ? process.env.DB_SB_URL : `${process.env.LH_DB_NAME}:${process.env.LH_DB_PORT}`}`;
+    console.log(connectionDetails);
+    return connectionDetails;
   }
 }

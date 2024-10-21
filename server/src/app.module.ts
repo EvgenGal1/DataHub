@@ -2,7 +2,7 @@ import { Module, MiddlewareConsumer } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
 
-import { AppController, AppController2 } from './app.controller.js';
+import { AppController } from './app.controller.js';
 import { AppService } from './app.service.js';
 // import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './modules/users/users.module.js';
@@ -48,7 +48,7 @@ import { isProduction } from './config/envs/env.consts.js';
     ReactionsModule,
   ],
   // подкл.cnrtl данного модуля
-  controllers: [AppController, AppController2],
+  controllers: [AppController],
   // подкл.serv данного модуля
   providers: [AppService, LoggingWinston],
   exports: [LoggingWinston],
