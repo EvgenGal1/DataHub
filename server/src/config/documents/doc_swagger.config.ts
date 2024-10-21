@@ -48,18 +48,6 @@ export const DocumentSwagger = (app: NestExpressApplication) => {
     // кастом ф.CSS (для отраб.статич.ф.на PROD - Vercel)
     customCssUrl: [
       'https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.15.5/swagger-ui.min.css',
-      'https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.15.5/swagger-ui-standalone-preset.min.css',
-      'https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.15.5/swagger-ui.css',
     ],
   });
-  // // путь сохр.док.swg
-  // const swaggerPath = path.join(
-  //   __dirname,
-  //   '../../../public/swagger/swagger.json',
-  // );
-  // // проверка/созд.п.
-  // const dir = path.dirname(swaggerPath);
-  // if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
-  // // сохр.док.swg
-  // fs.writeFileSync(swaggerPath, JSON.stringify(document, null, 2));
 };

@@ -22,11 +22,11 @@
     },
     {
       "src": "/public/(.*)",
-      "dest": "public/$1"
+      "dest": "/public/$1"
     },
     {
       "src": "/swagger/(.*)",
-      "dest": "public/swagger/$1"
+      "dest": "/public/swagger/$1"
     }
   ]
 }
