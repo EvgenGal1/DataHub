@@ -21,8 +21,12 @@
       "methods": ["GET", "POST", "PUT", "PATCH", "DELETE"]
     },
     {
-      "src": "/public/swagger/(.*)",
-      "dest": "/public/swagger/$1"
+      "src": "/public/(.*)",
+      "dest": "public/$1"
+    },
+    {
+      "src": "/swagger/(.*)",
+      "dest": "public/swagger/$1"
     }
   ]
 }
