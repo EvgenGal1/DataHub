@@ -16,10 +16,6 @@
   ],
   "routes": [
     {
-      "src": "/doc-swg/(.*)",
-      "dest": "src/main.ts"
-    },
-    {
       "src": "/public/(.*)",
       "dest": "/public/$1"
     },
