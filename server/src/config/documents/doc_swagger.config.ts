@@ -2,8 +2,6 @@
 
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { NestExpressApplication } from '@nestjs/platform-express';
-import * as path from 'path';
-import * as fs from 'fs';
 
 import { isProduction } from '../envs/env.consts.js';
 
@@ -28,18 +26,15 @@ export const DocumentSwagger = (app: NestExpressApplication) => {
   // настр.маршрута swg
   SwaggerModule.setup('doc-swg', app, document, {
     // Название страницы Swagger
-    customSiteTitle: 'Data Hub | Центр Данных (Swagger)',
+    customSiteTitle: 'Data Hub (Swagger)',
     swaggerOptions: {
       // `постоянное разрешение`настр.для использ.jwt.Токен в swg
       persistAuthorization: true,
     },
     // кастом иконки в браузере
-    customfavIcon:
-      // 'http://localhost:5791/public/img/ico/DataHub(dark).ico',
-      isProduction
-        ? `${process.env.SRV_VL_URL}/public/img/ico/icon.ico`
-        : // `${process.env.LH_SRV_URL}${process.env.LH_SRV_PORT}/img/icon.ico`
-          `http://localhost:5791/public/img/ico/icon.ico`,
+    customfavIcon: isProduction
+      ? `${process.env.SRV_VL_URL}/public/img/ico/icon.ico`
+      : `${process.env.LH_SRV_URL}${process.env.LH_SRV_PORT}/public/img/ico/icon.ico`,
     // кастом ф.JS (для отраб.статич.ф.на PROD - Vercel)
     customJs: [
       'https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.15.5/swagger-ui-bundle.min.js',

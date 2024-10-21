@@ -19,11 +19,7 @@ import { LoggingWinston } from './config/logging/log_winston.config.js';
 // документирование Swagger
 import { DocumentSwagger } from './config/documents/doc_swagger.config.js';
 // константы > команды запуска process.env.NODE_ENV
-import {
-  isProduction,
-  isDevelopment,
-  isTotal,
-} from './config/envs/env.consts.js';
+import { isProduction, isDevelopment } from './config/envs/env.consts.js';
 
 // загр.перем.окруж.от кмд.NODE_ENV
 if (isDevelopment) config({ path: '.env.development' });
@@ -52,7 +48,7 @@ async function bootstrap(): Promise<any> {
     // логгирование (Winston)
     let logger;
     if (isProduction) app.useLogger(new ConsoleLogger());
-    else if (isDevelopment || isTotal) {
+    else if (isDevelopment) {
       logger = app.get(LoggingWinston);
       app.useLogger(logger);
       // созд.п. > логи
@@ -66,28 +62,18 @@ async function bootstrap(): Promise<any> {
     DocumentSwagger(app);
 
     // прослуш.PORT и fn()callback с log на Запуск
-    let mod: string, db: string, srv: string;
     await app.listen(PORT, () => {
-      // ^ вывод подкл.к БД от NODE_ENV. производство(БД SB) <> разработка (dev БД SB, total БД SB, LH)
-      if (isProduction) {
-        mod = 'PROD';
-        srv = process.env.SRV_VL_URL;
-        db = process.env.DB_SB_URL;
-      } else if (isDevelopment) {
-        mod = 'DEV';
-        srv = process.env.LH_SRV_URL + process.env.LH_SRV_PORT;
-        db = `${process.env.LH_DB_NAME}_${process.env.LH_DB_USER}:${process.env.LH_DB_PORT}`;
-      } else if (isTotal) {
-        mod = 'DEV + PROD';
-        srv = process.env.LH_SRV_URL + process.env.LH_SRV_PORT;
-        db = `${process.env.LH_DB_NAME}_${process.env.LH_DB_USER}:${process.env.LH_DB_PORT}`;
-      }
-      console.log(`${mod}.m.  SRV: ${srv}  DB: ${db}`);
+      // вывод подкл.к БД от NODE_ENV. PROD(SB) <> DEV(LH)
+      console.log(
+        `${isProduction ? 'PROD' : 'DEV'}.m.  SRV: ${isProduction ? process.env.SRV_VL_URL : `${process.env.LH_SRV_URL}${process.env.LH_SRV_PORT}`}  DB: ${isProduction ? process.env.DB_SB_URL : `${process.env.LH_DB_NAME}:${process.env.LH_DB_PORT}`}`,
+      );
     });
     if (logger && isDevelopment)
-      logger.info(`${mod}.m.  SRV: ${srv}  DB: ${db}`);
+      logger.info(
+        `DEV.m.  SRV: ${process.env.LH_SRV_URL}${process.env.LH_SRV_PORT}  DB: ${process.env.LH_DB_NAME}:${process.env.LH_DB_PORT}`,
+      );
   } catch (e) {
-    console.log('main e : ' + e);
+    console.log('m.err : ' + e);
   }
 }
 
