@@ -27,6 +27,10 @@
     {
       "src": "/swagger/(.*)",
       "dest": "/public/swagger/$1"
+    },
+    {
+      "src": "/pages/(.*)",
+      "dest": "/public/views/$1"
     }
   ]
 }
