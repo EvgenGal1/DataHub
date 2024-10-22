@@ -27,10 +27,6 @@
     {
       "src": "/swagger/(.*)",
       "dest": "/public/swagger/$1"
-    },
-    {
-      "src": "/views/(.*)",
-      "dest": "/public/views/$1"
     }
   ]
 }
