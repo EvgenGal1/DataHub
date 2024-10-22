@@ -24,7 +24,8 @@ export class AppController {
     // после внедр.завис. обращ.к serv ч/з this
     // return this.appService.getHello();
     // возвращ.ф.HTML по пути из раб.п.
-    res.sendFile('views/pages/welcome.html', { root: 'public' });
+    res.sendFile('/views/pages/welcome.html', { root: __dirname });
+    // res.sendFile('/views/pages/welcome.html', { root: 'public' });
   }
 
   @Get('/details')
