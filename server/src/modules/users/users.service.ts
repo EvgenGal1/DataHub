@@ -187,96 +187,122 @@ export class UsersService {
 
   // ОДИН user.по id
   async findOneUser(id: number): Promise<UserEntity> {
-    // логи,перем.ошб.
-    // this.logger.info(
-    //   `Получение User по ID ${id} из ${isProduction ? 'SB' : isDevelopment ? 'LH' : 'SB и LH'}`,
-    // );
-    const err = `User с ID ${id} нет в БД`;
-    // условие > PROD и DEV. перем.,req.,лог.,ошб.
-    if (isProduction || isDevelopment) {
+    try {
+      if (isDevelopment) this.logger.info(`< User.ID: ${id}`);
+      const err = `User с ID ${id} нет в БД`;
+      // условие > PROD и DEV. перем.,req.,лог.,ошб.
+      // if (isProduction || isDevelopment) {
       const definiteUserRepository: Repository<UserEntity> = isProduction
         ? this.userRepositorySB
         : this.userRepository;
       const user = await definiteUserRepository.findOneBy({ id });
       if (!user) {
-        // this.logger.error(`Лог. ${err} ${isProduction ? 'SB' : 'LH'}`);
         createThrowError(`Ошб. ${err} ${isProduction ? 'SB' : 'LH'}`);
       }
+      this.logger.info(`< User.ID: ${id}`);
       return user;
-    }
-    // ОБЩ.с БД - SB и LH
-    if (isTotal) {
-      const userSB = await this.userRepositorySB.findOneBy({ id });
-      const userLH = await this.userRepository.findOneBy({ id });
-      // логг./ошб. е/и нет 2х
-      if (!userSB && !userLH) {
-        // this.logger.error(`Лог. ${err} SB и LH`);
-        createThrowError(`Ошб. ${err} SB и LH`);
-      }
-      // возврат е/и есть 1
-      if (!userSB || !userLH) return userSB ?? userLH;
-      // провер.равн.данн.userSB <> userLH
-      const areEqual = JSON.stringify(userSB) === JSON.stringify(userLH);
-      // е/и не равны - указ.источ.DB, возвращ.раскрыт.userSB и влож.userLH
-      if (!areEqual) {
-        const userWithSourceSB = { ...userSB, source: 'DB_SB' };
-        const userWithSourceLH = { ...userLH, source: 'DB_LH' };
-        return {
-          ...userWithSourceSB,
-          [`userLH_${userLH.id}`]: userWithSourceLH,
-        };
-      }
-      // е/и равны возврат userSB
-      return userSB;
+      // }
+      // ОБЩ.с БД - SB и LH
+      // if (isTotal) {
+      //   const userSB = await this.userRepositorySB.findOneBy({ id });
+      //   const userLH = await this.userRepository.findOneBy({ id });
+      //   // логг./ошб. е/и нет 2х
+      //   if (!userSB && !userLH) {
+      //     // this.logger.error(`Лог. ${err} SB и LH`);
+      //     createThrowError(`Ошб. ${err} SB и LH`);
+      //   }
+      //   // возврат е/и есть 1
+      //   if (!userSB || !userLH) return userSB ?? userLH;
+      //   // провер.равн.данн.userSB <> userLH
+      //   const areEqual = JSON.stringify(userSB) === JSON.stringify(userLH);
+      //   // е/и не равны - указ.источ.DB, возвращ.раскрыт.userSB и влож.userLH
+      //   if (!areEqual) {
+      //     const userWithSourceSB = { ...userSB, source: 'DB_SB' };
+      //     const userWithSourceLH = { ...userLH, source: 'DB_LH' };
+      //     return {
+      //       ...userWithSourceSB,
+      //       [`userLH_${userLH.id}`]: userWithSourceLH,
+      //     };
+      //   }
+      //   // е/и равны возврат userSB
+      //   return userSB;
+      // }
+    } catch (error) {
+      this.logger.error(
+        `Ошибка при получении пользователя с ID ${id}: ${JSON.stringify(error)}`,
+      );
+      throw new InternalServerErrorException(
+        'Ошибка при получении пользователя',
+      );
     }
   }
 
   // ОДИН user.по параметрам ID <> Email <> FullName
   // ! переделать под получ roles tracks user_roles в завис.от парам. и пр.
   async findUserByParam(param: string) {
-    // логи,перем.ошб.
-    // this.lgger.info(
-    //   `Получение User по Param ${param} из ${isProduction ? 'SB' : isDevelopment ? 'LH' : 'SB и LH'}`,
-    // );o
-    const err = `User с Param ${param} нет в БД`;
-    // ^^ fn для неск.id
-    // if (usersIds) {
-    //   const splitUserIds = usersIds.split(',');
-    //   return this.userRepository./* findAndCount */ find({
-    //     where: { id: In(splitUserIds) },
-    //     // relations: {
-    //     //   /* roles */ userRoles: true,
-    //     // },
-    //   });
-    // }
-    // return this.userRepository.find();
+    try {
+      if (isDevelopment) this.logger.info(`< User.param : ${param}`);
+      // логи,перем.ошб.
+      // this.lgger.info(
+      //   `Получение User по Param ${param} из ${isProduction ? 'SB' : isDevelopment ? 'LH' : 'SB и LH'}`,
+      // );o
+      if (!this.userRepository) {
+        this.logger.error('userRepository is undefined');
+        throw new InternalServerErrorException('userRepository is undefined');
+      }
+      const err = `User с Param ${param} нет в БД`;
+      // ^^ fn для неск.id
+      // if (usersIds) {
+      //   const splitUserIds = usersIds.split(',');
+      //   return this.userRepository./* findAndCount */ find({
+      //     where: { id: In(splitUserIds) },
+      //     // relations: {
+      //     //   /* roles */ userRoles: true,
+      //     // },
+      //   });
+      // }
+      // return this.userRepository.find();
 
-    // ^^ мтд.напрямую
-    // const users = await this.userRepository.find({
-    //   relations: ['roles', 'tracks', 'user_roles'],
-    // });
+      // ^^ мтд.напрямую
+      // const users = await this.userRepository.find({
+      //   relations: ['roles', 'tracks', 'user_roles'],
+      // });
 
-    // ^^ мтд.ч/з `созд. строитель запросов`
-    // const users = await this.userRepository
-    //   .createQueryBuilder('user')
-    //   .leftJoinAndSelect('user.roles', 'role')
-    //   // ! дораб.
-    //   .leftJoinAndSelect('role.user_roles', 'level')
-    //   .getMany();
+      // ^^ мтд.ч/з `созд. строитель запросов`
+      // const users = await this.userRepository
+      //   .createQueryBuilder('user')
+      //   .leftJoinAndSelect('user.roles', 'role')
+      //   // ! дораб.
+      //   .leftJoinAndSelect('role.user_roles', 'level')
+      //   .getMany();
 
-    const whereCondition: any = {};
-    // условия res. id/num|eml/@|fullname/str // ^^ дораб.распозн.eml ч/з регул.выраж.
-    if (!isNaN(Number(param))) {
-      whereCondition.id = param;
-    } else if (param.includes('@')) {
-      whereCondition.email = param;
-    } else if (!param.includes('@') && typeof param === 'string') {
-      whereCondition.fullname = param;
+      const whereCondition: any = {};
+      // условия res. id/num|eml/@|fullname/str // ^^ дораб.распозн.eml ч/з регул.выраж.
+      if (!isNaN(Number(param))) {
+        whereCondition.id = Number(param);
+      } else if (param.includes('@')) {
+        whereCondition.email = param;
+      } else if (!param.includes('@') && typeof param === 'string') {
+        whereCondition.fullname = param;
+      }
+      const definiteUserRepository: Repository<UserEntity> = isProduction
+        ? this.userRepositorySB
+        : this.userRepository;
+      // объ.res, обраб.ошб., res по значени.
+      const user = await definiteUserRepository.findOne({
+        where: whereCondition,
+      });
+      if (!user) throw new NotFoundException('Такого Пользователя нет');
+      this.logger.info(`< User.param : ${param}`);
+      return user;
+    } catch (error) {
+      this.logger.error(
+        `Ошибка при получении пользователя с param ${param}: ${JSON.stringify(error)}`,
+      );
+      throw new InternalServerErrorException(
+        'Ошибка при получении пользователя',
+      );
     }
-    // объ.res, обраб.ошб., res по значени.
-    const user = await this.userRepository.findOne({ where: whereCondition });
-    if (!user) throw new NotFoundException('Такого Пользователя нет');
-    return user;
   }
 
   async updateUser(id: number, updateUserDto: UpdateUserDto) {
