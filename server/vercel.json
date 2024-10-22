@@ -18,6 +18,14 @@
     {
       "src": "/(.*)",
       "dest": "src/main.ts"
+    },
+    {
+      "src": "/img/(.*)",
+      "dest": "/public/img/$1"
+    },
+    {
+      "src": "/views/(.*)",
+      "dest": "/public/views/$1"
     }
   ]
 }
