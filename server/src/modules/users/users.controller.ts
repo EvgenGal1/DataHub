@@ -18,7 +18,6 @@ import {
   ApiConsumes,
   ApiOperation,
   ApiTags,
-  // ApiQuery,
   // ApiBearerAuth,
   // ApiResponse,
 } from '@nestjs/swagger';
@@ -36,8 +35,8 @@ import { fileStorage } from '../../services/storage/storage';
 // логгирование LH
 import { LoggingWinston } from '../../config/logging/log_winston.config';
 
-@Controller('users')
-// групп.мтд.cntrl users
+@Controller('/users')
+// групп.мтд.cntrl users > swagger
 @ApiTags('Пользователи')
 // обёртка защиты JWT > swg
 // @ApiBearerAuth()
@@ -53,7 +52,7 @@ export class UsersController {
   // ^^ МТД.CRUD
 
   @Post()
-  @ApiOperation({ summary: 'Создание Пользователя' })
+  @ApiOperation({ summary: 'Создать Пользователя' })
   // декор.res.swagger: ApiResponse, ApiOkResponse, ApiCreatedResponse, ApiNotFoundResponse
   // @ApiResponse({
   //   status: 201,
@@ -71,15 +70,15 @@ export class UsersController {
   // @Roles('ADMIN')
   // @UseGuards(RolesGuard)
   async findAllUsers() {
-    this.logger.info(`req < Users All`);
+    this.logger.info(`req << Users All`);
     return this.usersService.findAllUsers();
   }
 
   // ОДИН user.по id
   @Get(':id')
   @ApiOperation({ summary: 'Получить Пользователя' })
-  async findOneUser(@Param('id') id: string) {
-    this.logger.info(`req < User.ID: ${id}`);
+  async findOneUser(@Param('id') id: number) {
+    this.logger.info(`req < User.ID ${id}`);
     return this.usersService.findOneUser(+id);
   }
 
@@ -87,25 +86,25 @@ export class UsersController {
   @Get('param/:param')
   @ApiOperation({ summary: 'Получить Usera по ID <> Email <> FullName' })
   async findUserByParam(@Param('param') param: string) {
-    this.logger.info(`req < User.Param: ${param}`);
+    this.logger.info(`req <? User Param: ${param}`);
     return this.usersService.findUserByParam(param);
   }
 
   @Patch(':id')
   @ApiOperation({ summary: 'Обновить Пользователя' })
   async updateUser(
-    @Param('id') id: string,
+    @Param('id') id: number,
     @Body() updateUserDto: UpdateUserDto,
   ) {
-    this.logger.info(`req # User.ID: ${id}`);
+    this.logger.info(`req # User.ID ${id}`);
     return this.usersService.updateUser(+id, updateUserDto);
   }
 
   @Delete(':id')
   @ApiOperation({ summary: 'Удалить Пользователя' })
-  async removeUser(@Param('id') id: string) {
-    this.logger.info(`req - User.ID: ${id}`);
-    return this.usersService.removeUser(+id);
+  async removeUser(@Param('id') id: number) {
+    this.logger.info(`req - User.ID ${id}`);
+    return this.usersService.removeUser(id);
   }
 
   // @Delete(':id')
@@ -122,19 +121,20 @@ export class UsersController {
     @Body() addingRolesToUsersDto: AddingRolesToUsersDto,
   ): Promise<void> {
     this.logger.info(
-      `req + Role > User: ${JSON.stringify(addingRolesToUsersDto)}`,
+      `req + Role в User: ${JSON.stringify(addingRolesToUsersDto)}`,
     );
     this.usersService.addingRolesToUsers(addingRolesToUsersDto);
   }
 
   // ^^ Расшир.мтд. ----------------------------------------------------------------------------
   // !! https://www.techiediaries.com/nestjs-upload-serve-static-file/
+
   // получ.аватар Пользователя. Раб.со статич.ф.
   @Get(':userid/avatar/:fileId')
   @ApiOperation({ summary: 'Открыть Аватар' })
   // из @`парам` взять id ф., возврат ответа
   async serveAvatar(@Param('fileId') fileId: string, @Res() res): Promise<any> {
-    this.logger.info(`req < Ava User.fileId: ${fileId}`);
+    this.logger.info(`req <? Ava User.fileId: ${fileId}`);
     // ^^ дораб.чтоб м/у users/ и /avatar встал userId
     res.sendFile(fileId, { root: 'static/users/avatar' });
   }
@@ -173,7 +173,7 @@ export class UsersController {
     avatar: Express.Multer.File,
     @UserId() userId: number,
   ) {
-    this.logger.info(`req # Ava User.ID ${userId}`);
+    this.logger.info(`req # AVA User.ID ${userId}`);
     let avatarUrl = avatar.destination.replace(
       /^\.\/static\/users\//g,
       `users/${userId}/`,
