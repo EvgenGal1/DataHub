@@ -246,11 +246,11 @@ export class UsersService {
       // this.lgger.info(
       //   `Получение User по Param ${param} из ${isProduction ? 'SB' : isDevelopment ? 'LH' : 'SB и LH'}`,
       // );o
-      if (!this.userRepository) {
-        this.logger.error('userRepository is undefined');
-        throw new InternalServerErrorException('userRepository is undefined');
-      }
-      const err = `User с Param ${param} нет в БД`;
+      // if (!this.userRepository) {
+      //   this.logger.error('userRepository is undefined');
+      //   throw new InternalServerErrorException('userRepository is undefined');
+      // }
+      // const err = `User с Param ${param} нет в БД`;
       // ^^ fn для неск.id
       // if (usersIds) {
       //   const splitUserIds = usersIds.split(',');
@@ -279,7 +279,7 @@ export class UsersService {
       const whereCondition: any = {};
       // условия res. id/num|eml/@|fullname/str // ^^ дораб.распозн.eml ч/з регул.выраж.
       if (!isNaN(Number(param))) {
-        console.log('typeof param : ', typeof param);
+        this.logger.info(`typeof param : ${typeof Number(param)}`);
         whereCondition.id = Number(param);
       } else if (param.includes('@')) {
         whereCondition.email = param;
@@ -289,10 +289,10 @@ export class UsersService {
       const definiteUserRepository: Repository<UserEntity> = isProduction
         ? this.userRepositorySB
         : this.userRepository;
-      console.log('definiteUserRepository : ', definiteUserRepository);
+      this.logger.info(`definiteUserRepository : ${definiteUserRepository}`);
       // объ.res, обраб.ошб., res по значени.
-      // const user = await definiteUserRepository.findOne({
-      const user = await this.userRepositorySB.findOne({
+      const user = await definiteUserRepository.findOne({
+        // const user = await this.userRepositorySB.findOne({
         where: whereCondition,
       });
       if (!user) throw new NotFoundException('Такого Пользователя нет');
