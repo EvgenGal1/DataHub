@@ -279,6 +279,7 @@ export class UsersService {
       const whereCondition: any = {};
       // условия res. id/num|eml/@|fullname/str // ^^ дораб.распозн.eml ч/з регул.выраж.
       if (!isNaN(Number(param))) {
+        console.log('typeof param : ', typeof param);
         whereCondition.id = Number(param);
       } else if (param.includes('@')) {
         whereCondition.email = param;
@@ -288,8 +289,10 @@ export class UsersService {
       const definiteUserRepository: Repository<UserEntity> = isProduction
         ? this.userRepositorySB
         : this.userRepository;
+      console.log('definiteUserRepository : ', definiteUserRepository);
       // объ.res, обраб.ошб., res по значени.
-      const user = await definiteUserRepository.findOne({
+      // const user = await definiteUserRepository.findOne({
+      const user = await this.userRepositorySB.findOne({
         where: whereCondition,
       });
       if (!user) throw new NotFoundException('Такого Пользователя нет');
