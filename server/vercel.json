@@ -18,22 +18,6 @@
     {
       "src": "/(.*)",
       "dest": "src/main.ts"
-    },
-    {
-      "src": "/img/(.*)",
-      "dest": "/public/img/$1"
-    },
-    {
-      "src": "/swagger/(.*)",
-      "dest": "/public/swagger/$1"
-    },
-    {
-      "src": "/pages/(.*)",
-      "dest": "/public/views/$1"
-    },
-    {
-      "src": "/pages/(.*)",
-      "dest": "/public/views/pages/$1"
     }
   ]
 }
