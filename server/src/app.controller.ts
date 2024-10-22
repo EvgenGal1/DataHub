@@ -18,13 +18,13 @@ export class AppController {
   ) {}
 
   // декоратор.маршр.req
-  @Get()
+  @Get('/')
   // декор.ответа
   getHello(@Res() res: Response): void {
     // после внедр.завис. обращ.к serv ч/з this
     // return this.appService.getHello();
     // возвращ.ф.HTML по пути из раб.п.
-    res.sendFile('src/views/pages/welcome.html', { root: process.cwd() });
+    res.sendFile('views/pages/welcome.html', { root: 'public' });
   }
 
   @Get('/details')
