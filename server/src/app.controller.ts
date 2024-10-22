@@ -25,8 +25,7 @@ export class AppController {
     // return this.appService.getHello();
     const viewPath = isProduction
       ? `/views/pages/welcome.html`
-      : // : `${process.env.LH_SRV_URL}${process.env.LH_SRV_PORT}/views/pages/welcome.html`;
-        `/views/pages/welcome.html`;
+      : `/views/pages/welcome.html`;
     // возвращ.ф.HTML по пути из раб.п.
     // res.sendFile('/public/views/pages/welcome.html', { root: __dirname });
     res.sendFile(viewPath, { root: 'public' });
