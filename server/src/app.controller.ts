@@ -24,7 +24,7 @@ export class AppController {
     // после внедр.завис. обращ.к serv ч/з this
     // return this.appService.getHello();
     const viewPath = isProduction
-      ? `${process.env.SRV_VL_URL}/public/views/pages/welcome.html`
+      ? `/views/pages/welcome.html`
       : // : `${process.env.LH_SRV_URL}${process.env.LH_SRV_PORT}/views/pages/welcome.html`;
         `/views/pages/welcome.html`;
     // возвращ.ф.HTML по пути из раб.п.
