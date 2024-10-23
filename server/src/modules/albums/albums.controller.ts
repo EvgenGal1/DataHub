@@ -23,9 +23,9 @@ import { UserId } from '../../common/decorators/user-id.decorator';
 import { LoggingWinston } from '../../config/logging/log_winston.config';
 
 @Controller('/albums')
-// групп.мтд.cntrl tracks > swagger
+// групп.мтд.cntrl albums > swagger
 @ApiTags('albums')
-// сообщ.о защищены req jwt Токеном > swagger
+// обёртка защиты JWT > swg
 // @ApiBearerAuth()
 export class AlbumController {
   constructor(
@@ -42,39 +42,41 @@ export class AlbumController {
     @Body() createAlbumDto: CreateAlbumDto,
     @UserId() userId: number,
   ) {
-    this.logger.info(`req + Alb User.ID: ${userId}`);
+    this.logger.info(
+      `req User.ID '${userId}' + Alb: '${JSON.stringify(createAlbumDto)}'`,
+    );
     return this.albumsService.createAlbum(createAlbumDto, userId);
   }
 
   @Get()
   @ApiOperation({ summary: 'Получить Все Альбомы' })
   async findAllAlbum() {
-    this.logger.info(`req < Alb All`);
+    this.logger.info(`req << Alb All`);
     return this.albumsService.findAllAlbums();
   }
 
   @Get(':id')
   @ApiOperation({ summary: 'Получить Альбом' })
-  async findOneAlbum(@Param('id') id: string) {
-    this.logger.info(`req < Alb ID ${id}`);
+  async findOneAlbum(@Param('id') id: number) {
+    this.logger.info(`req < Alb.ID '${id}'`);
     return this.albumsService.findOneAlbum(+id);
   }
 
   @Patch(':id')
   @ApiOperation({ summary: 'Обновить Альбом' })
   async updateAlbum(
-    @Param('id') id: string,
+    @Param('id') id: number,
     @Body() updateAlbumDto: UpdateAlbumDto,
   ) {
-    this.logger.info(`req # Alb ID ${id}`);
+    this.logger.info(`req # Alb.ID '${id}'`);
     return this.albumsService.updateAlbum(+id, updateAlbumDto);
   }
 
   @Delete(':id')
-  @ApiOperation({ summary: 'Удалить Альбом/ы' })
-  async removeAlbum(@Param('id') id: string) {
-    this.logger.info(`req - Alb ID ${id}`);
-    return this.albumsService.removeAlbum(+id);
+  @ApiOperation({ summary: 'Удалить Альбом' })
+  async removeAlbum(@Param('id') id: number) {
+    this.logger.info(`req - Alb.ID '${id}'`);
+    return this.albumsService.removeAlbum(id);
   }
 
   // ^^ ДОП.МТД.
@@ -88,7 +90,7 @@ export class AlbumController {
   async searchByAuthor(
     /* @Param // возвращ.всё */ @Query('author') authorName: string,
   ) /* : Promise<Album[]> // надо ли тип.возврат. */ {
-    this.logger.info(`req < Alb.Author ${authorName}`);
+    this.logger.info(`req <? Alb.Author '${authorName}'`);
     return this.albumsService.searchByAuthor(authorName);
   }
 
@@ -98,7 +100,7 @@ export class AlbumController {
   // @Get('/:album_Name')
   @ApiOperation({ summary: 'Поиск Альбома по Названию' })
   async searchByAlbumName(@Query('album') albumName: string) {
-    this.logger.info(`req < Alb.Name ${albumName}`);
+    this.logger.info(`req <? Alb.Name '${albumName}'`);
     return this.albumsService.searchByAlbumName(albumName);
   }
 
@@ -115,10 +117,10 @@ export class AlbumController {
   ): Promise<number> {
     switch (searchBy) {
       case 'название':
-        this.logger.info(`req < Track.count Alb.Name ${value}`);
+        this.logger.info(`req <= Track.count Alb.Name '${value}'`);
         return this.albumsService.getTrackCountByAlbumName(value);
       case 'id':
-        this.logger.info(`req < Track.count Alb.ID ${value}`);
+        this.logger.info(`req <= Track.count Alb.ID '${value}'`);
         return this.albumsService.getTrackCountByAlbumId(Number(value));
       // ^ Добавьте обработку других вариантов поиска по своим требованиям
       default:
@@ -141,7 +143,7 @@ export class AlbumController {
   ) /* : Promise<Album> */ {
     const props = {};
     props[field] = value;
-    this.logger.info(`req < Alb.Param ${value}`);
+    this.logger.info(`req <? Alb.Param '${value}'`);
     return this.albumsService.getAlbumByProps(props);
   }
 }

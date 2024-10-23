@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, Optional } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
@@ -10,65 +10,37 @@ import { ReactionEntity } from '../reactions/entities/reaction.entity';
 import { FileEntity } from '../files/entities/file.entity';
 import { FilesService } from '../files/files.service';
 import { TotalAlbumDto } from './dto/total-album.dto';
-import { DatabaseUtils } from '../../common/utils/database.utils';
 import { BasicUtils } from '../../common/utils/basic.utils';
+import { DatabaseUtils } from '../../common/utils/database.utils';
 import { LoggingWinston } from '../../config/logging/log_winston.config';
-import {
-  isProduction,
-  isDevelopment,
-  isTotal,
-} from '../../config/envs/env.consts';
+import { isProduction, isDevelopment } from '../../config/envs/env.consts';
 
 @Injectable()
 export class AlbumsService {
   constructor(
-    // логгер
     private readonly logger: LoggingWinston,
-    // БД SB
-    @Optional()
-    @InjectRepository(AlbumEntity, 'supabase')
-    private albumsRepositorySB: Repository<AlbumEntity>,
-    @Optional()
-    @InjectRepository(TrackEntity, 'supabase')
-    private tracksRepositorySB: Repository<TrackEntity>,
-    @Optional()
-    @InjectRepository(ReactionEntity, 'supabase')
-    private reactionsRepositorySB: Repository<ReactionEntity>,
-    @Optional()
-    @InjectRepository(FileEntity, 'supabase')
-    private fileRepositorySB: Repository<FileEntity>,
-    // Общ.зависимости
+    @InjectRepository(AlbumEntity, isProduction ? 'supabase' : 'localhost')
+    private albumsRepository: Repository<AlbumEntity>,
+    @InjectRepository(TrackEntity, isProduction ? 'supabase' : 'localhost')
+    private tracksRepository: Repository<TrackEntity>,
+    @InjectRepository(ReactionEntity, isProduction ? 'supabase' : 'localhost')
+    private reactionsRepository: Repository<ReactionEntity>,
+    @InjectRepository(FileEntity, isProduction ? 'supabase' : 'localhost')
+    private fileRepository: Repository<FileEntity>,
     private filesService: FilesService,
     private dataBaseUtils: DatabaseUtils,
     private basicUtils: BasicUtils,
-    // БД LH
-    @Optional()
-    @InjectRepository(AlbumEntity, 'localhost')
-    private albumsRepository?: Repository<AlbumEntity>,
-    @Optional()
-    @InjectRepository(TrackEntity, 'localhost')
-    private tracksRepository?: Repository<TrackEntity>,
-    @Optional()
-    @InjectRepository(ReactionEntity, 'localhost')
-    private reactionsRepository?: Repository<ReactionEntity>,
-    @Optional()
-    @InjectRepository(FileEntity, 'localhost')
-    private fileRepository?: Repository<FileEntity>,
   ) {}
-
-  // ^ МТД.CRUD
 
   async createAlbum(
     createAlbumDto: CreateAlbumDto,
     userId: number,
     coverObj?: any,
     totalAlbumData?: TotalAlbumDto,
-  ) {
+  ): Promise<AlbumEntity> {
     try {
-      // `получить наименьший доступный идентификатор` из БД > табл.album
       const smallestFreeId =
         await this.dataBaseUtils.getSmallestIDAvailable('album');
-      // объ.album созд./сохр./вернуть
       const album = this.albumsRepository.create({
         ...createAlbumDto,
         id: smallestFreeId,
@@ -76,23 +48,38 @@ export class AlbumsService {
         cover: coverObj,
         ...totalAlbumData,
       });
-      if (isDevelopment)
-        this.logger.info(
-          `req + Alb User.ID ${userId}: ${JSON.stringify({
+      if (!album)
+        throw new NotFoundException(
+          `User '${JSON.stringify({
             createAlbumDto,
             coverObj,
             totalAlbumData,
-          })}`,
+          })}' не создан`,
+        );
+      if (isDevelopment)
+        this.logger.info(
+          `db + Alb User.ID '${userId}': '${JSON.stringify({
+            createAlbumDto,
+            coverObj,
+            totalAlbumData,
+          })}'`,
         );
       const savedAlbum = await this.albumsRepository.save(album);
-      this.logger.info(`+ Album ID: ${savedAlbum.id}`);
+      if (!savedAlbum)
+        throw new NotFoundException(
+          `Album '${JSON.stringify({
+            createAlbumDto,
+            coverObj,
+            totalAlbumData,
+          })}' не сохранён`,
+        );
+      this.logger.info(`+ Album.ID '${savedAlbum.id}'`);
       return savedAlbum;
     } catch (error) {
       this.logger.error(
-        `!Ошб. + Album: ${await this.basicUtils.hendlerTypesErrors(error)}`,
+        `!Ошб. + Album: '${await this.basicUtils.hendlerTypesErrors(error)}'`,
       );
-      // DEV лог.debug
-      if (!isProduction && (isDevelopment || isTotal))
+      if (!isProduction && isDevelopment)
         this.basicUtils.logDebugDev(
           'alb.s. CRE createAlbumDto userId coverObj totalAlbumData : ',
           createAlbumDto,
@@ -104,74 +91,53 @@ export class AlbumsService {
     }
   }
 
-  async findAllAlbums() {
+  async findAllAlbums(): Promise<AlbumEntity[]> {
     try {
-      if (isDevelopment) this.logger.info(`req < Alb All`);
-      const allAlb = await this.albumsRepository.find();
-      // логи,перем.ошб.
+      if (isDevelopment) this.logger.info(`db << Album All`);
+      const albumsAll = await this.albumsRepository.find();
+      if (!albumsAll) throw new NotFoundException(`Albums All не найден`);
       this.logger.info(
-        `Albums All length ${allAlb?.length} < ${isProduction ? 'SB' : isDevelopment ? 'LH' : 'SB и LH'}`,
+        `<< Albums All length '${albumsAll?.length}' < БД '${
+          isProduction ? 'SB' : isDevelopment ? 'LH' : 'SB и LH'
+        }'`,
       );
-      return allAlb;
+      return albumsAll;
     } catch (error) {
       this.logger.error(
-        `!Ошб. < Albums: ${await this.basicUtils.hendlerTypesErrors(error)}`,
+        `!Ошб. << Albums: '${await this.basicUtils.hendlerTypesErrors(error)}'`,
       );
       throw error;
     }
   }
 
-  async findOneAlbum(id: number) {
-    // логи,перем.ошб.
+  async findOneAlbum(id: number): Promise<AlbumEntity> {
     try {
-      if (isDevelopment) this.logger.info(`req < Alb ID ${id}`);
-      const alb = await this.albumsRepository.findOne({ where: { id: id } });
-      this.logger.info(
-        `Album ID ${alb?.id} < ${isProduction ? 'SB' : isDevelopment ? 'LH' : 'SB и LH'}`,
-      );
-      return alb;
+      if (isDevelopment) this.logger.info(`db < Album.ID '${id}'`);
+      const album = await this.albumsRepository.findOneBy({ id });
+      if (!album) throw new NotFoundException(`Album.ID '${id}' не найден`);
+      this.logger.info(`< Album.ID '${album?.id}'`);
+      return album;
     } catch (error) {
       this.logger.error(
-        `!Ошб. < Album ID ${id}: ${await this.basicUtils.hendlerTypesErrors(error)}`,
+        `!Ошб. < Album.ID '${id}': '${await this.basicUtils.hendlerTypesErrors(error)}'`,
       );
       throw error;
     }
   }
 
+  // мтд.обновить
   async updateAlbum(
-    albumIds: any /* string | number */,
+    id: number,
     updateAlbumDto?: UpdateAlbumDto,
     totalAlbumDto?: TotalAlbumDto,
     param?: string,
     userId?: number,
-  ) {
+  ): Promise<AlbumEntity> {
     try {
-      // ошб.е/и нет ID
-      if (!albumIds) {
-        throw new NotFoundException('Нет Альбома > Удаления');
-      }
-      // превращ.ids ф.в масс.
-      let idsArray: number[] = [];
-      if (isNaN(Number(albumIds))) {
-        // Если ids не является числом, разбиваем строку на массив
-        idsArray = albumIds.split(',').map((id) => parseInt(id.trim(), 10));
-      } else {
-        // Если ids является числом, добавляем его в массив
-        idsArray.push(parseInt(albumIds, 10));
-      }
-      // const album = await this.albumsRepository.findOneBy({ id });
-      const existingAlbum = await this.albumsRepository
-        .createQueryBuilder('albums')
-        .withDeleted()
-        .where('id IN (:...ids)', { ids: idsArray })
-        .getMany();
+      const album = await this.albumsRepository.findOneBy({ id });
       // альтер.получ.всех Треков по Альбому и их кол-ву
       // const trackAll = await this.tracksRepository.find({ where: { album: { /* title: updateAlbumDto.title, */ id: id, }, }, });
-
-      const album = existingAlbum[0];
-      if (!album) {
-        throw new NotFoundException(`Альбом с id ${idsArray} не найдено`);
-      }
+      if (!album) throw new NotFoundException(`Album.ID '${id}' не найден`);
 
       // общ.кол-во.всех Треков одного Альбома
       if (totalAlbumDto?.total_tracks) {
@@ -302,19 +268,29 @@ export class AlbumsService {
         Object.assign(album, updateAlbumDto);
       }
 
-      if (isDevelopment) this.logger.info(`req # Album ${album}`);
+      if (isDevelopment)
+        this.logger.info(
+          `db # Album '${await this.basicUtils.hendlerTypesErrors(album)}'`,
+        );
       const albUpd = await this.albumsRepository.save(album);
-      this.logger.info(`# Album ${album.id}`);
+      if (!albUpd)
+        throw new NotFoundException(
+          `Album.ID '${id}' по данным '${JSON.stringify({
+            updateAlbumDto,
+            totalAlbumDto,
+            param,
+          })}' не обновлён`,
+        );
+      this.logger.info(`# Album.ID '${albUpd.id}'`);
       return albUpd;
     } catch (error) {
       this.logger.error(
-        `!Ошб. # Album: ${await this.basicUtils.hendlerTypesErrors(error)}`,
+        `!Ошб. # Album: '${await this.basicUtils.hendlerTypesErrors(error)}'`,
       );
-      // DEV лог.debug
-      if (!isProduction && (isDevelopment || isTotal))
+      if (!isProduction && isDevelopment)
         this.basicUtils.logDebugDev(
-          'alb.s. UPD albumIds updateAlbumDto totalAlbumDto param  :  ',
-          albumIds,
+          'alb.s. UPD Param - id | updateAlbumDto | totalAlbumDto | param :  ',
+          id,
           updateAlbumDto,
           totalAlbumDto,
           param,
@@ -326,47 +302,66 @@ export class AlbumsService {
   // пометка Удаления
   async removeAlbum(id: number) {
     try {
-      if (isDevelopment) this.logger.info(`req - Alb ID ${id}`);
-      return `DEL Alb ID ${id}`;
+      if (isDevelopment) this.logger.info(`db - Album.ID '${id}'`);
+      const albRem = await this.albumsRepository.softDelete(id);
+      if (!albRem) throw new NotFoundException(`Album.ID '${id}' не удалён`);
+      this.logger.info(`- Album.ID : '${albRem}'`);
+      return albRem;
     } catch (error) {
       this.logger.error(
-        `!Ошб.удал.Album ID ${id}: ${await this.basicUtils.hendlerTypesErrors(error)}`,
+        `!Ошб. - Album.ID '${id}': '${await this.basicUtils.hendlerTypesErrors(error)}'`,
       );
       throw error;
     }
   }
 
+  // востановить
+  // async restoreAlbim(id: number|string) {
+  //   return await this.albumsRepository.restore(id);
+  // }
+
   // Удаление
   async deleteAlbum(
-    ids: any /* string | number */,
+    albumIds: string | number,
     userId?: number,
     totalAlbumDto?: TotalAlbumDto,
     param?: string,
   ) {
     try {
       // ошб.е/и нет ID
-      if (!ids) {
-        throw new NotFoundException('Нет Альбома > Удаления');
+      if (!albumIds) {
+        throw new NotFoundException('Нет Альбома/ов > Удаления');
       }
       if (!userId && !param && !totalAlbumDto) {
-        throw new NotFoundException('Предовращено полное удаление Альбома');
-        // return await this.albumsRepository.delete(ids);
+        throw new NotFoundException('Предовращено полное удаление Альбома/ов');
       }
 
-      // превращ.ids ф.в масс.
-      const idsArray: number[] = Array.isArray(ids)
-        ? ids.map((id: string | number) => parseInt(id.toString().trim(), 10))
-        : isNaN(Number(ids))
-          ? ids.split(',').map((id) => parseInt(id.trim(), 10))
-          : [parseInt(ids, 10)];
+      // превращ.albumIds ф.в масс.
+      // const idsArray: number[] = Array.isArray(albumIds)
+      //   ? albumIds.map((id: string | number) =>
+      //       parseInt(id.toString().trim(), 10),
+      //     )
+      //   : isNaN(Number(albumIds))
+      //     ? albumIds.split(',').map((id) => parseInt(id.trim(), 10))
+      //     : [parseInt(albumIds, 10)];
+      //
       // let idsArray: number[] = [];
-      // if (isNaN(Number(ids))) {
-      //   // Если ids не является числом, разбиваем строку на массив
-      //   idsArray = ids.split(',').map((id) => parseInt(id.trim(), 10));
+      // if (isNaN(Number(albumIds))) {
+      //   // Если albumIds не является числом, разбиваем строку на массив
+      //   idsArray = albumIds.split(',').map((id) => parseInt(id.trim(), 10));
       // } else {
-      //   // Если ids является числом, добавляем его в массив
-      //   idsArray.push(parseInt(ids, 10));
+      //   // Если albumIds является числом, добавляем его в массив
+      //   idsArray.push(parseInt(albumIds, 10));
       // }
+      //
+      let idsArray: number[] = [];
+      if (typeof albumIds === 'string' && isNaN(Number(albumIds))) {
+        // Если ids не является числом, разбиваем строку на массив
+        idsArray = albumIds.split(',').map((id) => parseInt(id.trim(), 10));
+      } else if (typeof albumIds === 'number') {
+        // Если ids является числом, добавляем его в массив
+        idsArray.push(albumIds);
+      }
 
       // `созд.строит.req` > данн.Альбома/ов
       const qbAlbums = this.albumsRepository
@@ -391,7 +386,7 @@ export class AlbumsService {
 
         let albDel;
         if (param === 'del') {
-          if (isDevelopment) this.logger.info(`req - Alb ID ${ids}`);
+          if (isDevelopment) this.logger.info(`db - Alb ID '${albumIds}'`);
 
           // е/и в Альбоме 1 Трек
           if (albumOne.albums_total_tracks === 1) {
@@ -402,25 +397,33 @@ export class AlbumsService {
               `del`,
             );
             // cохр.измен.
-            await this.albumsRepository.save({
+            const albSav = await this.albumsRepository.save({
               id: albumOne.albums_id,
               genres: '',
               total_tracks: 0,
               total_duration: '0:00',
             });
-            this.logger.info(
-              `DEL Alb ID ${await this.basicUtils.hendlerTypesErrors(ids)}`,
-            );
+            if (!albSav)
+              throw new NotFoundException(
+                `Album.ID '${albumIds}' по данным '${JSON.stringify({
+                  totalAlbumDto,
+                  param,
+                })}' не сохранён`,
+              );
+            this.logger.info(`DEL Album.ID '${albumIds}'`);
             // мягк.удал.
             albDel = await qbAlbums.softDelete().execute();
-            // .where('id IN (:...ids)', { ids: idsArray })
-          } else {
-            this.logger.info(
-              `DEL Alb ID ${await this.basicUtils.hendlerTypesErrors(ids)}`,
+            // .where('id IN (:...albumIds)', { albumIds: idsArray })
+          } else if (albumOne.albums_total_tracks > 1) {
+            this.logger.info(`DEL Album.ID '${albumIds}'`);
+            albDel = await this.updateAlbum(
+              +albumIds,
+              null,
+              totalAlbumDto,
+              param,
             );
-            albDel = await this.updateAlbum(ids, null, totalAlbumDto, param);
           }
-          this.logger.info(`- Alb ${ids}`);
+          this.logger.info(`- Alb '${albumIds}'`);
           return albDel;
         }
       }
@@ -450,26 +453,28 @@ export class AlbumsService {
       // return this.albumsRepository.delete(ids);
     } catch (error) {
       this.logger.error(
-        `!Ошб.удал.Album ID ${await this.basicUtils.hendlerTypesErrors(ids)}: ${await this.basicUtils.hendlerTypesErrors(error)}`,
+        `!Ошб.- Album.ID '${albumIds}': '${await this.basicUtils.hendlerTypesErrors(error)}'`,
       );
       throw error;
     }
   }
 
-  // ^ ДОП.МТД.
+  // ^ ДОП.МТД. ----------------------------------------------------------------------------------
 
   // Alb по автору
   async searchByAuthor(author: string): Promise<AlbumEntity[]> {
     try {
-      if (isDevelopment) this.logger.info(`req ? Alb.ATHR : ${author}`);
+      if (isDevelopment) this.logger.info(`db ? Alb.ATHR : '${author}`);
       const albAthr = await this.albumsRepository.find({
         where: { author },
       });
-      this.logger.info(`? Alb.ATHR ${author} title : ${albAthr[0].title}`);
+      if (!albAthr)
+        throw new NotFoundException(`Alb.ATHR '${author}' не найден`);
+      this.logger.info(`? Alb.ATHR '${author}' title : '${albAthr[0].title}'`);
       return albAthr;
     } catch (error) {
       this.logger.error(
-        `!Ошб.поиска по Alb.author ${author} : ${await this.basicUtils.hendlerTypesErrors(error)}`,
+        `!Ошб.поиска по Alb.author '${author}' : '${await this.basicUtils.hendlerTypesErrors(error)}'`,
       );
       throw error;
       // throw new InternalServerErrorException('Ошибка при поиске по автору');
@@ -479,15 +484,19 @@ export class AlbumsService {
   // Alb по назв.
   async searchByAlbumName(albumName: string): Promise<AlbumEntity[]> {
     try {
-      if (isDevelopment) this.logger.info(`req ? Alb.TITL : ${albumName}`);
+      if (isDevelopment) this.logger.info(`db ? Alb.TITL : '${albumName}'`);
       const albNam = await this.albumsRepository.find({
         where: { title: albumName },
       });
-      this.logger.info(`? Alb.TITL ${albumName} author : ${albNam[0].author}`);
+      if (!albNam)
+        throw new NotFoundException(`Alb.TITL '${albumName}' не найден`);
+      this.logger.info(
+        `? Alb.TITL '${albumName}' author : '${albNam[0].author}'`,
+      );
       return albNam;
     } catch (error) {
       this.logger.error(
-        `!Ошб.поиска по Alb.titl ${albumName} : ${await this.basicUtils.hendlerTypesErrors(error)}`,
+        `!Ошб.поиска по Alb.titl '${albumName}' : '${await this.basicUtils.hendlerTypesErrors(error)}'`,
       );
       throw error;
     }
@@ -496,18 +505,20 @@ export class AlbumsService {
   // кол-во по назв.Alb
   async getTrackCountByAlbumName(albumName: string): Promise<number> {
     try {
-      if (isDevelopment) this.logger.info(`req +? Alb.name : ${albumName}`);
+      if (isDevelopment) this.logger.info(`db +? Alb.name : '${albumName}'`);
       const album = await this.albumsRepository.findOne({
-        where: {
-          title: albumName,
-        },
+        where: { title: albumName },
       });
+      if (!album)
+        throw new NotFoundException(`Alb.TITL '${albumName}' не найден`);
       const totalTracks = album ? album.total_tracks : 0;
-      this.logger.info(`Alb.name ${albumName} count Track : ${totalTracks}`);
+      this.logger.info(
+        `Alb.name '${albumName}' count Track : '${totalTracks}'`,
+      );
       return totalTracks;
     } catch (error) {
       this.logger.error(
-        `!Ошб.кол-ва Треков по Alb.name ${albumName} : ${await this.basicUtils.hendlerTypesErrors(error)}`,
+        `!Ошб.кол-ва Треков по Alb.name '${albumName}' : '${await this.basicUtils.hendlerTypesErrors(error)}'`,
       );
       throw error;
     }
@@ -516,18 +527,17 @@ export class AlbumsService {
   // кол-во по id.Alb
   async getTrackCountByAlbumId(albumId: number): Promise<number> {
     try {
-      if (isDevelopment) this.logger.info(`req +? Alb.id : ${albumId}`);
+      if (isDevelopment) this.logger.info(`db +? Alb.id : '${albumId}'`);
       const album = await this.albumsRepository.findOne({
-        where: {
-          id: albumId,
-        },
+        where: { id: albumId },
       });
+      if (!album) throw new NotFoundException(`Alb.TITL '${album}' не найден`);
       const totalTracks = album ? album.total_tracks : 0;
-      this.logger.info(`Alb.ID ${albumId} count Track : ${totalTracks}`);
+      this.logger.info(`Alb.ID '${albumId}' count Track : '${totalTracks}'`);
       return totalTracks;
     } catch (error) {
       this.logger.error(
-        `!Ошб.кол-ва Треков по Alb.ID ${albumId} : ${await this.basicUtils.hendlerTypesErrors(error)}`,
+        `!Ошб.кол-ва Треков по Alb.ID '${albumId}' : '${await this.basicUtils.hendlerTypesErrors(error)}'`,
       );
       throw error;
     }
@@ -536,21 +546,17 @@ export class AlbumsService {
   // универс.fn поиска по автору, альбому, обложки, год, стилю, id
   async getAlbumByProps(props: Partial<AlbumEntity>): Promise<AlbumEntity[]> {
     try {
-      // const { var1, var2 } = props;
-      // return this.albumsRepository.find(props);
-      // return this.albumsRepository.findOne(props as FindOneOptions<AlbumEntity>);
-      // return this.albumsRepository.find({ where: { album: props } });
-      // return this.albumsRepository.find({ where: { [var1]: var2 } });
-
-      if (isDevelopment) this.logger.info(`req ??? ALBOM парам.: ${props}`);
+      if (isDevelopment) this.logger.info(`db ??? ALBOM парам.: '${props}'`);
       const albProp = await this.albumsRepository.find({ where: [props] });
+      if (!albProp)
+        throw new NotFoundException(`Alb PROP '${albProp}' не найден`);
       this.logger.info(
-        `Alb props : ${await this.basicUtils.hendlerTypesErrors(albProp)}`,
+        `Alb props : '${await this.basicUtils.hendlerTypesErrors(albProp)}'`,
       );
       return albProp;
     } catch (error) {
       this.logger.error(
-        `!Ошб.универ-го поиска по свойствам: ${await this.basicUtils.hendlerTypesErrors(error)}`,
+        `!Ошб.универ-го поиска по свойствам: '${await this.basicUtils.hendlerTypesErrors(error)}'`,
       );
       throw error;
     }
