@@ -53,25 +53,25 @@ export class UsersService {
       });
       if (!user)
         throw new NotFoundException(
-          `User ${JSON.stringify(createUserDto)} не создан`,
+          `User '${JSON.stringify(createUserDto)}' не создан`,
         );
 
       // ^ будущ.запись Роли,Уровень Роли,psw,token и др.
 
       // log > DEV
       if (isDevelopment)
-        this.logger.info(`db + User : ${JSON.stringify(createUserDto)}`);
+        this.logger.info(`db + User : '${JSON.stringify(createUserDto)}'`);
       // сохр.,ошб.,лог.,возврат
       const savedUser: UserEntity = await this.userRepository.save(user);
       if (!savedUser)
         throw new NotFoundException(
-          `User ${JSON.stringify(createUserDto)} не сохранён`,
+          `User '${JSON.stringify(createUserDto)}' не сохранён`,
         );
-      this.logger.info(`+ User.ID ${savedUser.id}`);
+      this.logger.info(`+ User.ID '${savedUser.id}'`);
       return savedUser;
     } catch (error) {
       this.logger.error(
-        `!Ошб. + User: ${await this.basicUtils.hendlerTypesErrors(error)}`,
+        `!Ошб. + User: '${await this.basicUtils.hendlerTypesErrors(error)}'`,
       );
       // DEV лог.debug
       if (!isProduction && isDevelopment)
@@ -90,14 +90,14 @@ export class UsersService {
       const allUsers = await this.userRepository.find();
       if (!allUsers) throw new NotFoundException(`User All не найден`);
       this.logger.info(
-        `<< Users All length ${allUsers?.length} < БД ${
+        `<< Users All length '${allUsers?.length}' < БД '${
           isProduction ? 'SB' : isDevelopment ? 'LH' : 'SB и LH'
-        }`,
+        }'`,
       );
       return allUsers;
     } catch (error) {
       this.logger.error(
-        `!Ошб. << Users: ${await this.basicUtils.hendlerTypesErrors(error)}`,
+        `!Ошб. << Users: '${await this.basicUtils.hendlerTypesErrors(error)}'`,
       );
       throw error;
     }
@@ -106,14 +106,14 @@ export class UsersService {
   // ОДИН по id
   async findOneUser(id: number): Promise<UserEntity> {
     try {
-      if (isDevelopment) this.logger.info(`db < User.ID ${id}`);
+      if (isDevelopment) this.logger.info(`db < User.ID '${id}'`);
       const user = await this.userRepository.findOneBy({ id });
-      if (!user) throw new NotFoundException(`User.ID ${id} не найден`);
-      this.logger.info(`< User.ID ${user?.id}`);
+      if (!user) throw new NotFoundException(`User.ID '${id}' не найден`);
+      this.logger.info(`< User.ID '${user?.id}'`);
       return user;
     } catch (error) {
       this.logger.error(
-        `!Ошб. < User.ID ${id}: ${await this.basicUtils.hendlerTypesErrors(error)}`,
+        `!Ошб. < User.ID '${id}': '${await this.basicUtils.hendlerTypesErrors(error)}'`,
       );
       throw error;
     }
@@ -123,7 +123,7 @@ export class UsersService {
   // ! переделать под получ roles tracks user_roles в завис.от парам. и пр.
   async findUserByParam(param: string) {
     try {
-      if (isDevelopment) this.logger.info(`db <? User.Param : ${param}`);
+      if (isDevelopment) this.logger.info(`db <? User.Param : '${param}'`);
       // ^^ fn для неск.id
       // if (usersIds) {
       //   const splitUserIds = usersIds.split(',');
@@ -160,12 +160,12 @@ export class UsersService {
       }
 
       const user = await this.userRepository.findOne({ where: whereCondition });
-      if (!user) throw new NotFoundException(`User по ${param} не найден`);
-      this.logger.info(`<? User.Param : ${param}`);
+      if (!user) throw new NotFoundException(`User по '${param}' не найден`);
+      this.logger.info(`<? User.Param : '${param}'`);
       return user;
     } catch (error) {
       this.logger.error(
-        `!Ошб. <? User.Param ${param}: ${await this.basicUtils.hendlerTypesErrors(error)}`,
+        `!Ошб. <? User.Param '${param}': '${await this.basicUtils.hendlerTypesErrors(error)}'`,
       );
       throw error;
     }
@@ -179,7 +179,7 @@ export class UsersService {
     try {
       // получ.user.id / обраб.ошб.
       const user = await this.userRepository.findOneBy({ id });
-      if (!user) throw new NotFoundException(`User.ID ${id} не найден`);
+      if (!user) throw new NotFoundException(`User.ID '${id}' не найден`);
 
       // изменения
       user.fullname = updateUserDto.fullname;
@@ -189,20 +189,20 @@ export class UsersService {
       // log > DEV
       if (isDevelopment)
         this.logger.info(
-          `db # User ${await this.basicUtils.hendlerTypesErrors(user)}`,
+          `db # User '${await this.basicUtils.hendlerTypesErrors(user)}'`,
         );
 
       // сохр.,ошб.,лог.,возврат
       const usrUpd = await this.userRepository.save(user);
       if (!usrUpd)
         throw new NotFoundException(
-          `User.ID ${id} по данным ${JSON.stringify(updateUserDto)} не обновлён`,
+          `User.ID '${id}' по данным '${JSON.stringify(updateUserDto)}' не обновлён`,
         );
-      this.logger.info(`# User.ID : ${usrUpd.id}`);
+      this.logger.info(`# User.ID : '${usrUpd.id}'`);
       return usrUpd;
     } catch (error) {
       this.logger.error(
-        `!Ошб. # User: ${await this.basicUtils.hendlerTypesErrors(error)}`,
+        `!Ошб. # User: '${await this.basicUtils.hendlerTypesErrors(error)}'`,
       );
       // DEV лог.debug
       if (!isProduction && isDevelopment)
@@ -218,14 +218,14 @@ export class UsersService {
   // пометка Удаления
   async removeUser(id: number) {
     try {
-      if (isDevelopment) this.logger.info(`db - User.ID: ${id}`);
+      if (isDevelopment) this.logger.info(`db - User.ID: '${id}'`);
       const usrRem = await this.userRepository.softDelete(id);
-      if (!usrRem) throw new NotFoundException(`User.ID ${id} не удалён`);
-      this.logger.info(`- User.ID : ${usrRem}`);
+      if (!usrRem) throw new NotFoundException(`User.ID '${id}' не удалён`);
+      this.logger.info(`- User.ID : '${usrRem}'`);
       return usrRem;
     } catch (error) {
       this.logger.error(
-        `!Ошб. - User.ID ${id}: ${await this.basicUtils.hendlerTypesErrors(error)}`,
+        `!Ошб. - User.ID '${id}': '${await this.basicUtils.hendlerTypesErrors(error)}'`,
       );
       throw error;
     }
@@ -242,8 +242,6 @@ export class UsersService {
     userId?: number,
     // totalUserDto?: TotalUserDto,
     param?: string,
-
-    // востановить
   ) {
     try {
       // ошб.е/и нет ID
@@ -257,7 +255,7 @@ export class UsersService {
       }
     } catch (error) {
       this.logger.error(
-        `!Ошб. - User.ID ${userIds}: ${await this.basicUtils.hendlerTypesErrors(error)}`,
+        `!Ошб. - User.ID '${userIds}': '${await this.basicUtils.hendlerTypesErrors(error)}'`,
       );
       throw error;
     }
@@ -269,20 +267,20 @@ export class UsersService {
   public async setAvatar(userId: number, avatarUrl: string) {
     try {
       if (isDevelopment)
-        this.logger.info(`db + AVA ${avatarUrl} > User.ID: ${userId}`);
+        this.logger.info(`db + AVA '${avatarUrl}' > User.ID: '${userId}'`);
 
       const avaAdd = await this.userRepository.update(userId, {
         avatar: avatarUrl,
       });
       if (!avaAdd)
         throw new NotFoundException(
-          `User.ID ${userId} AVA ${avatarUrl} не добавлена`,
+          `User.ID '${userId}' AVA '${avatarUrl}' не добавлена`,
         );
-      this.logger.info(`# User.ID ${userId} AVA ${avatarUrl}`);
+      this.logger.info(`# User.ID '${userId}' AVA '${avatarUrl}'`);
       return avaAdd;
     } catch (error) {
       this.logger.error(
-        `!Ошб. # AVA User.ID ${userId}: ${await this.basicUtils.hendlerTypesErrors(error)}`,
+        `!Ошб. # AVA User.ID '${userId}': '${await this.basicUtils.hendlerTypesErrors(error)}'`,
       );
       throw error;
     }
@@ -305,10 +303,10 @@ export class UsersService {
       // получ.данн. User и Role
       const users = await this.userRepository.findBy({ id: In([...userIdss]) });
       if (!users)
-        throw new NotFoundException(`User.userIdss ${userIdss} не нейдены`);
+        throw new NotFoundException(`User.userIdss '${userIdss}' не нейдены`);
       const roles = await this.roleRepository.findBy({ id: In([...roleIdss]) });
       if (!users)
-        throw new NotFoundException(`Role.roleIdss ${roleIdss} не нейдены`);
+        throw new NotFoundException(`Role.roleIdss '${roleIdss}' не нейдены`);
       // Проверка существования пользователей и ролей
       if (users.length !== userIdss.length || roles.length !== roleIdss.length)
         throw new NotFoundException(

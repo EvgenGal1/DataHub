@@ -61,7 +61,7 @@ export class UsersController {
   // })
   // получ.объ из запроса ч/з @Body
   async createUser(@Body() createUserDto: CreateUserDto) {
-    this.logger.info(`req + User: ${JSON.stringify(createUserDto)}`);
+    this.logger.info(`req + User: '${JSON.stringify(createUserDto)}'`);
     return this.usersService.createUser(createUserDto);
   }
 
@@ -78,7 +78,7 @@ export class UsersController {
   @Get(':id')
   @ApiOperation({ summary: 'Получить Пользователя' })
   async findOneUser(@Param('id') id: number) {
-    this.logger.info(`req < User.ID ${id}`);
+    this.logger.info(`req < User.ID '${id}'`);
     return this.usersService.findOneUser(+id);
   }
 
@@ -86,7 +86,7 @@ export class UsersController {
   @Get('param/:param')
   @ApiOperation({ summary: 'Получить Usera по ID <> Email <> FullName' })
   async findUserByParam(@Param('param') param: string) {
-    this.logger.info(`req <? User Param: ${param}`);
+    this.logger.info(`req <? User Param: '${param}'`);
     return this.usersService.findUserByParam(param);
   }
 
@@ -96,14 +96,14 @@ export class UsersController {
     @Param('id') id: number,
     @Body() updateUserDto: UpdateUserDto,
   ) {
-    this.logger.info(`req # User.ID ${id}`);
+    this.logger.info(`req # User.ID '${id}'`);
     return this.usersService.updateUser(+id, updateUserDto);
   }
 
   @Delete(':id')
   @ApiOperation({ summary: 'Удалить Пользователя' })
   async removeUser(@Param('id') id: number) {
-    this.logger.info(`req - User.ID ${id}`);
+    this.logger.info(`req - User.ID '${id}'`);
     return this.usersService.removeUser(id);
   }
 
@@ -121,7 +121,7 @@ export class UsersController {
     @Body() addingRolesToUsersDto: AddingRolesToUsersDto,
   ): Promise<void> {
     this.logger.info(
-      `req + Role в User: ${JSON.stringify(addingRolesToUsersDto)}`,
+      `req + Role в User: '${JSON.stringify(addingRolesToUsersDto)}'`,
     );
     this.usersService.addingRolesToUsers(addingRolesToUsersDto);
   }
@@ -134,7 +134,7 @@ export class UsersController {
   @ApiOperation({ summary: 'Открыть Аватар' })
   // из @`парам` взять id ф., возврат ответа
   async serveAvatar(@Param('fileId') fileId: string, @Res() res): Promise<any> {
-    this.logger.info(`req <? Ava User.fileId: ${fileId}`);
+    this.logger.info(`req <? Ava User.fileId: '${fileId}'`);
     // ^^ дораб.чтоб м/у users/ и /avatar встал userId
     res.sendFile(fileId, { root: 'static/users/avatar' });
   }
@@ -173,7 +173,7 @@ export class UsersController {
     avatar: Express.Multer.File,
     @UserId() userId: number,
   ) {
-    this.logger.info(`req # AVA User.ID ${userId}`);
+    this.logger.info(`req # AVA User.ID '${userId}'`);
     let avatarUrl = avatar.destination.replace(
       /^\.\/static\/users\//g,
       `users/${userId}/`,

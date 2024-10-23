@@ -17,11 +17,7 @@ import { DatabaseUtils } from '../../common/utils/database.utils';
 // логгирование LH
 import { LoggingWinston } from '../../config/logging/log_winston.config';
 // константы > команды запуска process.env.NODE_ENV
-import {
-  isProduction,
-  isDevelopment,
-  isTotal,
-} from '../../config/envs/env.consts';
+import { isProduction } from '../../config/envs/env.consts';
 
 @Module({
   imports: [
@@ -44,7 +40,7 @@ import {
   ],
   controllers: [UsersController],
   providers: [UsersService, BasicUtils, DatabaseUtils, LoggingWinston],
-  // exp. UsersService для видимости вне modulя (напр.в AuthService)
+  // exp. UsersService для видимости вне modul (напр.в AuthService)
   exports: [UsersService],
 })
 export class UsersModule {}
