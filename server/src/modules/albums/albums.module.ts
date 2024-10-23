@@ -14,44 +14,21 @@ import { ReactionEntity } from '../reactions/entities/reaction.entity';
 import { BasicUtils } from '../../common/utils/basic.utils';
 import { DatabaseUtils } from '../../common/utils/database.utils';
 import { LoggingWinston } from '../../config/logging/log_winston.config';
-import {
-  isProduction,
-  isDevelopment,
-  isTotal,
-} from '../../config/envs/env.consts';
+import { isProduction } from '../../config/envs/env.consts';
 
 @Module({
   imports: [
-    ...(isProduction || isTotal
-      ? [
-          TypeOrmModule.forFeature(
-            [
-              UserEntity,
-              RoleEntity,
-              FileEntity,
-              TrackEntity,
-              AlbumEntity,
-              ReactionEntity,
-            ],
-            'supabase',
-          ),
-        ]
-      : []),
-    ...(isDevelopment || isTotal
-      ? [
-          TypeOrmModule.forFeature(
-            [
-              UserEntity,
-              RoleEntity,
-              FileEntity,
-              TrackEntity,
-              AlbumEntity,
-              ReactionEntity,
-            ],
-            'localhost',
-          ),
-        ]
-      : []),
+    TypeOrmModule.forFeature(
+      [
+        UserEntity,
+        RoleEntity,
+        FileEntity,
+        TrackEntity,
+        AlbumEntity,
+        ReactionEntity,
+      ],
+      isProduction ? 'supabase' : 'localhost',
+    ),
   ],
   controllers: [AlbumController],
   providers: [
