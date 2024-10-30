@@ -52,6 +52,7 @@ export class UsersController {
   // ^^ МТД.CRUD
 
   @Post()
+  // описание `операции`swagger
   @ApiOperation({ summary: 'Создать Пользователя' })
   // декор.res.swagger: ApiResponse, ApiOkResponse, ApiCreatedResponse, ApiNotFoundResponse
   // @ApiResponse({

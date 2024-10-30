@@ -23,15 +23,15 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 
-// import { CreateFileDto } from './dto/create-file.dto';
-import { UpdateFileDto } from './dto/update-file.dto';
 import { FileType, fileTypesAllowed } from './entities/file.entity';
+import { UpdateFileDto } from './dto/update-file.dto';
 import { FilesService } from './files.service';
 import { fileStorage } from '../../services/storage/storage';
 // import { JwtAuthGuard } from '../auth/guard/jwt.guard';
 import { UserId } from '../../common/decorators/user-id.decorator';
+import { LoggingWinston } from '../../config/logging/log_winston.config';
 
-@Controller('files')
+@Controller('/files')
 //  групп.мтд.cntrl files swagger
 @ApiTags('files')
 // оборач. f.cntrl в @UseGuard(JwtAuthGuard) для защищ.от Авториз. Откл.req е/и JWT Токен отсутств./просроч.
@@ -39,7 +39,10 @@ import { UserId } from '../../common/decorators/user-id.decorator';
 // оборач. чтоб swagger знал что req на files защищены jwt Токеном
 // @ApiBearerAuth()
 export class FilesController {
-  constructor(private readonly filesService: FilesService) {}
+  constructor(
+    private readonly filesService: FilesService,
+    private readonly logger: LoggingWinston,
+  ) {}
 
   // декор.мршрт./мтд.созд.ф.
   @Post()
@@ -79,9 +82,20 @@ export class FilesController {
     file: Express.Multer.File,
     @UserId() userId: number,
   ) {
-    console.log('f.CNTRL file | userId : ', file, '|', userId);
+    this.logger.info(
+      `req + File '${JSON.stringify(file)}' > User.ID '${userId}')`,
+    );
     // использ.мтд.из serv. Пердача file ч/з Multer, userId ч/з UserId
-    return await this.filesService.createFileByParam(file, userId);
+    return this.filesService.createFileByParam(file, userId);
+  }
+
+  @Get()
+  @ApiOperation({ summary: 'Получить Всех Пользователей' })
+  // @Roles('ADMIN')
+  // @UseGuards(RolesGuard)
+  async findAllUsers() {
+    this.logger.info(`req << Users All`);
+    // return this.usersService.findAllUsers();
   }
 
   // декор.мршрт./мтд.созд.ф.с Параметрами
@@ -126,13 +140,8 @@ export class FilesController {
     @Query('fileType') fileType: FileType,
     @UserId() userId: number,
   ) {
-    console.log(
-      'f.CNTRL file | fileType | userId : ',
-      file,
-      '|',
-      fileType,
-      '|',
-      userId,
+    this.logger.info(
+      `req + File '${JSON.stringify(file)}' и fileType '${JSON.stringify(fileType)}' > User.ID '${userId}', )`,
     );
     // использ.мтд.из serv. Пердача file ч/з Multer, выбран.типа FileType ч/з ApiQuery и userId ч/з UserId
     return await this.filesService.createFileByParam(file, userId, fileType);
@@ -141,6 +150,7 @@ export class FilesController {
   // получ.ф. Все/Тип. Обращ.к files, возвращ.масс.объ.
   @Get()
   @ApiOperation({ summary: 'Получить Файлы по Типам <> Все' })
+  @ApiOperation({ summary: 'Получить Всех Пользователей' })
   @ApiQuery({
     name: 'fileType',
     enum: fileTypesAllowed,
@@ -152,28 +162,38 @@ export class FilesController {
     @Query('fileType') fileType: FileType | FileType[],
   ) {
     if (!Array.isArray(fileType)) fileType = [fileType];
+    this.logger.info(
+      `req << Files All по fileType '${fileType}' у User.ID '${userId}'`,
+    );
     return await this.filesService.findAllFiles(userId, fileType);
   }
 
+  // ОДИН user.по id
   @Get(':id')
   @ApiOperation({ summary: 'Получить Один Файл' })
   async findOneFile(@Param('id') id: string) {
+    this.logger.info(`req < File.ID '${id}'`);
     return await this.filesService.findOneFile(+id);
   }
 
+  // ОДИН user.по параметрам ID <> Email <> FullName
   @Patch(':id')
-  @ApiOperation({ summary: 'Изменить Один Файл' })
+  @ApiOperation({ summary: 'Обновить Файл' })
   async updateFile(
-    @Param('id') id: string,
+    @Param('id') id: number,
     @Body() updateFileDto: UpdateFileDto,
   ) {
-    return await this.filesService.updateFile(+id, updateFileDto);
+    this.logger.info(
+      `req # File '${JSON.stringify(updateFileDto)}' у User.ID '${id}'`,
+    );
+    return this.filesService.updateFile(+id, updateFileDto);
   }
 
-  @Delete(/* ':id' */)
-  @ApiOperation({ summary: 'Удалить Файлы' })
-  async removeFile(@Query('ids') ids: string, @UserId() userId: number) {
+  @Delete(':id')
+  @ApiOperation({ summary: 'Удалить Файл' })
+  async removeFile(@Query('id') id: number, @UserId() userId: number) {
     // передача ф.id ч/з запят.> удал. file?ids=1,2,4,
-    return await this.filesService.removeFile(ids, userId);
+    this.logger.info(`req - File '${id}' у User.ID '${id}'`);
+    return await this.filesService.removeFile(id, userId);
   }
 }
