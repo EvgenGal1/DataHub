@@ -33,7 +33,7 @@ import { LoggingWinston } from '../../config/logging/log_winston.config';
 
 @Controller('/files')
 //  групп.мтд.cntrl files swagger
-@ApiTags('files')
+@ApiTags('Файлы')
 // оборач. f.cntrl в @UseGuard(JwtAuthGuard) для защищ.от Авториз. Откл.req е/и JWT Токен отсутств./просроч.
 // @UseGuards(JwtAuthGuard)
 // оборач. чтоб swagger знал что req на files защищены jwt Токеном
@@ -47,7 +47,7 @@ export class FilesController {
   // декор.мршрт./мтд.созд.ф.
   @Post()
   // описание `операции`swagger
-  @ApiOperation({ summary: 'Добавить Файл' })
+  @ApiOperation({ summary: 'Загрузить Файл' })
   // тип запроса`потребляет`для формы swagger
   @ApiConsumes('multipart/form-data')
   // настр.схемы передачи данн.swagger
@@ -73,7 +73,7 @@ export class FilesController {
         // валидаторы
         validators: [
           // валид.разм.в bite. Здесь макс.30 Mb
-          new MaxFileSizeValidator({ maxSize: 1024 * 1024 * 30 }),
+          new MaxFileSizeValidator({ maxSize: 30 * 1024 * 1024 }),
           // валид.тип файлов. // ^^ дораб под разн.типы файлов
           // new FileTypeValidator({ fileType: /(jpg|jpeg|png|gif)$/ }),
         ],
@@ -89,19 +89,10 @@ export class FilesController {
     return this.filesService.createFileByParam(file, userId);
   }
 
-  @Get()
-  @ApiOperation({ summary: 'Получить Всех Пользователей' })
-  // @Roles('ADMIN')
-  // @UseGuards(RolesGuard)
-  async findAllUsers() {
-    this.logger.info(`req << Users All`);
-    // return this.usersService.findAllUsers();
-  }
-
   // декор.мршрт./мтд.созд.ф.с Параметрами
   @Post(':param')
   // описание мтд.swagger
-  @ApiOperation({ summary: 'Добавить Файл по Параметрам' })
+  @ApiOperation({ summary: 'Загрузить Файл по Параметрам' })
   // тип запроса`потребляет`для формы swagger
   @ApiConsumes('multipart/form-data')
   // настр.схемы swagger
@@ -117,10 +108,7 @@ export class FilesController {
     },
   })
   // данн.выбора req swagger
-  @ApiQuery({
-    name: 'fileType',
-    enum: FileType,
-  })
+  @ApiQuery({ name: 'fileType', enum: FileType })
   // перехват.для раб.с ф
   @UseInterceptors(FileInterceptor('file', { storage: fileStorage }))
   async createFileByParam(
@@ -130,7 +118,7 @@ export class FilesController {
       new ParseFilePipe({
         validators: [
           // валид.разм.в bite. Здесь макс.30 Mb
-          new MaxFileSizeValidator({ maxSize: 1024 * 1024 * 30 }),
+          new MaxFileSizeValidator({ maxSize: 30 * 1024 * 1024 }),
           // валид.тип файлов. // ^^ дораб под разн.типы файлов
           // new FileTypeValidator({ fileType: /(jpg|jpeg|png|gif)$/ }),
         ],
@@ -141,21 +129,16 @@ export class FilesController {
     @UserId() userId: number,
   ) {
     this.logger.info(
-      `req + File '${JSON.stringify(file)}' и fileType '${JSON.stringify(fileType)}' > User.ID '${userId}', )`,
+      `req + File '${JSON.stringify(file)}' по fileType '${JSON.stringify(fileType)}' > User.ID '${userId}', )`,
     );
     // использ.мтд.из serv. Пердача file ч/з Multer, выбран.типа FileType ч/з ApiQuery и userId ч/з UserId
-    return await this.filesService.createFileByParam(file, userId, fileType);
+    return this.filesService.createFileByParam(file, userId, fileType);
   }
 
   // получ.ф. Все/Тип. Обращ.к files, возвращ.масс.объ.
   @Get()
   @ApiOperation({ summary: 'Получить Файлы по Типам <> Все' })
-  @ApiOperation({ summary: 'Получить Всех Пользователей' })
-  @ApiQuery({
-    name: 'fileType',
-    enum: fileTypesAllowed,
-    isArray: true,
-  })
+  @ApiQuery({ name: 'fileType', enum: fileTypesAllowed, isArray: true })
   // возвращ.ф.опред.user и с опред.типом(декор.Query)
   async findAllFiles(
     @UserId() userId: number,
@@ -165,18 +148,16 @@ export class FilesController {
     this.logger.info(
       `req << Files All по fileType '${fileType}' у User.ID '${userId}'`,
     );
-    return await this.filesService.findAllFiles(userId, fileType);
+    return this.filesService.findAllFiles(userId, fileType);
   }
 
-  // ОДИН user.по id
   @Get(':id')
   @ApiOperation({ summary: 'Получить Один Файл' })
-  async findOneFile(@Param('id') id: string) {
+  async findOneFile(@Param('id') id: number) {
     this.logger.info(`req < File.ID '${id}'`);
-    return await this.filesService.findOneFile(+id);
+    return this.filesService.findOneFile(id);
   }
 
-  // ОДИН user.по параметрам ID <> Email <> FullName
   @Patch(':id')
   @ApiOperation({ summary: 'Обновить Файл' })
   async updateFile(
@@ -194,6 +175,6 @@ export class FilesController {
   async removeFile(@Query('id') id: number, @UserId() userId: number) {
     // передача ф.id ч/з запят.> удал. file?ids=1,2,4,
     this.logger.info(`req - File '${id}' у User.ID '${id}'`);
-    return await this.filesService.removeFile(id, userId);
+    return this.filesService.removeFile(id, userId);
   }
 }
