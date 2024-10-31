@@ -34,8 +34,8 @@ export class UsersService {
     private userRolesRepository: Repository<UserRolesEntity>,
     // ^ доп.репозит.настр.
     private roleService: RolesService,
-    private dataBaseUtils: DatabaseUtils,
     private basicUtils: BasicUtils,
+    private dataBaseUtils: DatabaseUtils,
   ) {}
 
   // ^ МТД.CRUD
@@ -76,8 +76,7 @@ export class UsersService {
       // DEV лог.debug
       if (!isProduction && isDevelopment)
         this.basicUtils.logDebugDev(
-          'usr.s. CRE createUserDto : ',
-          createUserDto,
+          `'usr.s. CRE createUserDto '${JSON.stringify(createUserDto)}'`,
         );
       throw error;
     }
@@ -86,7 +85,7 @@ export class UsersService {
   // все users из БД
   async findAllUsers(): Promise<UserEntity[]> {
     try {
-      if (isDevelopment) this.logger.info(`db << User All`);
+      if (isDevelopment) this.logger.info(`db << Users All`);
       const allUsers = await this.userRepository.find();
       if (!allUsers) throw new NotFoundException(`User All не найден`);
       this.logger.info(

@@ -138,17 +138,31 @@ export class FilesController {
   // получ.ф. Все/Тип. Обращ.к files, возвращ.масс.объ.
   @Get()
   @ApiOperation({ summary: 'Получить Файлы по Типам <> Все' })
-  @ApiQuery({ name: 'fileType', enum: fileTypesAllowed, isArray: true })
+  @ApiQuery({
+    name: 'fileType',
+    enum: fileTypesAllowed,
+    isArray: true,
+    required: false,
+  })
   // возвращ.ф.опред.user и с опред.типом(декор.Query)
   async findAllFiles(
     @UserId() userId: number,
-    @Query('fileType') fileType: FileType | FileType[],
+    @Query('fileType')
+    fileType?: FileType | FileType[] | typeof fileTypesAllowed | string,
   ) {
-    if (!Array.isArray(fileType)) fileType = [fileType];
+    // опред.тип файла. // ! не оч.корр.лог при all + ещё, т.к. includes в ошб. all нельзя назначить параметру типа FileType
+    const isAllFilesRequest =
+      fileType === 'all' || !fileType; /* || fileType.includes('all') */
+    // пустой/один/неск-ко типов
+    const typeArray = Array.isArray(fileType)
+      ? fileType
+      : fileType
+        ? [fileType]
+        : [];
     this.logger.info(
-      `req << Files All по fileType '${fileType}' у User.ID '${userId}'`,
+      `req << Files ${isAllFilesRequest ? `'ALL'` : `'ILIKE' '${typeArray.join(', ')}'`} > User.ID '${userId}'`,
     );
-    return this.filesService.findAllFiles(userId, fileType);
+    return this.filesService.findAllFiles(userId, typeArray);
   }
 
   @Get(':id')
@@ -165,7 +179,7 @@ export class FilesController {
     @Body() updateFileDto: UpdateFileDto,
   ) {
     this.logger.info(
-      `req # File '${JSON.stringify(updateFileDto)}' у User.ID '${id}'`,
+      `req # File '${JSON.stringify(updateFileDto)}' > User.ID '${id}'`,
     );
     return this.filesService.updateFile(+id, updateFileDto);
   }
@@ -174,7 +188,7 @@ export class FilesController {
   @ApiOperation({ summary: 'Удалить Файл' })
   async removeFile(@Query('id') id: number, @UserId() userId: number) {
     // передача ф.id ч/з запят.> удал. file?ids=1,2,4,
-    this.logger.info(`req - File '${id}' у User.ID '${id}'`);
+    this.logger.info(`req - File '${id}' > User.ID '${id}'`);
     return this.filesService.removeFile(id, userId);
   }
 }
