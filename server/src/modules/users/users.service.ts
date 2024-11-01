@@ -47,14 +47,16 @@ export class UsersService {
       const smallestFreeId =
         await this.dataBaseUtils.getSmallestIDAvailable('user');
       // созд.репоз. / обраб.ошб.
-      const user = this.userRepository.create({
+      const userCre = this.userRepository.create({
         ...createUserDto,
         id: smallestFreeId,
       });
-      if (!user)
+      if (!userCre) {
+        this.logger.error(`User '${JSON.stringify(createUserDto)}' не создан`);
         throw new NotFoundException(
           `User '${JSON.stringify(createUserDto)}' не создан`,
         );
+      }
 
       // ^ будущ.запись Роли,Уровень Роли,psw,token и др.
 
@@ -62,11 +64,15 @@ export class UsersService {
       if (isDevelopment)
         this.logger.info(`db + User : '${JSON.stringify(createUserDto)}'`);
       // сохр.,ошб.,лог.,возврат
-      const savedUser: UserEntity = await this.userRepository.save(user);
-      if (!savedUser)
+      const savedUser: UserEntity = await this.userRepository.save(userCre);
+      if (!savedUser) {
+        this.logger.error(
+          `User '${JSON.stringify(createUserDto)}' не сохранён`,
+        );
         throw new NotFoundException(
           `User '${JSON.stringify(createUserDto)}' не сохранён`,
         );
+      }
       this.logger.info(`+ User.ID '${savedUser.id}'`);
       return savedUser;
     } catch (error) {
@@ -76,7 +82,7 @@ export class UsersService {
       // DEV лог.debug
       if (!isProduction && isDevelopment)
         this.basicUtils.logDebugDev(
-          `'usr.s. CRE createUserDto '${JSON.stringify(createUserDto)}'`,
+          `'usr.s. CRE : DTO '${JSON.stringify(createUserDto)}'`,
         );
       throw error;
     }
@@ -87,7 +93,10 @@ export class UsersService {
     try {
       if (isDevelopment) this.logger.info(`db << Users All`);
       const allUsers = await this.userRepository.find();
-      if (!allUsers) throw new NotFoundException(`User All не найден`);
+      if (!allUsers) {
+        this.logger.error(`User All не найден`);
+        throw new NotFoundException(`User All не найден`);
+      }
       this.logger.info(
         `<< Users All length '${allUsers?.length}' < БД '${
           isProduction ? 'SB' : isDevelopment ? 'LH' : 'SB и LH'
@@ -107,7 +116,10 @@ export class UsersService {
     try {
       if (isDevelopment) this.logger.info(`db < User.ID '${id}'`);
       const user = await this.userRepository.findOneBy({ id });
-      if (!user) throw new NotFoundException(`User.ID '${id}' не найден`);
+      if (!user) {
+        this.logger.error(`User.ID '${id}' не найден`);
+        throw new NotFoundException(`User.ID '${id}' не найден`);
+      }
       this.logger.info(`< User.ID '${user?.id}'`);
       return user;
     } catch (error) {
@@ -159,7 +171,10 @@ export class UsersService {
       }
 
       const user = await this.userRepository.findOne({ where: whereCondition });
-      if (!user) throw new NotFoundException(`User по '${param}' не найден`);
+      if (!user) {
+        this.logger.error(`User по '${param}' не найден`);
+        throw new NotFoundException(`User по '${param}' не найден`);
+      }
       this.logger.info(`<? User.Param : '${param}'`);
       return user;
     } catch (error) {
@@ -178,12 +193,21 @@ export class UsersService {
     try {
       // получ.user.id / обраб.ошб.
       const user = await this.userRepository.findOneBy({ id });
-      if (!user) throw new NotFoundException(`User.ID '${id}' не найден`);
+      if (!user) {
+        this.logger.error(`User.ID '${id}' не найден`);
+        throw new NotFoundException(`User.ID '${id}' не найден`);
+      }
 
       // изменения
-      user.fullname = updateUserDto.fullname;
-      user.email = updateUserDto.email;
-      // user.password = updateUserDto.password;
+      // user.fullname = updateUserDto.fullname;
+      // user.email = updateUserDto.email;
+      // // user.password = updateUserDto.password;
+      // Обновляем свойства пользователя с использованием Object.assign
+      Object.assign(user, updateUserDto); // Обновляем только те поля, которые указаны в DTO
+      // Если необходимо, зашифруйте пароль здесь прежде, чем сохранять (если password указан)
+      // if (updateUserDto.password) {
+      //   user.password = await this.hashPassword(updateUserDto.password);
+      // }
 
       // log > DEV
       if (isDevelopment)
@@ -193,10 +217,14 @@ export class UsersService {
 
       // сохр.,ошб.,лог.,возврат
       const usrUpd = await this.userRepository.save(user);
-      if (!usrUpd)
+      if (!usrUpd) {
+        this.logger.error(
+          `User.ID '${id}' по данным '${JSON.stringify(updateUserDto)}' не обновлён`,
+        );
         throw new NotFoundException(
           `User.ID '${id}' по данным '${JSON.stringify(updateUserDto)}' не обновлён`,
         );
+      }
       this.logger.info(`# User.ID : '${usrUpd.id}'`);
       return usrUpd;
     } catch (error) {
@@ -206,9 +234,7 @@ export class UsersService {
       // DEV лог.debug
       if (!isProduction && isDevelopment)
         this.basicUtils.logDebugDev(
-          'usr.s. UPD Param - id | updateUserDto :  ',
-          id,
-          updateUserDto,
+          `usr.s. UPD : User.ID '${id}' | DTO '${JSON.stringify(updateUserDto)}'`,
         );
       throw error;
     }
@@ -219,7 +245,10 @@ export class UsersService {
     try {
       if (isDevelopment) this.logger.info(`db - User.ID: '${id}'`);
       const usrRem = await this.userRepository.softDelete(id);
-      if (!usrRem) throw new NotFoundException(`User.ID '${id}' не удалён`);
+      if (!usrRem) {
+        this.logger.error(`User.ID '${id}' не удалён`);
+        throw new NotFoundException(`User.ID '${id}' не удалён`);
+      }
       this.logger.info(`- User.ID : '${usrRem}'`);
       return usrRem;
     } catch (error) {
@@ -235,7 +264,7 @@ export class UsersService {
   //   return await this.userRepository.restore(id);
   // }
 
-  // Удаление
+  // Удаление Полное
   async deleteUser(
     userIds: string | number,
     userId?: number,
@@ -245,9 +274,11 @@ export class UsersService {
     try {
       // ошб.е/и нет ID
       if (!userIds) {
+        this.logger.error('Нет Пользователя/ей > Удаления');
         throw new NotFoundException('Нет Пользователя/ей > Удаления');
       }
       if (!userId && !param /* && !totalUserDto */) {
+        this.logger.error('Предовращено полное удаление Пользователя/ей');
         throw new NotFoundException(
           'Предовращено полное удаление Пользователя/ей',
         );
@@ -271,10 +302,14 @@ export class UsersService {
       const avaAdd = await this.userRepository.update(userId, {
         avatar: avatarUrl,
       });
-      if (!avaAdd)
+      if (!avaAdd) {
+        this.logger.error(
+          `User.ID '${userId}' AVA '${avatarUrl}' не добавлена`,
+        );
         throw new NotFoundException(
           `User.ID '${userId}' AVA '${avatarUrl}' не добавлена`,
         );
+      }
       this.logger.info(`# User.ID '${userId}' AVA '${avatarUrl}'`);
       return avaAdd;
     } catch (error) {
@@ -301,17 +336,27 @@ export class UsersService {
         : roleIds;
       // получ.данн. User и Role
       const users = await this.userRepository.findBy({ id: In([...userIdss]) });
-      if (!users)
+      if (!users) {
+        this.logger.error(`User.userIdss '${userIdss}' не нейдены`);
         throw new NotFoundException(`User.userIdss '${userIdss}' не нейдены`);
+      }
       const roles = await this.roleRepository.findBy({ id: In([...roleIdss]) });
-      if (!users)
+      if (!users) {
+        this.logger.error(`Role.roleIdss '${roleIdss}' не нейдены`);
         throw new NotFoundException(`Role.roleIdss '${roleIdss}' не нейдены`);
+      }
       // Проверка существования пользователей и ролей
-      if (users.length !== userIdss.length || roles.length !== roleIdss.length)
+      if (
+        users.length !== userIdss.length ||
+        roles.length !== roleIdss.length
+      ) {
+        this.logger.error(
+          'Одного или нескольких пользователей или ролей не существует.',
+        );
         throw new NotFoundException(
           'Одного или нескольких пользователей или ролей не существует.',
         );
-
+      }
       // Создание связей между Пользователями и Ролями
       for (const user of users) {
         for (const role of roles) {
