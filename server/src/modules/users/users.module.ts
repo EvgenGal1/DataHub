@@ -10,6 +10,7 @@ import { UserRolesEntity } from '../roles/entities/user-roles.entity';
 import { FileEntity } from '../files/entities/file.entity';
 import { TrackEntity } from '../tracks/entities/track.entity';
 import { AlbumEntity } from '../albums/entities/album.entity';
+import { ReactionEntity } from '../reactions/entities/reaction.entity';
 // утилиты общ.
 import { BasicUtils } from '../../common/utils/basic.utils';
 // утилиты БД
@@ -31,6 +32,7 @@ import { isProduction } from '../../config/envs/env.consts';
         FileEntity,
         TrackEntity,
         AlbumEntity,
+        ReactionEntity,
       ],
       isProduction ? 'supabase' : 'localhost',
     ),

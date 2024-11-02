@@ -25,7 +25,7 @@ export class UsersService {
     // логгер
     private readonly logger: LoggingWinston,
     // ч/з внедр.завис. + UserEntity и др. > раб.ч/з this с табл.users и др.
-    // ^ подкл.БД от NODE_ENV. PROD(SB) <> DEV(LH)
+    // ^ подкл.2 БД от NODE_ENV. PROD(SB) <> DEV(LH)
     @InjectRepository(UserEntity, isProduction ? 'supabase' : 'localhost')
     private readonly userRepository: Repository<UserEntity>,
     @InjectRepository(RoleEntity, isProduction ? 'supabase' : 'localhost')

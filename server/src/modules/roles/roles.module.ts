@@ -10,6 +10,7 @@ import { UserRolesEntity } from './entities/user-roles.entity';
 import { FileEntity } from '../files/entities/file.entity';
 import { TrackEntity } from '../tracks/entities/track.entity';
 import { AlbumEntity } from '../albums/entities/album.entity';
+import { ReactionEntity } from '../reactions/entities/reaction.entity';
 import { BasicUtils } from '../../common/utils/basic.utils';
 import { DatabaseUtils } from '../../common/utils/database.utils';
 import { LoggingWinston } from '../../config/logging/log_winston.config';
@@ -25,6 +26,7 @@ import { isProduction } from '../../config/envs/env.consts';
         FileEntity,
         TrackEntity,
         AlbumEntity,
+        ReactionEntity,
       ],
       isProduction ? 'supabase' : 'localhost',
     ),
