@@ -52,9 +52,11 @@ export class UsersService {
         id: smallestFreeId,
       });
       if (!userCre) {
-        this.logger.error(`User '${JSON.stringify(createUserDto)}' не создан`);
+        this.logger.error(
+          `User DTO '${JSON.stringify(createUserDto)}' не создан`,
+        );
         throw new NotFoundException(
-          `User '${JSON.stringify(createUserDto)}' не создан`,
+          `User DTO '${JSON.stringify(createUserDto)}' не создан`,
         );
       }
 
@@ -62,15 +64,15 @@ export class UsersService {
 
       // log > DEV
       if (isDevelopment)
-        this.logger.info(`db + User : '${JSON.stringify(createUserDto)}'`);
+        this.logger.info(`db + User DTO : '${JSON.stringify(createUserDto)}'`);
       // сохр.,ошб.,лог.,возврат
       const savedUser: UserEntity = await this.userRepository.save(userCre);
       if (!savedUser) {
         this.logger.error(
-          `User '${JSON.stringify(createUserDto)}' не сохранён`,
+          `User DTO '${JSON.stringify(createUserDto)}' не сохранён`,
         );
         throw new NotFoundException(
-          `User '${JSON.stringify(createUserDto)}' не сохранён`,
+          `User DTO '${JSON.stringify(createUserDto)}' не сохранён`,
         );
       }
       this.logger.info(`+ User.ID '${savedUser.id}'`);
@@ -219,10 +221,10 @@ export class UsersService {
       const usrUpd = await this.userRepository.save(user);
       if (!usrUpd) {
         this.logger.error(
-          `User.ID '${id}' по данным '${JSON.stringify(updateUserDto)}' не обновлён`,
+          `User.ID '${id}' по DTO '${JSON.stringify(updateUserDto)}' не обновлён`,
         );
         throw new NotFoundException(
-          `User.ID '${id}' по данным '${JSON.stringify(updateUserDto)}' не обновлён`,
+          `User.ID '${id}' по DTO '${JSON.stringify(updateUserDto)}' не обновлён`,
         );
       }
       this.logger.info(`# User.ID '${usrUpd.id}'`);
@@ -368,7 +370,7 @@ export class UsersService {
       }
     } catch (error) {
       this.logger.error(
-        `!Ошб. + AVA User > Role '${JSON.stringify(addingRolesToUsersDto)}': '${await this.basicUtils.hendlerTypesErrors(error)}'`,
+        `!Ошб. + AVA User > Role DTO '${JSON.stringify(addingRolesToUsersDto)}': '${await this.basicUtils.hendlerTypesErrors(error)}'`,
       );
       throw error;
     }

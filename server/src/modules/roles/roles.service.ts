@@ -160,10 +160,10 @@ export class RolesService {
 
       if (!rolUpd) {
         this.logger.error(
-          `Role.ID '${id}' по данным '${JSON.stringify(updateRoleDto)}' не обновлён`,
+          `Role.ID '${id}' по DTO '${JSON.stringify(updateRoleDto)}' не обновлён`,
         );
         throw new NotFoundException(
-          `Role.ID '${id}' по данным '${JSON.stringify(updateRoleDto)}' не обновлён`,
+          `Role.ID '${id}' по DTO '${JSON.stringify(updateRoleDto)}' не обновлён`,
         );
       }
       this.logger.info(`# Role.ID '${rolUpd.id}'`);

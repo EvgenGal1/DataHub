@@ -43,7 +43,7 @@ export class AlbumController {
     @UserId() userId: number,
   ) {
     this.logger.info(
-      `req User.ID '${userId}' + Alb: '${JSON.stringify(createAlbumDto)}'`,
+      `req User.ID '${userId}' + Alb DTO: '${JSON.stringify(createAlbumDto)}'`,
     );
     return this.albumsService.createAlbum(createAlbumDto, userId);
   }

@@ -62,7 +62,7 @@ export class UsersController {
   // })
   // получ.объ из запроса ч/з @Body
   async createUser(@Body() createUserDto: CreateUserDto) {
-    this.logger.info(`req + User: '${JSON.stringify(createUserDto)}'`);
+    this.logger.info(`req + User DTO : '${JSON.stringify(createUserDto)}'`);
     return this.usersService.createUser(createUserDto);
   }
 
@@ -122,7 +122,7 @@ export class UsersController {
     @Body() addingRolesToUsersDto: AddingRolesToUsersDto,
   ): Promise<void> {
     this.logger.info(
-      `req + Role в User: '${JSON.stringify(addingRolesToUsersDto)}'`,
+      `req + Role в User DTO : '${JSON.stringify(addingRolesToUsersDto)}'`,
     );
     this.usersService.addingRolesToUsers(addingRolesToUsersDto);
   }

@@ -48,31 +48,39 @@ export class AlbumsService {
         cover: coverObj,
         ...totalAlbumData,
       });
-      if (!album)
+      if (!album) {
+        this.logger.error(
+          `Album DTO '${JSON.stringify(createAlbumDto)}' не создан`,
+        );
         throw new NotFoundException(
-          `User '${JSON.stringify({
+          `User DTO '${JSON.stringify({
             createAlbumDto,
             coverObj,
             totalAlbumData,
           })}' не создан`,
         );
+      }
       if (isDevelopment)
         this.logger.info(
-          `db + Alb User.ID '${userId}': '${JSON.stringify({
+          `db + Alb User.ID '${userId}' DTO : '${JSON.stringify({
             createAlbumDto,
             coverObj,
             totalAlbumData,
           })}'`,
         );
       const savedAlbum = await this.albumsRepository.save(album);
-      if (!savedAlbum)
+      if (!savedAlbum) {
+        this.logger.error(
+          `Album DTO '${JSON.stringify(createAlbumDto)}' не сохранён`,
+        );
         throw new NotFoundException(
-          `Album '${JSON.stringify({
+          `Album DTO '${JSON.stringify({
             createAlbumDto,
             coverObj,
             totalAlbumData,
           })}' не сохранён`,
         );
+      }
       this.logger.info(`+ Album.ID '${savedAlbum.id}'`);
       return savedAlbum;
     } catch (error) {
@@ -93,9 +101,12 @@ export class AlbumsService {
 
   async findAllAlbums(): Promise<AlbumEntity[]> {
     try {
-      if (isDevelopment) this.logger.info(`db << Album All`);
+      if (isDevelopment) this.logger.info(`db << Albums All`);
       const albumsAll = await this.albumsRepository.find();
-      if (!albumsAll) throw new NotFoundException(`Albums All не найден`);
+      if (!albumsAll) {
+        this.logger.error(`Albums All не найден`);
+        throw new NotFoundException(`Albums All не найден`);
+      }
       this.logger.info(
         `<< Albums All length '${albumsAll?.length}' < БД '${
           isProduction ? 'SB' : isDevelopment ? 'LH' : 'SB и LH'
@@ -114,7 +125,10 @@ export class AlbumsService {
     try {
       if (isDevelopment) this.logger.info(`db < Album.ID '${id}'`);
       const album = await this.albumsRepository.findOneBy({ id });
-      if (!album) throw new NotFoundException(`Album.ID '${id}' не найден`);
+      if (!album) {
+        this.logger.error(`Album.ID '${id}' не найден`);
+        throw new NotFoundException(`Album.ID '${id}' не найден`);
+      }
       this.logger.info(`< Album.ID '${album?.id}'`);
       return album;
     } catch (error) {
@@ -137,7 +151,10 @@ export class AlbumsService {
       const album = await this.albumsRepository.findOneBy({ id });
       // альтер.получ.всех Треков по Альбому и их кол-ву
       // const trackAll = await this.tracksRepository.find({ where: { album: { /* title: updateAlbumDto.title, */ id: id, }, }, });
-      if (!album) throw new NotFoundException(`Album.ID '${id}' не найден`);
+      if (!album) {
+        this.logger.error(`Album.ID '${id}' не найден`);
+        throw new NotFoundException(`Album.ID '${id}' не найден`);
+      }
 
       // общ.кол-во.всех Треков одного Альбома
       if (totalAlbumDto?.total_tracks) {
@@ -273,14 +290,22 @@ export class AlbumsService {
           `db # Album '${await this.basicUtils.hendlerTypesErrors(album)}'`,
         );
       const albUpd = await this.albumsRepository.save(album);
-      if (!albUpd)
-        throw new NotFoundException(
-          `Album.ID '${id}' по данным '${JSON.stringify({
+      if (!albUpd) {
+        this.logger.error(
+          `Album.ID '${id}' по DTO '${JSON.stringify({
             updateAlbumDto,
             totalAlbumDto,
             param,
           })}' не обновлён`,
         );
+        throw new NotFoundException(
+          `Album.ID '${id}' по DTO '${JSON.stringify({
+            updateAlbumDto,
+            totalAlbumDto,
+            param,
+          })}' не обновлён`,
+        );
+      }
       this.logger.info(`# Album.ID '${albUpd.id}'`);
       return albUpd;
     } catch (error) {
@@ -330,9 +355,11 @@ export class AlbumsService {
     try {
       // ошб.е/и нет ID
       if (!albumIds) {
+        this.logger.error('Нет Альбома/ов > Удаления');
         throw new NotFoundException('Нет Альбома/ов > Удаления');
       }
       if (!userId && !param && !totalAlbumDto) {
+        this.logger.error('Предовращено полное удаление Альбома/ов');
         throw new NotFoundException('Предовращено полное удаление Альбома/ов');
       }
 
@@ -403,13 +430,20 @@ export class AlbumsService {
               total_tracks: 0,
               total_duration: '0:00',
             });
-            if (!albSav)
-              throw new NotFoundException(
-                `Album.ID '${albumIds}' по данным '${JSON.stringify({
+            if (!albSav) {
+              this.logger.error(
+                `Album.ID '${albumIds}' по DTO '${JSON.stringify({
                   totalAlbumDto,
                   param,
                 })}' не сохранён`,
               );
+              throw new NotFoundException(
+                `Album.ID '${albumIds}' по DTO '${JSON.stringify({
+                  totalAlbumDto,
+                  param,
+                })}' не сохранён`,
+              );
+            }
             this.logger.info(`DEL Album.ID '${albumIds}'`);
             // мягк.удал.
             albDel = await qbAlbums.softDelete().execute();

@@ -73,6 +73,9 @@ export class FilesService {
     } catch (error) {
       // удал.записи табл./ф. при неудачн.загр.
       if (!savedFile) {
+        this.logger.error(
+          `Ошб.! File '${file.filename}' удаляется из п.public`,
+        );
         // удален.ф.с локал.хран.
         // fs.promises
         //   .unlink(deleteFile.path)
@@ -186,10 +189,10 @@ export class FilesService {
       const filUpd = await this.filesRepository.save(file);
       if (!filUpd) {
         this.logger.error(
-          `File.ID '${id}' по данным '${JSON.stringify(updateFileDto)}' не обновлён`,
+          `File.ID '${id}' по DTO '${JSON.stringify(updateFileDto)}' не обновлён`,
         );
         throw new NotFoundException(
-          `File.ID '${id}' по данным '${JSON.stringify(updateFileDto)}' не обновлён`,
+          `File.ID '${id}' по DTO '${JSON.stringify(updateFileDto)}' не обновлён`,
         );
       }
       this.logger.info(`# File.ID : '${filUpd.id}'`);
