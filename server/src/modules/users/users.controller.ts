@@ -87,7 +87,7 @@ export class UsersController {
   @Get('param/:param')
   @ApiOperation({ summary: 'Получить Usera по ID <> Email <> FullName' })
   async findUserByParam(@Param('param') param: string) {
-    this.logger.info(`req <? User Param: '${param}'`);
+    this.logger.info(`req <? User Param '${param}'`);
     return this.usersService.findUserByParam(param);
   }
 
@@ -189,7 +189,7 @@ export class UsersController {
   // @UseGuards(RolesGuard)
   // @Post('/role')
   // async addRole(@Body() dto: AddRoleDto) {
-  //   return await this.usersService.addRole(dto);
+  //   return this.usersService.addRole(dto);
   // }
 
   // @ApiOperation({ summary: 'Забанить пользователя' })
@@ -198,7 +198,7 @@ export class UsersController {
   // @UseGuards(RolesGuard)
   // @Post('/ban')
   // async ban(@Body() dto: BanUserDto) {
-  //   return await this.usersService.ban(dto);
+  //   return this.usersService.ban(dto);
   // }
 
   // ~~ связь с конкретными ролями
@@ -207,18 +207,18 @@ export class UsersController {
   //   @Body('username') username: string,
   //   @Body('roles') roles: string[],
   // ) {
-  //   const newUser = await this.usersService.createUserWithRoles(
+  //   const newUser = this.usersService.createUserWithRoles(
   //     username,
   //     roles,
   //   );
-  //   return await newUser;
+  //   return newUser;
   // }
   //  ----------------------------------------------------------------------------------
   // ~~ Для получения пользователя (user), его роли (role) и уровня (level) из таблиц users, roles и user_roles
   // @Post('/userId')
   // async getUserRoleAndLevel(@Query('userId') userId: number) {
   //   console.log('userId : ' + userId);
-  //   const user = await this.usersService.getUserRoleAndLevel(userId);
-  //   return await user;
+  //   const user = this.usersService.getUserRoleAndLevel(userId);
+  //   return user;
   // }
 }

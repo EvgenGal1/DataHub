@@ -24,7 +24,7 @@ import { LoggingWinston } from '../../config/logging/log_winston.config';
 
 @Controller('/albums')
 // групп.мтд.cntrl albums > swagger
-@ApiTags('albums')
+@ApiTags('Альбомы')
 // обёртка защиты JWT > swg
 // @ApiBearerAuth()
 export class AlbumController {

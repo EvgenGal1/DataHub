@@ -20,16 +20,16 @@ export class AlbumsService {
   constructor(
     private readonly logger: LoggingWinston,
     @InjectRepository(AlbumEntity, isProduction ? 'supabase' : 'localhost')
-    private albumsRepository: Repository<AlbumEntity>,
+    private readonly albumsRepository: Repository<AlbumEntity>,
     @InjectRepository(TrackEntity, isProduction ? 'supabase' : 'localhost')
-    private tracksRepository: Repository<TrackEntity>,
+    private readonly tracksRepository: Repository<TrackEntity>,
     @InjectRepository(ReactionEntity, isProduction ? 'supabase' : 'localhost')
-    private reactionsRepository: Repository<ReactionEntity>,
+    private readonly reactionsRepository: Repository<ReactionEntity>,
     @InjectRepository(FileEntity, isProduction ? 'supabase' : 'localhost')
-    private fileRepository: Repository<FileEntity>,
-    private filesService: FilesService,
-    private dataBaseUtils: DatabaseUtils,
-    private basicUtils: BasicUtils,
+    private readonly fileRepository: Repository<FileEntity>,
+    private readonly filesService: FilesService,
+    private readonly dataBaseUtils: DatabaseUtils,
+    private readonly basicUtils: BasicUtils,
   ) {}
 
   async createAlbum(

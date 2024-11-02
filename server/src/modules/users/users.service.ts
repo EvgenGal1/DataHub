@@ -29,13 +29,13 @@ export class UsersService {
     @InjectRepository(UserEntity, isProduction ? 'supabase' : 'localhost')
     private readonly userRepository: Repository<UserEntity>,
     @InjectRepository(RoleEntity, isProduction ? 'supabase' : 'localhost')
-    private roleRepository: Repository<RoleEntity>,
+    private readonly roleRepository: Repository<RoleEntity>,
     @InjectRepository(UserRolesEntity, isProduction ? 'supabase' : 'localhost')
-    private userRolesRepository: Repository<UserRolesEntity>,
+    private readonly userRolesRepository: Repository<UserRolesEntity>,
     // ^ доп.репозит.настр.
-    private roleService: RolesService,
-    private basicUtils: BasicUtils,
-    private dataBaseUtils: DatabaseUtils,
+    private readonly roleService: RolesService,
+    private readonly basicUtils: BasicUtils,
+    private readonly dataBaseUtils: DatabaseUtils,
   ) {}
 
   // ^ МТД.CRUD
@@ -94,8 +94,8 @@ export class UsersService {
       if (isDevelopment) this.logger.info(`db << Users All`);
       const allUsers = await this.userRepository.find();
       if (!allUsers) {
-        this.logger.error(`User All не найден`);
-        throw new NotFoundException(`User All не найден`);
+        this.logger.error(`Users All не найден`);
+        throw new NotFoundException(`Users All не найден`);
       }
       this.logger.info(
         `<< Users All length '${allUsers?.length}' < БД '${
@@ -132,9 +132,9 @@ export class UsersService {
 
   // ОДИН user.по параметрам ID <> Email <> FullName
   // ! переделать под получ roles tracks user_roles в завис.от парам. и пр.
-  async findUserByParam(param: string) {
+  async findUserByParam(param: string): Promise<UserEntity> {
     try {
-      if (isDevelopment) this.logger.info(`db <? User.Param : '${param}'`);
+      if (isDevelopment) this.logger.info(`db <? User Param '${param}'`);
       // ^^ fn для неск.id
       // if (usersIds) {
       //   const splitUserIds = usersIds.split(',');
@@ -172,14 +172,14 @@ export class UsersService {
 
       const user = await this.userRepository.findOne({ where: whereCondition });
       if (!user) {
-        this.logger.error(`User по '${param}' не найден`);
-        throw new NotFoundException(`User по '${param}' не найден`);
+        this.logger.error(`User Param '${param}' не найден`);
+        throw new NotFoundException(`User Param '${param}' не найден`);
       }
-      this.logger.info(`<? User.Param : '${param}'`);
+      this.logger.info(`<? User Param '${param}'`);
       return user;
     } catch (error) {
       this.logger.error(
-        `!Ошб. <? User.Param '${param}': '${await this.basicUtils.hendlerTypesErrors(error)}'`,
+        `!Ошб. <? User Param '${param}': '${await this.basicUtils.hendlerTypesErrors(error)}'`,
       );
       throw error;
     }
@@ -225,7 +225,7 @@ export class UsersService {
           `User.ID '${id}' по данным '${JSON.stringify(updateUserDto)}' не обновлён`,
         );
       }
-      this.logger.info(`# User.ID : '${usrUpd.id}'`);
+      this.logger.info(`# User.ID '${usrUpd.id}'`);
       return usrUpd;
     } catch (error) {
       this.logger.error(
@@ -291,10 +291,10 @@ export class UsersService {
     }
   }
 
-  // ^ ДОП.МТД. ----------------------------------------------------------------------------------
+  // ^ ДОП.МТД. -----------------------------------------------------------------------
   // !! https://www.techiediaries.com/nestjs-upload-serve-static-file/
   // обнов.аватар Пользователя
-  public async setAvatar(userId: number, avatarUrl: string) {
+  async setAvatar(userId: number, avatarUrl: string) {
     try {
       if (isDevelopment)
         this.logger.info(`db + AVA '${avatarUrl}' > User.ID: '${userId}'`);
@@ -320,7 +320,7 @@ export class UsersService {
     }
   }
 
-  // ^ МТД. > ADMIN ----------------------------------------------------------------------------------
+  // ^ МТД. > ADMIN -----------------------------------------------------------------------
   // добавить неск.Ролей к неск.Пользователям
   async addingRolesToUsers(
     addingRolesToUsersDto: AddingRolesToUsersDto,
@@ -366,7 +366,12 @@ export class UsersService {
           await this.userRolesRepository.save(userRoles);
         }
       }
-    } catch (error) {}
+    } catch (error) {
+      this.logger.error(
+        `!Ошб. + AVA User > Role '${JSON.stringify(addingRolesToUsersDto)}': '${await this.basicUtils.hendlerTypesErrors(error)}'`,
+      );
+      throw error;
+    }
   }
 
   // ^^ Расшир.мтд. ----------------------------------------------------------------------------
