@@ -1,130 +1,286 @@
-import { In, Repository } from 'typeorm';
-import { Injectable, NotFoundException, Optional } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 
 import { CreateRoleDto } from './dto/create-role.dto';
 import { UpdateRoleDto } from './dto/update-role.dto';
-import { UserEntity } from '../users/entities/user.entity';
 import { RoleEntity } from './entities/role.entity';
-import { UserRolesEntity } from './entities/user-roles.entity';
-import { AddingRolesToUsersDto } from './dto/add-roles-to-users.dto';
+// import { UserRolesEntity } from './entities/user-roles.entity';
+// import { AddingRolesToUsersDto } from './dto/add-roles-to-users.dto';
+import { BasicUtils } from '../../common/utils/basic.utils';
 import { DatabaseUtils } from '../../common/utils/database.utils';
 import { LoggingWinston } from '../../config/logging/log_winston.config';
-import {
-  isProduction,
-  isDevelopment,
-  isTotal,
-} from '../../config/envs/env.consts';
+import { isProduction, isDevelopment } from '../../config/envs/env.consts';
 
 @Injectable()
 export class RolesService {
   constructor(
     private readonly logger: LoggingWinston,
-    //
-    @Optional()
-    @InjectRepository(UserEntity, 'supabase')
-    private userRepositorySB: Repository<UserEntity>,
-    @Optional()
-    @InjectRepository(RoleEntity, 'supabase')
-    private roleRepositorySB: Repository<RoleEntity>,
-    @Optional()
-    @InjectRepository(UserRolesEntity, 'supabase')
-    private userRolesRepositorySB: Repository<UserRolesEntity>,
-    //
-    private dataBaseUtils: DatabaseUtils,
-    //
-    @Optional()
-    @InjectRepository(UserEntity, 'localhost')
-    private userRepository?: Repository<UserEntity>,
-    @Optional()
-    @InjectRepository(RoleEntity, 'localhost')
-    private roleRepository?: Repository<RoleEntity>,
-    @Optional()
-    @InjectRepository(UserRolesEntity, 'localhost')
-    private userRolesRepository?: Repository<UserRolesEntity>,
+    @InjectRepository(RoleEntity, isProduction ? 'supabase' : 'localhost')
+    private readonly roleRepository: Repository<RoleEntity>,
+    // @InjectRepository(UserRolesEntity, isProduction ? 'supabase' : 'localhost')
+    // private readonly userRolesRepository: Repository<UserRolesEntity>,
+    private readonly basicUtils: BasicUtils,
+    private readonly dataBaseUtils: DatabaseUtils,
   ) {}
 
-  async createRole(createRoleDto: CreateRoleDto) {
-    // логи,перем.ошб.
-    // this.logger.info(
-    //   `Запись Role в БД ${isProduction ? 'SB' : isDevelopment ? 'LH' : 'SB и LH'}`,
-    // );
-    const err = `Role не сохранён в БД`;
-    // `получить наименьший доступный идентификатор` из БД > табл.role
-    const smallestFreeId =
-      await this.dataBaseUtils.getSmallestIDAvailable('role');
-    // объ.track созд./сохр./вернуть
-    const role = this.roleRepository.create({
-      ...createRoleDto,
-      id: smallestFreeId,
-    });
-    await this.roleRepository.save(role);
-    return role;
+  async createRole(createRoleDto: CreateRoleDto): Promise<RoleEntity> {
+    try {
+      // `получить наименьший доступный идентификатор` из БД > табл.role
+      const smallestFreeId =
+        await this.dataBaseUtils.getSmallestIDAvailable('role');
+      // объ.track созд./сохр./вернуть
+      const roleCre = this.roleRepository.create({
+        ...createRoleDto,
+        id: smallestFreeId,
+      });
+      if (!roleCre) {
+        this.logger.error(`Role '${JSON.stringify(createRoleDto)}' не создан`);
+        throw new NotFoundException(
+          `Role '${JSON.stringify(createRoleDto)}' не создан`,
+        );
+      }
+
+      if (isDevelopment)
+        this.logger.info(`db + Role : '${JSON.stringify(createRoleDto)}'`);
+      // сохр.,ошб.,лог.,возврат
+      const savedRole: RoleEntity = await this.roleRepository.save(roleCre);
+      if (!savedRole) {
+        this.logger.error(
+          `Role '${JSON.stringify(createRoleDto)}' не сохранён`,
+        );
+        throw new NotFoundException(
+          `Role '${JSON.stringify(createRoleDto)}' не сохранён`,
+        );
+      }
+      this.logger.info(`+ Role.ID '${savedRole.id}'`);
+      return savedRole;
+    } catch (error) {
+      this.logger.error(
+        `!Ошб. + Role: '${await this.basicUtils.hendlerTypesErrors(error)}'`,
+      );
+      // DEV лог.debug
+      if (!isProduction && isDevelopment)
+        this.basicUtils.logDebugDev(
+          `'rol.s. CRE : DTO '${JSON.stringify(createRoleDto)}'`,
+        );
+      throw error;
+    }
   }
 
-  async findAllRoles() {
-    return await this.roleRepository.find();
+  async findAllRoles(): Promise<RoleEntity[]> {
+    try {
+      if (isDevelopment) this.logger.info(`db << Roles All`);
+      const allRoles = await this.roleRepository.find();
+      if (!allRoles) {
+        this.logger.error(`Roles All не найден`);
+        throw new NotFoundException(`Roles All не найден`);
+      }
+      this.logger.info(
+        `<< Roles All length '${allRoles?.length}' < БД '${
+          isProduction ? 'SB' : isDevelopment ? 'LH' : 'SB и LH'
+        }'`,
+      );
+      return allRoles;
+    } catch (error) {
+      this.logger.error(
+        `!Ошб. << Roles: '${await this.basicUtils.hendlerTypesErrors(error)}'`,
+      );
+      throw error;
+    }
+  }
+
+  // ОДИН по id
+  async findOneRole(id: number): Promise<RoleEntity> {
+    try {
+      if (isDevelopment) this.logger.info(`db < Role.ID '${id}'`);
+      const role = await this.roleRepository.findOneBy({ id });
+      if (!role) {
+        this.logger.error(`Role.ID '${id}' не найдена`);
+        throw new NotFoundException(`Role.ID '${id}' не найдена`);
+      }
+      this.logger.info(`< Role.ID '${role?.id}'`);
+      return role;
+    } catch (error) {
+      this.logger.error(
+        `!Ошб. < Role.ID '${id}': '${await this.basicUtils.hendlerTypesErrors(error)}'`,
+      );
+      throw error;
+    }
   }
 
   // Получить Роль по ID <> Значению
-  async findRoleByValue(value: string) {
-    const whereCondition: any = {};
-    // условия res. id/num|value/str
-    if (typeof value === 'number' || !isNaN(parseFloat(value)))
-      whereCondition.id = value;
-    else whereCondition.value = value;
-    // объ.res, обраб.ошб., res по значени.
-    const role = await this.roleRepository.findOne({ where: whereCondition });
-    // обраб.отсутствие Роли
-    if (!role) throw new NotFoundException('Такой Роли нет');
-    return role;
+  async findRoleByValue(value: string): Promise<RoleEntity> {
+    try {
+      if (isDevelopment) this.logger.info(`db <? Role Value '${value}'`);
+
+      const whereCondition: any = {};
+      // условия res. id/num|value/str
+      if (typeof value === 'number' || !isNaN(parseFloat(value)))
+        whereCondition.id = value;
+      else whereCondition.value = value;
+
+      // объ.res, обраб.ошб., res по значени.
+      const role = await this.roleRepository.findOne({ where: whereCondition });
+      if (!role) {
+        this.logger.error(`Role Value '${value}' не найдена`);
+        throw new NotFoundException('Такой Роли нет');
+      }
+      this.logger.info(`<? Role Value '${value}'`);
+      return role;
+    } catch (error) {
+      this.logger.error(
+        `!Ошб. <? Role Value '${value}': '${await this.basicUtils.hendlerTypesErrors(error)}'`,
+      );
+      throw error;
+    }
   }
 
-  async updateRole(id: number, updateRoleDto: UpdateRoleDto) {
-    const role = await this.roleRepository.findOneBy({ id });
-    if (!role) throw new Error('Роль не найдена');
-    role.value = updateRoleDto.value;
-    role.description = updateRoleDto.description;
-    return this.roleRepository.save(role);
+  async updateRole(
+    id: number,
+    updateRoleDto: UpdateRoleDto,
+  ): Promise<RoleEntity> {
+    try {
+      const role = await this.roleRepository.findOneBy({ id });
+      if (!role) {
+        this.logger.error(`Role.ID '${id}' не найдена`);
+        throw new NotFoundException(`Role.ID '${id}' не найдена`);
+      }
+
+      // role.value = updateRoleDto.value;
+      // role.description = updateRoleDto.description;
+      Object.assign(role, updateRoleDto);
+
+      if (isDevelopment)
+        this.logger.info(
+          `db # Role '${await this.basicUtils.hendlerTypesErrors(role)}'`,
+        );
+
+      const rolUpd = await this.roleRepository.save(role);
+
+      if (!rolUpd) {
+        this.logger.error(
+          `Role.ID '${id}' по данным '${JSON.stringify(updateRoleDto)}' не обновлён`,
+        );
+        throw new NotFoundException(
+          `Role.ID '${id}' по данным '${JSON.stringify(updateRoleDto)}' не обновлён`,
+        );
+      }
+      this.logger.info(`# Role.ID '${rolUpd.id}'`);
+      return rolUpd;
+    } catch (error) {
+      this.logger.error(
+        `!Ошб. # Role: '${await this.basicUtils.hendlerTypesErrors(error)}'`,
+      );
+      // DEV лог.debug
+      if (!isProduction && isDevelopment)
+        this.basicUtils.logDebugDev(
+          `rol.s. UPD : Role.ID '${id}' | DTO '${JSON.stringify(updateRoleDto)}'`,
+        );
+      throw error;
+    }
   }
 
+  // пометка Удаления
   async removeRole(id: number) {
-    return await this.roleRepository.softDelete(id);
+    try {
+      if (isDevelopment) this.logger.info(`db - Role.ID: '${id}'`);
+      const rolRem = await this.roleRepository.softDelete(id);
+      if (!rolRem) {
+        this.logger.error(`Role.ID '${id}' не удалён`);
+        throw new NotFoundException(`Role.ID '${id}' не удалён`);
+      }
+      this.logger.info(`- Role.ID : '${rolRem}'`);
+      return rolRem;
+    } catch (error) {
+      this.logger.error(
+        `!Ошб. - Role.ID '${id}': '${await this.basicUtils.hendlerTypesErrors(error)}'`,
+      );
+      throw error;
+    }
   }
-  // async restoreRole(id: number) {
+
+  // востановить
+  // async restoreRole(id: number|string) {
   //   return await this.roleRepository.restore(id);
   // }
 
-  // ^^ мтд.> ADMIN
-  // добавить неск.Ролей к неск.Пользователям
-  async addingRolesToUsers(
-    addingRolesToUsersDto: AddingRolesToUsersDto,
-  ): Promise<void> {
-    const { userIds, roleIds } = addingRolesToUsersDto;
-    // проверки и приведение к общ.типу
-    const userIdss: string | string[] = userIds.includes(',')
-      ? userIds.split(',')
-      : userIds;
-    const roleIdss: string | string[] = roleIds.includes(',')
-      ? roleIds.split(',')
-      : roleIds;
-    // получ.данн. User и Role
-    const users = await this.userRepository.findBy({ id: In([...userIdss]) });
-    const roles = await this.roleRepository.findBy({ id: In([...roleIdss]) });
-    // Проверка существования пользователей и ролей
-    if (users.length !== userIdss.length || roles.length !== roleIdss.length)
-      throw new Error(
-        'Одного или нескольких пользователей или ролей не существует.',
-      );
-
-    // Создание связей между Пользователями и Ролями
-    for (const user of users) {
-      for (const role of roles) {
-        const userRoles = new UserRolesEntity();
-        userRoles.userId = user.id;
-        userRoles.roleId = role.id;
-        await this.userRolesRepository.save(userRoles);
+  // Удаление Полное
+  async deleteRole(
+    roleIds: string | number,
+    roleId?: number,
+    // totalRoleDto?: TotalRoleDto,
+    param?: string,
+  ) {
+    try {
+      if (!roleIds) {
+        this.logger.error('Нет Роли/ей > Удаления');
+        throw new NotFoundException('Нет Роли/ей > Удаления');
       }
+      if (!roleId && !param /* && !totalRoleDto */) {
+        this.logger.error('Предовращено полное удаление Роли/ей');
+        throw new NotFoundException('Предовращено полное удаление Роли/ей');
+      }
+    } catch (error) {
+      this.logger.error(
+        `!Ошб. - Role.ID '${roleIds}': '${await this.basicUtils.hendlerTypesErrors(error)}'`,
+      );
+      throw error;
     }
   }
+
+  // ^ ДОП.МТД. -----------------------------------------------------------------------
+  // ^ МТД. > ADMIN -----------------------------------------------------------------------
+  // добавить неск.Ролей к неск.Пользователям
+  // async addingRolesToUsers(
+  //   addingRolesToUsersDto: AddingRolesToUsersDto,
+  // ): Promise<void> {
+  //   try {
+  //     const { userIds, roleIds } = addingRolesToUsersDto;
+  //     // проверки и приведение к общ.типу
+  //     const userIdss: string | string[] = userIds.includes(',')
+  //       ? userIds.split(',')
+  //       : userIds;
+  //     const roleIdss: string | string[] = roleIds.includes(',')
+  //       ? roleIds.split(',')
+  //       : roleIds;
+  //     // получ.данн. User и Role
+  //     const users = await this.userRepository.findBy({ id: In([...userIdss]) });
+  //     if (!users) {
+  //       this.logger.error(`User.userIdss '${userIdss}' не нейдены`);
+  //       throw new NotFoundException(`User.userIdss '${userIdss}' не нейдены`);
+  //     }
+  //     const roles = await this.roleRepository.findBy({ id: In([...roleIdss]) });
+  //     if (!users) {
+  //       this.logger.error(`Role.roleIdss '${roleIdss}' не нейдены`);
+  //       throw new NotFoundException(`Role.roleIdss '${roleIdss}' не нейдены`);
+  //     }
+  //     // Проверка существования пользователей и ролей
+  //     if (
+  //       users.length !== userIdss.length ||
+  //       roles.length !== roleIdss.length
+  //     ) {
+  //       this.logger.error(
+  //         'Одного или нескольких пользователей или ролей не существует.',
+  //       );
+  //       throw new NotFoundException(
+  //         'Одного или нескольких пользователей или ролей не существует.',
+  //       );
+  //     }
+  //     // Создание связей между Пользователями и Ролями
+  //     for (const user of users) {
+  //       for (const role of roles) {
+  //         const userRoles = new UserRolesEntity();
+  //         userRoles.userId = user.id;
+  //         userRoles.roleId = role.id;
+  //         await this.userRolesRepository.save(userRoles);
+  //       }
+  //     }
+  //   } catch (error) {
+  //     this.logger.error(
+  //       `!Ошб. + AVA User > Role '${JSON.stringify(addingRolesToUsersDto)}': '${await this.basicUtils.hendlerTypesErrors(error)}'`,
+  //     );
+  //     throw error;
+  //   }
+  // }
 }
