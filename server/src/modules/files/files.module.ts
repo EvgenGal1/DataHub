@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { UserEntity } from '../users/entities/user.entity';
-import { UsersService } from '../users/users.service';
+// import { UsersService } from '../users/users.service';
 import { RoleEntity } from '../roles/entities/role.entity';
 import { FileEntity } from './entities/file.entity';
 import { FilesController } from './files.controller';
@@ -31,7 +31,7 @@ import { isProduction } from '../../config/envs/env.consts';
   ],
   controllers: [FilesController],
   providers: [
-    UsersService,
+    // UsersService,
     FilesService,
     BasicUtils,
     DatabaseUtils,
