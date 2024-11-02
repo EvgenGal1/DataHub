@@ -10,7 +10,7 @@ import { FilesService } from './files.service';
 import { TrackEntity } from '../tracks/entities/track.entity';
 import { AlbumEntity } from '../albums/entities/album.entity';
 import { ReactionEntity } from '../reactions/entities/reaction.entity';
-import { BasicUtils } from 'src/common/utils/basic.utils';
+import { BasicUtils } from '../../common/utils/basic.utils';
 import { DatabaseUtils } from '../../common/utils/database.utils';
 import { LoggingWinston } from '../../config/logging/log_winston.config';
 import { isProduction } from '../../config/envs/env.consts';
