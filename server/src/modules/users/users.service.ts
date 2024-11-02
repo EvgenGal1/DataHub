@@ -33,7 +33,6 @@ export class UsersService {
     @InjectRepository(UserRolesEntity, isProduction ? 'supabase' : 'localhost')
     private readonly userRolesRepository: Repository<UserRolesEntity>,
     // ^ доп.репозит.настр.
-    private readonly roleService: RolesService,
     private readonly basicUtils: BasicUtils,
     private readonly dataBaseUtils: DatabaseUtils,
   ) {}

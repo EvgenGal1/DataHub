@@ -90,7 +90,7 @@ export class FilesService {
       // DEV лог.debug
       if (!isProduction && isDevelopment)
         this.basicUtils.logDebugDev(
-          `fil.s. CRE : file '${JSON.stringify(file)}' с fileType '${fileType}'`,
+          `fil.s. CRE : file '${file.filename}' с fileType '${fileType}'`,
         );
       throw error;
     }
@@ -181,10 +181,7 @@ export class FilesService {
       Object.assign(file, updateFileDto);
 
       // log > DEV
-      if (isDevelopment)
-        this.logger.info(
-          `db # File '${await this.basicUtils.hendlerTypesErrors(file)}'`,
-        );
+      if (isDevelopment) this.logger.info(`db # File '${file.filename}'`);
 
       const filUpd = await this.filesRepository.save(file);
       if (!filUpd) {
