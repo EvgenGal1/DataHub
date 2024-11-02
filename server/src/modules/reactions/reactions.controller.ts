@@ -7,42 +7,58 @@ import {
   Param,
   Delete,
 } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 
 import { CreateReactionDto } from './dto/create-reaction.dto';
 import { UpdateReactionDto } from './dto/update-reaction.dto';
 import { ReactionsService } from './reactions.service';
+import { LoggingWinston } from '../../config/logging/log_winston.config';
 
-@Controller('reactions')
+@Controller('/reactions')
 @ApiTags('Реакции')
 export class ReactionsController {
-  constructor(private readonly reactionsService: ReactionsService) {}
+  constructor(
+    private readonly reactionsService: ReactionsService,
+    private readonly logger: LoggingWinston,
+  ) {}
 
   @Post()
-  create(@Body() createReactionDto: CreateReactionDto) {
-    return this.reactionsService.create(createReactionDto);
+  @ApiOperation({ summary: 'Создать Реакцию' })
+  async createReaction(@Body() createReactionDto: CreateReactionDto) {
+    this.logger.info(
+      `req + Reaction DTO : '${JSON.stringify(createReactionDto)}'`,
+    );
+    return this.reactionsService.createReaction(createReactionDto);
   }
 
   @Get()
-  findAll() {
-    return this.reactionsService.findAll();
+  @ApiOperation({ summary: 'Получить Все Реакции' })
+  async findAllReaction() {
+    this.logger.info(`req << Reacts All`);
+    return this.reactionsService.findAllReaction();
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.reactionsService.findOne(+id);
+  @ApiOperation({ summary: 'Получить Реакцию' })
+  async findOneReaction(@Param('id') id: number) {
+    this.logger.info(`req < React.ID '${id}'`);
+    return this.reactionsService.findOneReaction(+id);
   }
 
   @Patch(':id')
-  update(
-    @Param('id') id: string,
+  @ApiOperation({ summary: 'Обновить Реакцию' })
+  async updateReaction(
+    @Param('id') id: number,
     @Body() updateReactionDto: UpdateReactionDto,
   ) {
-    return this.reactionsService.update(+id, updateReactionDto);
+    this.logger.info(`req # React.ID '${id}'`);
+    return this.reactionsService.updateReaction(+id, updateReactionDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.reactionsService.remove(+id);
+  @ApiOperation({ summary: 'Удалить Реакцию' })
+  async removeReaction(@Param('id') id: number) {
+    this.logger.info(`req - React.ID '${id}'`);
+    return this.reactionsService.removeReaction(+id);
   }
 }
