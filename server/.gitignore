@@ -101,6 +101,7 @@ webpack*
 !/**/src/config/logging/
 !/**/src/common/filters/
 !/**/src/common/pipes/
+!/**/src/common/types/
 !/**/src/services/storage/
 !/**/src/common/utils/
 # все.ф.в п. 
@@ -117,6 +118,7 @@ webpack*
 !/**/src/common/filters/http-exception.filter.ts
 !/**/src/common/storage/storage.ts
 !/**/src/common/pipes/fileTypeValidation.pipe.ts
+!/**/src/common/types/file-types.ts
 !/**/src/common/utils/basic.utils.ts
 !/**/src/common/utils/database.utils.ts
 !/**/src/services/storage/storage.ts
