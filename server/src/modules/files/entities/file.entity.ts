@@ -17,47 +17,6 @@ import { AlbumEntity } from '../../albums/entities/album.entity';
 import { TrackEntity } from '../../tracks/entities/track.entity';
 import { UserEntity } from '../../users/entities/user.entity';
 
-// типизация (Query парам.ч/з enum. и др.вар.) Filter ф.по фото и trash`мусор`
-export enum FileType { // ^^ возм. стоит завести FileTarget с типами IMAGE = 'IMAGE', и т.д.
-  IMAGE = 'image',
-  ALBUM = 'album',
-  PICTURE = 'picture',
-  AVATAR = 'avatar',
-  PHOTO = 'photo',
-  PERSONAL = 'personal',
-  AUDIO = 'audio',
-  TRACK = 'track',
-  BOOK = 'books',
-  FILE = 'files',
-  PROSE = 'prose',
-  CODE = 'code',
-  SCHEME = 'scheme',
-  BLUEPRINT = 'blueprint',
-  TRASH = 'trash',
-  OTHER = 'other',
-}
-
-// `разрешенные типы файлов` для мтд.масс.
-export const fileTypesAllowed = [
-  'all',
-  'image',
-  'picture',
-  'album',
-  'avatar',
-  'photo',
-  'personal',
-  'audio',
-  'track',
-  'book',
-  'file',
-  'prose',
-  'code',
-  'scheme',
-  'blueprint',
-  'trash',
-  'other',
-];
-
 @Entity({ name: 'files', schema: 'public' })
 export class FileEntity {
   @PrimaryColumn()
