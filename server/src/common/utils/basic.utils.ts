@@ -13,46 +13,7 @@ export class BasicUtils {
     // логгер
     private readonly logger: LoggingWinston,
   ) {}
-  // опред.сохр.пути по передан.типу
-  static fileTargets(fileType: string): string {
-    console.log('BasicUtils fileTargets fileType : ' + fileType);
-    switch (fileType) {
-      case 'IMAGE':
-        return 'images';
-      case 'PICTURE':
-        return 'images/picture';
-      case 'AVATAR':
-        return 'users/avatar';
-      case 'ALBUM':
-      case 'COVER':
-        return 'images/album';
-      case 'PHOTO':
-        return 'users/photo';
-      case 'PERSONAL':
-        return 'users/personal';
-      case 'AUDIO':
-        return 'audios';
-      case 'AUDIOBOOK':
-        return 'audios/audiobook';
-      case 'TRACK':
-        return 'audios/track';
-      case 'BOOK':
-        return 'books/book';
-      case 'FILE':
-        return 'books/file';
-      case 'PROSE':
-        return 'books/prose';
-      case 'CODE':
-        return 'prog/code';
-      case 'SCHEME':
-        return 'prog/scheme';
-      case 'BLUEPRINT':
-        return 'prog/blueprint';
-      default:
-        return 'other';
-    }
-  }
-
+  // лог при DEV подробный
   async logDebugDev(...args: any[]) {
     // лог.в консоль
     console.log(...args);
