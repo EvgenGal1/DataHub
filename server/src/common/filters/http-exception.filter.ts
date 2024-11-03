@@ -23,15 +23,17 @@ export class HttpExceptionFilter implements ExceptionFilter {
         ? exception.getStatus()
         : HttpStatus.INTERNAL_SERVER_ERROR;
 
+    let message: string;
+    if (status === HttpStatus.NOT_FOUND) message = 'Ресурс не найден';
+    else if (status === HttpStatus.BAD_REQUEST) message = 'Некорректные данные';
+    else message = 'Внутренняя ошибка сервера';
+
     const errorResponse = {
       statusCode: status,
       timestamp: new Date().toISOString(),
       path: request.url,
       method: request.method,
-      message:
-        exception instanceof HttpException
-          ? exception.message
-          : 'Internal Server Error',
+      message: exception instanceof HttpException ? exception.message : message,
       ...(exception instanceof HttpException &&
         exception.getResponse && { error: exception.getResponse() }),
     };
