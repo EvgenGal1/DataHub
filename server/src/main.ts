@@ -65,15 +65,19 @@ async function bootstrap(): Promise<any> {
     await app.listen(PORT, () => {
       // вывод подкл.к БД от NODE_ENV. PROD(SB) <> DEV(LH)
       console.log(
-        `${isProduction ? 'PROD' : 'DEV'}.m.  SRV: ${isProduction ? process.env.SRV_VL_URL : `${process.env.LH_SRV_URL}${process.env.LH_SRV_PORT}`}  DB: ${isProduction ? process.env.DB_SB_URL : `${process.env.LH_DB_NAME}:${process.env.LH_DB_PORT}`}`,
+        `${isProduction ? 'PROD' : 'DEV'}   MAIN   SRV: ${isProduction ? process.env.SRV_VL_URL : `${process.env.LH_SRV_URL}${process.env.LH_SRV_PORT}`}  DB: ${isProduction ? process.env.DB_SB_URL : `${process.env.LH_DB_NAME}:${process.env.LH_DB_PORT}`}`,
       );
     });
     if (logger && isDevelopment)
       logger.info(
-        `DEV.m.  SRV: ${process.env.LH_SRV_URL}${process.env.LH_SRV_PORT}  DB: ${process.env.LH_DB_NAME}:${process.env.LH_DB_PORT}`,
+        `DEV   MAIN   SRV: ${process.env.LH_SRV_URL}${process.env.LH_SRV_PORT}  DB: ${process.env.LH_DB_NAME}:${process.env.LH_DB_PORT}`,
       );
-  } catch (e) {
-    console.log('m.err : ' + e);
+  } catch (error) {
+    if (isDevelopment) {
+      const logger = new LoggingWinston();
+      logger.error(`DEV   MAIN.error '${error}'`);
+    }
+    console.log('m.err : ' + error);
   }
 }
 
