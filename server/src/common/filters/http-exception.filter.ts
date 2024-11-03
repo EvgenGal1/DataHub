@@ -10,6 +10,19 @@ import {
 } from '@nestjs/common';
 import { Request, Response } from 'express';
 
+// объ.сопоставления КОД - СМС
+const statusMessages: { [key: number]: string } = {
+  [HttpStatus.BAD_REQUEST]: 'Некорректные данные',
+  [HttpStatus.UNAUTHORIZED]: 'Доступ к ресурсу запрещён',
+  [HttpStatus.FORBIDDEN]: 'У вас нет прав для доступа к этому ресурсу',
+  [HttpStatus.NOT_FOUND]: 'Ресурс не найден',
+  [HttpStatus.NOT_ACCEPTABLE]:
+    'Запрос не может быть обработан, так как формат данных неприемлем',
+  [HttpStatus.CONFLICT]: 'Конфликт данных',
+  [HttpStatus.GONE]: 'Запрашиваемый ресурс больше не доступен',
+  [HttpStatus.INTERNAL_SERVER_ERROR]: 'Внутренняя ошибка сервера',
+};
+
 @Catch(HttpException)
 export class HttpExceptionFilter implements ExceptionFilter {
   private readonly logger = new Logger(HttpExceptionFilter.name);
@@ -23,10 +36,8 @@ export class HttpExceptionFilter implements ExceptionFilter {
         ? exception.getStatus()
         : HttpStatus.INTERNAL_SERVER_ERROR;
 
-    let message: string;
-    if (status === HttpStatus.NOT_FOUND) message = 'Ресурс не найден';
-    else if (status === HttpStatus.BAD_REQUEST) message = 'Некорректные данные';
-    else message = 'Внутренняя ошибка сервера';
+    const message =
+      statusMessages[status] || exception.message || 'Неизвестная ошибка';
 
     const errorResponse = {
       statusCode: status,
