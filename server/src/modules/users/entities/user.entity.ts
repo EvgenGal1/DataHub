@@ -37,6 +37,7 @@ export class UserEntity {
   })
   email: string;
 
+  // psw (тип, имя, длина, с обязат.указ. users.password)
   @ApiProperty({ example: '123_Test', description: 'Пароль' })
   @Column({ type: 'varchar', nullable: false, name: 'password', length: 128 })
   password: string;
@@ -45,25 +46,25 @@ export class UserEntity {
   @Column({ type: 'varchar', name: 'fullname', length: 50 })
   fullname: string;
 
-  // подтвержд./ссылка актив.ч/з почту по ссылке
+  // подтвержд./ссылка актив.ч/з почту по ссылке (с опцион.указ. users.activatedLink)
   @ApiProperty({
     example: 'qdfvg.reth6k-fe3b',
     description: 'Ссылка активации акка ч/з Почту',
   })
-  @Column({ type: 'varchar', default: '' })
+  @Column({ type: 'varchar', default: '', nullable: true })
   activatedLink: string;
 
   @ApiProperty({
     example: 'avatar',
     description: 'Аватар',
     default: 'avatar',
-    nullable: false,
+    nullable: true,
   })
   @Column({
     type: 'varchar',
     name: 'avatar',
     default: 'avatar',
-    nullable: false,
+    nullable: true,
   })
   avatar: string;
 

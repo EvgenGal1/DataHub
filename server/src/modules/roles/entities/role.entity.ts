@@ -17,7 +17,13 @@ export class RoleEntity {
   id: number;
 
   // Роль
-  @Column({ type: 'varchar', unique: true, nullable: false })
+  @ApiProperty({ example: 'visitor', description: 'visitor' })
+  @Column({
+    type: 'varchar',
+    default: 'visitor',
+    unique: true,
+    nullable: false,
+  })
   value: string;
 
   // Описание Роли

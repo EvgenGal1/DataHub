@@ -21,10 +21,10 @@ export class UserRolesEntity {
   level: number;
 
   // ^^ связки Мн.>Мн. у users/userId и roles/roleId
-  @PrimaryColumn({ name: 'userId' })
+  @PrimaryColumn({ name: 'userId', type: 'integer' })
   userId: number;
 
-  @PrimaryColumn({ name: 'roleId' })
+  @PrimaryColumn({ name: 'roleId', type: 'integer' })
   roleId: number;
 
   @ManyToOne(() => UserEntity, (user) => user.roles, {
