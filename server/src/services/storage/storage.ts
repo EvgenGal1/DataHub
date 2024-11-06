@@ -1,61 +1,71 @@
 // ^^ лог.хран-ща.ф. + MW.multer обраб.ф.>загр.формата multipart/form-data(локал.хран.ф.diskStorage) + генер.уник.id/имён
+
 import * as multer from 'multer';
 import * as path from 'path';
 import * as fs from 'fs';
 import { BadRequestException, NotFoundException } from '@nestjs/common';
 
-import { BasicUtils } from '../../common/utils/basic.utils';
+// логгирование LH
+import { LoggingWinston } from '../../config/logging/log_winston.config';
+// константы > команды запуска process.env.NODE_ENV
+import { isDevelopment } from '../../config/envs/env.consts';
+// типы/пути файлов
+import { FileType } from 'src/common/types/typeFile';
+// mapping связь ф.mimeType с FileType
+import { mappingMimeType } from '../../common/mappings/mappingMimeType';
 
-// MW > сохр.неск.ф. `файловое хранилище` = `дисковое хранилище`
+// логгирование
+const logger = new LoggingWinston();
+
+// MW > сохр.ф.в локальное хранилище
 export const fileStorage = multer.diskStorage({
   // `место назначения`
-  destination: /* async */ (req, file, cb) => {
-    console.log('flStor DES.file : ', file);
-    if (file === undefined || file === null) {
-      throw new NotFoundException('Ошибка сохранения данных в БД', 'нет файла');
+  destination: (req, file, cb) => {
+    if (isDevelopment) logger.info(`flStor DES.file '${JSON.stringify(file)}'`);
+
+    if (!file) {
+      logger.error(`ОШБ.сохр.ф.в Хранилище - ф.нет'`);
+      return cb(new NotFoundException('ОШБ.сохр.ф.в Хранилище', 'ф.нет'), null);
     }
-    // Баз.п./Путь
+
+    // баз.п. / путь/имя по ф.mimetype <> ф.fileType
     const baseFolder = 'static';
-    // перем.путь по расширению <> типу
     let fileTarget: string;
 
-    // опред.путь. по переданному Типу
-    if (req.query.fileType) {
-      fileTarget = BasicUtils.fileTargets(
-        String(req.query.fileType).toUpperCase(),
-      );
-    }
-    // по fieldname(типу загр.) и mimetype(типу файла)
+    // путь по fileType е/и не 'all'
+    if (String(req.query.fileType) !== 'all')
+      fileTarget = String(req.query.fileType);
     else {
-      // `соответствие типов файлов`
-      const fileTypeMappings = {
-        audio: ['track', 'audiobook', 'sounds'],
-        image: ['album', 'cover', 'picture', 'image'],
-      };
-      // тип файла
-      const fileMimeType = file.mimetype.split('/')[0]; // audio <> image <> ...
-      // альтер.получ.тип ч/з ключи масс.соответствий по нач.знач.mimetype - Object.keys(fileTypeMappings).find((type) => file.mimetype.startsWith(type), );
-      // `разрешенные типы файлов`
-      const allowedFileTypes = fileTypeMappings[fileMimeType]; // track,audiobook,sounds <> ...
+      // типы файла
+      const [fileMimeType, fullMimeType] = file.mimetype.split('/');
 
-      // опред.путь <> ошб. от соответствия значений fieldname(поле загр.) к fileTypeMappings(типам ф.)
-      if (allowedFileTypes && allowedFileTypes.includes(file.fieldname)) {
-        fileTarget = BasicUtils.fileTargets(
-          String(file.fieldname).toUpperCase(),
-        );
-      } else {
-        const err = `Несоответствие типов. Передан файл '${file.originalname}' с типом '${file.mimetype}', а должен быть '${file.fieldname}'`;
-        const error = new /* NotFoundException */ BadRequestException(
-          'Ошибка сохранения данных в БД',
-          err,
-        );
+      // путь по соответ. типу ф.
+      fileTarget = mappingMimeType[fileMimeType] || FileType.OTHER;
 
-        return cb(error, null);
+      // доп.обраб. > application, text
+      if (typeof fileTarget !== 'string') {
+        if (fileMimeType === 'application')
+          fileTarget =
+            mappingMimeType.application[fullMimeType] || FileType.OTHER;
+        else if (fileMimeType === 'text')
+          fileTarget = mappingMimeType.text[fullMimeType] || FileType.OTHER;
+      }
+
+      if (!fileTarget) {
+        logger.error(
+          `ОШБ.сохр.ф.в Хранилище - ф. '${file.originalname}' с типом '${file.mimetype}' - Не поддерживается`,
+        );
+        return cb(
+          new BadRequestException(
+            'ОШБ.сохр.ф.в Хранилище',
+            `Ф. '${file.originalname}' с типом '${file.mimetype}' - Не поддерживается`,
+          ),
+          null,
+        );
       }
     }
 
-    // формир.путь сохран. сокращ.ручной <> полн.автомат
-    // const destinationPath = baseFolder + '/' + fileTarget; // /static/audios/track/
+    // формир.путь сохран.
     const filePath = path.resolve(
       __dirname,
       '..',
@@ -63,58 +73,57 @@ export const fileStorage = multer.diskStorage({
       '..',
       baseFolder,
       fileTarget,
-    ); // D:\Про\Творения\FullStack\Data-Hub\server\static\audios\track
+    ); // D:\Про\Творения\FullStack\Data-Hub\server\static\...
     // альтер.сохр.п./ф. // ! не раб. - file.buffer = undf
     // fs.writeFileSync(path.resolve(filePath, fileName), file.buffer)
-
-    // провер./созд. папки собраб.ошб.
+    // провер./созд.п.хран.
     if (!fs.existsSync(filePath)) {
       fs.mkdirSync(filePath, { recursive: true });
     }
-    // альтер.проверка п.
-    // fs.access(filePath, (error) => {
-    //   if (error) { fs.mkdir(filePath, { recursive: true }, (err) => { if (err) { cb(err, null); } else { cb(null, filePath); } });
-    //   } else { cb(null, filePath); }      });
+
+    if (isDevelopment) logger.info(`flStor DES.filePath '${filePath}'`);
 
     cb(null, filePath);
   },
 
   // `имя файла`
   filename: (req, file, cb) => {
-    console.log('flStor FIL.file : ', file);
-    let fileNameReturn: string;
+    if (isDevelopment) logger.info(`flStor FIL.file '${JSON.stringify(file)}'`);
 
-    // проверки читаемости имени трека
+    let fileName: string;
+
+    // регуляр.выраж. > проверки имени файла ч/з
     // наличие букв RU/EN, цифр в названии
-    const regExStand = /^[а-яА-Яa-zA-Z0-9\s]+$/u;
+    const regExStandard = /^[а-яА-Яa-zA-Z0-9\s]+$/u;
     // налич.: любой в([) букв(p{L}),пробел(s),цифра(d),знаки(.,&!@#%()-) ] повтор(+) регистр(i)Юникод(u)
     const regExpHard = /^([\p{L}\s\d.,&!@#%()-]+)$/iu;
-    // логика разбора по Unicode, символам, random
-    if (!regExStand.test(file.originalname)) {
-      // Получает некодируемую версию кодируемого компонента единого идентификатора ресурсов (URI).
-      fileNameReturn = decodeURIComponent(escape(file.originalname));
-      // перекодирует ч/з буфур в указ.кодировку(utf8). Альтер.вар.для строки без символов
-      // fileNameReturn = Buffer.from(file.originalname, 'utf8').toString('utf8');
-    } else if (regExpHard.test(file.originalname)) {
-      fileNameReturn = file.originalname;
-    } else {
-      // формат даты - 01-12-2023
-      const formattedDate = new Date()
-        .toLocaleDateString('ru-RU')
-        /* .split('.').join('-') */
-        .replace(/\./g, '-');
-      // формир.Random
-      const Random = Array(5)
-        .fill(null)
-        .map(() => Math.round(Math.random() * 16).toString(16))
-        .join('');
+
+    // генер.случайной строки
+    const generateRandomString = (length: number): string => {
+      return Array.from({ length }, () =>
+        Math.round(Math.random() * 16).toString(16),
+      ).join('');
+    };
+    // форматирование даты
+    const getFormattedDate = (): string => {
+      return new Date().toISOString().split('T')[0]; // YYYY-MM-DD > БД
+    };
+
+    // стандарт.декод.имя ф. (URI).
+    if (!regExStandard.test(file.originalname))
+      fileName = decodeURIComponent(escape(file.originalname));
+    // имя по Unicode
+    else if (regExpHard.test(file.originalname)) fileName = file.originalname;
+    // нов.имя ф.
+    else {
+      const formattedDate = getFormattedDate();
+      const randomString = generateRandomString(5);
       // формир.Имя
-      const fileNameDateRandomExt = `${formattedDate}_${Random}${path.extname(
-        file.originalname,
-      )}`;
-      fileNameReturn = fileNameDateRandomExt;
+      fileName = `${formattedDate}_${randomString}${path.extname(file.originalname)}`;
     }
-    console.log('flStor filename = : ' + fileNameReturn);
-    cb(null, fileNameReturn);
+
+    if (isDevelopment) logger.info(`flStor FIL.filename '${fileName}'`);
+
+    cb(null, fileName);
   },
 });
