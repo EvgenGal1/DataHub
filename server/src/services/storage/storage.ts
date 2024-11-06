@@ -10,7 +10,7 @@ import { LoggingWinston } from '../../config/logging/log_winston.config';
 // константы > команды запуска process.env.NODE_ENV
 import { isDevelopment } from '../../config/envs/env.consts';
 // типы/пути файлов
-import { FileType } from 'src/common/types/typeFile';
+import { FileType } from '../../common/types/typeFile';
 // mapping связь ф.mimeType с FileType
 import { mappingMimeType } from '../../common/mappings/mappingMimeType';
 
