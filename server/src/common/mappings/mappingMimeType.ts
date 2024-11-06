@@ -1,6 +1,6 @@
 // ^ mapping (расшир.связь ф.mimeType с FileType)
 
-import { FileType } from '../types/file-types';
+import { FileType } from '../types/typeFile';
 
 export const mappingMimeType = {
   audio: FileType.AUDIO,

@@ -120,7 +120,7 @@ webpack*
 !/**/src/common/mappings/mappingMimeType.ts
 !/**/src/common/storage/storage.ts
 !/**/src/common/pipes/fileTypeValidation.pipe.ts
-!/**/src/common/types/file-types.ts
+!/**/src/common/types/typeFile.ts
 !/**/src/common/utils/basic.utils.ts
 !/**/src/common/utils/database.utils.ts
 !/**/src/services/storage/storage.ts
