@@ -36,10 +36,10 @@ export const authConfig: AuthOptions = {
         );
         // фейк данн.польз. соответ.ведённым данн.
         if (currentUser && currentUser.password === credentials.password) {
-          const { password, ...userWithoutPass } = currentUser;
+          const { password, ...userDataWithoutPass } = currentUser;
           // возвращ.user под опред.типом без psw
-          console.log("userWithoutPass : ", userWithoutPass);
-          return userWithoutPass as User;
+          console.log("данн.польз.без psw : ", userDataWithoutPass);
+          return userDataWithoutPass as User;
         }
         // null е/и не авториз.
         return null;

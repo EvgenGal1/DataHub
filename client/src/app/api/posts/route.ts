@@ -16,7 +16,7 @@ export async function POST(req: Request) {
   // сохр./парсим.в json
   const body = await req.json();
   // ^ отраб.SRV
-  console.log(body);
+  console.log("body ", body);
   // возврат на CLT
   return NextResponse.json({ body });
 }
