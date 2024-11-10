@@ -27,11 +27,12 @@ const SignInForm = () => {
     });
 
     // логика Вход(редирект в profile) / ошб.(логи)
-    if (res && !res.error) {
+    if (res && !res?.error) {
+      console.log("res", res);
       router.push("/profile");
     } else {
+      console.log("res + err ", res, res?.error);
       setErr(res?.error || "Неизвестная ошибка");
-      console.log(res); // отраж на CLT
     }
   };
 

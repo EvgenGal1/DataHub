@@ -1,6 +1,7 @@
 // api динам.роуты аутентиф.
 
 import NextAuth from "next-auth";
+
 // подкл.конфиг.auth
 import { authConfig } from "@/configs/auth/auth";
 

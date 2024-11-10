@@ -10,12 +10,12 @@ import { usersFake } from "@/data/usersFake";
 export const authConfig: AuthOptions = {
   // провайдеры(обязат.парам.). Здесь google/форма/кастом (их МНОГО)
   providers: [
-    // fn гугл.вход
-    GoggleProvider({
-      // настр.ID и SECRET ч/з Google Cloud Console OAuth APLs&Services
-      clientId: process.env.GOOGLE_CLIENT_ID as string,
-      clientSecret: process.env.GOOGLE_SECRET!,
-    }),
+    // fn гугл.вход // ! ошб.врем.откл - ошб.vercel - Ошибка 400: redirect_uri_mismatch  >  ~  Google Cloud Console  >  Authorized redirect URIs
+    // GoggleProvider({
+    //   // настр.ID и SECRET ч/з Google Cloud Console OAuth APLs&Services
+    //   clientId: process.env.GOOGLE_CLIENT_ID as string,
+    //   clientSecret: process.env.GOOGLE_SECRET!,
+    // }),
     // `Реквизиты для входа`. fn вход ч/з форму по логин/пароль
     Credentials({
       // поля eml/psw с указ.:обводки,типа,обязат.
