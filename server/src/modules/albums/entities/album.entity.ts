@@ -6,70 +6,122 @@ import {
   CreateDateColumn,
   DeleteDateColumn,
   PrimaryColumn,
+  ManyToMany,
+  JoinTable,
 } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 
 import { TrackEntity } from '../../tracks/entities/track.entity';
 import { UserEntity } from '../../users/entities/user.entity';
 import { FileEntity } from '../../files/entities/file.entity';
+import { ReactionEntity } from 'src/modules/reactions/entities/reaction.entity';
 
 @Entity({ name: 'albums', schema: 'public' })
 export class AlbumEntity {
   // id, назв.альбома, автор, ссылк.изо обложки трека, масс.треков
-  @PrimaryColumn()
+  @PrimaryColumn({ type: 'integer', unique: true })
+  @ApiProperty({ description: 'Уникальный идентификатор Альбома' })
   id: number;
 
-  // Назв.Альбома
-  @Column({ default: 'Название альбома' })
+  @Column({ length: 100, nullable: false })
+  @ApiProperty({ example: 'Мой Альбом', description: 'Название Альбома' })
   title: string;
 
   // Автор
-  @Column({ default: 'Автор альбома 1' })
+  @Column({ length: 255, nullable: true })
+  @ApiProperty({ example: 'Иван Иванов', description: 'Авторы Альбома' })
   author: string;
 
-  // год выпуска
-  @Column({ default: null })
-  year: number;
-
-  // путь
-  @ApiProperty({ example: '/images/albums', description: 'путь' })
-  @Column({ default: '/images/albums/заглушка.jpg', nullable: true })
-  path: string;
-
-  // связь табл. 1го ко Мн. У Одного альбома Мн.треков
-  @OneToMany(() => TrackEntity, (track: TrackEntity) => track.album)
-  //  возвращ.масс.треков
-  tracks: TrackEntity[];
-
-  // связь табл. Мн.к 1му. У Мн.альбомов Один файл(заглушка). Ранее OneToMany
-  @ManyToOne(() => FileEntity, (files: FileEntity) => files.album, {
-    nullable: true,
-  })
-  cover: FileEntity;
-
-  // связь табл. Мн.к 1му. У Мн.альбомов Один польз.
-  @ManyToOne(() => UserEntity, (user: UserEntity) => user.albums)
-  user: UserEntity;
-
   // объед.жанры всех Треков одного Альбома
-  @Column({ default: 'Other #', nullable: true })
+  @Column({ length: 255, nullable: true })
+  @ApiProperty({ example: 'Rock | Metal', description: 'Жанры Альбома' })
   genres: string;
 
-  // общ.кол-во.всех Треков одного Альбома
-  @Column({ default: 1 })
-  total_tracks: number;
-
-  // общ.длительность всех Треков одного Альбома
-  @Column({ default: '0:00' })
-  total_duration: string;
+  // год выпуска
+  @Column({ nullable: true })
+  @ApiProperty({ example: 2000, description: 'Год выпуска Альбома' })
+  year: number;
 
   // описание Альбома, необязательно
   @Column({ nullable: true })
+  @ApiProperty({ description: 'Описание Альбома' })
   description: string;
 
-  @CreateDateColumn()
+  // общ.кол-во.всех Треков одного Альбома
+  @Column({ default: 1 /* , name: 'total_track' */ })
+  @ApiProperty({ description: 'Количество Треков в Альбоме' })
+  total_tracks /* totalTracks */ : number;
+
+  // общ.длительность всех Треков одного Альбома
+  @Column({ default: '0:00' /* 0 */, name: 'total_duration' })
+  @ApiProperty({ description: 'Длительность Треков в Альбоме' })
+  total_duration /* totalDuration */ : /* number */ string;
+
+  // У Мн.Альбомов Один Польз.
+  @ManyToOne(() => UserEntity, (user: UserEntity) => user.uploadedAlbums)
+  @ApiProperty({
+    type: () => UserEntity,
+    description: 'Пользователь, загрузивший Альбом',
+  })
+  uploadedBy: UserEntity;
+
+  // Мн.ко Мн. Мн.Файлов Обложек у Одного Альбома  <>  Файл Альбома (заглушка) > Мн.Албомов
+  @ManyToMany(() => FileEntity, (file: FileEntity) => file.albums)
+  @JoinTable({
+    name: 'album_cover',
+    joinColumn: { name: 'albumId', referencedColumnName: 'id' },
+    inverseJoinColumn: { name: 'fileId', referencedColumnName: 'id' },
+  })
+  @ApiProperty({
+    type: () => FileEntity,
+    isArray: true,
+    description: 'Обложки Альбома',
+  })
+  covers: FileEntity[];
+
+  // Мн.ко Мн. Один Файл Трека мб в Мн.Альбомах  <>  Мн.Файлов Треков мб в Одном Альбоме
+  @ManyToMany(() => FileEntity, (file: FileEntity) => file.albums)
+  @JoinTable({
+    name: 'album_file',
+    joinColumn: { name: 'albumId', referencedColumnName: 'id' },
+    inverseJoinColumn: { name: 'fileId', referencedColumnName: 'id' },
+  })
+  @ApiProperty({
+    type: () => FileEntity,
+    isArray: true,
+    description: 'Файлы, связанные с Альбомом',
+  })
+  files: FileEntity[];
+
+  // ^ Мн.ко Мн. У Альбома Мн.Треков, Трек может быть во Мн.Альбомах
+  @ManyToMany(() => TrackEntity, (track: TrackEntity) => track.albums)
+  @JoinTable({
+    name: 'album_track',
+    joinColumn: { name: 'albumId', referencedColumnName: 'id' },
+    inverseJoinColumn: { name: 'trackId', referencedColumnName: 'id' },
+  })
+  @ApiProperty({
+    type: () => TrackEntity,
+    isArray: true,
+    description: 'Треки, связанные с Альбомом',
+  })
+  tracks: TrackEntity[];
+
+  // у Алб.Мн. Реакций
+  @OneToMany(
+    () => ReactionEntity,
+    (reaction: ReactionEntity) => reaction.reactionType === 'album',
+  )
+  @ApiProperty({
+    type: () => ReactionEntity,
+    isArray: true,
+    description: 'Реакции на Альбом',
+  })
+  reactions: ReactionEntity[];
+
+  @CreateDateColumn({ name: 'createdAt' })
   startDate?: Date;
 
-  @DeleteDateColumn()
+  @DeleteDateColumn({ name: 'deletedAt' })
   deletedAt?: Date;
 }
