@@ -29,13 +29,16 @@ async function bootstrap(): Promise<any> {
   try {
     // PORT Запуска SRV
     const PORT: number = isProduction
-      ? +process.env.DB_SB_PORT || 3000
+      ? +process.env.DB_SB_PORT
       : +process.env.LH_SRV_PORT || 3000;
 
     // в перем.app асинхр.созд.экзепл.приложения ч/з кл.NestFactory с передачей в парам.modul входа и пр.настр.
     const app = await NestFactory.create<NestExpressApplication>(AppModule, {
       cors: true,
     });
+
+    // в 2х местах вкл. cors
+    app.enableCors({ credentials: true, origin: true });
 
     // п.статич.ф.
     app.useStaticAssets(path.join(__dirname, '..', 'public'), {
