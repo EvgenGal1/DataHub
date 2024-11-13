@@ -16,7 +16,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { AlbumEntity } from '../../albums/entities/album.entity';
 import { TrackEntity } from '../../tracks/entities/track.entity';
 import { UserEntity } from '../../users/entities/user.entity';
-import { ReactionEntity } from 'src/modules/reactions/entities/reaction.entity';
+import { ReactionEntity } from '../../reactions/entities/reaction.entity';
 
 @Entity({ name: 'files', schema: 'public' })
 export class FileEntity {
