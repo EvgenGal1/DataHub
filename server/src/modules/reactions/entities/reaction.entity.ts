@@ -1,9 +1,8 @@
 import {
   Entity,
+  PrimaryColumn,
   Column,
   ManyToOne,
-  PrimaryColumn,
-  ManyToMany,
   CreateDateColumn,
   DeleteDateColumn,
 } from 'typeorm';
@@ -18,7 +17,7 @@ export class ReactionEntity {
   @ApiProperty({ description: 'Уникальный идентификатор Реакции' })
   id: number;
 
-  // Поле для текста Реакции
+  // Текст Реакции
   @Column({ nullable: true, length: 500 })
   @ApiProperty({
     example: 'Мне очень понравился этот трек!',
@@ -34,7 +33,7 @@ export class ReactionEntity {
   @ManyToOne(() => UserEntity, (user: UserEntity) => user.reactions)
   @ApiProperty({
     type: () => UserEntity,
-    description: 'Пользователь, оставивший Реакцию',
+    description: 'Реакции от Пользователя',
   })
   user: UserEntity;
 
@@ -47,26 +46,16 @@ export class ReactionEntity {
   reactionType: 'track' | 'album' | 'file';
 
   // ID объекта на который оставлена Реакция
-  @Column(/* { type: 'uuid' } */)
+  @Column()
   @ApiProperty({
     example: 12,
     description: 'ID объекта Реакции',
   })
-  reactionId: /* string */ number;
-
-  // Метод для приведения ID к UUID(защит.от коллизии) > reactionId: string и остальных ID через PrimaryColumn
-  // addReaction(postId: number) {
-  //   this.reactionId = uuidv4(); // Генерация нового уникального идентификатора для реакции
-  //   this.postId = postId; // Заполнение стандартным идентификатором поста
-  // }
+  reactionId: number;
 
   @CreateDateColumn({ name: 'createdAt' })
-  startDate?: Date;
+  createdAt?: Date;
 
   @DeleteDateColumn({ name: 'deletedAt' })
   deletedAt?: Date;
-
-  // ^^ прописать совместную таблицу под лайки, комменты, реакции. Подтягивать только то что нужно к запросу.
-  // Например на один трек от 3х user может быть по 3 лайка, коммента, репоста и это займёт только 3 строчки в данн.табл.
-  // При подтяг.данн. раскидывать res по местам
 }

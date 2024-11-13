@@ -1,10 +1,12 @@
 // ^ `Сущность`.взаимод.с БД (стркт.табл./измен.данн.в табл.User)
+
 // декораторы для раб.с БД
 import {
-  Column,
   Entity,
   PrimaryColumn,
+  Column,
   OneToMany,
+  ManyToOne,
   ManyToMany,
   JoinTable,
   CreateDateColumn,
@@ -12,6 +14,7 @@ import {
 } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 
+// подкл.Сущности
 import { RoleEntity } from '../../roles/entities/role.entity';
 import { FileEntity } from '../../files/entities/file.entity';
 import { TrackEntity } from '../../tracks/entities/track.entity';
@@ -65,7 +68,7 @@ export class UserEntity {
   })
   password: string;
 
-  // подтвержд./ссылка актив.ч/з почту по ссылке (с опцион.указ. users.activatedLink)
+  // Подтвержд./ссылка актив.ч/з почту по ссылке (с опцион.указ. users.activatedLink)
   @Column({ type: 'varchar', unique: true, nullable: true })
   @ApiProperty({
     example: 'qdfvg.reth6k-fe3b',
@@ -73,22 +76,16 @@ export class UserEntity {
   })
   activatedLink: string;
 
-  // связь Мн.ко Мн. м/у Пользователями и Файлами Аватара ч/з доп.табл.user_avatar
-  @ManyToMany(() => FileEntity, (file: FileEntity) => file.avatars)
-  @JoinTable({
-    name: 'user_avatar',
-    joinColumn: { name: 'userId', referencedColumnName: 'id' },
-    inverseJoinColumn: { name: 'fileId', referencedColumnName: 'id' },
-  })
+  // у Мн.Пользователей Один Аватар (заглушка)
+  @ManyToOne(() => FileEntity, (file: FileEntity) => file.avatars)
   @ApiProperty({
     type: () => FileEntity,
-    isArray: true,
-    description: 'Аватары Пользователя',
+    description: 'Аватар Пользователей',
   })
-  avatars: FileEntity[];
+  avatar: FileEntity;
 
-  // связь Мн.ко Мн. у users/userId и roles/roleId ч/з доп.табл.user_roles
-  @ManyToMany(() => RoleEntity, (role) => role.users, {
+  // связь Мн.ко Мн. У users/userId и roles/roleId ч/з доп.табл.user_roles
+  @ManyToMany(() => RoleEntity, (role: RoleEntity) => role.users, {
     // Ничего не делать при обновлении/удалении Ролей
     onUpdate: 'NO ACTION',
     onDelete: 'NO ACTION',
@@ -105,34 +102,34 @@ export class UserEntity {
   })
   roles?: RoleEntity[];
 
-  // У Польз.Мн.загр.Файлов. Связь 1го ко Мн. Аноним.fn(табл.обращ.(TrackEntity), получ.данн.по обрат.связи(track.uploadedBy))
-  @OneToMany(() => FileEntity, (file: FileEntity) => file.uploadedBy)
+  // у Польз.Мн.загр.Файлов. Связь 1го ко Мн. Аноним.fn(табл.обращ.(TrackEntity), получ.данн.по обрат.связи(track.user))
+  @OneToMany(() => FileEntity, (file: FileEntity) => file.user)
   @ApiProperty({
     type: () => FileEntity,
     isArray: true,
     description: 'Файлы, загруженные Пользователем',
   })
-  uploadedFiles: FileEntity[];
+  files: FileEntity[];
 
-  // У Польз.Мн.Треков
-  @OneToMany(() => TrackEntity, (track: TrackEntity) => track.uploadedBy)
+  // у Польз.Мн.Треков
+  @OneToMany(() => TrackEntity, (track: TrackEntity) => track.user)
   @ApiProperty({
     type: () => TrackEntity,
     isArray: true,
     description: 'Треки, загруженные Пользователем',
   })
-  uploadedTracks: TrackEntity[];
+  tracks: TrackEntity[];
 
-  // У Польз.Мн.Альбомов
-  @OneToMany(() => AlbumEntity, (album: AlbumEntity) => album.uploadedBy)
+  // у Польз.Мн.Альбомов
+  @OneToMany(() => AlbumEntity, (album: AlbumEntity) => album.user)
   @ApiProperty({
     type: () => AlbumEntity,
     isArray: true,
     description: 'Альбомы, загруженные Пользователем',
   })
-  uploadedAlbums: AlbumEntity[];
+  albums: AlbumEntity[];
 
-  // У Польз.Мн.Реакций
+  // у Польз.Мн.Реакций
   @OneToMany(() => ReactionEntity, (reaction: ReactionEntity) => reaction.user)
   @ApiProperty({
     type: () => ReactionEntity,
@@ -141,9 +138,11 @@ export class UserEntity {
   })
   reactions: ReactionEntity[];
 
+  // декор.созд.
   @CreateDateColumn({ name: 'createdAt' })
-  startDate?: Date;
+  createdAt?: Date;
 
+  // декор.поментки удаления (без удаления)
   @DeleteDateColumn({ name: 'deletedAt' })
   deletedAt?: Date;
 

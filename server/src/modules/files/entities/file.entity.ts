@@ -1,21 +1,20 @@
-// доп.табл.>хран.общ.данн.ф.<tracks,audios,videos,shemas
+// ^ доп.табл.>хран.общ.данн.ф.<tracks,audios,videos,shemas
+
 import {
+  Entity,
+  PrimaryColumn,
   Column,
+  OneToOne,
+  OneToMany,
+  ManyToOne,
   CreateDateColumn,
   DeleteDateColumn,
-  Entity,
-  JoinTable,
-  ManyToMany,
-  ManyToOne,
-  OneToMany,
-  OneToOne,
-  PrimaryColumn,
 } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 
-import { AlbumEntity } from '../../albums/entities/album.entity';
-import { TrackEntity } from '../../tracks/entities/track.entity';
 import { UserEntity } from '../../users/entities/user.entity';
+import { TrackEntity } from '../../tracks/entities/track.entity';
+import { AlbumEntity } from '../../albums/entities/album.entity';
 import { ReactionEntity } from '../../reactions/entities/reaction.entity';
 
 @Entity({ name: 'files', schema: 'public' })
@@ -31,12 +30,12 @@ export class FileEntity {
   @ApiProperty({ example: 'my-file.jpg', description: 'Название Файла' })
   fileName: string;
 
-  // размер в bt
+  // Размер в bt
   @Column({ nullable: true })
   @ApiProperty({ example: 1024, description: 'Размер Файла в байтах' })
   size?: number;
 
-  // путь (images/album)
+  // Путь (images/album)
   @Column({ length: 500 })
   @ApiProperty({ example: '/images/my-file.jpg', description: 'Путь к Файлу' })
   path: string;
@@ -49,58 +48,52 @@ export class FileEntity {
   })
   mimeType: string;
 
-  // связь табл. 1 к 1. Один файл указ.на Один трек (с опцион.указ. files.track)
+  // связь табл. 1 к 1. Один Файл указ.на Один Трек (с опцион.указ. files.track)
   @OneToOne(() => TrackEntity, (track: TrackEntity) => track.file, {
     nullable: true,
   })
   @ApiProperty({
     type: () => TrackEntity,
-    description: 'Трек данного Файла',
+    description: 'Трек Файла',
   })
   track: TrackEntity | null;
 
-  // У Обложки (заглушки) Мн.Треков. Ссылк.изо трека
+  // у Обложки (заглушки) Мн.Треков. Ссылк.изо Трека
   @OneToMany(() => TrackEntity, (track: TrackEntity) => track.cover)
   @ApiProperty({
     type: () => TrackEntity,
     isArray: true,
-    description: 'Треки содержащие Файл Обложки',
+    description: 'Треки с Обложкой',
   })
   tracksCover: TrackEntity[];
 
-  // Мн.ко Мн. Один Файл Трека мб в Мн.Альбомах  <>  Мн.Файлов Треков мб в Одном Альбоме
-  @ManyToMany(() => AlbumEntity, (album: AlbumEntity) => album.files)
-  @JoinTable({
-    // Название таблицы для связи
-    name: 'album_file',
-    joinColumn: { name: 'fileId', referencedColumnName: 'id' },
-    inverseJoinColumn: { name: 'albumId', referencedColumnName: 'id' },
-  })
+  // у Обложки (заглушки) Мн.Альбомов
+  @OneToMany(() => AlbumEntity, (album: AlbumEntity) => album.cover)
   @ApiProperty({
     type: () => AlbumEntity,
     isArray: true,
-    description: 'Альбомы, содержащие Файл Трека',
+    description: 'Альбомы с Обложкой',
   })
-  albums: AlbumEntity[];
+  albumsCover: AlbumEntity[];
 
-  // У Мн.Файлов Один Польз.
-  @ManyToOne(() => UserEntity, (user: UserEntity) => user.uploadedFiles)
+  // у Мн.Файлов Один Польз.
+  @ManyToOne(() => UserEntity, (user: UserEntity) => user.files)
   @ApiProperty({
     type: () => UserEntity,
-    description: 'Пользователь, загрузивший Файл',
+    description: 'Пользователь, загрузивший Файлы',
   })
-  uploadedBy: UserEntity;
+  user: UserEntity;
 
-  // Мн.ко Мн. Один Файл Аватара (заглушка) мб > Мн.Users  <>  Мн. Файлов Аватар мб у Одного User
-  @ManyToMany(() => UserEntity, (user: UserEntity) => user.avatars)
+  // у Одного ф.Аватара (заглушка) Мн.Пользователей
+  @OneToMany(() => UserEntity, (user: UserEntity) => user.avatar)
   @ApiProperty({
     type: () => UserEntity,
     isArray: true,
-    description: 'Пользователи, использующие Файл как аватар',
+    description: 'Аватар Пользователей',
   })
   avatars: UserEntity[];
 
-  // У Файла Мн.Реакций
+  // у Файла Мн.Реакций
   @OneToMany(
     () => ReactionEntity,
     (reaction: ReactionEntity) => reaction.reactionType === 'file',
@@ -112,11 +105,9 @@ export class FileEntity {
   })
   reactions: ReactionEntity[];
 
-  // декор.созд.
   @CreateDateColumn({ name: 'createdAt' })
-  startDate?: Date;
+  createdAt?: Date;
 
-  // декор.поментки удаления (без удаления)
   @DeleteDateColumn({ name: 'deletedAt' })
   deletedAt?: Date;
 }

@@ -1,24 +1,23 @@
-// ^ `Сущность`.взаимод.с БД (стркт.табл./измен.данн.в табл.Tracks)
-// табл.>хран.данн.<tracks(муз.треки,книги,звуки,медиа)
+// ^ табл.>хран.данн.<tracks(муз.треки,книги,звуки,медиа)
+
 import {
   Entity,
-  Column,
-  ManyToOne,
-  OneToMany,
   PrimaryColumn,
+  Column,
+  OneToOne,
+  OneToMany,
+  ManyToOne,
+  ManyToMany,
+  JoinTable,
   CreateDateColumn,
   DeleteDateColumn,
-  JoinColumn,
-  OneToOne,
-  JoinTable,
-  ManyToMany,
 } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 
 import { UserEntity } from '../../users/entities/user.entity';
-import { ReactionEntity } from '../../reactions/entities/reaction.entity';
-import { AlbumEntity } from '../../albums/entities/album.entity';
 import { FileEntity } from '../../files/entities/file.entity';
+import { AlbumEntity } from '../../albums/entities/album.entity';
+import { ReactionEntity } from '../../reactions/entities/reaction.entity';
 
 @Entity({ name: 'tracks', schema: 'public' })
 export class TrackEntity {
@@ -35,21 +34,22 @@ export class TrackEntity {
   @ApiProperty({ example: 'Иван Иванов', description: 'Автор Трека' })
   author: string;
 
+  // Жанр
   @Column({ length: 50, nullable: true })
   @ApiProperty({ example: 'Rock', description: 'Жанр Трека' })
   genre: string;
 
-  // текст песни
+  // Текст песни
   @Column({ type: 'text', nullable: true })
   @ApiProperty({ example: 'Это моя песня...', description: 'Текст Трека' })
   lyrics: string;
 
-  // кол-во прослушиваний
+  // Кол-во Прослушиваний
   @Column({ nullable: true })
   @ApiProperty({ example: 123, description: 'Количество прослушиваний Трека' })
   listens: number;
 
-  // длительность Трека
+  // Длительность Трека
   @Column({ nullable: true })
   @ApiProperty({
     example: 180,
@@ -57,33 +57,31 @@ export class TrackEntity {
   })
   duration: number;
 
-  // У Мн.Треков Один Польз.
-  @ManyToOne(() => UserEntity, (user: UserEntity) => user.uploadedTracks)
+  // у Мн.Треков Один Польз.
+  @ManyToOne(() => UserEntity, (user: UserEntity) => user.tracks)
   @ApiProperty({
     type: () => UserEntity,
-    description: 'Пользователь, загрузивший Трек',
+    description: 'Пользователь, загрузивший Треки',
   })
-  uploadedBy: UserEntity;
+  user: UserEntity;
 
-  // связь 1 к 1. У Одного трека Один файл
+  // связь 1 к 1. У Одного Трека Один Файл
   @OneToOne(() => FileEntity, (file: FileEntity) => file.track)
-  // Используется для управления именами столбцов в базе данных
-  @JoinColumn()
   @ApiProperty({
     type: () => FileEntity,
-    description: 'Файл, связанный с Треком',
+    description: 'Файл Трека',
   })
   file: FileEntity;
 
-  // У Мн.треков Одна обложка. Ссылк.изо Трека
+  // у Мн.треков Одна обложка. Ссылк.изо Трека
   @ManyToOne(() => FileEntity, (file: FileEntity) => file.tracksCover)
   @ApiProperty({
     type: () => FileEntity,
-    description: 'Обложка Трека',
+    description: 'Обложка Треков',
   })
   cover: FileEntity | null;
 
-  // Мн Треков в 1ом Алб и в разн.Алб-ах один трек
+  // Мн.Треков в 1ом Алб <> во Мн.Алб-ах один Трек
   @ManyToMany(() => AlbumEntity, (album: AlbumEntity) => album.tracks)
   @JoinTable({
     name: 'album_track',
@@ -93,11 +91,11 @@ export class TrackEntity {
   @ApiProperty({
     type: () => AlbumEntity,
     isArray: true,
-    description: 'Альбомы, связанные с Треком',
+    description: 'Альбомы с Треками',
   })
   albums: AlbumEntity[];
 
-  // У трека Мн.реакций.
+  // у Трека Мн.реакций.
   @OneToMany(
     () => ReactionEntity,
     (reaction: ReactionEntity) => reaction.reactionType === 'track',
@@ -110,7 +108,7 @@ export class TrackEntity {
   reactions: ReactionEntity[];
 
   @CreateDateColumn({ name: 'createdAt' })
-  startDate?: Date;
+  createdAt?: Date;
 
   @DeleteDateColumn({ name: 'deletedAt' })
   deletedAt?: Date;

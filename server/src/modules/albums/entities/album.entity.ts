@@ -1,19 +1,19 @@
 import {
   Entity,
+  PrimaryColumn,
   Column,
   OneToMany,
   ManyToOne,
-  CreateDateColumn,
-  DeleteDateColumn,
-  PrimaryColumn,
   ManyToMany,
   JoinTable,
+  CreateDateColumn,
+  DeleteDateColumn,
 } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 
-import { TrackEntity } from '../../tracks/entities/track.entity';
 import { UserEntity } from '../../users/entities/user.entity';
 import { FileEntity } from '../../files/entities/file.entity';
+import { TrackEntity } from '../../tracks/entities/track.entity';
 import { ReactionEntity } from '../../reactions/entities/reaction.entity';
 
 @Entity({ name: 'albums', schema: 'public' })
@@ -27,73 +27,52 @@ export class AlbumEntity {
   @ApiProperty({ example: 'Мой Альбом', description: 'Название Альбома' })
   title: string;
 
-  // Автор
   @Column({ length: 255, nullable: true })
   @ApiProperty({ example: 'Иван Иванов', description: 'Авторы Альбома' })
   author: string;
 
-  // объед.жанры всех Треков одного Альбома
+  // объед.Жанры всех Треков одного Альбома
   @Column({ length: 255, nullable: true })
   @ApiProperty({ example: 'Rock | Metal', description: 'Жанры Альбома' })
   genres: string;
 
-  // год выпуска
+  // Год выпуска
   @Column({ nullable: true })
   @ApiProperty({ example: 2000, description: 'Год выпуска Альбома' })
   year: number;
 
-  // описание Альбома, необязательно
+  // Описание Альбома, необязательно
   @Column({ nullable: true })
   @ApiProperty({ description: 'Описание Альбома' })
   description: string;
 
-  // общ.кол-во.всех Треков одного Альбома
+  // общ.Кол-во.всех Треков одного Альбома
   @Column({ default: 1 /* , name: 'total_track' */ })
   @ApiProperty({ description: 'Количество Треков в Альбоме' })
   total_tracks /* totalTracks */ : number;
 
-  // общ.длительность всех Треков одного Альбома
+  // общ.Длительность всех Треков одного Альбома
   @Column({ default: '0:00' /* 0 */, name: 'total_duration' })
   @ApiProperty({ description: 'Длительность Треков в Альбоме' })
   total_duration /* totalDuration */ : /* number */ string;
 
-  // У Мн.Альбомов Один Польз.
-  @ManyToOne(() => UserEntity, (user: UserEntity) => user.uploadedAlbums)
+  // у Мн.Альбомов Один Польз.
+  @ManyToOne(() => UserEntity, (user: UserEntity) => user.albums)
   @ApiProperty({
     type: () => UserEntity,
-    description: 'Пользователь, загрузивший Альбом',
+    description: 'Пользователь, загрузивший Альбомы',
   })
-  uploadedBy: UserEntity;
+  user: UserEntity;
 
-  // Мн.ко Мн. Мн.Файлов Обложек у Одного Альбома  <>  Файл Альбома (заглушка) > Мн.Албомов
-  @ManyToMany(() => FileEntity, (file: FileEntity) => file.albums)
-  @JoinTable({
-    name: 'album_cover',
-    joinColumn: { name: 'albumId', referencedColumnName: 'id' },
-    inverseJoinColumn: { name: 'fileId', referencedColumnName: 'id' },
-  })
+  // у Мн.треков Одна обложка. Ссылк.изо Трека
+  @ManyToOne(() => FileEntity, (file: FileEntity) => file.albumsCover)
   @ApiProperty({
     type: () => FileEntity,
-    isArray: true,
-    description: 'Обложки Альбома',
+    description: 'Обложка Альбомов',
   })
-  covers: FileEntity[];
+  cover: FileEntity | null;
 
-  // Мн.ко Мн. Один Файл Трека мб в Мн.Альбомах  <>  Мн.Файлов Треков мб в Одном Альбоме
-  @ManyToMany(() => FileEntity, (file: FileEntity) => file.albums)
-  @JoinTable({
-    name: 'album_file',
-    joinColumn: { name: 'albumId', referencedColumnName: 'id' },
-    inverseJoinColumn: { name: 'fileId', referencedColumnName: 'id' },
-  })
-  @ApiProperty({
-    type: () => FileEntity,
-    isArray: true,
-    description: 'Файлы, связанные с Альбомом',
-  })
-  files: FileEntity[];
-
-  // ^ Мн.ко Мн. У Альбома Мн.Треков, Трек может быть во Мн.Альбомах
+  // у Альбома Мн.Треков <> Трек может быть во Мн.Альбомах
   @ManyToMany(() => TrackEntity, (track: TrackEntity) => track.albums)
   @JoinTable({
     name: 'album_track',
@@ -103,11 +82,11 @@ export class AlbumEntity {
   @ApiProperty({
     type: () => TrackEntity,
     isArray: true,
-    description: 'Треки, связанные с Альбомом',
+    description: 'Треки в Альбомах',
   })
   tracks: TrackEntity[];
 
-  // у Алб.Мн. Реакций
+  // у Алб.Мн.Реакций
   @OneToMany(
     () => ReactionEntity,
     (reaction: ReactionEntity) => reaction.reactionType === 'album',
@@ -120,7 +99,7 @@ export class AlbumEntity {
   reactions: ReactionEntity[];
 
   @CreateDateColumn({ name: 'createdAt' })
-  startDate?: Date;
+  createdAt?: Date;
 
   @DeleteDateColumn({ name: 'deletedAt' })
   deletedAt?: Date;
