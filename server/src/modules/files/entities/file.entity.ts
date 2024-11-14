@@ -58,8 +58,17 @@ export class FileEntity {
   })
   track: TrackEntity | null;
 
-  // у Обложки (заглушки) Мн.Треков. Ссылк.изо Трека
-  @OneToMany(() => TrackEntity, (track: TrackEntity) => track.cover)
+  // у Аватара (заглушки) Мн.Пользователей. Общ.связь coverArt в user,track,album > - лишн.столбца в file
+  @OneToMany(() => UserEntity, (user: UserEntity) => user.coverArt)
+  @ApiProperty({
+    type: () => UserEntity,
+    isArray: true,
+    description: 'Пользователи с Аватаром',
+  })
+  userAvatar: UserEntity[];
+
+  // у Обложки (заглушки) Мн.Треков
+  @OneToMany(() => TrackEntity, (track: TrackEntity) => track.coverArt)
   @ApiProperty({
     type: () => TrackEntity,
     isArray: true,
@@ -68,7 +77,7 @@ export class FileEntity {
   tracksCover: TrackEntity[];
 
   // у Обложки (заглушки) Мн.Альбомов
-  @OneToMany(() => AlbumEntity, (album: AlbumEntity) => album.cover)
+  @OneToMany(() => AlbumEntity, (album: AlbumEntity) => album.coverArt)
   @ApiProperty({
     type: () => AlbumEntity,
     isArray: true,
@@ -83,15 +92,6 @@ export class FileEntity {
     description: 'Пользователь, загрузивший Файлы',
   })
   user: UserEntity;
-
-  // у Одного ф.Аватара (заглушка) Мн.Пользователей
-  @OneToMany(() => UserEntity, (user: UserEntity) => user.avatar)
-  @ApiProperty({
-    type: () => UserEntity,
-    isArray: true,
-    description: 'Аватар Пользователей',
-  })
-  avatars: UserEntity[];
 
   // у Файла Мн.Реакций
   @OneToMany(

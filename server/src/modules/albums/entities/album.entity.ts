@@ -70,7 +70,7 @@ export class AlbumEntity {
     type: () => FileEntity,
     description: 'Обложка Альбомов',
   })
-  cover: FileEntity | null;
+  coverArt: FileEntity | null;
 
   // у Альбома Мн.Треков <> Трек может быть во Мн.Альбомах
   @ManyToMany(() => TrackEntity, (track: TrackEntity) => track.albums)

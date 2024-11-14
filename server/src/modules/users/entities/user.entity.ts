@@ -76,13 +76,13 @@ export class UserEntity {
   })
   activatedLink: string;
 
-  // у Мн.Пользователей Один Аватар (заглушка)
-  @ManyToOne(() => FileEntity, (file: FileEntity) => file.avatars)
+  // у Мн.Пользователей Один Аватар (заглушка). Общ.связь coverArt в user,track,album > - лишн.столбца в file
+  @ManyToOne(() => FileEntity, (file: FileEntity) => file.userAvatar)
   @ApiProperty({
     type: () => FileEntity,
     description: 'Аватар Пользователей',
   })
-  avatar: FileEntity;
+  coverArt: FileEntity | null;
 
   // связь Мн.ко Мн. У users/userId и roles/roleId ч/з доп.табл.user_roles
   @ManyToMany(() => RoleEntity, (role: RoleEntity) => role.users, {
