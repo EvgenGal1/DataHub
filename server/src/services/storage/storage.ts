@@ -10,8 +10,8 @@ import { LoggingWinston } from '../../config/logging/log_winston.config';
 // константы > команды запуска process.env.NODE_ENV
 import { isDevelopment } from '../../config/envs/env.consts';
 // типы/пути файлов
-import { FileGroups } from '../../common/types/typeFileGroups';
-// mapping связь ф.mimeType с FileGroups
+import { FilePaths } from '../../common/types/typeFilePaths';
+// mapping связь ф.mimeType с FilePaths
 import { mappingMimeType } from '../../common/mappings/mappingMimeType';
 
 // логгирование
@@ -21,36 +21,34 @@ const logger = new LoggingWinston();
 export const fileStorage = multer.diskStorage({
   // `место назначения`
   destination: (req, file, cb) => {
-    if (isDevelopment) {
-      logger.info(`flStor DES.file '${JSON.stringify(file)}'`);
-    }
+    if (isDevelopment) logger.info(`flStor DES.file '${JSON.stringify(file)}'`);
 
     if (!file) {
       logger.error(`ОШБ.сохр.ф.в Хранилище - ф.нет'`);
       return cb(new NotFoundException('ОШБ.сохр.ф.в Хранилище', 'ф.нет'), null);
     }
 
-    // баз.п. / путь/имя по ф.mimetype <> ф.fileGroups
+    // баз.п. / путь/имя по ф.mimetype <> ф.filePaths
     const baseFolder = 'static';
     let fileTarget: string;
 
-    // путь по fileGroups е/и не 'all'
-    if (req?.query?.fileGroups && String(req?.query?.fileGroups) !== 'all') {
-      fileTarget = String(req.query.fileGroups);
+    // путь по filePaths е/и не 'all'
+    if (req?.query?.filePaths && String(req?.query?.filePaths) !== 'all') {
+      fileTarget = String(req.query.filePaths);
     } else {
       // типы файла
       const [fileMimeType, fullMimeType] = file.mimetype.split('/');
 
       // путь по соответ. типу ф.
-      fileTarget = mappingMimeType[fileMimeType] || FileGroups.OTHER;
+      fileTarget = mappingMimeType[fileMimeType] || FilePaths.OTHER;
 
       // доп.обраб. > application, text
       if (typeof fileTarget !== 'string') {
         if (fileMimeType === 'application') {
           fileTarget =
-            mappingMimeType.application[fullMimeType] || FileGroups.OTHER;
+            mappingMimeType.application[fullMimeType] || FilePaths.OTHER;
         } else if (fileMimeType === 'text') {
-          fileTarget = mappingMimeType.text[fullMimeType] || FileGroups.OTHER;
+          fileTarget = mappingMimeType.text[fullMimeType] || FilePaths.OTHER;
         }
       }
       if (!fileTarget) {
