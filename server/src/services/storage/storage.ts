@@ -10,8 +10,8 @@ import { LoggingWinston } from '../../config/logging/log_winston.config';
 // константы > команды запуска process.env.NODE_ENV
 import { isDevelopment } from '../../config/envs/env.consts';
 // типы/пути файлов
-import { FileType } from '../../common/types/typeFile';
-// mapping связь ф.mimeType с FileType
+import { FileGroups } from '../../common/types/typeFileGroups';
+// mapping связь ф.mimeType с FileGroups
 import { mappingMimeType } from '../../common/mappings/mappingMimeType';
 
 // логгирование
@@ -28,29 +28,29 @@ export const fileStorage = multer.diskStorage({
       return cb(new NotFoundException('ОШБ.сохр.ф.в Хранилище', 'ф.нет'), null);
     }
 
-    // баз.п. / путь/имя по ф.mimetype <> ф.fileType
+    // баз.п. / путь/имя по ф.mimetype <> ф.fileGroups
     const baseFolder = 'static';
     let fileTarget: string;
 
-    // путь по fileType е/и не 'all'
-    if (String(req.query.fileType) !== 'all')
-      fileTarget = String(req.query.fileType);
-    else {
+    // путь по fileGroups е/и не 'all'
+    if (req?.query?.fileGroups && String(req?.query?.fileGroups) !== 'all') {
+      fileTarget = String(req.query.fileGroups);
+    } else {
       // типы файла
       const [fileMimeType, fullMimeType] = file.mimetype.split('/');
 
       // путь по соответ. типу ф.
-      fileTarget = mappingMimeType[fileMimeType] || FileType.OTHER;
+      fileTarget = mappingMimeType[fileMimeType] || FileGroups.OTHER;
 
       // доп.обраб. > application, text
       if (typeof fileTarget !== 'string') {
-        if (fileMimeType === 'application')
+        if (fileMimeType === 'application') {
           fileTarget =
-            mappingMimeType.application[fullMimeType] || FileType.OTHER;
-        else if (fileMimeType === 'text')
-          fileTarget = mappingMimeType.text[fullMimeType] || FileType.OTHER;
+            mappingMimeType.application[fullMimeType] || FileGroups.OTHER;
+        } else if (fileMimeType === 'text') {
+          fileTarget = mappingMimeType.text[fullMimeType] || FileGroups.OTHER;
+        }
       }
-
       if (!fileTarget) {
         logger.error(
           `ОШБ.сохр.ф.в Хранилище - ф. '${file.originalname}' с типом '${file.mimetype}' - Не поддерживается`,
