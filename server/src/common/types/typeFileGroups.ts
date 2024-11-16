@@ -1,6 +1,6 @@
 // ^ типы/пути файлов
 
-export enum FileType {
+export enum FileGroups {
   ALL = 'all',
   IMAGE = 'images',
   ALBUM = 'images/album',

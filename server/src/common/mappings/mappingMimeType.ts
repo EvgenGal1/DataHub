@@ -1,35 +1,36 @@
-// ^ mapping (расшир.связь ф.mimeType с FileType)
+// ^ mapping (расшир.связь ф.mimeType с FileGroups)
 
-import { FileType } from '../types/typeFile';
+import { FileGroups } from '../types/typeFileGroups';
 
 export const mappingMimeType = {
-  audio: FileType.AUDIO,
-  image: FileType.IMAGE,
+  audio: FileGroups.AUDIO,
+  image: FileGroups.IMAGE,
   text: {
-    plain: FileType.DOCUMENT, // txt
-    html: FileType.WEB,
-    css: FileType.WEB,
-    scss: FileType.WEB,
-    javascript: FileType.WEB,
-    'x-python': FileType.WEB,
-    xml: FileType.DOCUMENT,
-    csv: FileType.IMAGE,
+    plain: FileGroups.DOCUMENT, // txt
+    html: FileGroups.WEB,
+    css: FileGroups.WEB,
+    scss: FileGroups.WEB,
+    javascript: FileGroups.WEB,
+    'x-python': FileGroups.WEB,
+    xml: FileGroups.DOCUMENT,
+    csv: FileGroups.IMAGE,
   },
   application: {
-    msword: FileType.DOCUMENT, //  стар.DOC
-    xml: FileType.DOCUMENT,
-    json: FileType.DOCUMENT,
-    'schema+json': FileType.DOCUMENT,
-    pdf: FileType.DOCUMENT,
+    msword: FileGroups.DOCUMENT, //  стар.DOC
+    xml: FileGroups.DOCUMENT,
+    json: FileGroups.DOCUMENT,
+    'schema+json': FileGroups.DOCUMENT,
+    pdf: FileGroups.DOCUMENT,
     'vnd.openxmlformats-officedocument.wordprocessingml.document':
-      FileType.DOCUMENT, // DOCX
-    'vnd.openxmlformats-officedocument.spreadsheetml.sheet': FileType.DOCUMENT, // Excel
+      FileGroups.DOCUMENT, // DOCX
+    'vnd.openxmlformats-officedocument.spreadsheetml.sheet':
+      FileGroups.DOCUMENT, // Excel
     'vnd.openxmlformats-officedocument.presentationml.presentation':
-      FileType.DOCUMENT, // PowrPoint
-    'octet-stream': FileType.BOOK, // fb2
-    zip: FileType.APPLICATION,
-    'x-rar-compressed': FileType.APPLICATION,
-    'x-msdownload': FileType.APPLICATION,
+      FileGroups.DOCUMENT, // PowrPoint
+    'octet-stream': FileGroups.BOOK, // fb2
+    zip: FileGroups.APPLICATION,
+    'x-rar-compressed': FileGroups.APPLICATION,
+    'x-msdownload': FileGroups.APPLICATION,
   },
-  video: FileType.VIDEO,
+  video: FileGroups.VIDEO,
 };
