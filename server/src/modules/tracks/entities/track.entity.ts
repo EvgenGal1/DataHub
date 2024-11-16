@@ -8,6 +8,7 @@ import {
   OneToMany,
   ManyToOne,
   ManyToMany,
+  JoinColumn,
   JoinTable,
   CreateDateColumn,
   DeleteDateColumn,
@@ -67,6 +68,7 @@ export class TrackEntity {
 
   // связь 1 к 1. У Одного Трека Один Файл
   @OneToOne(() => FileEntity, (file: FileEntity) => file.track)
+  @JoinColumn({ name: 'fileId' }) // Указываем имя столбца для связи
   @ApiProperty({
     type: () => FileEntity,
     description: 'Файл Трека',
