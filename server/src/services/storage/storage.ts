@@ -21,7 +21,9 @@ const logger = new LoggingWinston();
 export const fileStorage = multer.diskStorage({
   // `место назначения`
   destination: (req, file, cb) => {
-    if (isDevelopment) logger.info(`flStor DES.file '${JSON.stringify(file)}'`);
+    if (isDevelopment) {
+      logger.info(`flStor DES.file '${JSON.stringify(file)}'`);
+    }
 
     if (!file) {
       logger.error(`ОШБ.сохр.ф.в Хранилище - ф.нет'`);
