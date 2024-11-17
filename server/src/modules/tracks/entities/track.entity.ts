@@ -47,7 +47,7 @@ export class TrackEntity {
 
   // Кол-во Прослушиваний
   @Column({ nullable: true })
-  @ApiProperty({ example: 123, description: 'Количество прослушиваний Трека' })
+  @ApiProperty({ example: 0, description: 'Количество прослушиваний Трека' })
   listens: number;
 
   // Длительность Трека
