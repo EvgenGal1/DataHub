@@ -116,7 +116,7 @@ webpack*
 !/**/src/config/envs/env.consts.ts
 !/**/src/config/logging/winston-logger.config.ts
 !/**/src/config/logging/log_winston.config.ts
-!/**/src/common/filters/http-exception.filter.ts
+!/**/src/common/filters/all-exception.filter.ts
 !/**/src/common/mappings/mappingMimeType.ts
 !/**/src/common/storage/storage.ts
 !/**/src/common/pipes/fileTypeValidation.pipe.ts
