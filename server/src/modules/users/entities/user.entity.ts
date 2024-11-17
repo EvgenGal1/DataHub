@@ -33,7 +33,13 @@ export class UserEntity {
   })
   id: number;
 
-  @Column({ type: 'varchar', name: 'fullName', length: 50, nullable: false })
+  @Column({
+    type: 'varchar',
+    name: 'fullName',
+    length: 50,
+    unique: true,
+    nullable: false,
+  })
   @ApiProperty({
     example: 'Тест Тестович',
     description: 'Полное Имя Пользователя',
@@ -42,10 +48,10 @@ export class UserEntity {
 
   @Column({
     type: 'varchar',
-    unique: true,
-    nullable: false,
     name: 'email',
     length: 128,
+    unique: true,
+    nullable: false,
   })
   @ApiProperty({
     example: 'Test@Test.ru',

@@ -15,5 +15,5 @@ export class UpdateUserDto extends PartialType(CreateUserDto) {
   readonly password: string;
 
   @ApiProperty({ default: 'Тест Тестович', description: 'Полное Имя' })
-  readonly fullname: string;
+  readonly fullName: string;
 }
