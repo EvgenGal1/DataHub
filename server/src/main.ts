@@ -6,14 +6,14 @@ import { NestFactory } from '@nestjs/core';
 // import swaggerUI from "swagger-ui-express";
 // import swaggerJsDoc from "swagger-jsdoc";
 import { NestExpressApplication } from '@nestjs/platform-express';
-import { ConsoleLogger } from '@nestjs/common';
+import { ConsoleLogger, ValidationPipe } from '@nestjs/common';
 import { config } from 'dotenv';
 import * as path from 'path';
 import * as fs from 'fs';
 
 import { AppModule } from './app.module.js';
 // фильтр исключ.
-import { HttpExceptionFilter } from './common/filters/http-exception.filter.js';
+import { AllExceptionsFilter } from './common/filters/all-exception.filter.js';
 // логирование LH Winston
 import { LoggingWinston } from './config/logging/log_winston.config.js';
 // документирование Swagger
@@ -45,8 +45,11 @@ async function bootstrap(): Promise<any> {
       prefix: '/public/',
     });
 
+    // обраб.валидации ч/з глобал.обраб.исключений
+    app.useGlobalPipes(new ValidationPipe());
+
     // обраб.ошб.ч/з глобал.обраб.исключений
-    app.useGlobalFilters(new HttpExceptionFilter());
+    app.useGlobalFilters(new AllExceptionsFilter());
 
     // логгирование (Winston)
     let logger;

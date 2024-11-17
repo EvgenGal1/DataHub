@@ -1,5 +1,6 @@
 // ^ различные/помошники
 
+import { Injectable } from '@nestjs/common';
 import * as fs from 'fs';
 import * as mm from 'music-metadata';
 import iconv from 'iconv-lite';
@@ -7,7 +8,7 @@ import iconv from 'iconv-lite';
 // логгирование LH
 import { LoggingWinston } from '../../config/logging/log_winston.config';
 
-// @Injectable()
+@Injectable()
 export class BasicUtils {
   constructor(
     // логгер
