@@ -52,7 +52,7 @@ export class AlbumEntity {
   total_tracks /* totalTracks */ : number;
 
   // общ.Длительность всех Треков одного Альбома
-  @Column({ default: '0:00' /* 0 */, name: 'total_duration' })
+  @Column({ default: '00:00:00' /* 0 */, name: 'total_duration' })
   @ApiProperty({ description: 'Длительность Треков в Альбоме' })
   total_duration /* totalDuration */ : /* number */ string;
 
