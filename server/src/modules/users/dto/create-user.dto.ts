@@ -1,23 +1,51 @@
 // ^ `Объект передачи данных` разрещ.req front > dack. Отдел.кл.с опис.ожид.св-в/полей
+
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsEmail, Length, IsNotEmpty } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsString,
+  IsEmail,
+  Length,
+  Matches,
+} from 'class-validator';
 
 export class CreateUserDto {
-  // доп.декор swagger по св-вам. Можно указ.знач.по умолч. в {default:''}
-  @ApiProperty({ default: 'Test@Test.ru', description: 'Email' })
-  @IsString({ message: 'Должно быть строкой' })
-  @IsEmail({}, { message: 'Некорректный email' })
+  @ApiProperty({
+    example: 'Тест Тестович',
+    description: 'Полное Имя Пользователя',
+    required: true,
+  })
+  @IsNotEmpty({ message: 'Полное Имя не должно быть пустым' })
+  @IsString({ message: 'Полное Имя должно быть строкой' })
+  @Length(2, 50, { message: 'Полное Имя должно быть от 2 до 50 символов' })
+  readonly fullName: string;
+
+  @ApiProperty({
+    example: 'test@example.com',
+    description: 'Email Пользователя',
+    required: true,
+  })
   @IsNotEmpty({ message: 'Email не должен быть пустым' })
+  @IsString({ message: 'Email должен быть строкой' })
+  @Length(2, 128, { message: 'Email должно быть от 2 до 128 символов' })
+  @IsEmail({}, { message: 'Некорректный Email' })
   readonly email: string;
 
-  @ApiProperty({ default: '123_Test', description: 'Пароль' })
-  @IsString({ message: 'Должно быть строкой' })
-  @Length(4, 16, { message: 'Не меньше 4 и не больше 16' })
+  @ApiProperty({
+    example: '123_Test',
+    description: 'Пароль Пользователя',
+    required: true,
+    minLength: 4,
+    maxLength: 128,
+  })
   @IsNotEmpty({ message: 'Пароль не должен быть пустым' })
+  @IsString({ message: 'Пароль должен быть строкой' })
+  @Length(4, 128, { message: 'Пароль должен быть от 4 до 128 символов' })
+  @Matches(
+    /^(?=.*[A-Za-zА-Яа-я])(?=.*\d)(?=.*[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]).{4,16}$/,
+    {
+      message: 'Пароль должен содержать букву (EN/RU), цифру, символ',
+    },
+  )
   readonly password: string;
-
-  @ApiProperty({ default: 'Тест Тестович', description: 'Полное Имя' })
-  @IsString({ message: 'Должно быть строкой' })
-  @IsNotEmpty({ message: 'Полное Имя не должно быть пустым' })
-  readonly fullName: string;
 }
