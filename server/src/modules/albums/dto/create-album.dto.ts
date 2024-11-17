@@ -70,7 +70,7 @@ export class CreateAlbumDto {
   readonly total_tracks?: number;
 
   @ApiProperty({
-    example: '00:00:00',
+    example: '00:30:00',
     description: 'Длительность Треков в Альбоме',
     required: false,
   })
