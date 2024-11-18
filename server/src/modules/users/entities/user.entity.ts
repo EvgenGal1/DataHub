@@ -97,16 +97,25 @@ export class UserEntity {
     onDelete: 'NO ACTION',
   })
   @JoinTable({
-    name: 'user_roles',
-    joinColumn: { name: 'userId', referencedColumnName: 'id' },
-    inverseJoinColumn: { name: 'roleId', referencedColumnName: 'id' },
+    // ! ошб.  -  DROP COLUMN "level"  >>  столбец "level" содержит значения NULL
+    // назв.связ.табл., стлолбцы/ссылки владельца/обратного
+    // name: 'user_roles',
+    // joinColumn: { name: 'userId', ссылкаColumnName: 'id' },
+    // inverseJoinColumn: { name: 'roleId', referencedColumnName: 'id' },
   })
   @ApiProperty({
     type: () => RoleEntity,
     isArray: true,
     description: 'Роли Пользователя',
   })
-  roles?: RoleEntity[];
+  roles: RoleEntity[];
+  // ^ нужн.по док.
+  // @OneToMany(() => UserRolesEntity, (userRoles) => userRoles.user)
+  // public userRoles: UserRolesEntity[];
+  //
+  // ^ раб, но запись странная
+  // @OneToMany(() => UserRolesEntity, (userRoles) => userRoles.user)
+  // userRoles: UserRolesEntity[];
 
   // у Польз.Мн.загр.Файлов. Связь 1го ко Мн. Аноним.fn(табл.обращ.(TrackEntity), получ.данн.по обрат.связи(track.user))
   @OneToMany(() => FileEntity, (file: FileEntity) => file.user)

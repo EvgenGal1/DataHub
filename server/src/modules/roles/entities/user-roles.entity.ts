@@ -1,51 +1,45 @@
-import {
-  Column,
-  Entity,
-  JoinColumn,
-  ManyToOne,
-  PrimaryColumn,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
-
-import { UserEntity } from '../../users/entities/user.entity';
-import { RoleEntity } from './role.entity';
+import { Entity, PrimaryGeneratedColumn, PrimaryColumn, Column } from 'typeorm';
+import { ApiProperty } from '@nestjs/swagger';
 
 @Entity({ name: 'user_roles', schema: 'public' })
 export class UserRolesEntity {
   @PrimaryGeneratedColumn()
-  // @PrimaryColumn({type: 'integer',unique: true,})
-  id: number;
+  public id: number;
 
-  // уровень Роли (напр.: роль Miloman ур.1 при загр.1 изо, ур.2 > 5 изо и т.д.)
   @Column({ default: 1, nullable: true })
-  level: number;
-
-  // ^^ связки Мн.>Мн. у users/userId и roles/roleId
-  @PrimaryColumn({ name: 'userId', type: 'integer' })
-  userId: number;
-
-  @PrimaryColumn({ name: 'roleId', type: 'integer' })
-  roleId: number;
-
-  @ManyToOne(() => UserEntity, (user) => user.roles, {
-    onDelete: 'NO ACTION',
-    onUpdate: 'NO ACTION',
+  @ApiProperty({
+    example: 1,
+    description:
+      'Уровень Роли (например, Роль Miloman ур.1 при загрузке 1 изо, ур.2 > 5 изо и т.д.)',
   })
-  @JoinColumn([{ name: 'userId', referencedColumnName: 'id' }])
-  users: UserEntity[];
+  public level: number | null;
 
-  @ManyToOne(() => RoleEntity, (role) => role.users, {
-    onDelete: 'NO ACTION',
-    onUpdate: 'NO ACTION',
-  })
-  @JoinColumn([{ name: 'roleId', referencedColumnName: 'id' }])
-  roles: RoleEntity[];
+  @PrimaryColumn({ name: 'userId' })
+  public userId: number;
 
-  // ~~ доп.столб.в users.roles
-  // Теперь, при создании или обновлении связей UserRolesEntity, столбец roles в сущности UserEntity будет автоматически заполнен массивом ролей.
-  // @BeforeInsert()
-  // @BeforeUpdate()
-  // updateRolesArray() {
-  //   this.user.roles = this.user.userRoles.map((userRole) => userRole.role.role);
-  // }
+  @PrimaryColumn({ name: 'roleId' })
+  public roleId: number;
+  // ^ нужн.по док.
+  // @ManyToOne(() => UserEntity, (user) => user./* roles */ userRoles, {
+  //   onDelete: 'NO ACTION',
+  //   onUpdate: 'NO ACTION',
+  // })
+  // // @JoinColumn({ name: 'userId' })
+  // public user: UserEntity;
+  // ^ нужн.по док.
+  // @ManyToOne(() => RoleEntity, (role) => role.userRoles, {
+  //   onDelete: 'NO ACTION',
+  //   onUpdate: 'NO ACTION',
+  // })
+  // // @JoinColumn([{ name: 'roleId', referencedColumnName: 'id' }])
+  // public role: RoleEntity;
+  //
+  // ^ раб, но запись странная
+  // @ManyToOne(() => UserEntity, (user) => user.userRoles /* , { eager: true } */ )
+  // @JoinColumn({ name: 'userId' })
+  // user: UserEntity;
+  // ^ раб, но запись странная
+  // @ManyToOne/* ManyToMany */(() => RoleEntity, (role) => role.userRoles /* , { eager: true } */ )
+  // @JoinColumn({ name: 'roleId' })
+  // role: RoleEntity;
 }

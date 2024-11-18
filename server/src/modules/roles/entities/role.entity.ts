@@ -34,13 +34,25 @@ export class RoleEntity {
     onDelete: 'NO ACTION',
     onUpdate: 'NO ACTION',
   })
-  // ! JoinTable откл от ошб. ERROR [TypeOrmModule] Unable to connect to the database (localhost). Retrying  >>  QueryFailedError: ограничение "PK_54ee852c4fe81342f9c06ee0fdd" в таблице "user_roles" не существует
+  // ! ошб.  -  ограничение "PK_..." в таблице "user_roles" не существует
+  // @JoinTable({
+  //   name: 'user_roles',
+  //   joinColumn: { name: 'roleId', referencedColumnName: 'id' },
+  //   inverseJoinColumn: { name: 'userId', referencedColumnName: 'id' },
+  // })
   @ApiProperty({
     type: () => UserEntity,
     isArray: true,
     description: 'Роли Пользователя',
   })
-  users?: UserEntity[];
+  users: UserEntity[];
+  // ^ нужн.по док.
+  // @OneToMany(() => UserRolesEntity, (userRoles) => userRoles.role)
+  // public userRoles: UserRolesEntity[];
+  //
+  // ^ раб, но запись странная
+  // @OneToMany(() => UserRolesEntity, (userRoles) => userRoles.role)
+  // userRoles: UserRolesEntity[];
 
   @CreateDateColumn({ name: 'createdAt' })
   createdAt?: Date;
