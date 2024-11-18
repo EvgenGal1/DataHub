@@ -48,14 +48,24 @@ export class ReactionEntity {
   // ID объекта на который оставлена Реакция
   @Column()
   @ApiProperty({
-    example: 12,
+    example: 123,
     description: 'ID объекта Реакции',
   })
   reactionId: number;
+
+  // Метод для приведения ID к UUID(защит.от коллизии) > reactionId: string и остальных ID через PrimaryColumn
+  // addReaction(postId: number) {
+  //   this.reactionId = uuidv4(); // Генерация нового уникального идентификатора для реакции
+  //   this.postId = postId; // Заполнение стандартным идентификатором поста
+  // }
 
   @CreateDateColumn({ name: 'createdAt' })
   createdAt?: Date;
 
   @DeleteDateColumn({ name: 'deletedAt' })
   deletedAt?: Date;
+
+  // ^^ прописать совместную таблицу под лайки, комменты, реакции. Подтягивать только то что нужно к запросу.
+  // Например на один трек от 3х user может быть по 3 лайка, коммента, репоста и это займёт только 3 строчки в данн.табл.
+  // При подтяг.данн. раскидывать res по местам
 }
