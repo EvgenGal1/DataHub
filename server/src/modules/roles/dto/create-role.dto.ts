@@ -1,15 +1,24 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { IsNotEmpty, IsString, Length } from 'class-validator';
 
 export class CreateRoleDto {
   @ApiProperty({
-    default: 'USER',
+    example: 'GUEST',
     description: 'Роль',
+    required: true,
   })
-  value: string;
+  @IsNotEmpty({ message: 'Роль не должна быть пустой' })
+  @IsString({ message: 'Роль должна быть строкой' })
+  @Length(1, 50, { message: 'Роль должна быть от 1 до 50 символов' })
+  readonly value: string;
 
   @ApiProperty({
-    default: 'Описание Роли',
+    example: 'Обычный Пользователь',
     description: 'Описание Роли',
+    required: true,
   })
-  description: string;
+  @IsNotEmpty({ message: 'Описание Роли не должно быть пустым' })
+  @IsString({ message: 'Описание Роли должно быть строкой' })
+  @Length(1, 255, { message: 'Описание Роли должно быть от 1 до 255 символов' })
+  readonly description: string;
 }
