@@ -74,12 +74,13 @@ export class AlbumEntity {
 
   // у Альбома Мн.Треков <> Трек может быть во Мн.Альбомах
   @ManyToMany(() => TrackEntity, (track: TrackEntity) => track.albums)
-  // откл. нет нужды настр.второстеп.табл.
-  // @JoinTable({
-  // name: 'album_track',
-  // joinColumn: { name: 'albumId', referencedColumnName: 'id' },
-  // inverseJoinColumn: { name: 'trackId', referencedColumnName: 'id' },
-  // })
+  // ! без JoinTable не созд.доп.табл. album_track
+  @JoinTable({
+    // ! c JoinTable И БЕЗ внутр.настр.(name,joinColumn,inverseJoinColumn) созд.доп.табл. tracks_albums_albums
+    name: 'album_track',
+    joinColumn: { name: 'albumId', referencedColumnName: 'id' },
+    inverseJoinColumn: { name: 'trackId', referencedColumnName: 'id' },
+  })
   @ApiProperty({
     type: () => TrackEntity,
     isArray: true,
