@@ -34,7 +34,7 @@ export class RoleEntity {
     onDelete: 'NO ACTION',
     onUpdate: 'NO ACTION',
   })
-  // ! ошб.  -  ограничение "PK_..." в таблице "user_roles" не существует
+  // ! ошб.  -  ограничение "PK_54...dd" в таблице "user_roles" не существует
   // @JoinTable({
   //   name: 'user_roles',
   //   joinColumn: { name: 'roleId', referencedColumnName: 'id' },
@@ -46,6 +46,7 @@ export class RoleEntity {
     description: 'Роли Пользователя',
   })
   users: UserEntity[];
+
   // ^ нужн.по док.
   // @OneToMany(() => UserRolesEntity, (userRoles) => userRoles.role)
   // public userRoles: UserRolesEntity[];

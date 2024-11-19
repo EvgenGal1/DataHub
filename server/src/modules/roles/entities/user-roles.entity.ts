@@ -19,6 +19,7 @@ export class UserRolesEntity {
 
   @PrimaryColumn({ name: 'roleId' })
   public roleId: number;
+
   // ^ нужн.по док.
   // @ManyToOne(() => UserEntity, (user) => user./* roles */ userRoles, {
   //   onDelete: 'NO ACTION',

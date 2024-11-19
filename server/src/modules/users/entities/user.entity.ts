@@ -96,19 +96,21 @@ export class UserEntity {
     onUpdate: 'NO ACTION',
     onDelete: 'NO ACTION',
   })
-  @JoinTable({
-    // ! ошб.  -  DROP COLUMN "level"  >>  столбец "level" содержит значения NULL
-    // назв.связ.табл., стлолбцы/ссылки владельца/обратного
-    // name: 'user_roles',
-    // joinColumn: { name: 'userId', ссылкаColumnName: 'id' },
-    // inverseJoinColumn: { name: 'roleId', referencedColumnName: 'id' },
-  })
+  // ! созд.2 доп.табл. - users_roles и users_roles_roles
+  // @JoinTable({
+  // ! ошб.  -  DROP COLUMN "level"  >>  столбец "level" содержит значения NULL  <>  создать уникальный индекс "PK_88...75" не удалось
+  // назв.связ.табл., стлолбцы/ссылки владельца/обратного
+  // name: 'user_roles',
+  // joinColumn: { name: 'userId', referencedColumnName: 'id' },
+  // inverseJoinColumn: { name: 'roleId', referencedColumnName: 'id' },
+  // })
   @ApiProperty({
     type: () => RoleEntity,
     isArray: true,
     description: 'Роли Пользователя',
   })
   roles: RoleEntity[];
+
   // ^ нужн.по док.
   // @OneToMany(() => UserRolesEntity, (userRoles) => userRoles.user)
   // public userRoles: UserRolesEntity[];
