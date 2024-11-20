@@ -89,10 +89,7 @@ export class AlbumEntity {
   tracks: TrackEntity[];
 
   // у Алб.Мн.Реакций
-  @OneToMany(
-    () => ReactionEntity,
-    (reaction: ReactionEntity) => reaction.reactionType === 'album',
-  )
+  @OneToMany(() => ReactionEntity, (reaction: ReactionEntity) => reaction.album)
   @ApiProperty({
     type: () => ReactionEntity,
     isArray: true,

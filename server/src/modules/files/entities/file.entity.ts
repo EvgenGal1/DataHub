@@ -94,10 +94,7 @@ export class FileEntity {
   user: UserEntity;
 
   // у Файла Мн.Реакций
-  @OneToMany(
-    () => ReactionEntity,
-    (reaction: ReactionEntity) => reaction.reactionType === 'file',
-  )
+  @OneToMany(() => ReactionEntity, (reaction: ReactionEntity) => reaction.file)
   @ApiProperty({
     type: () => ReactionEntity,
     isArray: true,

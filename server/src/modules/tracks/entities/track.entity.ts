@@ -101,10 +101,7 @@ export class TrackEntity {
   albums: AlbumEntity[];
 
   // у Трека Мн.реакций.
-  @OneToMany(
-    () => ReactionEntity,
-    (reaction: ReactionEntity) => reaction.reactionType === 'track',
-  )
+  @OneToMany(() => ReactionEntity, (reaction: ReactionEntity) => reaction.track)
   @ApiProperty({
     type: () => ReactionEntity,
     isArray: true,

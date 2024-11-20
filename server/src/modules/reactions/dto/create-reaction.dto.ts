@@ -15,7 +15,7 @@ export class CreateReactionDto {
   })
   @IsOptional()
   @IsString()
-  text?: string;
+  comment?: string;
 
   @ApiProperty({
     example: 5,
@@ -35,23 +35,37 @@ export class CreateReactionDto {
   @IsInt()
   userId: number;
 
-  @ApiProperty({
-    example: 'track',
-    description: 'Тип объекта Реакция',
-    required: true,
-    enum: ['track', 'album', 'file'],
-  })
-  @IsNotEmpty()
-  @IsString()
-  @IsEnum(['track', 'album', 'file'])
-  reactionType: 'track' | 'album' | 'file';
+  // ^ Общ.Реакции. ID/Типы
+  // @ApiProperty({ description: 'ID Сущности Реакции', required: true })
+  // @IsNotEmpty()
+  // @IsInt()
+  // entityId: number;
+  // @ApiProperty({ description: 'Тип Сущности Реакции', required: true, enum: ['track', 'album', 'file'], })
+  // @IsNotEmpty()
+  // @IsString()
+  // @IsEnum(['track', 'album', 'file'])
+  // entityType: 'track' | 'album' | 'file';
+
+  // ^ Раздел.Реакции. ID Файла/Трека/Альбома
+  @ApiProperty({ description: 'ID Файла', required: false })
+  @IsOptional()
+  @IsInt()
+  fileId?: number;
+  @ApiProperty({ description: 'ID Трека', required: false })
+  @IsOptional()
+  @IsInt()
+  trackId?: number;
+  @ApiProperty({ description: 'ID Альбома', required: false })
+  @IsOptional()
+  @IsInt()
+  albumId?: number;
 
   @ApiProperty({
-    example: 12,
-    description: 'ID объекта Реакции',
-    required: true,
+    example: 1,
+    description: 'ID родительской Реакции',
+    required: false,
   })
-  @IsNotEmpty()
+  @IsOptional()
   @IsInt()
-  reactionId: number;
+  parentReactionId?: number;
 }
