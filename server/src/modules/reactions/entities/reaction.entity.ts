@@ -10,9 +10,9 @@ import {
 import { ApiProperty } from '@nestjs/swagger';
 
 import { UserEntity } from '../../users/entities/user.entity';
-import { FileEntity } from 'src/modules/files/entities/file.entity';
-import { TrackEntity } from 'src/modules/tracks/entities/track.entity';
-import { AlbumEntity } from 'src/modules/albums/entities/album.entity';
+import { FileEntity } from '../../files/entities/file.entity';
+import { TrackEntity } from '../../tracks/entities/track.entity';
+import { AlbumEntity } from '../../albums/entities/album.entity';
 
 @Entity({ name: 'reactions', schema: 'public' })
 export class ReactionEntity {
