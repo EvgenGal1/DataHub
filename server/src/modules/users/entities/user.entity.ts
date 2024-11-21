@@ -8,7 +8,6 @@ import {
   OneToMany,
   ManyToOne,
   ManyToMany,
-  JoinTable,
   CreateDateColumn,
   DeleteDateColumn,
 } from 'typeorm';

@@ -59,30 +59,30 @@ export class ReactionEntity {
   @ApiProperty({ type: () => AlbumEntity, description: 'Альбом с Реакцией' })
   album?: AlbumEntity;
 
-  // Реакция на Реакцию
+  // у Мн.Дочек Один Родитель  -  ID Реакции (Родителя) этой Реакции
   @ManyToOne(() => ReactionEntity, (reaction) => reaction.childReactions, {
     nullable: true,
     onDelete: 'CASCADE',
   })
   @ApiProperty({
     type: () => ReactionEntity,
-    description: 'Родительская Реакция (если это Реакция на Реакцию)',
+    description: 'ID Родительской Реакции (если это Реакция на Реакцию)',
   })
   parentReaction?: ReactionEntity;
 
-  // Реакции на эту Реакцию
+  // у Родителя Мн.Дочек  -  IDs Реакций (Дочек) на эту Реакцию
   @OneToMany(() => ReactionEntity, (reaction) => reaction.parentReaction, {
     cascade: true,
   })
   @ApiProperty({
     type: () => [ReactionEntity],
-    description: 'Дочерние Реакции (если эта Реакция имеет ответы))',
+    description: 'ID Дочерних Реакций (если эта Реакция имеет Реакции))',
   })
   childReactions?: ReactionEntity[];
 
   //  ----------------------------------------------------------------------------------
 
-  // Метод для приведения ID к UUID(защит.от коллизии) > entityId: string и остальных ID через PrimaryColumn
+  // Метод для приведения ID к UUID(защит.от коллизии) > entityId: number и остальных ID через PrimaryColumn
   // addReaction(postId: number) {
   //   this.entityId = uuidv4(); // Генерация нового уникального идентификатора для реакции
   //   this.postId = postId; // Заполнение стандартным идентификатором поста
