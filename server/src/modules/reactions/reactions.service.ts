@@ -2,9 +2,9 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { In, Repository } from 'typeorm';
 
+import { ReactionEntity } from './entities/reaction.entity';
 import { CreateReactionDto } from './dto/create-reaction.dto';
 import { UpdateReactionDto } from './dto/update-reaction.dto';
-import { ReactionEntity } from './entities/reaction.entity';
 import { BasicUtils } from '../../common/utils/basic.utils';
 import { DatabaseUtils } from '../../common/utils/database.utils';
 import { LoggingWinston } from '../../config/logging/log_winston.config';
@@ -187,7 +187,7 @@ export class ReactionsService {
     userId?: number,
     // totalReactionDto?: TotalReactionDto,
     param?: string,
-  ) {
+  ): Promise<void> {
     try {
       // ошб.е/и нет ID
       if (!reactionIds) {
@@ -204,5 +204,213 @@ export class ReactionsService {
       );
       throw error;
     }
+  }
+
+  // ^^ Расшир.мтд. ----------------------------------------------------------------------------
+
+  // Получить Дочерние Реакции по ID Родительской Реакции
+  async findChildReactions(parentId: number): Promise<ReactionEntity[]> {
+    try {
+      if (isDevelopment)
+        this.logger.log(`db < Child по React.parentId '${parentId}`);
+
+      // загр. Дочерние Реакции по ID Родителя
+      const childReactions = await this.reactionRepository.find({
+        where: { parentReaction: { id: parentId } },
+        relations: ['childReactions'], // Загружаем дочерние реакции
+      });
+      if (childReactions.length === 0) {
+        this.logger.warn(`Child по React.parentId '${parentId}' не найдены`);
+        throw new NotFoundException(
+          `Child по React.parentId '${parentId}' не найдены`,
+        );
+      }
+
+      this.logger.info(`< Child по React.parentId '${parentId}'`);
+      return childReactions;
+    } catch (error) {
+      this.logger.error(
+        `!Ошб. < Child по React.parentId '${parentId}': '${await this.basicUtils.hendlerTypesErrors(error)}'`,
+      );
+      throw error;
+    }
+  }
+
+  // Получить Родительскую Реакцию по ID Дочерней Реакции
+  async findParentReaction(childId: number): Promise<ReactionEntity> {
+    try {
+      if (isDevelopment)
+        this.logger.log(`db < Parent по React.childId '${childId}`);
+
+      // загр.связ. Родительскую Реакцию по ID Дочки
+      const childReaction = await this.reactionRepository.findOne({
+        where: { id: childId },
+        relations: ['parentReaction'], // Загружаем родительскую реакцию
+      });
+      if (!childReaction || !childReaction.parentReaction) {
+        this.logger.warn(`Parent по React.childId '${childId}' не найдены`);
+        throw new NotFoundException(
+          `Parent по React.childId '${childId}' не найдены`,
+        );
+      }
+
+      this.logger.info(`< Parent по React.childId '${childId}'`);
+      return childReaction.parentReaction;
+    } catch (error) {
+      this.logger.error(
+        `!Ошб. < Parent по React.childId '${childId}': '${await this.basicUtils.hendlerTypesErrors(error)}'`,
+      );
+      throw error;
+    }
+  }
+
+  // получить Реакции по связи Сущности/ID
+  async findByEntity(
+    entityId: number,
+    entityType: string,
+    includedParams: string | string[],
+  ): Promise<ReactionEntity[]> {
+    try {
+      if (isDevelopment)
+        this.logger.log(
+          `db << React Entity '${entityType}' с ID '${entityId}'`,
+        );
+      // поля выбора
+      const selectFields = [
+        'reaction.id',
+        'reaction.comment',
+        'reaction.rating',
+        // 'reaction.createdAt', 'reaction.deletedAt', // + даты к Родителю
+      ];
+      // созд.req > Родителя
+      const baseQuery = this.reactionRepository
+        .createQueryBuilder('reaction')
+        .select(selectFields)
+        .where(`reaction.${entityType}Id = :entityId`, { entityId })
+        .andWhere('reaction.parentReaction IS NULL'); // + только в Родителя
+      //  выгр.Родителя/Дочку из Реакций + связи по типу -  "user": { "id": 3 }, "file": null
+      // const entityReact = await this.reactionRepository.createQueryBuilder('reaction').select(['reaction.id','reaction.comment','reaction.rating','reaction.createdAt','reaction.deletedAt','user.id','file.id','track.id','album.id','parentReaction.id','childReactions.id']).leftJoin('reaction.user', 'user').leftJoin('reaction.file', 'file').leftJoin('reaction.track', 'track').leftJoin('reaction.album', 'album').leftJoin('reaction.parentReaction', 'parentReaction').leftJoin('reaction.childReactions', 'childReactions').where(`reaction.${entityType} = :entityId`, { entityId }).getMany();
+
+      // доп.req по вкл.парам
+      if (includedParams) {
+        // leftJoin > вложен.Реакций Детей
+        if (includedParams.includes('childs')) {
+          baseQuery.leftJoinAndSelect(
+            'reaction.childReactions',
+            'childReactions',
+          );
+        }
+        // leftJoin > связей
+        if (
+          includedParams.includes('relationId') ||
+          includedParams.includes('relationFull')
+        ) {
+          baseQuery
+            .leftJoinAndSelect('reaction.user', 'user')
+            .leftJoinAndSelect('reaction.file', 'file')
+            .leftJoinAndSelect('reaction.track', 'track')
+            .leftJoinAndSelect('reaction.album', 'album');
+          // .leftJoinAndSelect('reaction.parentReaction', 'parentReaction');
+        }
+      }
+
+      // req/данн./обраб.ошб
+      const reactions: any = await baseQuery.getMany();
+      if (reactions.length === 0) {
+        this.logger.warn(
+          `Реакций для Entity '${entityType}' с ID '${entityId}' не найдены`,
+        );
+        throw new NotFoundException(
+          `Реакций для Entity '${entityType}' с ID '${entityId}' не найдены`,
+        );
+      }
+
+      // рекурсивная обраб.вкл.парам. > вложенных Реакций
+      if (includedParams && includedParams?.includes('childs')) {
+        await this.loadChildsReactions(reactions, includedParams);
+      }
+      // возврат с формир.req с вкл.парам или возврат напрямую
+      return includedParams
+        ? reactions.map((reaction: ReactionEntity) =>
+            this.formatReaction(reaction, includedParams),
+          )
+        : reactions;
+    } catch (error) {
+      this.logger.error(
+        `!Ошб. << React Entity '${entityType}' с ID '${entityId}': '${await this.basicUtils.hendlerTypesErrors(error)}'`,
+      );
+      throw error;
+    }
+  }
+
+  // рекурс.загр.Реакций Дочерних/Детей. Дети <&> User Связи
+  private async loadChildsReactions(
+    reactions: ReactionEntity[],
+    includedParams: string | string[],
+  ) {
+    // перебор эл.масс.reactions
+    for (const reaction of reactions) {
+      // е/и есть Дети
+      if (reaction.childReactions && reaction.childReactions.length > 0) {
+        // сбор всех ID Рекций Детей
+        const childReactionIds = reaction.childReactions.map(
+          (child) => child.id,
+        );
+        // поля выбора
+        const selectFields: any = ['id', 'comment', 'rating'];
+        // загр.Реакции Детей по ID, вкл.вложенности
+        const childReactions = await this.reactionRepository.find({
+          where: { id: In(childReactionIds) },
+          select: selectFields,
+          relations:
+            // е/и `связь` + 'дочерний' - загр.ещё User
+            (includedParams.includes('relationId') ||
+              includedParams.includes('relationFull')) &&
+            includedParams.includes('childs')
+              ? ['user', 'childReactions']
+              : // загр.без User
+                includedParams.includes('childs')
+                ? ['childReactions']
+                : [],
+        });
+        // присвойка Детей к текущей Реакции
+        reaction.childReactions = childReactions;
+        // рекурс.загр.Реакции Детей > всех вложен.Реакций
+        await this.loadChildsReactions(childReactions, includedParams);
+      }
+    }
+  }
+
+  // формир.res Реакций от параметров
+  private formatReaction(
+    reaction: ReactionEntity,
+    includedParams: string | string[],
+  ) {
+    // мини.формат
+    const formattedReaction: any = {
+      id: reaction.id,
+      comment: reaction.comment,
+      rating: reaction.rating,
+    };
+    // по вкл.парам.формит.res. ID <> Full данн.
+    if (includedParams?.includes('relationId')) {
+      if (reaction.user?.id) formattedReaction.userId = reaction.user.id;
+      if (reaction.file?.id) formattedReaction.fileId = reaction.file.id;
+      if (reaction.track?.id) formattedReaction.trackId = reaction.track.id;
+      if (reaction.album?.id) formattedReaction.albumId = reaction.album.id;
+    } else if (includedParams?.includes('relationFull')) {
+      if (reaction.user?.id) formattedReaction.user = reaction.user;
+      if (reaction.file?.id) formattedReaction.file = reaction.file;
+      if (reaction.track?.id) formattedReaction.track = reaction.track;
+      if (reaction.album?.id) formattedReaction.album = reaction.album;
+    }
+    // рекурс.формир.Реакции Детей > всех вложен.Реакций
+    if (reaction.childReactions) {
+      formattedReaction.childReactions = reaction.childReactions.map((child) =>
+        this.formatReaction(child, includedParams),
+      );
+    }
+
+    return formattedReaction;
   }
 }
