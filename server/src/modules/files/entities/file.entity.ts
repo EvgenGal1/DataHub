@@ -67,7 +67,7 @@ export class FileEntity {
   })
   userAvatar: UserEntity[];
 
-  // у Обложки (заглушки) Мн.Треков
+  // у Обложки (заглушка) Мн.Треков
   @OneToMany(() => TrackEntity, (track: TrackEntity) => track.coverArt)
   @ApiProperty({
     type: () => TrackEntity,
@@ -76,7 +76,7 @@ export class FileEntity {
   })
   tracksCover: TrackEntity[];
 
-  // у Обложки (заглушки) Мн.Альбомов
+  // у Обложки (заглушка) Мн.Альбомов
   @OneToMany(() => AlbumEntity, (album: AlbumEntity) => album.coverArt)
   @ApiProperty({
     type: () => AlbumEntity,

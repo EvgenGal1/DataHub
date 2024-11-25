@@ -64,7 +64,7 @@ export class AlbumEntity {
   })
   user: UserEntity;
 
-  // у Мн.треков Одна обложка. Ссылк.изо Трека
+  // у Мн.Альбомов Одна Обложка (заглушка)
   @ManyToOne(() => FileEntity, (file: FileEntity) => file.albumsCover)
   @ApiProperty({
     type: () => FileEntity,

@@ -75,7 +75,7 @@ export class TrackEntity {
   })
   file: FileEntity;
 
-  // у Мн.треков Одна обложка. Ссылк.изо Трека
+  // у Мн.Треков Одна Обложка. Ссылк.изо Трека
   @ManyToOne(() => FileEntity, (file: FileEntity) => file.tracksCover)
   @ApiProperty({
     type: () => FileEntity,
