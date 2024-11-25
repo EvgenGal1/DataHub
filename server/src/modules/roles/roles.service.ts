@@ -5,8 +5,6 @@ import { Repository } from 'typeorm';
 import { CreateRoleDto } from './dto/create-role.dto';
 import { UpdateRoleDto } from './dto/update-role.dto';
 import { RoleEntity } from './entities/role.entity';
-// import { UserRolesEntity } from './entities/user-roles.entity';
-// import { AddingRolesToUsersDto } from './dto/add-roles-to-users.dto';
 import { BasicUtils } from '../../common/utils/basic.utils';
 import { DatabaseUtils } from '../../common/utils/database.utils';
 import { LoggingWinston } from '../../config/logging/log_winston.config';
@@ -18,14 +16,15 @@ export class RolesService {
     private readonly logger: LoggingWinston,
     @InjectRepository(RoleEntity, isProduction ? 'supabase' : 'localhost')
     private readonly roleRepository: Repository<RoleEntity>,
-    // @InjectRepository(UserRolesEntity, isProduction ? 'supabase' : 'localhost')
-    // private readonly userRolesRepository: Repository<UserRolesEntity>,
     private readonly basicUtils: BasicUtils,
     private readonly dataBaseUtils: DatabaseUtils,
   ) {}
 
   async createRole(createRoleDto: CreateRoleDto): Promise<RoleEntity> {
     try {
+      if (isDevelopment)
+        this.logger.info(`db + Role : '${JSON.stringify(createRoleDto)}'`);
+
       // `получить наименьший доступный идентификатор` из БД > табл.role
       const smallestFreeId =
         await this.dataBaseUtils.getSmallestIDAvailable('role');
@@ -35,25 +34,21 @@ export class RolesService {
         id: smallestFreeId,
       });
       if (!roleCre) {
-        this.logger.error(`Role '${JSON.stringify(createRoleDto)}' не создан`);
+        this.logger.warn(`Role '${JSON.stringify(createRoleDto)}' не создан`);
         throw new NotFoundException(
           `Role '${JSON.stringify(createRoleDto)}' не создан`,
         );
       }
 
-      if (isDevelopment)
-        this.logger.info(`db + Role : '${JSON.stringify(createRoleDto)}'`);
       // сохр.,ошб.,лог.,возврат
       const savedRole: RoleEntity = await this.roleRepository.save(roleCre);
       if (!savedRole) {
-        this.logger.error(
-          `Role '${JSON.stringify(createRoleDto)}' не сохранён`,
-        );
+        this.logger.warn(`Role '${JSON.stringify(createRoleDto)}' не сохранён`);
         throw new NotFoundException(
           `Role '${JSON.stringify(createRoleDto)}' не сохранён`,
         );
       }
-      this.logger.info(`+ Role.ID '${savedRole.id}'`);
+      this.logger.debug(`+ Role.ID '${savedRole.id}'`);
       return savedRole;
     } catch (error) {
       this.logger.error(
@@ -73,10 +68,10 @@ export class RolesService {
       if (isDevelopment) this.logger.info(`db << Roles All`);
       const allRoles = await this.roleRepository.find();
       if (!allRoles) {
-        this.logger.error(`Roles All не найден`);
+        this.logger.warn(`Roles All не найден`);
         throw new NotFoundException(`Roles All не найден`);
       }
-      this.logger.info(
+      this.logger.debug(
         `<< Roles All length '${allRoles?.length}' < БД '${
           isProduction ? 'SB' : isDevelopment ? 'LH' : 'SB и LH'
         }'`,
@@ -96,10 +91,10 @@ export class RolesService {
       if (isDevelopment) this.logger.info(`db < Role.ID '${id}'`);
       const role = await this.roleRepository.findOneBy({ id });
       if (!role) {
-        this.logger.error(`Role.ID '${id}' не найдена`);
+        this.logger.warn(`Role.ID '${id}' не найдена`);
         throw new NotFoundException(`Role.ID '${id}' не найдена`);
       }
-      this.logger.info(`< Role.ID '${role?.id}'`);
+      this.logger.debug(`< Role.ID '${role?.id}'`);
       return role;
     } catch (error) {
       this.logger.error(
@@ -123,10 +118,10 @@ export class RolesService {
       // объ.res, обраб.ошб., res по значени.
       const role = await this.roleRepository.findOne({ where: whereCondition });
       if (!role) {
-        this.logger.error(`Role Value '${value}' не найдена`);
+        this.logger.warn(`Role Value '${value}' не найдена`);
         throw new NotFoundException('Такой Роли нет');
       }
-      this.logger.info(`<? Role Value '${value}'`);
+      this.logger.debug(`<? Role Value '${value}'`);
       return role;
     } catch (error) {
       this.logger.error(
@@ -141,9 +136,14 @@ export class RolesService {
     updateRoleDto: UpdateRoleDto,
   ): Promise<RoleEntity> {
     try {
+      if (isDevelopment)
+        this.logger.info(
+          `db + Role.ID '${id}' | DTO '${JSON.stringify(updateRoleDto)}'`,
+        );
+
       const role = await this.roleRepository.findOneBy({ id });
       if (!role) {
-        this.logger.error(`Role.ID '${id}' не найдена`);
+        this.logger.warn(`Role.ID '${id}' не найдена`);
         throw new NotFoundException(`Role.ID '${id}' не найдена`);
       }
 
@@ -151,22 +151,17 @@ export class RolesService {
       // role.description = updateRoleDto.description;
       Object.assign(role, updateRoleDto);
 
-      if (isDevelopment)
-        this.logger.info(
-          `db # Role '${await this.basicUtils.hendlerTypesErrors(role)}'`,
-        );
-
       const rolUpd = await this.roleRepository.save(role);
 
       if (!rolUpd) {
-        this.logger.error(
+        this.logger.warn(
           `Role.ID '${id}' по DTO '${JSON.stringify(updateRoleDto)}' не обновлён`,
         );
         throw new NotFoundException(
           `Role.ID '${id}' по DTO '${JSON.stringify(updateRoleDto)}' не обновлён`,
         );
       }
-      this.logger.info(`# Role.ID '${rolUpd.id}'`);
+      this.logger.debug(`# Role.ID '${rolUpd.id}'`);
       return rolUpd;
     } catch (error) {
       this.logger.error(
@@ -187,10 +182,10 @@ export class RolesService {
       if (isDevelopment) this.logger.info(`db - Role.ID: '${id}'`);
       const rolRem = await this.roleRepository.softDelete(id);
       if (!rolRem) {
-        this.logger.error(`Role.ID '${id}' не удалён`);
+        this.logger.warn(`Role.ID '${id}' не удалён`);
         throw new NotFoundException(`Role.ID '${id}' не удалён`);
       }
-      this.logger.info(`- Role.ID : '${rolRem}'`);
+      this.logger.debug(`- Role.ID : '${rolRem}'`);
       return rolRem;
     } catch (error) {
       this.logger.error(
@@ -214,11 +209,11 @@ export class RolesService {
   ) {
     try {
       if (!roleIds) {
-        this.logger.error('Нет Роли/ей > Удаления');
+        this.logger.warn('Нет Роли/ей > Удаления');
         throw new NotFoundException('Нет Роли/ей > Удаления');
       }
       if (!roleId && !param /* && !totalRoleDto */) {
-        this.logger.error('Предовращено полное удаление Роли/ей');
+        this.logger.warn('Предовращено полное удаление Роли/ей');
         throw new NotFoundException('Предовращено полное удаление Роли/ей');
       }
     } catch (error) {

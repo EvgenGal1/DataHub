@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */ // ^^ от ошб. - Св-во объяв., но знач.не прочитано.
+
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { In, Repository } from 'typeorm';
@@ -7,8 +8,8 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserEntity } from './entities/user.entity';
 import { RoleEntity } from '../roles/entities/role.entity';
-import { RolesService } from '../roles/roles.service';
 import { UserRolesEntity } from '../roles/entities/user-roles.entity';
+import { FileEntity } from '../files/entities/file.entity';
 import { AddingRolesToUsersDto } from '../roles/dto/add-roles-to-users.dto';
 // утилиты Общие
 import { BasicUtils } from '../../common/utils/basic.utils';
@@ -32,6 +33,8 @@ export class UsersService {
     private readonly roleRepository: Repository<RoleEntity>,
     @InjectRepository(UserRolesEntity, isProduction ? 'supabase' : 'localhost')
     private readonly userRolesRepository: Repository<UserRolesEntity>,
+    @InjectRepository(FileEntity, isProduction ? 'supabase' : 'localhost')
+    private readonly fileRepository: Repository<FileEntity>,
     // ^ доп.репозит.настр.
     private readonly basicUtils: BasicUtils,
     private readonly dataBaseUtils: DatabaseUtils,
@@ -42,6 +45,9 @@ export class UsersService {
   // СОЗД User + Role + связь
   async createUser(createUserDto: CreateUserDto): Promise<UserEntity> {
     try {
+      if (isDevelopment)
+        this.logger.info(`db + User DTO '${JSON.stringify(createUserDto)}'`);
+
       // `получить наименьший доступный идентификатор` из БД > табл.users
       const smallestFreeId =
         await this.dataBaseUtils.getSmallestIDAvailable('user');
@@ -51,7 +57,7 @@ export class UsersService {
         id: smallestFreeId,
       });
       if (!userCre) {
-        this.logger.error(
+        this.logger.warn(
           `User DTO '${JSON.stringify(createUserDto)}' не создан`,
         );
         throw new NotFoundException(
@@ -61,25 +67,24 @@ export class UsersService {
 
       // ^ будущ.запись Роли,Уровень Роли,psw,token и др.
 
-      // log > DEV
-      if (isDevelopment)
-        this.logger.info(`db + User DTO : '${JSON.stringify(createUserDto)}'`);
       // сохр.,ошб.,лог.,возврат
       const savedUser: UserEntity = await this.userRepository.save(userCre);
       if (!savedUser) {
-        this.logger.error(
+        this.logger.warn(
           `User DTO '${JSON.stringify(createUserDto)}' не сохранён`,
         );
         throw new NotFoundException(
           `User DTO '${JSON.stringify(createUserDto)}' не сохранён`,
         );
       }
-      this.logger.info(`+ User.ID '${savedUser.id}'`);
+      this.logger.debug(`+ User.ID '${savedUser.id}'`);
       return savedUser;
     } catch (error) {
       this.logger.error(
         `!Ошб. + User: '${await this.basicUtils.hendlerTypesErrors(error)}'`,
+        // `!Ошб. + User: ERR '${error}', detail '${error?.detail}', cod '${error?.code}'`, // ^ есть в AllExceptionsFilter
       );
+
       // DEV лог.debug
       if (!isProduction && isDevelopment)
         this.basicUtils.logDebugDev(
@@ -93,12 +98,13 @@ export class UsersService {
   async findAllUsers(): Promise<UserEntity[]> {
     try {
       if (isDevelopment) this.logger.info(`db << Users All`);
+
       const allUsers = await this.userRepository.find();
       if (!allUsers) {
-        this.logger.error(`Users All не найден`);
+        this.logger.warn(`Users All не найден`);
         throw new NotFoundException(`Users All не найден`);
       }
-      this.logger.info(
+      this.logger.debug(
         `<< Users All length '${allUsers?.length}' < БД '${
           isProduction ? 'SB' : isDevelopment ? 'LH' : 'SB и LH'
         }'`,
@@ -116,12 +122,13 @@ export class UsersService {
   async findOneUser(id: number): Promise<UserEntity> {
     try {
       if (isDevelopment) this.logger.info(`db < User.ID '${id}'`);
+
       const user = await this.userRepository.findOneBy({ id });
       if (!user) {
-        this.logger.error(`User.ID '${id}' не найден`);
+        this.logger.warn(`User.ID '${id}' не найден`);
         throw new NotFoundException(`User.ID '${id}' не найден`);
       }
-      this.logger.info(`< User.ID '${user?.id}'`);
+      this.logger.debug(`< User.ID '${user?.id}'`);
       return user;
     } catch (error) {
       this.logger.error(
@@ -136,6 +143,7 @@ export class UsersService {
   async findUserByParam(param: string): Promise<UserEntity> {
     try {
       if (isDevelopment) this.logger.info(`db <? User Param '${param}'`);
+
       // ^^ fn для неск.id
       // if (usersIds) {
       //   const splitUserIds = usersIds.split(',');
@@ -162,21 +170,21 @@ export class UsersService {
       //   .getMany();
 
       const whereCondition: any = {};
-      // условия res. id/num|eml/@|fullname/str // ^^ дораб.распозн.eml ч/з регул.выраж.
+      // условия res. id/num|eml/@|fullName/str // ^^ дораб.распозн.eml ч/з регул.выраж.
       if (!isNaN(Number(param))) {
         whereCondition.id = param;
       } else if (param.includes('@')) {
         whereCondition.email = param;
       } else if (!param.includes('@') && typeof param === 'string') {
-        whereCondition.fullname = param;
+        whereCondition.fullName = param;
       }
 
       const user = await this.userRepository.findOne({ where: whereCondition });
       if (!user) {
-        this.logger.error(`User Param '${param}' не найден`);
+        this.logger.warn(`User Param '${param}' не найден`);
         throw new NotFoundException(`User Param '${param}' не найден`);
       }
-      this.logger.info(`<? User Param '${param}'`);
+      this.logger.debug(`<? User Param '${param}'`);
       return user;
     } catch (error) {
       this.logger.error(
@@ -192,15 +200,20 @@ export class UsersService {
     updateUserDto: UpdateUserDto,
   ): Promise<UserEntity> {
     try {
+      if (isDevelopment)
+        this.logger.info(
+          `db # User.ID '${id}' | DTO '${JSON.stringify(updateUserDto)}'`,
+        );
+
       // получ.user.id / обраб.ошб.
       const user = await this.userRepository.findOneBy({ id });
       if (!user) {
-        this.logger.error(`User.ID '${id}' не найден`);
+        this.logger.warn(`User.ID '${id}' не найден`);
         throw new NotFoundException(`User.ID '${id}' не найден`);
       }
 
       // изменения
-      // user.fullname = updateUserDto.fullname;
+      // user.fullName = updateUserDto.fullName;
       // user.email = updateUserDto.email;
       // // user.password = updateUserDto.password;
       // Обновляем свойства пользователя с использованием Object.assign
@@ -210,23 +223,17 @@ export class UsersService {
       //   user.password = await this.hashPassword(updateUserDto.password);
       // }
 
-      // log > DEV
-      if (isDevelopment)
-        this.logger.info(
-          `db # User '${await this.basicUtils.hendlerTypesErrors(user)}'`,
-        );
-
       // сохр.,ошб.,лог.,возврат
       const usrUpd = await this.userRepository.save(user);
       if (!usrUpd) {
-        this.logger.error(
+        this.logger.warn(
           `User.ID '${id}' по DTO '${JSON.stringify(updateUserDto)}' не обновлён`,
         );
         throw new NotFoundException(
           `User.ID '${id}' по DTO '${JSON.stringify(updateUserDto)}' не обновлён`,
         );
       }
-      this.logger.info(`# User.ID '${usrUpd.id}'`);
+      this.logger.debug(`# User.ID '${usrUpd.id}'`);
       return usrUpd;
     } catch (error) {
       this.logger.error(
@@ -245,12 +252,13 @@ export class UsersService {
   async removeUser(id: number) {
     try {
       if (isDevelopment) this.logger.info(`db - User.ID: '${id}'`);
+
       const usrRem = await this.userRepository.softDelete(id);
       if (!usrRem) {
-        this.logger.error(`User.ID '${id}' не удалён`);
+        this.logger.warn(`User.ID '${id}' не удалён`);
         throw new NotFoundException(`User.ID '${id}' не удалён`);
       }
-      this.logger.info(`- User.ID : '${usrRem}'`);
+      this.logger.debug(`- User.ID : '${usrRem}'`);
       return usrRem;
     } catch (error) {
       this.logger.error(
@@ -275,11 +283,11 @@ export class UsersService {
     try {
       // ошб.е/и нет ID
       if (!userIds) {
-        this.logger.error('Нет Пользователя/ей > Удаления');
+        this.logger.warn('Нет Пользователя/ей > Удаления');
         throw new NotFoundException('Нет Пользователя/ей > Удаления');
       }
       if (!userId && !param /* && !totalUserDto */) {
-        this.logger.error('Предовращено полное удаление Пользователя/ей');
+        this.logger.warn('Предовращено полное удаление Пользователя/ей');
         throw new NotFoundException(
           'Предовращено полное удаление Пользователя/ей',
         );
@@ -295,27 +303,149 @@ export class UsersService {
   // ^ ДОП.МТД. -----------------------------------------------------------------------
   // !! https://www.techiediaries.com/nestjs-upload-serve-static-file/
   // обнов.аватар Пользователя
-  async setAvatar(userId: number, avatarUrl: string) {
+  async setAvatar(
+    userId: number,
+    avatarId: number,
+    avatarUrl: Express.Multer.File,
+  ) {
     try {
       if (isDevelopment)
-        this.logger.info(`db + AVA '${avatarUrl}' > User.ID: '${userId}'`);
+        this.logger.info(
+          `db + AVA '${avatarUrl}' в Ava.ID '${avatarId}' > User.ID: '${userId}'`,
+        );
 
-      const avaAdd = await this.userRepository.update(userId, {
-        avatar: avatarUrl,
+      // const avaAdd = await this.userRepository.update(userId, {
+      //   avatars: avatarUrl,
+      // });
+      // if (!avaAdd) {
+      //   this.logger.error(
+      //     `User.ID '${userId}' AVA '${avatarUrl}' не добавлена`,
+      //   );
+      //   throw new NotFoundException(
+      //     `User.ID '${userId}' AVA '${avatarUrl}' не добавлена`,
+      //   );
+      // }
+      // this.logger.info(`# User.ID '${userId}' AVA '${avatarUrl}'`);
+      // return avaAdd;
+      // Найдите или создайте FileEntity для данного аватара
+      // const avatarFile = await this.fileRepository.findOne({
+      //   where: { target: avatarUrl }, // Замените `url` на поле, в котором хранится URL файла
+      // });
+
+      // ^ замена ссылки
+      // let avatarUrl = avatar.destination.replace(
+      //   /^\.\/static\/users\//g,
+      //   `users/${userId}/`,
+      // );
+      // avatarUrl = avatarUrl.replace(/\/$/, '');
+
+      const user = await this.userRepository.findOne({
+        where: { id: userId },
       });
-      if (!avaAdd) {
-        this.logger.error(
-          `User.ID '${userId}' AVA '${avatarUrl}' не добавлена`,
-        );
-        throw new NotFoundException(
-          `User.ID '${userId}' AVA '${avatarUrl}' не добавлена`,
-        );
+      // const user = await this.userRepository.findOne(userId);
+      if (!user) {
+        this.logger.warn(`Пользователь с ID '${userId}' не найден`);
+        throw new NotFoundException(`Пользователь с ID '${userId}' не найден`);
       }
-      this.logger.info(`# User.ID '${userId}' AVA '${avatarUrl}'`);
-      return avaAdd;
+
+      const files = await this.fileRepository
+        .createQueryBuilder('file')
+        // .innerJoin('file.avatars', 'avatar') // Присоединяем таблицу пользователей
+        .where('avatar.id = :avatarId', { avatarId }) // Фильтруем по avatarId
+        .getMany();
+      const avatarFile = await this.fileRepository.findOne({
+        where: { id: avatarId },
+      });
+      // const users = await this.userRepository.findBy({ id: In([...userIdss]) });
+      // const avatarFile = await this.fileRepository.findOne([avatarId]);
+      // const avatarFile = await this.fileRepository.findBy([avatarId]);
+      // Ищем файл по avatarId
+      // const avatarFile = await this.fileRepository.findOne({
+      //   // where: { id: avatarId, avatars: { id: userId } }, // Ищем файл с конкретным avatarId, связанным с пользователем
+      //   relations: ['avatars'], // Загружаем связи с пользователями
+      // });
+      const existingAva = await this.fileRepository
+        .createQueryBuilder('files')
+        .where({ user: userId })
+        .leftJoinAndSelect('files.avatars', 'avatarId')
+        .withDeleted()
+        .getOne();
+
+      // const avatarFile = await this.fileRepository
+      //   /* fghf */
+      //   /* .findOne( */
+      //   .findOne(
+      //     /* fgh */
+      //     {
+      //       where: { avatars: avatarId },
+      //       // avatars: In([...avatarId]),
+      //     },
+      //   );
+      // Тип "number" не может быть назначен для типа "boolean | UserEntity | FindOperator<any> | FindOptionsWhere<UserEntity> | FindOptionsWhere<UserEntity>[] | EqualOperator<...>".ts(2322)
+      // (property) avatars?: boolean | UserEntity | FindOperator<any> | FindOptionsWhere<UserEntity> | FindOptionsWhere<UserEntity>[] | EqualOperator<...>
+      if (!avatarFile) {
+        this.logger.warn(`Аватар с ID '${avatarId}' не найден`);
+        throw new NotFoundException(`Аватар с ID '${avatarId}' не найден`);
+      }
+      // if (!avatarFile) {
+      //   this.logger.error(`Файл для аватара с URL '${avatarUrl}' не найден`);
+      //   throw new NotFoundException(
+      //     `Файл для аватара с URL '${avatarUrl}' не найден`,
+      //   );
+      // }
+      // // Обновите пользователя, добавив аватар в массив avatars
+      // await this.userRepository
+      //   .createQueryBuilder()
+      //   .relation(UserEntity, 'avatars')
+      //   .of(userId)
+      //   .add(avatarFile);
+      // Обновляем аватар в таблице файлов
+      // const updatedFile = await this.fileRepository.save({
+      //   ...avatarFile,
+      //   filename: avatarUrl.filename,
+      //   originalname: avatarUrl.originalname,
+      //   mimetype: avatarUrl.mimetype,
+      //   size: avatarUrl.size,
+      //   target: avatarUrl.path, // предполагаю, что путь хранится здесь
+      // });
+
+      // // Обновляем ссылку на аватар у пользователя
+      // user.avatars = updatedFile.target; // предполагаем, что 'avatars' - это строка
+      // await this.usersRepository.save(user);
+
+      // return {
+      //   message: 'Аватар успешно заменен',
+      //   userId: user.id,
+      //   avatarId: updatedFile.id,
+      //   avatarUrl: updatedFile.target,
+      // };
+
+      //  // Находим файл по avatarId
+      //  const avatarFile = await this.fileRepository.findOne({ where: { id: avatarId } });
+
+      //  if (!avatarFile) {
+      //    throw new NotFoundException(`Файл аватара с ID '${avatarId}' не найден`);
+      //  }
+
+      //  // Если необходимо, здесь можно обновить данные аватара
+      //  // например, переименовать или изменить его содержимое, если это требуется
+      //  avatarFile.filename = avatar.originalname; // или любая другая логика обновления
+
+      //  // Сохраняем файл и обновляем связь с пользователем
+      //  await this.fileRepository.save(avatarFile);
+
+      //  // Добавляем файл аватара к пользователю если его там нет
+      //  if (!user.avatars.some(existingAvatar => existingAvatar.id === avatarId)) {
+      //    user.avatars.push(avatarFile);
+      //    await this.userRepository.save(user); // Сохраняем изменения в пользовательской сущности
+      //  }
+
+      this.logger.debug(
+        `+ AVA '${avatarUrl}' в Ava.ID '${avatarId}' > User.ID: '${userId}'`,
+      );
     } catch (error) {
       this.logger.error(
-        `!Ошб. # AVA User.ID '${userId}': '${await this.basicUtils.hendlerTypesErrors(error)}'`,
+        `!Ошб. + AVA '${avatarUrl}' в Ava.ID '${avatarId}' > User.ID: '${userId}': '${await this.basicUtils.hendlerTypesErrors(error)}'`,
       );
       throw error;
     }
@@ -327,6 +457,11 @@ export class UsersService {
     addingRolesToUsersDto: AddingRolesToUsersDto,
   ): Promise<void> {
     try {
+      if (isDevelopment)
+        this.logger.info(
+          `db ++ Пользователи и Роли в DTO '${addingRolesToUsersDto}'`,
+        );
+
       const { userIds, roleIds } = addingRolesToUsersDto;
       // проверки и приведение к общ.типу
       const userIdss: string | string[] = userIds.includes(',')
@@ -338,12 +473,12 @@ export class UsersService {
       // получ.данн. User и Role
       const users = await this.userRepository.findBy({ id: In([...userIdss]) });
       if (!users) {
-        this.logger.error(`User.userIdss '${userIdss}' не нейдены`);
+        this.logger.warn(`User.userIdss '${userIdss}' не нейдены`);
         throw new NotFoundException(`User.userIdss '${userIdss}' не нейдены`);
       }
       const roles = await this.roleRepository.findBy({ id: In([...roleIdss]) });
       if (!users) {
-        this.logger.error(`Role.roleIdss '${roleIdss}' не нейдены`);
+        this.logger.warn(`Role.roleIdss '${roleIdss}' не нейдены`);
         throw new NotFoundException(`Role.roleIdss '${roleIdss}' не нейдены`);
       }
       // Проверка существования пользователей и ролей
@@ -362,11 +497,14 @@ export class UsersService {
       for (const user of users) {
         for (const role of roles) {
           const userRoles = new UserRolesEntity();
-          userRoles.userId = user.id;
-          userRoles.roleId = role.id;
+          // userRoles.userId = user.id;
+          // userRoles.roleId = role.id;
           await this.userRolesRepository.save(userRoles);
         }
       }
+      this.logger.info(
+        `++ Пользователи и Роли в DTO '${addingRolesToUsersDto}'`,
+      );
     } catch (error) {
       this.logger.error(
         `!Ошб. + AVA User > Role DTO '${JSON.stringify(addingRolesToUsersDto)}': '${await this.basicUtils.hendlerTypesErrors(error)}'`,
@@ -447,7 +585,7 @@ export class UsersService {
   // const userInfo = {
   //   user,
   //   role,
-  //   level,
+  //   level, //
   // };
 
   // return userInfo;
