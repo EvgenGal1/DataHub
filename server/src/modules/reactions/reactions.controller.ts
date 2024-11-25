@@ -27,7 +27,7 @@ export class ReactionsController {
   @Post()
   @ApiOperation({ summary: 'Создать Реакцию' })
   async createReaction(@Body() createReactionDto: CreateReactionDto) {
-    this.logger.info(
+    this.logger.debug(
       `req + Reaction DTO : '${JSON.stringify(createReactionDto)}'`,
     );
     return this.reactionsService.createReaction(createReactionDto);
@@ -36,14 +36,14 @@ export class ReactionsController {
   @Get()
   @ApiOperation({ summary: 'Получить Все Реакции' })
   async findAllReaction() {
-    this.logger.info(`req << Reacts All`);
+    this.logger.debug(`req << Reacts All`);
     return this.reactionsService.findAllReaction();
   }
 
   @Get(':id')
   @ApiOperation({ summary: 'Получить Реакцию' })
   async findOneReaction(@Param('id') id: number) {
-    this.logger.info(`req < React.ID '${id}'`);
+    this.logger.debug(`req < React.ID '${id}'`);
     return this.reactionsService.findOneReaction(+id);
   }
 
@@ -53,14 +53,14 @@ export class ReactionsController {
     @Param('id') id: number,
     @Body() updateReactionDto: UpdateReactionDto,
   ) {
-    this.logger.info(`req # React.ID '${id}'`);
+    this.logger.debug(`req # React.ID '${id}'`);
     return this.reactionsService.updateReaction(+id, updateReactionDto);
   }
 
   @Delete(':id')
   @ApiOperation({ summary: 'Удалить Реакцию' })
   async removeReaction(@Param('id') id: number) {
-    this.logger.info(`req - React.ID '${id}'`);
+    this.logger.debug(`req - React.ID '${id}'`);
     return this.reactionsService.removeReaction(+id);
   }
 
@@ -71,8 +71,9 @@ export class ReactionsController {
     summary: 'Получить Дочерние Реакции по ID Родительской Реакции',
   })
   async findChildReactions(
-    @Param('parentId') parentId: string,
+    @Param('parentId') parentId: number,
   ): Promise<ReactionEntity[]> {
+    this.logger.debug(`req < Child по React.parentId '${parentId}'`);
     return this.reactionsService.findChildReactions(+parentId);
   }
 
@@ -81,8 +82,9 @@ export class ReactionsController {
     summary: 'Получить Родительскую Реакцию по ID Дочерней Реакции',
   })
   async findParentReaction(
-    @Param('childId') childId: string,
+    @Param('childId') childId: number,
   ): Promise<ReactionEntity> {
+    this.logger.debug(`req < Parent по React.childId '${childId}`);
     return this.reactionsService.findParentReaction(+childId);
   }
 
@@ -90,18 +92,18 @@ export class ReactionsController {
   @Get('/entity/:entityType/:entityId/')
   @ApiOperation({ summary: 'Получить Реакции по Сущности/ID + Дети/Связи' })
   // параметры выбора: Тип/ID (из Param стр.)
-  @/* ApiQuery */ ApiParam({
+  @ApiParam({
     name: 'entityType',
     enum: ['file', 'track', 'album'],
     required: true,
     description: 'Тип сущности (file, track, album)',
   })
-  @/* ApiQuery */ ApiParam({
+  @ApiParam({
     name: 'entityId',
     required: true,
     description: 'ID сущности',
   })
-  // опцион.вкл.параметры
+  // опцион.вкл.параметры (из стр.req)
   @ApiQuery({
     name: 'includedParams',
     enum: ['childs', 'relationId', 'relationFull'],
@@ -111,13 +113,13 @@ export class ReactionsController {
   })
   async findByEntity(
     // параметры выбора: Тип/ID (из Param стр.)
-    @/* Query */ Param('entityType') entityType: string,
-    @/* Query */ Param('entityId') entityId: number,
-    // опцион.вкл.параметры
+    @Param('entityType') entityType: string,
+    @Param('entityId') entityId: number,
+    // опцион.вкл.параметры (из стр.req)
     @Query('includedParams')
     includedParams?: string | string[],
   ): Promise<ReactionEntity[]> {
-    this.logger.info(`req << React Entity '${entityType}' с ID '${entityId}'`);
+    this.logger.debug(`req << React Entity '${entityType}' с ID '${entityId}'`);
     return this.reactionsService.findByEntity(
       entityId,
       entityType,

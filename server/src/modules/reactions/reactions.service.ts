@@ -24,6 +24,11 @@ export class ReactionsService {
     createReactionDto: CreateReactionDto,
   ): Promise<ReactionEntity> {
     try {
+      if (isDevelopment)
+        this.logger.info(
+          `db + React DTO : '${JSON.stringify(createReactionDto)}'`,
+        );
+
       const smallestFreeId =
         await this.dataBaseUtils.getSmallestIDAvailable('react');
       // созд.репоз. / обраб.ошб.
@@ -40,23 +45,18 @@ export class ReactionsService {
         );
       }
 
-      // log > DEV
-      if (isDevelopment)
-        this.logger.info(
-          `db + React DTO : '${JSON.stringify(createReactionDto)}'`,
-        );
       // сохр.,ошб.,лог.,возврат
       const savedReact: ReactionEntity =
         await this.reactionRepository.save(reactCre);
       if (!savedReact) {
-        this.logger.error(
+        this.logger.warn(
           `React DTO '${JSON.stringify(createReactionDto)}' не сохранён`,
         );
         throw new NotFoundException(
           `React DTO '${JSON.stringify(createReactionDto)}' не сохранён`,
         );
       }
-      this.logger.info(`+ React.ID '${savedReact.id}'`);
+      this.logger.debug(`+ React.ID '${savedReact.id}'`);
       return savedReact;
     } catch (error) {
       this.logger.error(
@@ -76,10 +76,10 @@ export class ReactionsService {
       if (isDevelopment) this.logger.info(`db << Reactions All`);
       const allReacts = await this.reactionRepository.find();
       if (!allReacts) {
-        this.logger.error(`Reactions All не найден`);
+        this.logger.warn(`Reactions All не найден`);
         throw new NotFoundException(`Reactions All не найден`);
       }
-      this.logger.info(
+      this.logger.debug(
         `<< Reactions All length '${allReacts?.length}' < БД '${
           isProduction ? 'SB' : isDevelopment ? 'LH' : 'SB и LH'
         }'`,
@@ -99,10 +99,10 @@ export class ReactionsService {
       if (isDevelopment) this.logger.info(`db < React.ID '${id}'`);
       const react = await this.reactionRepository.findOneBy({ id });
       if (!react) {
-        this.logger.error(`React.ID '${id}' не найден`);
+        this.logger.warn(`React.ID '${id}' не найден`);
         throw new NotFoundException(`React.ID '${id}' не найден`);
       }
-      this.logger.info(`< React.ID '${react?.id}'`);
+      this.logger.debug(`< React.ID '${react?.id}'`);
       return react;
     } catch (error) {
       this.logger.error(
@@ -118,32 +118,31 @@ export class ReactionsService {
     updateReactionDto: UpdateReactionDto,
   ): Promise<ReactionEntity> {
     try {
+      if (isDevelopment)
+        this.logger.info(
+          `db # React.ID '${id}' | DTO '${await this.basicUtils.hendlerTypesErrors(updateReactionDto)}'`,
+        );
+
       const react = await this.reactionRepository.findOneBy({ id });
       if (!react) {
-        this.logger.error(`React.ID '${id}' не найден`);
+        this.logger.warn(`React.ID '${id}' не найден`);
         throw new NotFoundException(`React.ID '${id}' не найден`);
       }
 
       // изменения
       Object.assign(react, updateReactionDto);
 
-      // log > DEV
-      if (isDevelopment)
-        this.logger.info(
-          `db # React '${await this.basicUtils.hendlerTypesErrors(react)}'`,
-        );
-
       // сохр.,ошб.,лог.,возврат
       const reaUpd = await this.reactionRepository.save(react);
       if (!reaUpd) {
-        this.logger.error(
+        this.logger.warn(
           `React.ID '${id}' по DTO '${JSON.stringify(updateReactionDto)}' не обновлён`,
         );
         throw new NotFoundException(
           `React.ID '${id}' по DTO '${JSON.stringify(updateReactionDto)}' не обновлён`,
         );
       }
-      this.logger.info(`# React.ID '${reaUpd.id}'`);
+      this.logger.debug(`# React.ID '${reaUpd.id}'`);
       return reaUpd;
     } catch (error) {
       this.logger.error(
@@ -163,10 +162,10 @@ export class ReactionsService {
       if (isDevelopment) this.logger.info(`db - React.ID: '${id}'`);
       const reaRem = await this.reactionRepository.softDelete(id);
       if (!reaRem) {
-        this.logger.error(`React.ID '${id}' не удалён`);
+        this.logger.warn(`React.ID '${id}' не удалён`);
         throw new NotFoundException(`React.ID '${id}' не удалён`);
       }
-      this.logger.info(`- React.ID : '${reaRem}'`);
+      this.logger.debug(`- React.ID : '${reaRem}'`);
       return reaRem;
     } catch (error) {
       this.logger.error(
@@ -191,11 +190,11 @@ export class ReactionsService {
     try {
       // ошб.е/и нет ID
       if (!reactionIds) {
-        this.logger.error('Нет Реакции/ий > Удаления');
+        this.logger.warn('Нет Реакции/ий > Удаления');
         throw new NotFoundException('Нет Реакции/ий > Удаления');
       }
       if (!userId && !param /* && !totalReactionDto */) {
-        this.logger.error('Предовращено полное удаление Реакции/ий');
+        this.logger.warn('Предовращено полное удаление Реакции/ий');
         throw new NotFoundException('Предовращено полное удаление Реакции/ий');
       }
     } catch (error) {
@@ -212,7 +211,7 @@ export class ReactionsService {
   async findChildReactions(parentId: number): Promise<ReactionEntity[]> {
     try {
       if (isDevelopment)
-        this.logger.log(`db < Child по React.parentId '${parentId}`);
+        this.logger.info(`db < Child по React.parentId '${parentId}`);
 
       // загр. Дочерние Реакции по ID Родителя
       const childReactions = await this.reactionRepository.find({
@@ -226,7 +225,7 @@ export class ReactionsService {
         );
       }
 
-      this.logger.info(`< Child по React.parentId '${parentId}'`);
+      this.logger.debug(`< Child по React.parentId '${parentId}'`);
       return childReactions;
     } catch (error) {
       this.logger.error(
@@ -240,7 +239,7 @@ export class ReactionsService {
   async findParentReaction(childId: number): Promise<ReactionEntity> {
     try {
       if (isDevelopment)
-        this.logger.log(`db < Parent по React.childId '${childId}`);
+        this.logger.info(`db < Parent по React.childId '${childId}`);
 
       // загр.связ. Родительскую Реакцию по ID Дочки
       const childReaction = await this.reactionRepository.findOne({
@@ -254,7 +253,7 @@ export class ReactionsService {
         );
       }
 
-      this.logger.info(`< Parent по React.childId '${childId}'`);
+      this.logger.debug(`< Parent по React.childId '${childId}'`);
       return childReaction.parentReaction;
     } catch (error) {
       this.logger.error(
@@ -272,7 +271,7 @@ export class ReactionsService {
   ): Promise<ReactionEntity[]> {
     try {
       if (isDevelopment)
-        this.logger.log(
+        this.logger.info(
           `db << React Entity '${entityType}' с ID '${entityId}'`,
         );
       // поля выбора
@@ -315,7 +314,7 @@ export class ReactionsService {
       }
 
       // req/данн./обраб.ошб
-      const reactions: any = await baseQuery.getMany();
+      let reactions: any = await baseQuery.getMany();
       if (reactions.length === 0) {
         this.logger.warn(
           `Реакций для Entity '${entityType}' с ID '${entityId}' не найдены`,
@@ -329,12 +328,17 @@ export class ReactionsService {
       if (includedParams && includedParams?.includes('childs')) {
         await this.loadChildsReactions(reactions, includedParams);
       }
-      // возврат с формир.req с вкл.парам или возврат напрямую
-      return includedParams
-        ? reactions.map((reaction: ReactionEntity) =>
-            this.formatReaction(reaction, includedParams),
-          )
-        : reactions;
+      // с вкл.парам формир.req
+      if (includedParams) {
+        reactions = reactions.map((reaction: ReactionEntity) =>
+          this.formatReaction(reaction, includedParams),
+        );
+      }
+
+      this.logger.debug(
+        `<< React Entity '${entityType}'/'${entityId}' кол-во ${reactions.length}`,
+      );
+      return reactions;
     } catch (error) {
       this.logger.error(
         `!Ошб. << React Entity '${entityType}' с ID '${entityId}': '${await this.basicUtils.hendlerTypesErrors(error)}'`,
