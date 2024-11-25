@@ -26,11 +26,8 @@ const customLevels = {
 @Injectable({ scope: Scope.DEFAULT })
 export class LoggingWinston {
   private readonly logger: Logger;
-  // private readonly exceptionLogger: ExceptionLogger;
 
   constructor() {
-    // this.exceptionLogger = new ExceptionLogger();
-
     // масс.кмд.запуска/транспорт > лог-ия
     const transportsArray: transport[] = [
       // консол.транспорт > всех окружений
@@ -39,9 +36,9 @@ export class LoggingWinston {
         format: combine(
           colorize(),
           timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
-          printf(
-            (info) => `${info.timestamp} | ${info.level}: ${info.message}`,
-          ),
+          printf(({ timestamp, level, message, context }) => {
+            return `${timestamp} | ${level} | ${context ? context + ' | ' : ''}${message}`;
+          }),
           errors({ stack: true }),
           json(),
         ),
@@ -83,27 +80,27 @@ export class LoggingWinston {
 
   // мтд.ур.логг.
   log(message: string) {
-    this.logger.info(message);
+    this.logger.log({ level: 'info', message });
   }
 
-  debug(message: string) {
-    this.logger.debug(message);
+  debug(message: string, context?: string | number) {
+    this.logger.debug({ message, context });
   }
 
   verbose(message: string) {
     this.logger.verbose(message);
   }
 
-  info(message: string) {
-    this.logger.info(message);
+  info(message: string, context?: string | number) {
+    this.logger.info({ message, context });
   }
 
   warn(message: string) {
     this.logger.warn(message);
   }
 
-  error(message: string) {
-    this.logger.error(message);
+  error(message: string, context?: string | number) {
+    this.logger.error({ message, context });
     // this.exceptionLogger.captureException(new Error(message));
   }
 }
