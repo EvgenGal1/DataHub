@@ -111,7 +111,7 @@ export class ReactionsController {
     required: false,
     description: 'Включены параметры (Дети, ID Cвязи <> Полная Связь)',
   })
-  async findByEntity(
+  async findReactionsByEntity(
     // параметры выбора: Тип/ID (из Param стр.)
     @Param('entityType') entityType: string,
     @Param('entityId') entityId: number,
@@ -120,7 +120,7 @@ export class ReactionsController {
     includedParams?: string | string[],
   ): Promise<ReactionEntity[]> {
     this.logger.debug(`req << React Entity '${entityType}' с ID '${entityId}'`);
-    return this.reactionsService.findByEntity(
+    return this.reactionsService.findReactionsByEntity(
       entityId,
       entityType,
       includedParams,

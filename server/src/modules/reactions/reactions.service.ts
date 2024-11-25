@@ -264,7 +264,7 @@ export class ReactionsService {
   }
 
   // получить Реакции по связи Сущности/ID
-  async findByEntity(
+  async findReactionsByEntity(
     entityId: number,
     entityType: string,
     includedParams: string | string[],
@@ -336,7 +336,7 @@ export class ReactionsService {
       }
 
       this.logger.debug(
-        `<< React Entity '${entityType}'/'${entityId}' кол-во ${reactions.length}`,
+        `<< React Entity '${entityType}'/'${entityId}' кол-во '${reactions.length}'`,
       );
       return reactions;
     } catch (error) {
