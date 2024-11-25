@@ -8,12 +8,7 @@ import {
   Delete,
   Query,
 } from '@nestjs/common';
-import {
-  /* ApiBearerAuth, */ ApiOperation,
-  ApiQuery,
-  ApiResponse,
-  ApiTags,
-} from '@nestjs/swagger';
+import { ApiOperation, ApiParam, ApiQuery, ApiTags } from '@nestjs/swagger';
 
 import { AlbumEntity } from './entities/album.entity';
 import { AlbumsService } from './albums.service';
@@ -42,7 +37,7 @@ export class AlbumController {
     @Body() createAlbumDto: CreateAlbumDto,
     @UserId() userId: number,
   ) {
-    this.logger.info(
+    this.logger.debug(
       `req User.ID '${userId}' + Alb DTO: '${JSON.stringify(createAlbumDto)}'`,
     );
     return this.albumsService.createAlbum(createAlbumDto, userId);
@@ -51,14 +46,14 @@ export class AlbumController {
   @Get()
   @ApiOperation({ summary: 'Получить Все Альбомы' })
   async findAllAlbum() {
-    this.logger.info(`req << Alb All`);
+    this.logger.debug(`req << Alb All`);
     return this.albumsService.findAllAlbums();
   }
 
   @Get(':id')
   @ApiOperation({ summary: 'Получить Альбом' })
   async findOneAlbum(@Param('id') id: number) {
-    this.logger.info(`req < Alb.ID '${id}'`);
+    this.logger.debug(`req < Alb.ID '${id}'`);
     return this.albumsService.findOneAlbum(+id);
   }
 
@@ -68,82 +63,65 @@ export class AlbumController {
     @Param('id') id: number,
     @Body() updateAlbumDto: UpdateAlbumDto,
   ) {
-    this.logger.info(`req # Alb.ID '${id}'`);
+    this.logger.debug(`req # Alb.ID '${id}'`);
     return this.albumsService.updateAlbum(+id, updateAlbumDto);
   }
 
   @Delete(':id')
   @ApiOperation({ summary: 'Удалить Альбом' })
   async removeAlbum(@Param('id') id: number) {
-    this.logger.info(`req - Alb.ID '${id}'`);
+    this.logger.debug(`req - Alb.ID '${id}'`);
     return this.albumsService.removeAlbum(id);
   }
 
-  // ^^ ДОП.МТД.
+  // ^^ ДОП.МТД. ----------------------------------------------------------------------------------
 
-  // поиск по исполнителю // ~ верн. возвращ.один альбом
-  // ! не раб. @Get('/:author') | '/author' | 'author' > отраб.мтд.@Get(':id')findOne
-  // @Get('/album/:author_Name')
-  // @Get('/album/author_Name/:Name')
-  @Get('/author_Name/:Name')
-  @ApiOperation({ summary: 'Поиск Альбома по Автору' })
-  async searchByAuthor(
-    /* @Param // возвращ.всё */ @Query('author') authorName: string,
-  ) /* : Promise<Album[]> // надо ли тип.возврат. */ {
-    this.logger.info(`req <? Alb.Author '${authorName}'`);
-    return this.albumsService.searchByAuthor(authorName);
-  }
-
-  // поиск по назв.альбома // ~ не верн. возвращ.по мтд. Author все альбомы
-  // @Get('/album/album_Name/:Name')
-  @Get('/album_Name/:Name')
-  // @Get('/:album_Name')
-  @ApiOperation({ summary: 'Поиск Альбома по Названию' })
-  async searchByAlbumName(@Query('album') albumName: string) {
-    this.logger.info(`req <? Alb.Name '${albumName}'`);
-    return this.albumsService.searchByAlbumName(albumName);
-  }
-
-  // кол-во Треков по Альбому
-  @Get('/album/:track-count')
-  @ApiOperation({ summary: 'Получить количество по Альбому' })
-  @ApiQuery({
-    name: 'searchBy',
-    enum: ['название', 'id', 'стиль', 'год выпуска', 'общая длительность'],
+  // Получить по Параметрам Альбомы <> данн.Треков
+  @Get('/params/:paramField/:paramValue') //:
+  @ApiOperation({
+    summary:
+      'Получить по Параметрам Альбомы <> данн.Треков (кол-во / длительность / прослушиваний)',
   })
-  async getTrackCount(
-    @Query('searchBy') searchBy: string,
-    @Query('value') value: string,
-  ): Promise<number> {
-    switch (searchBy) {
-      case 'название':
-        this.logger.info(`req <= Track.count Alb.Name '${value}'`);
-        return this.albumsService.getTrackCountByAlbumName(value);
-      case 'id':
-        this.logger.info(`req <= Track.count Alb.ID '${value}'`);
-        return this.albumsService.getTrackCountByAlbumId(Number(value));
-      // ^ Добавьте обработку других вариантов поиска по своим требованиям
-      default:
-        throw new Error('Неверный вариант поиска');
-    }
-  }
-
-  // по параметрам Альбома. Универс.
-  @Get('/album/:track-params')
-  @ApiOperation({ summary: 'Получить Альбомы по параметрам' })
-  @ApiQuery({
-    name: 'field',
-    enum: ['author', 'album', 'cover', 'year', 'genre', 'id'],
+  // параметры выбора: Поле/Значение (из Param стр.)
+  @ApiParam({
+    name: 'paramField',
+    enum: [
+      'id',
+      'title',
+      'author',
+      'genres',
+      'year',
+      'description',
+      'coverArtId',
+    ],
+    required: true,
+    description: 'Поле Параметра',
   })
-  @ApiQuery({ name: 'value', required: true })
-  @ApiResponse({ status: 200, type: AlbumEntity })
-  async getAlbumByParams(
-    @Query('field') field: string,
-    @Query('value') value: string,
-  ) /* : Promise<Album> */ {
-    const props = {};
-    props[field] = value;
-    this.logger.info(`req <? Alb.Param '${value}'`);
-    return this.albumsService.getAlbumByProps(props);
+  @ApiParam({
+    name: 'paramValue',
+    required: true,
+    description: 'Значение Параметра',
+  })
+  // опцион.возвращ.тип (из стр.req)
+  @ApiQuery({
+    name: 'returnType',
+    enum: ['countTracks', 'durationTracks', 'listensTrack'],
+    required: false,
+    description:
+      'Тип возврата (альбомы по умолчанию)(количество / продолжительность / прослушиваний)',
+  })
+  async findAlbumsByParams(
+    @Param('paramField') paramField: string,
+    @Param('paramValue') paramValue: string,
+    @Query('returnType') returnType: string,
+  ): Promise<AlbumEntity[] | number> {
+    this.logger.debug(
+      `req << Albums Param '${paramField}'/'${paramValue}' ${returnType ? `return '${returnType}'` : ''}`,
+    );
+    return this.albumsService.findAlbumsByParams(
+      paramField,
+      paramValue,
+      returnType,
+    );
   }
 }
