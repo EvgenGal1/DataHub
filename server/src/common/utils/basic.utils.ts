@@ -14,6 +14,15 @@ export class BasicUtils {
     // логгер
     private readonly logger: LoggingWinston,
   ) {}
+  // разбор IDs из строки
+  async parseIdsFromString(idsString: string): Promise<number[]> {
+    return idsString
+      .split(',')
+      .map((id) => id.trim())
+      .filter((id) => id !== '' && !isNaN(parseInt(id, 10)))
+      .map((id) => parseInt(id, 10));
+  }
+
   // лог при DEV подробный
   async logDebugDev(...args: any[]) {
     // лог.в консоль

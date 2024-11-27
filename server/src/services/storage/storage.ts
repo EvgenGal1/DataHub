@@ -29,7 +29,9 @@ export const fileStorage = multer.diskStorage({
     }
 
     // баз.п. / путь/имя по ф.mimetype <> ф.filePaths
-    const baseFolder = 'static';
+    const baseFolder = isDevelopment
+      ? process.env.LH_PUB_DIR
+      : process.env.SRV_PUB_DIR;
     let fileTarget: string;
 
     // путь по filePaths е/и не 'all'
