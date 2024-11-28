@@ -21,14 +21,22 @@ import {
   // ApiBearerAuth,
   ApiQuery,
   ApiTags,
+  ApiParam,
 } from '@nestjs/swagger';
 
-import { FileType, fileTypesAllowed } from './entities/file.entity';
-import { UpdateFileDto } from './dto/update-file.dto';
+// Сервисы/DTO
 import { FilesService } from './files.service';
-import { fileStorage } from '../../services/storage/storage';
+import { UpdateFileDto } from './dto/update-file.dto';
 // import { JwtAuthGuard } from '../auth/guard/jwt.guard';
+// декор.получ. User.ID
 import { UserId } from '../../common/decorators/user-id.decorator';
+// локал.ф.хран-ще
+import { fileStorage } from '../../services/storage/storage';
+// утилиты Общие
+import { BasicUtils } from 'src/common/utils/basic.utils';
+// типы/пути файлов
+import { FilePaths } from '../../common/types/typeFilePaths';
+// логгирование LH
 import { LoggingWinston } from '../../config/logging/log_winston.config';
 
 @Controller('/files')
@@ -41,6 +49,7 @@ import { LoggingWinston } from '../../config/logging/log_winston.config';
 export class FilesController {
   constructor(
     private readonly filesService: FilesService,
+    private readonly basicUtils: BasicUtils,
     private readonly logger: LoggingWinston,
   ) {}
 
@@ -82,6 +91,7 @@ export class FilesController {
     file: Express.Multer.File,
     @UserId() userId: number,
   ) {
+    // логгирование в LH
     this.logger.info(
       `req + File '${JSON.stringify(file)}' > User.ID '${userId}')`,
     );
@@ -108,7 +118,7 @@ export class FilesController {
     },
   })
   // данн.выбора req swagger
-  @ApiQuery({ name: 'fileType', enum: FileType })
+  @ApiQuery({ name: 'filePaths', enum: FilePaths })
   // перехват.для раб.с ф
   @UseInterceptors(FileInterceptor('file', { storage: fileStorage }))
   async createFileByParam(
@@ -125,44 +135,71 @@ export class FilesController {
       }),
     )
     file: Express.Multer.File,
-    @Query('fileType') fileType: FileType,
+    @Query('filePaths') filePaths: FilePaths,
     @UserId() userId: number,
   ) {
     this.logger.info(
-      `req + File '${JSON.stringify(file)}' по fileType '${JSON.stringify(fileType)}' > User.ID '${userId}', )`,
+      `req + File '${JSON.stringify(file)}' по filePaths '${JSON.stringify(filePaths)}' > User.ID '${userId}', )`,
     );
-    // использ.мтд.из serv. Пердача file ч/з Multer, выбран.типа FileType ч/з ApiQuery и userId ч/з UserId
-    return this.filesService.createFileByParam(file, userId, fileType);
+    // использ.мтд.из serv. Пердача file ч/з Multer, выбран.типа FilePaths ч/з ApiQuery и userId ч/з UserId
+    return this.filesService.createFileByParam(file, userId, filePaths);
   }
 
   // получ.ф. Все/Тип. Обращ.к files, возвращ.масс.объ.
   @Get()
-  @ApiOperation({ summary: 'Получить Файлы по Типам <> Все' })
+  @ApiOperation({
+    summary: 'Получить Файлы: Все <> Парам/Тип/user <> count/offset',
+  })
+  // уточнен.`запрос`
+  // параметры выбора: цель/значения
   @ApiQuery({
-    name: 'fileType',
-    enum: fileTypesAllowed,
+    name: 'paramTarget',
+    enum: ['fileName', 'size', 'mimeType', 'user'],
+    required: false,
+  })
+  @ApiQuery({ name: 'paramValue', required: false })
+  // кол-во/смещение
+  @ApiQuery({ name: 'count', required: false })
+  @ApiQuery({ name: 'offset', required: false })
+  // гр.файлов (п.назначения)
+  @ApiQuery({
+    name: 'filePaths',
+    enum: FilePaths,
     isArray: true,
     required: false,
   })
   // возвращ.ф.опред.user и с опред.типом(декор.Query)
   async findAllFiles(
-    @UserId() userId: number,
-    @Query('fileType')
-    fileType?: FileType | FileType[] | typeof fileTypesAllowed | string,
+    // параметры выбора: цель/значения
+    @Query('paramTarget') paramTarget?: string,
+    @Query('paramValue') paramValue?: string,
+    // кол-во/смещение
+    @Query('count') count?: number,
+    @Query('offset') offset?: number,
+    // пути хранения ф.
+    @Query('filePaths') filePaths?: FilePaths | FilePaths[],
   ) {
-    // опред.тип файла. // ! не оч.корр.лог при all + ещё, т.к. includes в ошб. all нельзя назначить параметру типа FileType
-    const isAllFilesRequest =
-      fileType === 'all' || !fileType; /* || fileType.includes('all') */
+    // объ./объедин.парам.
+    const paramTargetValue = {};
+    if (paramTarget && paramValue) paramTargetValue[paramTarget] = paramValue;
+
+    // опред.тип файла.
+    const isAllFilesRequest = FilePaths.ALL || !filePaths;
     // пустой/один/неск-ко типов
-    const typeArray = Array.isArray(fileType)
-      ? fileType
-      : fileType
-        ? [fileType]
+    const filePathsArray = Array.isArray(filePaths)
+      ? filePaths
+      : filePaths
+        ? [filePaths]
         : [];
     this.logger.info(
-      `req << Files ${isAllFilesRequest ? `'ALL'` : `'ILIKE' '${typeArray.join(', ')}'`} > User.ID '${userId}'`,
+      `req << Files ${isAllFilesRequest ? `'ALL'` : `'ILIKE' '${filePathsArray.join(', ')}'`}'`,
     );
-    return this.filesService.findAllFiles(userId, typeArray);
+    return this.filesService.findAllFiles(
+      paramTargetValue,
+      count,
+      offset,
+      filePathsArray,
+    );
   }
 
   @Get(':id')
@@ -184,11 +221,30 @@ export class FilesController {
     return this.filesService.updateFile(+id, updateFileDto);
   }
 
-  @Delete(':id')
-  @ApiOperation({ summary: 'Удалить Файл' })
-  async removeFile(@Query('id') id: number, @UserId() userId: number) {
-    // передача ф.id ч/з запят.> удал. file?ids=1,2,4,
-    this.logger.info(`req - File '${id}' > User.ID '${id}'`);
-    return this.filesService.removeFile(id, userId);
+  @Delete(':ids')
+  @ApiOperation({ summary: 'Удалить Файл/ы по IDs' })
+  @ApiParam({
+    name: 'ids',
+    required: true,
+    description: 'IDs Файла/ов ч/з запятые',
+    type: String,
+  })
+  @ApiQuery({
+    name: 'hardDelete',
+    required: false,
+    description: 'Флаг полного Удаления',
+    type: Boolean,
+  })
+  async deleteFiles(
+    @Param('ids') idsString: string,
+    @Query('hardDelete') hardDelete: boolean,
+    @UserId() userId: number,
+  ) {
+    // разбир. IDs из стр.
+    const ids = await this.basicUtils.parseIdsFromString(idsString);
+    this.logger.debug(
+      `req - Files.IDs '${ids}' ${hardDelete ? 'HardDel' : ''} от User.ID '${userId}'`,
+    );
+    return this.filesService.deleteFiles(ids, userId, hardDelete);
   }
 }

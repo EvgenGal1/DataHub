@@ -15,7 +15,8 @@ import { AlbumsService } from './albums.service';
 import { CreateAlbumDto } from './dto/create-album.dto';
 import { UpdateAlbumDto } from './dto/update-album.dto';
 import { UserId } from '../../common/decorators/user-id.decorator';
-import { LoggingWinston } from '../../config/logging/log_winston.config';
+import { BasicUtils } from 'src/common/utils/basic.utils';
+import { LoggingWinston } from 'src/config/logging/log_winston.config';
 
 @Controller('/albums')
 // групп.мтд.cntrl albums > swagger
@@ -26,6 +27,7 @@ export class AlbumController {
   constructor(
     // private readonly authService: AuthService,
     private readonly albumsService: AlbumsService,
+    private readonly basicUtils: BasicUtils,
     private readonly logger: LoggingWinston,
   ) {}
 
@@ -72,6 +74,33 @@ export class AlbumController {
   async removeAlbum(@Param('id') id: number) {
     this.logger.debug(`req - Alb.ID '${id}'`);
     return this.albumsService.removeAlbum(id);
+  }
+
+  @Delete(':ids')
+  @ApiOperation({ summary: 'Удалить Альбом/ы по IDs' })
+  @ApiParam({
+    name: 'ids',
+    required: true,
+    description: 'IDs Альбома/ов ч/з запятые',
+    type: String,
+  })
+  @ApiQuery({
+    name: 'hardDelete',
+    required: false,
+    description: 'Флаг полного Удаления',
+    type: Boolean,
+  })
+  async deleteAlbums(
+    @Param('ids') idsString: string,
+    @Query('hardDelete') hardDelete: boolean,
+    @UserId() userId: number,
+  ) {
+    // разбир. IDs из стр.
+    const ids = await this.basicUtils.parseIdsFromString(idsString);
+    this.logger.debug(
+      `req - Albums.IDs '${ids}' ${hardDelete ? 'HardDel' : ''} от User.ID '${userId}'`,
+    );
+    return this.albumsService.deleteAlbums(ids, userId, hardDelete);
   }
 
   // ^^ ДОП.МТД. ----------------------------------------------------------------------------------
