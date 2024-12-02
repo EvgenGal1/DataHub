@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { ObjectId } from 'typeorm';
 import {
   Controller,
@@ -15,24 +14,25 @@ import {
 } from '@nestjs/common';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import {
-  ApiTags,
-  ApiOperation,
-  ApiCreatedResponse,
-  ApiConsumes,
   ApiBody,
+  ApiOperation,
+  ApiConsumes,
   ApiQuery,
+  ApiTags,
+  ApiParam,
 } from '@nestjs/swagger';
 import * as fs from 'fs';
 
 // БАЗЫ ДАННЫХ. localhost, supabase(cloude storage)
-import { fileStorage } from '../../services/storage/storage';
-// import { createClient } from '@supabase/supabase-js';
 import { TracksService } from './tracks.service';
 import { CreateTrackDto } from './dto/create-track.dto';
 import { UpdateTrackDto } from './dto/update-track.dto';
 import { CreateReactionDto } from '../reactions/dto/create-reaction.dto';
 import { UserId } from '../../common/decorators/user-id.decorator';
+import { fileStorage } from '../../services/storage/storage';
+import { BasicUtils } from '../../common/utils/basic.utils';
 import { FileTypeValidationPipe } from '../../common/pipes/fileTypeValidation.pipe';
+import { LoggingWinston } from '../../config/logging/log_winston.config';
 
 @Controller('tracks')
 // групп.мтд.cntrl tracks > swagger
@@ -45,8 +45,9 @@ export class TrackController {
     // ! ошб.в ParseFilePipe({validators[{validator}]}) - "validator" не существует в типе "FileValidator<Record<string
     // private readonly imageValidator: ImageValidator,
     // private readonly audioValidator: AudioValidator,
-
-    private readonly trackService: TracksService,
+    private readonly tracksService: TracksService,
+    private readonly basicUtils: BasicUtils,
+    private readonly logger: LoggingWinston,
   ) {}
 
   // мтд.созд.ф.с допами. декор.мршрт.
@@ -140,10 +141,10 @@ export class TrackController {
       const keys = Object.keys(audios);
       if (keys.length === 1 && keys[0] === 'track') {
         // Обработка загрузки только трека
-        return await this.trackService.createTrackByParam(audios, userId);
+        return await this.tracksService.createTrackByParam(audios, userId);
       } else {
         // Обработка загрузки трека с обложкой альбома
-        return await this.trackService.createTrackByParam(
+        return await this.tracksService.createTrackByParam(
           audios,
           userId,
           createTrackDto,
@@ -154,7 +155,7 @@ export class TrackController {
 
       // перем.`отсоединить обещания` > удал.эл.
       const unlinkPromises = [];
-      // перебор объ.audios, заполнение перем.> удал.неск.файлов при неудачн.загр.
+      // перебор объ.audios, заполнение перем.> удал.неск.ф.при неудачн.сохр.данн.в БД
       Object.values(audios).forEach((trackArray) => {
         trackArray.forEach((track) => {
           unlinkPromises.push(fs.promises.unlink(track.path));
@@ -177,7 +178,7 @@ export class TrackController {
   // получить все треки
   @Get()
   @ApiOperation({
-    summary: 'Получить: все <> назв.трека <> автор + count | offset',
+    summary: 'Получить Треки: Все <> Трек/Автор/user <> count/offset',
   })
   // уточнен.`запрос`
   @ApiQuery({ name: 'param', required: false })
@@ -195,7 +196,7 @@ export class TrackController {
       count,
       offset,
     );
-    const findAllTracks = await this.trackService.findAllTracks(
+    const findAllTracks = await this.tracksService.findAllTracks(
       param ?? null,
       count ?? null,
       offset ?? null,
@@ -210,7 +211,7 @@ export class TrackController {
   // param получ.из param маршрута req
   async findOneTrack(@Param('param') param: string) {
     console.log('t.c. findOneTrack param : ', param);
-    return await this.trackService.findOneTrack(param);
+    return await this.tracksService.findOneTrack(param);
   }
 
   @Patch(':id')
@@ -219,7 +220,7 @@ export class TrackController {
     @Param('id') id: ObjectId,
     @Body() updateTrackDto: UpdateTrackDto,
   ) {
-    return await this.trackService.updateTrack(+id, updateTrackDto);
+    return await this.tracksService.updateTrack(+id, updateTrackDto);
   }
 
   @Delete(/* ':ids' */)
@@ -230,7 +231,7 @@ export class TrackController {
     @UserId() userId: number,
   ) {
     // передача ф.id ч/з запят.> удал. tracks?ids=1,2,4, под userId
-    return await this.trackService.deleteTrack(ids, userId);
+    return await this.tracksService.deleteTrack(ids, userId);
   }
 
   // поиск
@@ -239,20 +240,20 @@ export class TrackController {
   @ApiOperation({ summary: 'Поиск' })
   async searchTrack(@Query('search') search: string) {
     console.log('t.c. searchTrack search : ', search);
-    return await this.trackService.searchTrack(search);
+    return await this.tracksService.searchTrack(search);
   }
 
   // Добавить реакцию к Треку
-  @Post('/reaction')
-  @ApiOperation({ summary: 'Добавить реакцию к Треку' })
-  async addReactionTrack(@Body() createReactionDto: CreateReactionDto) {
-    return await this.trackService.addReactionTrack(createReactionDto);
-  }
+  // @Post('/reaction')
+  // @ApiOperation({ summary: 'Добавить реакцию к Треку' })
+  // async addReactionTrack(@Body() createReactionDto: CreateReactionDto) {
+  //   return await this.trackService.addReactionTrack(createReactionDto);
+  // }
 
   // увелич.Прослушиваний
   @Post('/listen/:id')
   @ApiOperation({ summary: 'увеличение Прослушиваний' })
   async listenTrack(@Param('id') id: ObjectId) {
-    return await this.trackService.listenTrack(id);
+    return await this.tracksService.listenTrack(id);
   }
 }

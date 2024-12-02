@@ -33,7 +33,7 @@ import { UserId } from '../../common/decorators/user-id.decorator';
 // локал.ф.хран-ще
 import { fileStorage } from '../../services/storage/storage';
 // утилиты Общие
-import { BasicUtils } from 'src/common/utils/basic.utils';
+import { BasicUtils } from '../../common/utils/basic.utils';
 // типы/пути файлов
 import { FilePaths } from '../../common/types/typeFilePaths';
 // логгирование LH

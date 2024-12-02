@@ -26,11 +26,11 @@ import {
 } from '@nestjs/swagger';
 import { FileInterceptor } from '@nestjs/platform-express';
 
+// Сервисы/DTO
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { AddingRolesToUsersDto } from '../roles/dto/add-roles-to-users.dto';
-// import { UserEntity } from './entities/user.entity';
 // декор.получ. User.ID
 import { UserId } from '../../common/decorators/user-id.decorator';
 // локал.ф.хран-ще

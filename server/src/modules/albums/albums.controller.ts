@@ -15,8 +15,8 @@ import { AlbumsService } from './albums.service';
 import { CreateAlbumDto } from './dto/create-album.dto';
 import { UpdateAlbumDto } from './dto/update-album.dto';
 import { UserId } from '../../common/decorators/user-id.decorator';
-import { BasicUtils } from 'src/common/utils/basic.utils';
-import { LoggingWinston } from 'src/config/logging/log_winston.config';
+import { BasicUtils } from '../../common/utils/basic.utils';
+import { LoggingWinston } from '../../config/logging/log_winston.config';
 
 @Controller('/albums')
 // групп.мтд.cntrl albums > swagger
