@@ -4,7 +4,7 @@ import { ConfigModule } from '@nestjs/config';
 
 import { AppController } from './app.controller.js';
 import { AppService } from './app.service.js';
-// import { AuthModule } from './auth/auth.module';
+import { AuthModule } from './modules/auth/auth.module';
 import { UsersModule } from './modules/users/users.module.js';
 import { RolesModule } from './modules/roles/roles.module.js';
 import { FilesModule } from './modules/files/files.module.js';
@@ -27,7 +27,9 @@ import { isProduction } from './config/envs/env.consts.js';
       // условн.путь к ф.конфиг.
       envFilePath:
         // ['.env.development', '.env.production'],
-        isProduction ? `.env.${process.env.NODE_ENV}` : '.env.development',
+        isProduction
+          ? `.env.${process.env.NODE_ENV}`
+          : `.env.${process.env.NODE_ENV}`,
       // глоб.видим.
       isGlobal: true,
     }),
@@ -39,7 +41,7 @@ import { isProduction } from './config/envs/env.consts.js';
     // ! ошб. при сборке VERCEL от -v @nestjs/(serve-static, common). ~ замена ниже в export
     // ServeStaticModule.forRoot({ rootPath: join(__dirname, '..', 'public '), /* serveRoot: '/static', */ }),
     // подкл.использ.modulи
-    // AuthModule,
+    AuthModule,
     UsersModule,
     RolesModule,
     FilesModule,

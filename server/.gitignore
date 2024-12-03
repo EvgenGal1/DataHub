@@ -78,7 +78,7 @@ webpack*
 **/env.validation.ts
 **/env.development.ts
 **/src/helpers/**
-**/auth/*
+# **/auth/*
 **/auth_/*
 **/admins/*
 **/validators/*
