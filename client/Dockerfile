@@ -1,38 +1,43 @@
-# Используем официальный легковесный образ Node.js
+# использ.легковесный образ Node.js
 FROM node:18-alpine AS builder
 
 # Устанавливаем рабочую директорию
-WORKDIR /app
+WORKDIR /frontend
 
 # Копируем package.json и package-lock.json для установки зависимостей
 COPY package*.json ./
 
-# Устанавливаем зависимости
-RUN npm install
+# устан.зависимости PROD по package-lock.json
+RUN npm ci
 
 # Копируем все файлы проекта в контейнер
 COPY . .
 
-# Собираем приложение для продакшн
+# сбор прилож. PROD
 RUN npm run build
 
-# Этап для запуска приложения
+# запуск приложения
 FROM node:18-alpine AS runner
 
-# Устанавливаем рабочую директорию
-WORKDIR /app
+# устан.раб.п.
+WORKDIR /frontend
 
-# Копируем собранное приложение из предыдущего образа
-COPY --from=builder /app ./
+# копир.опред.зависимости из предыдущ.Образа
+COPY --from=builder /frontend/.next ./.next
+COPY --from=builder /frontend/public ./public
+COPY --from=builder /frontend/package.json ./package.json
 
-# Копируем все ф.env переменных окружения
-COPY .env* ./
+# устан.зависимости PROD
+RUN npm install --only=production
 
-# Устанавливаем переменные окружения для продакшн
+# копир.ф.окруж. PROD
+COPY .env.production .env
+
+# устан.перем.окруж. PROD
 ENV NODE_ENV=production
 
-# Указываем порт, который будет использоваться приложением
+# указ.порт приложением
 EXPOSE 3000
 
-# Запускаем приложение
+# запуск приложение
 CMD ["npm", "start"]
