@@ -36,7 +36,7 @@ import { isProduction, isDocker } from './config/envs/env.consts.js';
       isGlobal: true,
     }),
     TypeOrmModule.forRootAsync({
-      name: process.env.DB_HOST,
+      name: process.env.DB_NAM,
       useFactory: isProduction ? DBSupabaseConfig : DBLocalhostConfig,
     }),
     // обслуж.статич.контент по путь/папка ч/з веб-сайт

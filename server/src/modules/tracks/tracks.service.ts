@@ -32,15 +32,15 @@ export class TracksService {
     // логи
     private readonly logger: LoggingWinston,
     // ^ подкл.БД от NODE_ENV. PROD(SB) <> DEV(LH)
-    @InjectRepository(UserEntity, process.env.DB_HOST)
+    @InjectRepository(UserEntity, process.env.DB_NAM)
     private usersRepository: Repository<UserEntity>,
-    @InjectRepository(FileEntity, process.env.DB_HOST)
+    @InjectRepository(FileEntity, process.env.DB_NAM)
     private filesRepository: Repository<FileEntity>,
-    @InjectRepository(TrackEntity, process.env.DB_HOST)
+    @InjectRepository(TrackEntity, process.env.DB_NAM)
     private tracksRepository: Repository<TrackEntity>,
-    @InjectRepository(AlbumEntity, process.env.DB_HOST)
+    @InjectRepository(AlbumEntity, process.env.DB_NAM)
     private albumsRepository: Repository<AlbumEntity>,
-    @InjectRepository(ReactionEntity, process.env.DB_HOST)
+    @InjectRepository(ReactionEntity, process.env.DB_NAM)
     private reactionsRepository: Repository<ReactionEntity>,
     // ^ общ.репозит.настр.
     private filesService: FilesService,

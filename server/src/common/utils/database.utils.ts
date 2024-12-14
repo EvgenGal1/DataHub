@@ -15,17 +15,17 @@ export class DatabaseUtils {
   constructor(
     // ч/з внедр.завис. + UserEntity и др. > раб.ч/з this с табл.users и др.
     // подкл.2 БД от NODE_ENV. PROD(SB) <> DEV(LH)
-    @InjectRepository(UserEntity, process.env.DB_HOST)
+    @InjectRepository(UserEntity, process.env.DB_NAM)
     private readonly userRepository?: Repository<UserEntity>,
-    @InjectRepository(RoleEntity, process.env.DB_HOST)
+    @InjectRepository(RoleEntity, process.env.DB_NAM)
     private readonly rolesRepository?: Repository<RoleEntity>,
-    @InjectRepository(TrackEntity, process.env.DB_HOST)
+    @InjectRepository(TrackEntity, process.env.DB_NAM)
     private readonly trackRepository?: Repository<TrackEntity>,
-    @InjectRepository(FileEntity, process.env.DB_HOST)
+    @InjectRepository(FileEntity, process.env.DB_NAM)
     private readonly fileRepository?: Repository<FileEntity>,
-    @InjectRepository(AlbumEntity, process.env.DB_HOST)
+    @InjectRepository(AlbumEntity, process.env.DB_NAM)
     private readonly albumRepository?: Repository<AlbumEntity>,
-    @InjectRepository(ReactionEntity, process.env.DB_HOST)
+    @InjectRepository(ReactionEntity, process.env.DB_NAM)
     private readonly reactionRepository?: Repository<ReactionEntity>,
   ) {}
 

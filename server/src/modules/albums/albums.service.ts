@@ -24,13 +24,13 @@ import { isProduction, isDevelopment } from '../../config/envs/env.consts';
 export class AlbumsService {
   constructor(
     private readonly logger: LoggingWinston,
-    @InjectRepository(FileEntity, process.env.DB_HOST)
+    @InjectRepository(FileEntity, process.env.DB_NAM)
     private readonly fileRepository: Repository<FileEntity>,
-    @InjectRepository(TrackEntity, process.env.DB_HOST)
+    @InjectRepository(TrackEntity, process.env.DB_NAM)
     private readonly tracksRepository: Repository<TrackEntity>,
-    @InjectRepository(AlbumEntity, process.env.DB_HOST)
+    @InjectRepository(AlbumEntity, process.env.DB_NAM)
     private readonly albumsRepository: Repository<AlbumEntity>,
-    @InjectRepository(ReactionEntity, process.env.DB_HOST)
+    @InjectRepository(ReactionEntity, process.env.DB_NAM)
     private readonly reactionsRepository: Repository<ReactionEntity>,
     private readonly filesService: FilesService,
     private readonly dataBaseUtils: DatabaseUtils,

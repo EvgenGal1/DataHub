@@ -1,10 +1,5 @@
 // точка входа, запуск приложения
 import { NestFactory } from '@nestjs/core';
-// import * as SwaggerUIStandalonePreset from 'swagger-ui-standalone-preset';
-// import SwaggerUI from 'swagger-ui-dist/swagger-ui.min.js';
-// import 'swagger-ui-dist/swagger-ui.css';
-// import swaggerUI from "swagger-ui-express";
-// import swaggerJsDoc from "swagger-jsdoc";
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { ConsoleLogger, ValidationPipe } from '@nestjs/common';
 import { config } from 'dotenv';

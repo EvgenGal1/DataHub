@@ -27,7 +27,7 @@ import { LoggingWinston } from '../../config/logging/log_winston.config';
         AlbumEntity,
         ReactionEntity,
       ],
-      process.env.DB_HOST,
+      process.env.DB_NAM,
     ),
   ],
   controllers: [RolesController],

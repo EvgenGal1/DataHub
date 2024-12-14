@@ -14,7 +14,7 @@ import { isProduction, isDevelopment } from '../../config/envs/env.consts';
 export class ReactionsService {
   constructor(
     private readonly logger: LoggingWinston,
-    @InjectRepository(ReactionEntity, process.env.DB_HOST)
+    @InjectRepository(ReactionEntity, process.env.DB_NAM)
     private readonly reactionRepository: Repository<ReactionEntity>,
     private readonly basicUtils: BasicUtils,
     private readonly dataBaseUtils: DatabaseUtils,

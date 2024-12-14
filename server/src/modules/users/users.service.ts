@@ -30,13 +30,13 @@ export class UsersService {
     private readonly logger: LoggingWinston,
     // ч/з внедр.завис. + UserEntity и др. > раб.ч/з this с табл.users и др.
     // ^ подкл.2 БД от NODE_ENV. PROD(SB) <> DEV(LH)
-    @InjectRepository(UserEntity, process.env.DB_HOST)
+    @InjectRepository(UserEntity, process.env.DB_NAM)
     private readonly userRepository: Repository<UserEntity>,
-    @InjectRepository(RoleEntity, process.env.DB_HOST)
+    @InjectRepository(RoleEntity, process.env.DB_NAM)
     private readonly roleRepository: Repository<RoleEntity>,
-    @InjectRepository(UserRolesEntity, process.env.DB_HOST)
+    @InjectRepository(UserRolesEntity, process.env.DB_NAM)
     private readonly userRolesRepository: Repository<UserRolesEntity>,
-    @InjectRepository(FileEntity, process.env.DB_HOST)
+    @InjectRepository(FileEntity, process.env.DB_NAM)
     private readonly fileRepository: Repository<FileEntity>,
     // ^ доп.репозит.настр.
     private readonly basicUtils: BasicUtils,

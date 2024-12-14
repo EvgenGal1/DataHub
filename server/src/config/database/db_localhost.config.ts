@@ -9,7 +9,7 @@ import { AlbumEntity } from '../../modules/albums/entities/album.entity';
 import { ReactionEntity } from '../../modules/reactions/entities/reaction.entity';
 
 export const DBLocalhostConfig = (): TypeOrmModuleOptions => ({
-  // name: process.env.DB_HOST,
+  name: process.env.DB_NAM,
   type: 'postgres',
   host: process.env.DB_HOST,
   port: parseInt(process.env.DB_PORT, 10) || 5432,
