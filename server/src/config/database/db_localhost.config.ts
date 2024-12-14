@@ -9,13 +9,13 @@ import { AlbumEntity } from '../../modules/albums/entities/album.entity';
 import { ReactionEntity } from '../../modules/reactions/entities/reaction.entity';
 
 export const DBLocalhostConfig = (): TypeOrmModuleOptions => ({
-  name: 'localhost',
+  // name: process.env.DB_HOST,
   type: 'postgres',
-  host: process.env.LH_DB_HOST,
-  port: parseInt(process.env.LH_DB_PORT, 10) || 5432,
-  database: process.env.LH_DB_NAME,
-  username: process.env.LH_DB_USER,
-  password: process.env.LH_DB_PSW,
+  host: process.env.DB_HOST,
+  port: parseInt(process.env.DB_PORT, 10) || 5432,
+  database: process.env.DB_NAME,
+  username: process.env.DB_USER,
+  password: process.env.DB_PSW,
   entities: [
     UserEntity,
     RoleEntity,
@@ -24,9 +24,8 @@ export const DBLocalhostConfig = (): TypeOrmModuleOptions => ({
     TrackEntity,
     AlbumEntity,
     ReactionEntity,
-    // ! не отраб.подкл.по пути - постояный сбор query: SELECT * FROM current_schema() | ошб.в swg - "statusCode": 500, "message": "Internal server error
-    // `../../*/entities/*.entity.ts`, `src/*/entities/*.entity{.ts,.js}`, `src/**/*.entity.ts`, `*/entities/**.entity{.ts}`, path.join(__dirname, 'src', '**', 'entities', '*.entity.{ts,js}'),
   ],
   synchronize: true,
-  logging: true,
+  // logging: true,
+  logging: ['error', 'warn'],
 });

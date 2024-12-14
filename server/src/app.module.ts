@@ -17,7 +17,7 @@ import { DBSupabaseConfig } from './config/database/db_supabase.config.js';
 // логгирование LH
 import { LoggingWinston } from './config/logging/log_winston.config.js';
 // константы > команды запуска process.env.NODE_ENV
-import { isProduction } from './config/envs/env.consts.js';
+import { isProduction, isDocker } from './config/envs/env.consts.js';
 
 // декор.модуль. (организ.структуры области действ.> cntrl и provider)
 @Module({
@@ -29,12 +29,14 @@ import { isProduction } from './config/envs/env.consts.js';
         // ['.env.development', '.env.production'],
         isProduction
           ? `.env.${process.env.NODE_ENV}`
-          : `.env.${process.env.NODE_ENV}`,
+          : isDocker
+            ? `../.env.${process.env.NODE_ENV_DOCK}`
+            : `.env.${process.env.NODE_ENV}`,
       // глоб.видим.
       isGlobal: true,
     }),
     TypeOrmModule.forRootAsync({
-      name: isProduction ? 'supabase' : 'localhost',
+      name: process.env.DB_HOST,
       useFactory: isProduction ? DBSupabaseConfig : DBLocalhostConfig,
     }),
     // обслуж.статич.контент по путь/папка ч/з веб-сайт
@@ -55,7 +57,4 @@ import { isProduction } from './config/envs/env.consts.js';
   providers: [AppService, LoggingWinston],
   exports: [LoggingWinston],
 })
-export class AppModule {
-  // ^ замена ServeStaticModule от ошб. при сборке VERCEL от -v @nestjs/(serve-static, common)
-  // configure(consumer: MiddlewareConsumer) { consumer.apply(express.static(path.join(__dirname, '..', 'public'))).forRoutes('*'); }
-}
+export class AppModule {}

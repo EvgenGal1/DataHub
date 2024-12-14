@@ -9,25 +9,23 @@ import { FileEntity } from '../../modules/files/entities/file.entity';
 import { TrackEntity } from '../../modules/tracks/entities/track.entity';
 import { AlbumEntity } from '../../modules/albums/entities/album.entity';
 import { ReactionEntity } from '../../modules/reactions/entities/reaction.entity';
-// константы > команды запуска process.env.NODE_ENV
-import { isProduction, isDevelopment } from '../../config/envs/env.consts';
 
 @Injectable()
 export class DatabaseUtils {
   constructor(
     // ч/з внедр.завис. + UserEntity и др. > раб.ч/з this с табл.users и др.
     // подкл.2 БД от NODE_ENV. PROD(SB) <> DEV(LH)
-    @InjectRepository(UserEntity, isProduction ? 'supabase' : 'localhost')
+    @InjectRepository(UserEntity, process.env.DB_HOST)
     private readonly userRepository?: Repository<UserEntity>,
-    @InjectRepository(RoleEntity, isProduction ? 'supabase' : 'localhost')
+    @InjectRepository(RoleEntity, process.env.DB_HOST)
     private readonly rolesRepository?: Repository<RoleEntity>,
-    @InjectRepository(TrackEntity, isProduction ? 'supabase' : 'localhost')
+    @InjectRepository(TrackEntity, process.env.DB_HOST)
     private readonly trackRepository?: Repository<TrackEntity>,
-    @InjectRepository(FileEntity, isProduction ? 'supabase' : 'localhost')
+    @InjectRepository(FileEntity, process.env.DB_HOST)
     private readonly fileRepository?: Repository<FileEntity>,
-    @InjectRepository(AlbumEntity, isProduction ? 'supabase' : 'localhost')
+    @InjectRepository(AlbumEntity, process.env.DB_HOST)
     private readonly albumRepository?: Repository<AlbumEntity>,
-    @InjectRepository(ReactionEntity, isProduction ? 'supabase' : 'localhost')
+    @InjectRepository(ReactionEntity, process.env.DB_HOST)
     private readonly reactionRepository?: Repository<ReactionEntity>,
   ) {}
 

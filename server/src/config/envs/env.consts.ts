@@ -1,6 +1,8 @@
 // ^ константы > команды запуска process.env.NODE_ENV
 const isProduction = process.env.NODE_ENV === 'production';
 const isDevelopment = process.env.NODE_ENV === 'development';
-const isTotal = process.env.NODE_ENV === 'total';
+const isDocker =
+  process.env.NODE_ENV === 'production' &&
+  process.env.NODE_ENV_DOCK === 'docker';
 
-export { isProduction, isDevelopment, isTotal };
+export { isProduction, isDevelopment, isDocker };

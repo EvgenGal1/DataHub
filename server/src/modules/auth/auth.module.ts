@@ -8,6 +8,8 @@ import { AuthController } from './auth.controller';
 import { UsersModule } from '../users/users.module';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { LocalStrategy } from './strategies/local.strategy';
+// логгирование LH
+import { LoggingWinston } from '../../config/logging/log_winston.config';
 
 @Global()
 @Module({
@@ -22,7 +24,7 @@ import { LocalStrategy } from './strategies/local.strategy';
     UsersModule,
     PassportModule,
   ],
-  providers: [AuthService, JwtStrategy, LocalStrategy],
+  providers: [AuthService, JwtStrategy, LocalStrategy, LoggingWinston],
   controllers: [AuthController],
   exports: [AuthService],
 })

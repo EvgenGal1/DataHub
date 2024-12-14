@@ -5,30 +5,38 @@ import { LoginAuthDto } from './dto/login-auth.dto';
 import { UserEntity } from '../users/entities/user.entity';
 import { CreateUserDto } from '../users/dto/create-user.dto';
 import { UsersService } from '../users/users.service';
+import { LoggingWinston } from '../../config/logging/log_winston.config';
 
 @Injectable()
 export class AuthService {
   constructor(
-    private readonly usersService: UsersService,
+    // ч/з внедр.завис. + UserEntity и др. > раб.ч/з this с табл.users и др.
     private readonly jwtService: JwtService,
+    // логгер
+    private readonly logger: LoggingWinston,
+    private readonly usersService: UsersService,
   ) {}
 
   async register(createUserDto: CreateUserDto): Promise<UserEntity> {
+    this.logger.debug(`req Auth register`);
     // созд.нов. Пользователя
     return this.usersService.createUser(createUserDto);
   }
 
   async login(loginDto: LoginAuthDto): Promise<{ accessToken: string }> {
+    this.logger.debug(`req Auth login`);
     const user = await this.usersService.validateUser(
       loginDto.email,
       loginDto.password,
     );
     if (!user) {
-      throw new UnauthorizedException('Invalid credentials');
+      this.logger.warn(`User '${user}' не создан`);
+      throw new UnauthorizedException('Неверные полномочия');
     }
 
     // возвращ.Токен
     const payload = { sub: user.id, email: user.email };
+    this.logger.debug(`# User \`ID-eml\` '${payload}'`);
     return { accessToken: this.jwtService.sign(payload) };
   }
 

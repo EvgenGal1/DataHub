@@ -7,7 +7,7 @@ import * as path from 'path';
 // import { ExceptionLogger } from 'nest-exceptions';
 
 // константы > команды запуска process.env.NODE_ENV, winston
-import { isDevelopment, isTotal } from '../envs/env.consts';
+import { isDevelopment } from '../envs/env.consts';
 const { colorize, timestamp, combine, json, printf, errors } = format;
 
 // уровни логирования
@@ -46,7 +46,7 @@ export class LoggingWinston {
     ];
 
     // DEV|TOTAL + доп.кмд. (ф.)
-    if (isDevelopment || isTotal) {
+    if (isDevelopment) {
       transportsArray.push(
         // new FileRotateTransport // настр. > Elasticsearch + Kibana
         // ! ошб.врем.откл. - ошб.vercel - read-only file system, mkdir '/var/task/' | '/var/logs/'

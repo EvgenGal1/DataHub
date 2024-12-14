@@ -11,6 +11,17 @@ import { config } from 'dotenv';
 import * as path from 'path';
 import * as fs from 'fs';
 
+// константы > команды запуска process.env.NODE_ENV
+import {
+  isProduction,
+  isDevelopment,
+  isDocker,
+} from './config/envs/env.consts.js';
+// загр.перем.окруж.от кмд.NODE_ENV до подкл.др.модулей (+Docker)
+config({
+  path: `${isDocker ? '../' : ''}.env.${isDocker ? process.env.NODE_ENV_DOCK : process.env.NODE_ENV}`,
+});
+
 import { AppModule } from './app.module.js';
 // фильтр исключ.
 import { AllExceptionsFilter } from './common/filters/all-exception.filter.js';
@@ -18,19 +29,11 @@ import { AllExceptionsFilter } from './common/filters/all-exception.filter.js';
 import { LoggingWinston } from './config/logging/log_winston.config.js';
 // документирование Swagger
 import { DocumentSwagger } from './config/documents/doc_swagger.config.js';
-// константы > команды запуска process.env.NODE_ENV
-import { isProduction, isDevelopment } from './config/envs/env.consts.js';
-
-// загр.перем.окруж.от кмд.NODE_ENV
-if (isDevelopment) config({ path: '.env.development' });
-else if (isProduction) config({ path: '.env.production' });
 
 async function bootstrap(): Promise<any> {
   try {
     // PORT Запуска SRV
-    const PORT: number = isProduction
-      ? +process.env.DB_SB_PORT
-      : +process.env.LH_SRV_PORT || 3000;
+    const PORT: number = +process.env.SRV_PORT || 5000;
 
     // в перем.app асинхр.созд.экзепл.приложения ч/з кл.NestFactory с передачей в парам.modul входа и пр.настр.
     const app = await NestFactory.create<NestExpressApplication>(AppModule, {
@@ -71,12 +74,12 @@ async function bootstrap(): Promise<any> {
     await app.listen(PORT, () => {
       // вывод подкл.к БД от NODE_ENV. PROD(SB) <> DEV(LH)
       console.log(
-        `${isProduction ? 'PROD' : 'DEV'}   MAIN   SRV: ${isProduction ? process.env.SRV_VL_URL : `${process.env.LH_SRV_URL}${process.env.LH_SRV_PORT}`}  DB: ${isProduction ? process.env.DB_SB_URL : `${process.env.LH_DB_NAME}:${process.env.LH_DB_PORT}`}`,
+        `${isProduction ? 'PROD' : 'DEV'}   MAIN   SRV: ${process.env.SRV_URL}   DB: ${process.env.DB_NAME}:${process.env.DB_PORT}`,
       );
     });
     if (logger && isDevelopment)
       logger.info(
-        `DEV   MAIN   SRV: ${process.env.LH_SRV_URL}${process.env.LH_SRV_PORT}  DB: ${process.env.LH_DB_NAME}:${process.env.LH_DB_PORT}`,
+        `DEV   MAIN   SRV: ${process.env.SRV_URL}   DB: ${process.env.DB_NAME}:${process.env.DB_PORT}`,
       );
   } catch (error) {
     if (isDevelopment) {

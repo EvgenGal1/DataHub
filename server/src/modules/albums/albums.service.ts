@@ -1,6 +1,11 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  HttpException,
+  HttpStatus,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { DeleteResult, In, Repository } from 'typeorm';
 
 import { CreateAlbumDto } from './dto/create-album.dto';
 import { UpdateAlbumDto } from './dto/update-album.dto';
@@ -19,14 +24,14 @@ import { isProduction, isDevelopment } from '../../config/envs/env.consts';
 export class AlbumsService {
   constructor(
     private readonly logger: LoggingWinston,
-    @InjectRepository(AlbumEntity, isProduction ? 'supabase' : 'localhost')
-    private readonly albumsRepository: Repository<AlbumEntity>,
-    @InjectRepository(TrackEntity, isProduction ? 'supabase' : 'localhost')
-    private readonly tracksRepository: Repository<TrackEntity>,
-    @InjectRepository(ReactionEntity, isProduction ? 'supabase' : 'localhost')
-    private readonly reactionsRepository: Repository<ReactionEntity>,
-    @InjectRepository(FileEntity, isProduction ? 'supabase' : 'localhost')
+    @InjectRepository(FileEntity, process.env.DB_HOST)
     private readonly fileRepository: Repository<FileEntity>,
+    @InjectRepository(TrackEntity, process.env.DB_HOST)
+    private readonly tracksRepository: Repository<TrackEntity>,
+    @InjectRepository(AlbumEntity, process.env.DB_HOST)
+    private readonly albumsRepository: Repository<AlbumEntity>,
+    @InjectRepository(ReactionEntity, process.env.DB_HOST)
+    private readonly reactionsRepository: Repository<ReactionEntity>,
     private readonly filesService: FilesService,
     private readonly dataBaseUtils: DatabaseUtils,
     private readonly basicUtils: BasicUtils,
@@ -418,6 +423,10 @@ export class AlbumsService {
 
       // полн.удал.Альбома е/и нет userId
       if (!userId && !param && !totalAlbumDto) {
+        this.logger.warn(`Запрет полн.удал. Альбома/ов '${albumIds}'`);
+        throw new NotFoundException(
+          `Запрет полн.удал. Альбома/ов '${albumIds}'`,
+        );
         return await qbAlbums.delete().execute();
       }
 
@@ -508,6 +517,42 @@ export class AlbumsService {
         `!Ошб.- Album.ID '${albumIds}': '${await this.basicUtils.hendlerTypesErrors(error)}'`,
       );
       throw error;
+    }
+  }
+
+  async deleteAlbums(
+    ids: number[],
+    userId: number,
+    hardDelete: boolean = false,
+  ): Promise<DeleteResult> {
+    const albums = await this.albumsRepository.findBy({ id: In(ids) });
+
+    if (albums.length !== ids.length) {
+      throw new HttpException(
+        'Некоторые альбомы не найдены',
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
+    for (const album of albums) {
+      // Мягкое удаление всех треков в альбоме
+      for (const track of album.tracks) {
+        await this.tracksRepository.softDelete(track.id);
+      }
+      // Мягкое удаление обложки альбома
+      if (album.coverArt) {
+        await this.fileRepository.softDelete(album.coverArt.id);
+      }
+      // Удаление реакций на альбом
+      await this.reactionsRepository.delete({ album: album });
+    }
+
+    if (hardDelete) {
+      // Полное удаление альбомов
+      return this.albumsRepository.delete({ id: In(ids) });
+    } else {
+      // Мягкое удаление альбомов
+      return this.albumsRepository.softDelete({ id: In(ids) });
     }
   }
 

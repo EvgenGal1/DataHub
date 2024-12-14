@@ -18,9 +18,6 @@ import { BasicUtils } from '../../common/utils/basic.utils';
 import { DatabaseUtils } from '../../common/utils/database.utils';
 // логгирование LH
 import { LoggingWinston } from '../../config/logging/log_winston.config';
-// константы > команды запуска process.env.NODE_ENV
-import { isProduction } from '../../config/envs/env.consts';
-
 @Module({
   imports: [
     // ч/з TypeOrmModule.`для функции` подкл.UserEntity и пр. для раб.с табл.users и пр.
@@ -35,7 +32,7 @@ import { isProduction } from '../../config/envs/env.consts';
         AlbumEntity,
         ReactionEntity,
       ],
-      isProduction ? 'supabase' : 'localhost',
+      process.env.DB_HOST,
     ),
     // подкл.использ.modul
     // forwardRef(() => AuthModule),

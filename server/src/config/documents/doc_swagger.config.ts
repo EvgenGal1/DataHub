@@ -3,8 +3,6 @@
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { NestExpressApplication } from '@nestjs/platform-express';
 
-import { isProduction } from '../envs/env.consts.js';
-
 export const DocumentSwagger = (app: NestExpressApplication) => {
   // настр.док.swg
   const configSwagger = new DocumentBuilder()
@@ -15,11 +13,7 @@ export const DocumentSwagger = (app: NestExpressApplication) => {
     // токен аутентификации
     // .addBearerAuth()
     // Указание URL вашего сервера
-    .addServer(
-      isProduction
-        ? `${process.env.SRV_VL_URL}`
-        : `${process.env.LH_SRV_URL}${process.env.LH_SRV_PORT}`,
-    )
+    .addServer(process.env.SRV_URL)
     .build();
   // созд.док.swg
   const document = SwaggerModule.createDocument(app, configSwagger);
@@ -32,9 +26,7 @@ export const DocumentSwagger = (app: NestExpressApplication) => {
       persistAuthorization: true,
     },
     // кастом иконки в браузере
-    customfavIcon: isProduction
-      ? `${process.env.SRV_VL_URL}/public/img/ico/icon.ico`
-      : `${process.env.LH_SRV_URL}${process.env.LH_SRV_PORT}/public/img/ico/icon.ico`,
+    customfavIcon: `${process.env.SRV_URL}/public/img/ico/icon.ico`,
     // кастом ф.JS (для отраб.статич.ф.на PROD - Vercel)
     customJs: [
       'https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.15.5/swagger-ui-bundle.min.js',

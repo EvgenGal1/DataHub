@@ -11,11 +11,11 @@ import { ReactionEntity } from '../../modules/reactions/entities/reaction.entity
 export const DBSupabaseConfig = (): TypeOrmModuleOptions => ({
   name: 'supabase',
   type: 'postgres',
-  host: process.env.DB_SB_HOST,
-  port: Number(process.env.DB_SB_PORT),
-  database: process.env.DB_SB_NAME,
-  username: process.env.DB_SB_USER,
-  password: process.env.DB_SB_PSW,
+  host: process.env.DB_HOST,
+  port: Number(process.env.DB_PORT),
+  database: process.env.DB_NAME,
+  username: process.env.DB_USER,
+  password: process.env.DB_PSW,
   entities: [
     UserEntity,
     RoleEntity,
@@ -24,8 +24,6 @@ export const DBSupabaseConfig = (): TypeOrmModuleOptions => ({
     TrackEntity,
     AlbumEntity,
     ReactionEntity,
-    // ! не отраб.подкл.по пути - постояный сбор query: SELECT * FROM current_schema() | ошб.в swg - "statusCode": 500, "message": "Internal server error
-    // `../../*/entities/*.entity.ts`, `src/*/entities/*.entity{.ts,.js}`, `src/**/*.entity.ts`, `*/entities/**.entity{.ts}`, path.join(__dirname, 'src', '**', 'entities', '*.entity.{ts,js}'), '../**/entities/*.entity{.ts}'
   ],
   synchronize: false,
   logging: false,

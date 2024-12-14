@@ -14,7 +14,7 @@ import { isProduction, isDevelopment } from '../../config/envs/env.consts';
 export class RolesService {
   constructor(
     private readonly logger: LoggingWinston,
-    @InjectRepository(RoleEntity, isProduction ? 'supabase' : 'localhost')
+    @InjectRepository(RoleEntity, process.env.DB_HOST)
     private readonly roleRepository: Repository<RoleEntity>,
     private readonly basicUtils: BasicUtils,
     private readonly dataBaseUtils: DatabaseUtils,

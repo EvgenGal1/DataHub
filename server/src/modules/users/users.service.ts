@@ -3,6 +3,9 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { In, Repository } from 'typeorm';
+// хеширование паролей
+import * as bcryptjs from 'bcryptjs';
+// import * as bcrypt from 'bcrypt';
 
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -27,13 +30,13 @@ export class UsersService {
     private readonly logger: LoggingWinston,
     // ч/з внедр.завис. + UserEntity и др. > раб.ч/з this с табл.users и др.
     // ^ подкл.2 БД от NODE_ENV. PROD(SB) <> DEV(LH)
-    @InjectRepository(UserEntity, isProduction ? 'supabase' : 'localhost')
+    @InjectRepository(UserEntity, process.env.DB_HOST)
     private readonly userRepository: Repository<UserEntity>,
-    @InjectRepository(RoleEntity, isProduction ? 'supabase' : 'localhost')
+    @InjectRepository(RoleEntity, process.env.DB_HOST)
     private readonly roleRepository: Repository<RoleEntity>,
-    @InjectRepository(UserRolesEntity, isProduction ? 'supabase' : 'localhost')
+    @InjectRepository(UserRolesEntity, process.env.DB_HOST)
     private readonly userRolesRepository: Repository<UserRolesEntity>,
-    @InjectRepository(FileEntity, isProduction ? 'supabase' : 'localhost')
+    @InjectRepository(FileEntity, process.env.DB_HOST)
     private readonly fileRepository: Repository<FileEntity>,
     // ^ доп.репозит.настр.
     private readonly basicUtils: BasicUtils,
@@ -514,6 +517,18 @@ export class UsersService {
   }
 
   // ^^ Расшир.мтд. ----------------------------------------------------------------------------
+
+  async validateUser(
+    email: string,
+    password: string,
+  ): Promise<UserEntity | null> {
+    const user = await this.userRepository.findOne({ where: { email } });
+    if (user && (await bcryptjs.compare(password, user.password))) {
+      return user; // Если пароль верен, вернуть пользователя
+    }
+    return null; // Если не найден пользователь или пароль неверен
+  }
+
   // ~~ получить level из user_roles
   // async getUserRolesLevel(userId: number): Promise<number[]> {
   //   const queryResult = await this.userRepository

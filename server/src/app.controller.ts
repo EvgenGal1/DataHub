@@ -141,7 +141,7 @@ export class AppController {
   @Get('/details')
   getDetails(): string {
     // return this.appService.getDetails();
-    const connectionDetails = `${isProduction ? 'PROD' : 'DEV'}.a.c.  SRV: ${isProduction ? process.env.SRV_VL_URL : `${process.env.LH_SRV_URL}${process.env.LH_SRV_PORT}`}  DB: ${isProduction ? process.env.DB_SB_URL : `${process.env.LH_DB_NAME}:${process.env.LH_DB_PORT}`}`;
+    const connectionDetails = `${isProduction ? 'PROD' : 'DEV'}.a.c.  SRV: ${isProduction ? process.env.SRV_URL : `${process.env.SRV_URL}${process.env.SRV_PORT}`}  DB: ${isProduction ? process.env.DB_URL : `${process.env.DB_NAME}:${process.env.DB_PORT}`}`;
     console.log(connectionDetails);
     return connectionDetails;
   }

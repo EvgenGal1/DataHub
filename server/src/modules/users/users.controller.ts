@@ -27,6 +27,7 @@ import {
 import { FileInterceptor } from '@nestjs/platform-express';
 
 // Сервисы/DTO
+import { AuthService } from '../auth/auth.service';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -46,7 +47,7 @@ import { LoggingWinston } from '../../config/logging/log_winston.config';
 export class UsersController {
   // ч/з внедр.завис. + UsersService > раб.ч/з this с serv.users
   constructor(
-    // private readonly authService: AuthService,
+    private readonly authService: AuthService,
     private readonly usersService: UsersService,
     // логгер
     private readonly logger: LoggingWinston,

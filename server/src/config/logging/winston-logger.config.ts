@@ -4,7 +4,7 @@ import 'winston-daily-rotate-file';
 import * as path from 'path';
 
 // константы > команды запуска process.env.NODE_ENV, winston
-import { isProduction, isDevelopment, isTotal } from '../envs/env.consts';
+import { isProduction, isDevelopment } from '../envs/env.consts';
 const { timestamp, combine, json, errors } = format;
 
 export const WinstonLoggerProvider = {
@@ -23,7 +23,7 @@ export const WinstonLoggerProvider = {
       }),
     ];
     // DEV|TOTAL + доп.кмд. (ф.)
-    if (isDevelopment || isTotal) {
+    if (isDevelopment) {
       // файлы для dev и total
       transportsArray.push(
         // new FileRotateTransport // настр. > Elasticsearch + Kibana

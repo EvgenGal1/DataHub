@@ -14,7 +14,6 @@ import { ReactionEntity } from '../reactions/entities/reaction.entity';
 import { BasicUtils } from '../../common/utils/basic.utils';
 import { DatabaseUtils } from '../../common/utils/database.utils';
 import { LoggingWinston } from '../../config/logging/log_winston.config';
-import { isProduction } from '../../config/envs/env.consts';
 
 @Module({
   imports: [
@@ -27,7 +26,7 @@ import { isProduction } from '../../config/envs/env.consts';
         AlbumEntity,
         ReactionEntity,
       ],
-      isProduction ? 'supabase' : 'localhost',
+      process.env.DB_HOST,
     ),
   ],
   controllers: [AlbumController],

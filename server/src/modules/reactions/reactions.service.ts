@@ -14,7 +14,7 @@ import { isProduction, isDevelopment } from '../../config/envs/env.consts';
 export class ReactionsService {
   constructor(
     private readonly logger: LoggingWinston,
-    @InjectRepository(ReactionEntity, isProduction ? 'supabase' : 'localhost')
+    @InjectRepository(ReactionEntity, process.env.DB_HOST)
     private readonly reactionRepository: Repository<ReactionEntity>,
     private readonly basicUtils: BasicUtils,
     private readonly dataBaseUtils: DatabaseUtils,

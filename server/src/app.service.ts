@@ -2,11 +2,7 @@
 import { Injectable } from '@nestjs/common';
 
 // константы > команды запуска process.env.NODE_ENV
-import {
-  isProduction,
-  isDevelopment,
-  isTotal,
-} from './config/envs/env.consts.js';
+import { isProduction, isDevelopment } from './config/envs/env.consts.js';
 
 // декор.`инъекции`. (отметка кл.как Provider ч/з инъекции > подкл.в др.кл.)
 @Injectable()
@@ -20,20 +16,12 @@ export class AppService {
   }
 
   getDetails(): string {
-    let mod: string, db: string, srv: string;
-    if (isProduction) {
-      mod = 'PROD';
-      db = process.env.DB_SB_PORT;
-      srv = process.env.SRV_VL_URL;
-    } else if (isDevelopment) {
-      mod = 'DEV';
-      db = process.env.LH_DB_PORT;
-      srv = process.env.LH_SRV_URL + process.env.LH_SRV_PORT;
-    } else if (isTotal) {
-      mod = 'DEV + PROD';
-      db = process.env.LH_DB_PORT;
-      srv = process.env.LH_SRV_URL + process.env.LH_SRV_PORT;
-    }
+    let mod: string,
+      db: string = process.env.DB_PORT,
+      srv: string = process.env.SRV_URL;
+    if (isProduction) mod = 'PROD';
+    else if (isDevelopment) mod = 'DEV';
+
     console.log(`${mod}.a.serv.  SRV: '${srv}  DB: ${db}`);
     return `${mod}.a.serv.  SRV: '${srv}  DB: ${db}`;
   }

@@ -243,13 +243,6 @@ export class TrackController {
     return await this.tracksService.searchTrack(search);
   }
 
-  // Добавить реакцию к Треку
-  // @Post('/reaction')
-  // @ApiOperation({ summary: 'Добавить реакцию к Треку' })
-  // async addReactionTrack(@Body() createReactionDto: CreateReactionDto) {
-  //   return await this.trackService.addReactionTrack(createReactionDto);
-  // }
-
   // увелич.Прослушиваний
   @Post('/listen/:id')
   @ApiOperation({ summary: 'увеличение Прослушиваний' })

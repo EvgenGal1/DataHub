@@ -1,6 +1,11 @@
-import { Injectable, NotFoundException, Optional } from '@nestjs/common';
+import {
+  HttpException,
+  HttpStatus,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, ILike, ObjectId } from 'typeorm';
+import { Repository, ObjectId, In, DeleteResult } from 'typeorm';
 import * as fs from 'fs';
 
 import { CreateTrackDto } from './dto/create-track.dto';
@@ -20,57 +25,28 @@ import { BasicUtils } from '../../common/utils/basic.utils';
 import { DatabaseUtils } from '../../common/utils/database.utils';
 // логгирование LH
 import { LoggingWinston } from '../../config/logging/log_winston.config';
-// константы > команды запуска process.env.NODE_ENV
-import {
-  isProduction,
-  isDevelopment,
-  isTotal,
-} from '../../config/envs/env.consts';
 
 @Injectable()
 export class TracksService {
   constructor(
     // логи
     private readonly logger: LoggingWinston,
-    // ч/з внедр.завис. + TrackEntity,ReactionEntity,UserEntity > раб.ч/з this с табл.track,reaction,user
-    // ^ подкл.неск.БД.
-    // ^ репозитории только > БД SupaBase(SB)
-    @Optional()
-    @InjectRepository(TrackEntity, 'supabase')
-    private tracksRepositorySB: Repository<TrackEntity>,
-    @Optional()
-    @InjectRepository(ReactionEntity, 'supabase')
-    private reactionsRepositorySB: Repository<ReactionEntity>,
-    @Optional()
-    @InjectRepository(UserEntity, 'supabase')
-    private usersRepositorySB: Repository<UserEntity>,
-    @Optional()
-    @InjectRepository(FileEntity, 'supabase')
-    private filesRepositorySB: Repository<FileEntity>,
-    @Optional()
-    @InjectRepository(AlbumEntity, 'supabase')
-    private albumsRepositorySB: Repository<AlbumEntity>,
+    // ^ подкл.БД от NODE_ENV. PROD(SB) <> DEV(LH)
+    @InjectRepository(UserEntity, process.env.DB_HOST)
+    private usersRepository: Repository<UserEntity>,
+    @InjectRepository(FileEntity, process.env.DB_HOST)
+    private filesRepository: Repository<FileEntity>,
+    @InjectRepository(TrackEntity, process.env.DB_HOST)
+    private tracksRepository: Repository<TrackEntity>,
+    @InjectRepository(AlbumEntity, process.env.DB_HOST)
+    private albumsRepository: Repository<AlbumEntity>,
+    @InjectRepository(ReactionEntity, process.env.DB_HOST)
+    private reactionsRepository: Repository<ReactionEntity>,
     // ^ общ.репозит.настр.
     private filesService: FilesService,
     private albumsService: AlbumsService,
     private dataBaseUtils: DatabaseUtils,
     private basicUtils: BasicUtils,
-    // ^ доп.необязат.репозит(Optional) > БД LocalHost(LH)
-    @Optional()
-    @InjectRepository(TrackEntity, 'localhost')
-    private tracksRepository?: Repository<TrackEntity>,
-    @Optional()
-    @InjectRepository(ReactionEntity, 'localhost')
-    private reactionsRepository?: Repository<ReactionEntity>,
-    @Optional()
-    @InjectRepository(UserEntity, 'localhost')
-    private usersRepository?: Repository<UserEntity>,
-    @Optional()
-    @InjectRepository(FileEntity, 'localhost')
-    private filesRepository?: Repository<FileEntity>,
-    @Optional()
-    @InjectRepository(AlbumEntity, 'localhost')
-    private albumsRepository?: Repository<AlbumEntity>,
   ) {}
 
   // СОЗД.Трек. Req - track(аудио + обложка),UserId,CreateTrackDto(трек,артист,текст,стиль); Res - TrackEntity в `Обещание`
@@ -114,7 +90,7 @@ export class TracksService {
         const existingTrack = await this.tracksRepository
           .createQueryBuilder('tracks')
           .withDeleted()
-          .where('name = :title OR name = :originalname', {
+          .where('title = :title OR title = :originalname', {
             title: audioMetaData.title,
             originalname: audioMetaData.originalname,
           })
@@ -206,7 +182,7 @@ export class TracksService {
             // перекод.имя
             audios.cover[0].filename =
               await this.basicUtils.decodeIntoKeyAndValue(
-                'filename',
+                'fileName',
                 audios.cover[0].originalname,
               );
             // сохр.обложку Files
@@ -233,12 +209,7 @@ export class TracksService {
             author: existingAlbum?.author || audioMetaData.artist,
             year: existingAlbum?.year || audioMetaData.year,
             genres: existingAlbum?.genres || audioMetaData.genre,
-            path:
-              // стар.,нов.,нет
-              existingAlbum?.path ||
-              savedCover?.target + savedCover?.filename ||
-              '',
-            cover: existingAlbum?.cover || savedCover?.id,
+            covers: existingAlbum?.coverArt || savedCover?.id,
           };
           // доп.данн.Альбома
           const totalAlbumData = {
@@ -258,10 +229,10 @@ export class TracksService {
               });
             }
             // очистка мягк.удал.Обложки
-            if (existingAlbum?.cover?.deletedAt != null) {
+            if (existingAlbum?.coverArt[0]?.deletedAt != null) {
               await this.filesRepository.save({
-                id: existingAlbum?.cover?.id,
-                deletedAt: (existingAlbum.cover.deletedAt = null),
+                id: existingAlbum?.coverArt[0]?.id,
+                deletedAt: (existingAlbum.coverArt[0].deletedAt = null),
               });
             }
             // перем.обнов.Альбома
@@ -279,7 +250,7 @@ export class TracksService {
                 .createQueryBuilder('tracks')
                 .leftJoinAndSelect('tracks.album', 'album')
                 .withDeleted()
-                .where('tracks.name = :trackName', {
+                .where('tracks.title = :trackName', {
                   trackName: audioMetaData.title,
                 })
                 .andWhere('album.title = :albumName', {
@@ -318,30 +289,31 @@ export class TracksService {
             : new CreateTrackDto();
         const basicTrackData = {
           ...trackDto,
-          name: trackDto.name.includes('#')
-            ? (audioMetaData?.title ?? `${trackDto?.name}_${smallestFreeId}`)
-            : (existingTrack?.name ?? `${trackDto?.name}_${smallestFreeId}`),
+          name: trackDto.title.includes('#')
+            ? (audioMetaData?.title ?? `${trackDto?.title}_${smallestFreeId}`)
+            : (existingTrack?.title ?? `${trackDto?.title}_${smallestFreeId}`),
           genre: trackDto.genre.includes('#')
             ? (audioMetaData?.genre ?? `${trackDto?.genre}_${smallestFreeId}`)
             : (existingTrack?.genre ?? `${trackDto?.genre}_${smallestFreeId}`),
-          artist: trackDto.artist.includes('#')
-            ? (audioMetaData?.artist ?? `${trackDto?.artist}_${smallestFreeId}`)
-            : (existingTrack?.artist ??
-              `${trackDto?.artist}_${smallestFreeId}`),
+          artist: trackDto.author.includes('#')
+            ? (audioMetaData?.artist ?? `${trackDto?.author}_${smallestFreeId}`)
+            : (existingTrack?.author ??
+              `${trackDto?.author}_${smallestFreeId}`),
         };
         // объ.track созд./сохр./вернуть
         const track = /* this.tracksRepository.create( */ {
           ...basicTrackData,
           id: existingTrack?.id || smallestFreeId,
-          path:
-            existingTrack?.path ||
-            savedFile?.target + savedFile?.filename ||
-            audioObj?.path,
           listens: existingTrack?.listens || 0,
           duration: audioMetaData?.duration || 0,
-          file: savedFile?.id || null,
-          album: savedAlbum?.id || null,
-          cover: savedCover?.id || savedAlbum?.cover || null,
+          file: savedFile ? { id: savedFile.id } : null, // Предполагается, что `savedFile` уже содержит объект `FileEntity`
+          // album: savedAlbum?.id || null,
+          album: savedAlbum ? { id: savedAlbum.id } : null, // Предполагается, что `savedAlbum` уже содержит объект `AlbumEntity`
+          cover: savedCover
+            ? { id: savedCover.id }
+            : savedAlbum?.cover
+              ? { id: savedAlbum.cover.id }
+              : null,
           user: { id: userId },
           // sampleRate: audioMetaData.sampleRate, // частота дискретизации
           // bitrate: audioMetaData.bitrate:,
@@ -349,7 +321,6 @@ export class TracksService {
           reactions: null,
         }; /* ) */
 
-        console.log('T.s. CRE track : ', track);
         savedTrack = await this.tracksRepository.save(track);
 
         // ^^ РАЗДЕЛ.ф.,настр. Внедрен.репозит.в зависим.от БД (е/и табл.на разн.БД)
@@ -364,21 +335,16 @@ export class TracksService {
       console.log('t.s. catch error : ', error);
       // опред.загр.данн.в табл. и удал.записи табл./ф. при неудачн.загр.
       if (!savedTrack || !savedFile || !savedAlbum) {
-        if (savedTrack) {
-          // удален.ф.с локал.хран.
-          // fs.promises
-          //   .unlink(savedTrack.path)
-          //   .catch((error) => console.error(`Ошибка удаления файла: ${error}`));
-          // удален.записи табл.
-          await this.deleteTrack(savedTrack.id);
-        }
         if (savedFile) {
           // удален.ф.с локал.хран.
           // fs.promises
-          //   .unlink(savedFile.target + savedFile.filename)
+          //   .unlink(savedFile.path)
           //   .catch((error) => console.error(`Ошибка удаления файла: ${error}`));
           // удален.записи табл.
           await this.filesService.removeFile(savedFile.id);
+        }
+        if (savedTrack) {
+          await this.deleteTrack(savedTrack.id);
         }
         if (savedAlbum) {
           await this.albumsService.deleteAlbum(savedAlbum.id);
@@ -399,7 +365,7 @@ export class TracksService {
     // this.logger.info(
     //   `Получение всех Audios из БД ${isProduction ? 'SB' : isDevelopment ? 'LH' : 'SB и LH'}`,
     // );
-    const err = `Audios нет в БД`;
+
     // без парам.вернуть всё
     if (!param && count === 10 && offset === 0) {
       return this.tracksRepository.find();
@@ -410,7 +376,7 @@ export class TracksService {
     // по прам.
     if (param) {
       queryBuilder.where(
-        'track.name ILIKE :query OR track.artist ILIKE :query',
+        'track.title ILIKE :query OR track.author ILIKE :query',
         { query: `%${param}%` },
       );
     }
@@ -427,7 +393,7 @@ export class TracksService {
     return tracks;
   }
 
-  // ОДИН Трек по ID
+  // ОДИН Трек по ID <> Названию <> Исполнителю
   async findOneTrack(param: string): Promise<TrackEntity | TrackEntity[]> {
     // логи,перем.ошб.
     // this.logger.info(
@@ -435,7 +401,7 @@ export class TracksService {
     // );
     const err = `Audio с PARAM ${param} нет в БД`;
     const whereCondition: any = {};
-    // условия res. id/num|eml/@|fullname/str
+    // условия res. id/num|eml/@|fullName/str
     // ^^ дораб.распозн.стиль ч/з enum | регул.выраж. | шаблона строки
     if (!isNaN(Number(param))) {
       whereCondition.id = param;
@@ -609,54 +575,12 @@ export class TracksService {
       .execute();
   }
 
-  // ДОБАВИТЬ РЕАКЦИЮ
-  async addReactionTrack(
-    createReactionDto: CreateReactionDto,
-  ): Promise<ReactionEntity> {
-    // ? получ.track
-    const track = await this.tracksRepository.findOne({
-      where: { id: createReactionDto.trackId },
-    });
-
-    // инициал.св-во reaction в track
-    if (!track.reactions) {
-      track.reactions = []; // Инициализация массива reactions, если он не определен
-    }
-
-    // ? получ.user
-    const user = await this.usersRepository.findOne({
-      where: { id: createReactionDto.userId },
-    });
-
-    // fn по возвр.наименьшего свободного id
-    const smallestFreeId =
-      await this.dataBaseUtils.getSmallestIDAvailable('reaction');
-
-    // созд.реакцию по id track
-    const reaction = this.reactionsRepository.create({
-      ...createReactionDto,
-      // ! ошб. - Ни одна перегрузка не соответствует этому вызову.
-      // trackId: track.id, || userReqId (const userReqId = user.id;)
-      track,
-      user,
-      id: smallestFreeId,
-    });
-
-    // добав.в track в масс.reactions одну реакцию
-    // ! В track есть связка с reaction ч/з  reactions, но сам парам.reactions не заполняется и не отражается. Должен ли заполн./отраж.
-    track.reactions.push(reaction);
-
-    // запись в БД и возврат реакции
-    await this.reactionsRepository.save(reaction);
-    return reaction;
-  }
-
   // поиск
   async searchTrack(query: string): Promise<TrackEntity[]> {
     // await this.tracksRepository.find({ where: [{ name: ILike(`%${query}%`) }, { artist: ILike(`%${query}%`) }], });
     const tracks = await this.tracksRepository
       .createQueryBuilder('track')
-      .where('track.name ILIKE :query OR track.artist ILIKE :query', {
+      .where('track.title ILIKE :query OR track.author ILIKE :query', {
         query: `%${query}%`,
       })
       .getMany();
