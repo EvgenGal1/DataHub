@@ -1,10 +1,10 @@
-# ^ Dockerfile для frontend (Next.js)
+# ^ Dockerfile для backend (Nest.js)
 
 # использ.легковесный образ Node.js
 FROM node:18-alpine AS builder
 
-# устан.раб.п.frontend
-WORKDIR /frontend
+# устан.раб.п.backend
+WORKDIR /backend
 
 # копир.все package*.json > устан.зависимостей
 COPY package*.json ./
@@ -21,12 +21,12 @@ RUN npm run build
 # запуск приложения
 FROM node:18-alpine AS runner
 
-# устан.раб.п.frontend
-WORKDIR /frontend
+# устан.раб.п.backend
+WORKDIR /backend
 
 # копир.необходимые зависимости из предыдущ.Образа
-COPY --from=builder /frontend/.next ./.next
-COPY --from=builder /frontend/public ./public
+COPY --from=builder /backend/dist ./dist
+COPY --from=builder /backend/tsconfig.json ./tsconfig.json
 COPY package*.json ./
 
 # устан.зависимости PROD по package-lock.json
@@ -36,7 +36,7 @@ RUN npm ci --only=production
 ENV NODE_ENV=production
 
 # указ.порт приложением
-EXPOSE 3000
+EXPOSE 5791 
 
 # запуск приложения
-CMD ["npm", "run", "start"]
+CMD ["npm", "run", "start:docker"]

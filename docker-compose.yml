@@ -1,0 +1,70 @@
+services:
+  frontend: # client
+    container_name: clt_next-dev
+    build:
+      context: ./client
+      dockerfile: Dockerfile.client-dev
+    ports:
+      - "3000:3000"
+    # volumes:
+    #   - ./client:/frontend # авто.отраж.измен.в п.frontend
+    env_file:
+      - .env.docker
+    environment:
+      NODE_ENV: production
+    depends_on: # зависимости запуска
+      - backend
+      - database
+    restart: unless-stopped # > локал.разраб., от постоян.перезапуск.комп.
+    networks:
+      - app-network
+
+  backend: # server
+    container_name: srv_nest-dev
+    build:
+      context: ./server
+      dockerfile: Dockerfile.server-dev
+    ports:
+      - "5000:5000"
+    # volumes:
+    #   - ./server:/backend # авто.отраж.измен.в п.backend
+    env_file:
+      - .env.docker
+    environment:
+      NODE_ENV: production
+    depends_on: # зависимости запуска
+      database:
+        condition: service_healthy # дожидаемся готовности базы
+    restart: unless-stopped
+    networks:
+      - app-network
+
+  database:
+    image: postgres:latest
+    container_name: db_postgres-dev
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_postgres-dev:/var/lib/postgresql/data # Том для сохр.данню
+      - ./server/init.sql:/docker-entrypoint-initdb.d/init.sql:ro # скрипт для инициализации данных
+    env_file:
+      - .env.docker
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PSW}
+    healthcheck: # проверка готовности базы данных
+      test: ["CMD", "pg_isready", "-U", "postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+    networks:
+      - app-network
+
+volumes:
+  db_postgres-dev:
+
+networks:
+  app-network:
+    driver: bridge
