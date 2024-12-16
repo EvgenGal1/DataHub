@@ -27,6 +27,7 @@ WORKDIR /backend
 # копир.необходимые зависимости из предыдущ.Образа
 COPY --from=builder /backend/dist ./dist
 COPY --from=builder /backend/tsconfig.json ./tsconfig.json
+COPY --from=builder /backend/public/favicon.ico ./public/favicon.ico
 COPY package*.json ./
 
 # устан.зависимости PROD по package-lock.json
