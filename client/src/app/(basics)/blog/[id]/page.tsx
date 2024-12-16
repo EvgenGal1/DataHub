@@ -4,10 +4,7 @@ import { Metadata } from "next";
 
 // вспомог.fn получ.данн с парам.id. Отраб.на serv.
 async function getDate(id: string) {
-  const baseUrl =
-    process.env.NODE_ENV === "production"
-      ? process.env.NEXT_URL_PROD
-      : process.env.NEXT_URL_DEV;
+  const baseUrl = process.env.NEXTAUTH_URL;
 
   const response = await fetch(
     // ^ общ.доступные url

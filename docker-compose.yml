@@ -1,9 +1,9 @@
 services:
   frontend: # client
-    container_name: clt_next-dev
+    container_name: clt_next
     build:
       context: ./client
-      dockerfile: Dockerfile.client-dev
+      dockerfile: Dockerfile
     ports:
       - "3000:3000"
     # volumes:
@@ -20,10 +20,10 @@ services:
       - app-network
 
   backend: # server
-    container_name: srv_nest-dev
+    container_name: srv_nest
     build:
       context: ./server
-      dockerfile: Dockerfile.server-dev
+      dockerfile: Dockerfile
     ports:
       - "5000:5000"
     # volumes:
@@ -41,11 +41,11 @@ services:
 
   database:
     image: postgres:latest
-    container_name: db_postgres-dev
+    container_name: db_postgres
     ports:
       - "5432:5432"
     volumes:
-      - db_postgres-dev:/var/lib/postgresql/data # Том для сохр.данню
+      - db_postgres:/var/lib/postgresql/data # Том для сохр.данн.
       - ./server/init.sql:/docker-entrypoint-initdb.d/init.sql:ro # скрипт для инициализации данных
     env_file:
       - .env.docker
@@ -63,7 +63,7 @@ services:
       - app-network
 
 volumes:
-  db_postgres-dev:
+  db_postgres:
 
 networks:
   app-network:

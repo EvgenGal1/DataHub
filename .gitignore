@@ -91,9 +91,7 @@ vr/
 
 # помошники
 GitHub Команды.txt
-git.txt
-info.txt
-infoMy.txt
+info_*.txt
 webpack*
 desktop.ini
 

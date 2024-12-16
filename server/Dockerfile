@@ -32,11 +32,14 @@ COPY package*.json ./
 # устан.зависимости PROD по package-lock.json
 RUN npm ci --only=production
 
+# устан. NestJS CLI для доступа к кмд. nest
+RUN npm install -g @nestjs/cli
+
 # устан.перем.окруж. PROD
 ENV NODE_ENV=production
 
 # указ.порт приложением
-EXPOSE 5791 
+EXPOSE 5000 
 
 # запуск приложения
 CMD ["npm", "run", "start:docker"]
