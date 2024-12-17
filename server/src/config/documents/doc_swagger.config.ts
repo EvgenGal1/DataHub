@@ -8,11 +8,11 @@ export const DocumentSwagger = (app: NestExpressApplication) => {
   const configSwagger = new DocumentBuilder()
     .setTitle('Data Hub | Центр Данных')
     .setDescription('Описание методов интеграции API')
-    .setVersion('1.1')
+    .setVersion('1.1.0')
     .addTag('app')
     // JWT токен аутентификации
     .addBearerAuth()
-    // Указание URL вашего сервера
+    // URL сервера
     .addServer(process.env.SRV_URL)
     .build();
   // созд.док.swg

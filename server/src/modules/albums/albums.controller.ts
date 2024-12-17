@@ -136,8 +136,7 @@ export class AlbumController {
     name: 'returnType',
     enum: ['countTracks', 'durationTracks', 'listensTrack'],
     required: false,
-    description:
-      'Тип возврата (альбомы по умолчанию)(количество / продолжительность / прослушиваний)',
+    description: 'Тип возврата (кол-во / длительность / прослушиваний)',
   })
   async findAlbumsByParams(
     @Param('paramField') paramField: string,

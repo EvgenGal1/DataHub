@@ -477,16 +477,8 @@
     div.wrapper
     section.block
     div.opblock-tag-section.is-open
-    div.opblock
-  /* , .swagger-ui
-    div.wrapper
-    section.block
-    div.opblock-tag-section.is-open
-    div.opblock
-    div.opblock-summary
-    > button
-    > span  */ {
-    color: #999999 !important;
+    div.opblock {
+    color: rgba(255, 255, 255, 0.6);
   }
   .swagger-ui .copy-to-clipboard {
     display: none;
@@ -500,12 +492,13 @@
   }
   /* ссылка  */
   .opblock-summary > button > span.opblock-summary-path > a.nostyle {
-    color: inherit !important;
+    color: var(--secondary-text-color);
   }
   /* ссылка с откр.блоком */
   .is-open > .opblock-summary > button > span.opblock-summary-path > a.nostyle {
     color: var(--primary-text-color) !important;
   }
+  /* описание мтд. */
   .swagger-ui .opblock-summary-description {
     position: absolute;
     left: 500px;
@@ -517,14 +510,28 @@
   .swagger-ui .btn {
     border-color: yellow;
   }
+  /* параметры */
+  .swagger-ui .parameter__name {
+    color: rgba(255, 255, 255, 0.8);
+  }
+  /* обязательный */
   .swagger-ui .parameter__name.required span {
-    color: red;
+    color: rgba(255, 0, 0, 0.6);
   }
   .swagger-ui .parameter__name.required::after {
-    color: red;
+    font-size: 12px;
+    letter-spacing: 2px;
+    color: rgba(255, 0, 0, 0.6);
+    text-decoration-thickness: 2px;
     text-decoration-line: underline;
-    text-decoration-color: yellow;
-    text-decoration-thickness: 3px;
+    text-decoration-color: rgb(255, 255, 0, 0.6);
+  }
+  /* значение */
+  .swagger-ui .renderedMarkdown {
+    color: rgba(255, 255, 255, 0.4);
+  }
+  .swagger-ui .renderedMarkdown:first-child {
+    color: rgba(255, 255, 255, 0.8);
   }
   .swagger-ui select {
     background: var(--primary-text-color);
