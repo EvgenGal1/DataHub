@@ -112,7 +112,7 @@ webpack*
 !/**/src/config/
 !/**/src/config/database/db_localhost.config.ts
 !/**/src/config/database/db_supabase.config.ts
-!/**/src/config/documents/doc_swagger.config.ts
+!/**/src/config/documents/swagger.config.ts
 !/**/src/common/decorators/user-id.decorator.ts
 !/**/src/config/envs/env.consts.ts
 !/**/src/config/logging/winston-logger.config.ts

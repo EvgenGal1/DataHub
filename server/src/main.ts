@@ -23,7 +23,7 @@ import { AllExceptionsFilter } from './common/filters/all-exception.filter.js';
 // логирование LH Winston
 import { LoggingWinston } from './config/logging/log_winston.config.js';
 // документирование Swagger
-import { DocumentSwagger } from './config/documents/doc_swagger.config.js';
+import { DocumentSwagger } from './config/documents/swagger.config.js';
 
 async function bootstrap(): Promise<any> {
   try {
