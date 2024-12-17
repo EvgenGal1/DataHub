@@ -94,7 +94,7 @@ export class AppController {
           <p>Основная точка входа API. Ниже приведены некоторые полезные ссылки:</p>
           <div class="container">
             <div class="container-link">
-              <a href="/doc-swg" target="_blank">API Docs Swagger</a>
+              <a href="/swagger" target="_blank">API Docs Swagger</a>
             </div>
             <div class="container-link">
               <a href="#" id="get-details-btn">Данные подключения</a>

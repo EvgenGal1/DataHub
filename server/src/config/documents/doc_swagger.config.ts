@@ -10,19 +10,19 @@ export const DocumentSwagger = (app: NestExpressApplication) => {
     .setDescription('Описание методов интеграции API')
     .setVersion('1.1')
     .addTag('app')
-    // токен аутентификации
-    // .addBearerAuth()
+    // JWT токен аутентификации
+    .addBearerAuth()
     // Указание URL вашего сервера
     .addServer(process.env.SRV_URL)
     .build();
   // созд.док.swg
   const document = SwaggerModule.createDocument(app, configSwagger);
   // настр.маршрута swg
-  SwaggerModule.setup('doc-swg', app, document, {
+  SwaggerModule.setup('swagger', app, document, {
     // Название страницы Swagger
     customSiteTitle: 'Data Hub (Swagger)',
     swaggerOptions: {
-      // `постоянное разрешение`настр.для использ.jwt.Токен в swg
+      // `постоянное разрешение` на использ.JWT Токен в swg
       persistAuthorization: true,
     },
     // кастом иконки в браузере
@@ -32,9 +32,10 @@ export const DocumentSwagger = (app: NestExpressApplication) => {
       'https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.15.5/swagger-ui-bundle.min.js',
       'https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.15.5/swagger-ui-standalone-preset.min.js',
     ],
-    // кастом ф.CSS (для отраб.статич.ф.на PROD - Vercel)
+    // кастом ф.CSS
     customCssUrl: [
-      'https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.15.5/swagger-ui.min.css',
+      'https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.15.5/swagger-ui.min.css', // для отраб.статич.ф.на PROD - Vercel
+      `${process.env.SRV_URL}/public/swagger/theme.css`, // темы + своё
     ],
   });
 };

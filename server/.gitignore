@@ -90,6 +90,7 @@ webpack*
 **/src/modules/model/**
 **/src/shared/**
 **/src/base/database/config/**
+**/public/swagger/theme_max.css
 
 # ^ общ.врем.ИСКЛЮЧЁННЫЕ
 # папки 
