@@ -1,4 +1,4 @@
-import { Module, MiddlewareConsumer } from '@nestjs/common';
+import { Module, Global } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
 
@@ -19,22 +19,24 @@ import { LoggingWinston } from './config/logging/log_winston.config.js';
 // константы > команды запуска process.env.NODE_ENV
 import { isProduction, isDocker } from './config/envs/env.consts.js';
 
+// глоб. > видим.везде
+@Global()
 // декор.модуль. (организ.структуры области действ.> cntrl и provider)
 @Module({
+  // подкл.использ.модули
   imports: [
     // подкл.конфиг.модуль > счит.перем.из.env
     ConfigModule.forRoot({
       // условн.путь к ф.конфиг.
-      envFilePath:
-        // ['.env.development', '.env.production'],
-        isProduction
-          ? `.env.${process.env.NODE_ENV}`
-          : isDocker
-            ? `../.env.${process.env.NODE_ENV_DOCK}`
-            : `.env.${process.env.NODE_ENV}`,
+      envFilePath: isProduction
+        ? `.env.${process.env.NODE_ENV}`
+        : isDocker
+          ? `../.env.${process.env.NODE_ENV_DOCK}`
+          : `.env.${process.env.NODE_ENV}`,
       // глоб.видим.
       isGlobal: true,
     }),
+    // асинхр.подкл.БД
     TypeOrmModule.forRootAsync({
       name: process.env.DB_NAM,
       useFactory: isProduction ? DBSupabaseConfig : DBLocalhostConfig,
@@ -51,10 +53,11 @@ import { isProduction, isDocker } from './config/envs/env.consts.js';
     AlbumModule,
     ReactionsModule,
   ],
-  // подкл.cnrtl данного модуля
+  // подкл.cnrtl/обраб.req в данн.модуль
   controllers: [AppController],
-  // подкл.serv данного модуля
+  // подкл.serv/cls/log/strateg/util в данн.модуль
   providers: [AppService, LoggingWinston],
+  // доступ в др.модули
   exports: [LoggingWinston],
 })
 export class AppModule {}
