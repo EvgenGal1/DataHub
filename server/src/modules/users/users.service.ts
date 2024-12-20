@@ -4,9 +4,9 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { In, Repository } from 'typeorm';
 // хеширование паролей
-import * as bcryptjs from 'bcryptjs';
-// import * as bcrypt from 'bcrypt';
+import bcrypt from 'bcrypt';
 
+import { UserDto } from './dto/user.dto';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserEntity } from './entities/user.entity';
@@ -46,7 +46,7 @@ export class UsersService {
   // ^ МТД.CRUD
 
   // СОЗД User + Role + связь
-  async createUser(createUserDto: CreateUserDto): Promise<UserEntity> {
+  async createUser(createUserDto: CreateUserDto): Promise<UserDto> {
     try {
       if (isDevelopment)
         this.logger.info(`db + User DTO '${JSON.stringify(createUserDto)}'`);
@@ -55,10 +55,10 @@ export class UsersService {
       const smallestFreeId =
         await this.dataBaseUtils.getSmallestIDAvailable('user');
       // созд.репоз. / обраб.ошб.
-      const userCre = this.userRepository.create({
+      const userCre: /* UserEntity */ any = /* this.userRepository.create( */ {
         ...createUserDto,
         id: smallestFreeId,
-      });
+      }; /* ) */
       if (!userCre) {
         this.logger.warn(
           `User DTO '${JSON.stringify(createUserDto)}' не создан`,
@@ -98,7 +98,7 @@ export class UsersService {
   }
 
   // все users из БД
-  async findAllUsers(): Promise<UserEntity[]> {
+  async findAllUsers(): Promise<UserDto[]> {
     try {
       if (isDevelopment) this.logger.info(`db << Users All`);
 
@@ -122,7 +122,7 @@ export class UsersService {
   }
 
   // ОДИН по id
-  async findOneUser(id: number): Promise<UserEntity> {
+  async findOneUser(id: number): Promise<UserDto> {
     try {
       if (isDevelopment) this.logger.info(`db < User.ID '${id}'`);
 
@@ -143,7 +143,7 @@ export class UsersService {
 
   // ОДИН user.по параметрам ID <> Email <> FullName
   // ! переделать под получ roles tracks user_roles в завис.от парам. и пр.
-  async findUserByParam(param: string): Promise<UserEntity> {
+  async findUserByParam(param: string): Promise<UserDto> {
     try {
       if (isDevelopment) this.logger.info(`db <? User Param '${param}'`);
 
@@ -187,7 +187,7 @@ export class UsersService {
         this.logger.warn(`User Param '${param}' не найден`);
         throw new NotFoundException(`User Param '${param}' не найден`);
       }
-      this.logger.debug(`<? User Param '${param}'`);
+      this.logger.debug(`<? User.ID '${user.id}' Param '${param}'`);
       return user;
     } catch (error) {
       this.logger.error(
@@ -198,10 +198,7 @@ export class UsersService {
   }
 
   // мтд.обновить
-  async updateUser(
-    id: number,
-    updateUserDto: UpdateUserDto,
-  ): Promise<UserEntity> {
+  async updateUser(id: number, updateUserDto: UpdateUserDto): Promise<UserDto> {
     try {
       if (isDevelopment)
         this.logger.info(
@@ -517,17 +514,6 @@ export class UsersService {
   }
 
   // ^^ Расшир.мтд. ----------------------------------------------------------------------------
-
-  async validateUser(
-    email: string,
-    password: string,
-  ): Promise<UserEntity | null> {
-    const user = await this.userRepository.findOne({ where: { email } });
-    if (user && (await bcryptjs.compare(password, user.password))) {
-      return user; // Если пароль верен, вернуть пользователя
-    }
-    return null; // Если не найден пользователь или пароль неверен
-  }
 
   // ~~ получить level из user_roles
   // async getUserRolesLevel(userId: number): Promise<number[]> {
