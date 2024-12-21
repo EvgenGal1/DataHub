@@ -1,24 +1,27 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+// ^ стратегия аутентификации с помощью логина и пароля
+
+import { Controller, Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { Strategy } from 'passport-local';
 
+import { AuthDto } from '../dto/auth.dto';
+import { UserDto } from '../../../modules/users/dto/user.dto';
 import { AuthService } from '../auth.service';
-import { LoggingWinston } from '../../../config/logging/log_winston.config';
 
 @Injectable()
+@Controller('local')
 export class LocalStrategy extends PassportStrategy(Strategy) {
-  constructor(
-    private readonly authService: AuthService,
-    private readonly logger: LoggingWinston,
-  ) {
-    super();
+  constructor(private readonly authService: AuthService) {
+    super({
+      // соответствие полей в запросе
+      usernameField: 'email',
+      passwordField: 'password',
+    });
   }
 
-  async validate(email: string, password: string): Promise<any> {
-    const user = await this.authService.validateUser(email, password);
-    if (!user) {
-      throw new UnauthorizedException('Invalid credentials');
-    }
-    return { userId: user.id, userFullName: user.fullName, roles: user.roles };
+  async validate(payload: AuthDto): Promise<UserDto> {
+    const user = await this.authService.validateUser(payload);
+
+    return user;
   }
 }

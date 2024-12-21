@@ -46,7 +46,10 @@ export class UsersService {
   // ^ МТД.CRUD
 
   // СОЗД User + Role + связь
-  async createUser(createUserDto: CreateUserDto): Promise<UserDto> {
+  async createUser(
+    createUserDto: CreateUserDto,
+    manager?: any,
+  ): Promise<UserDto> {
     try {
       if (isDevelopment)
         this.logger.info(`db + User DTO '${JSON.stringify(createUserDto)}'`);
@@ -54,11 +57,17 @@ export class UsersService {
       // `получить наименьший доступный идентификатор` из БД > табл.users
       const smallestFreeId =
         await this.dataBaseUtils.getSmallestIDAvailable('user');
-      // созд.репоз. / обраб.ошб.
-      const userCre: /* UserEntity */ any = /* this.userRepository.create( */ {
+
+      // универс.мтд. > транз.manager или Repository
+      const repository = manager ? manager : this.userRepository;
+
+      // созд.объ.(указ.сущность > manager) / обраб.ошб.
+      const userCre = repository.create(UserEntity, {
         ...createUserDto,
+        // ^ врем.вкл. формир.имя - eml до @ + рандом _4 цифры
+        fullName: `${createUserDto.email.split('@')[0]}_${Math.floor(1000 + Math.random() * 9000)}`,
         id: smallestFreeId,
-      }; /* ) */
+      });
       if (!userCre) {
         this.logger.warn(
           `User DTO '${JSON.stringify(createUserDto)}' не создан`,
@@ -68,10 +77,8 @@ export class UsersService {
         );
       }
 
-      // ^ будущ.запись Роли,Уровень Роли,psw,token и др.
-
       // сохр.,ошб.,лог.,возврат
-      const savedUser: UserEntity = await this.userRepository.save(userCre);
+      const savedUser = await repository.save(userCre);
       if (!savedUser) {
         this.logger.warn(
           `User DTO '${JSON.stringify(createUserDto)}' не сохранён`,
@@ -81,6 +88,10 @@ export class UsersService {
         );
       }
       this.logger.debug(`+ User.ID '${savedUser.id}'`);
+
+      // Сохраняем запись в промежуточной таблице
+      await this.assignRoleToUser(savedUser.id, manager);
+
       return savedUser;
     } catch (error) {
       this.logger.error(
@@ -143,7 +154,7 @@ export class UsersService {
 
   // ОДИН user.по параметрам ID <> Email <> FullName
   // ! переделать под получ roles tracks user_roles в завис.от парам. и пр.
-  async findUserByParam(param: string): Promise<UserDto> {
+  async findUserByParam(param: string, NoExisting?: string): Promise<UserDto> {
     try {
       if (isDevelopment) this.logger.info(`db <? User Param '${param}'`);
 
@@ -183,10 +194,11 @@ export class UsersService {
       }
 
       const user = await this.userRepository.findOne({ where: whereCondition });
-      if (!user) {
+      if (!user && !NoExisting) {
         this.logger.warn(`User Param '${param}' не найден`);
         throw new NotFoundException(`User Param '${param}' не найден`);
-      }
+      } else if (NoExisting === 'NoExisting') return null;
+
       this.logger.debug(`<? User.ID '${user.id}' Param '${param}'`);
       return user;
     } catch (error) {
@@ -195,6 +207,9 @@ export class UsersService {
       );
       throw error;
     }
+  }
+  async findByEmail(email: string): Promise<UserDto> {
+    return this.userRepository.findOne({ where: { email } });
   }
 
   // мтд.обновить
@@ -514,6 +529,30 @@ export class UsersService {
   }
 
   // ^^ Расшир.мтд. ----------------------------------------------------------------------------
+
+  private async assignRoleToUser(userId: number, manager?: any): Promise<void> {
+    const roles = await this.roleRepository.findOne({
+      where: { value: 'USER' },
+    });
+    const smallestFreeId =
+      await this.dataBaseUtils.getSmallestIDAvailable('userRole');
+    const repository = manager ? manager : this.roleRepository;
+
+    // Создаем запись в промежуточной таблице user_roles
+    const userRoleRelation = repository.create(UserRolesEntity, {
+      id: smallestFreeId,
+      userId: userId,
+      roleId: roles.id,
+      level: 1,
+    });
+
+    const savedUserRole = await repository.save(userRoleRelation);
+    if (!savedUserRole) {
+      this.logger.warn(`UserRole '${userId}' не сохранён`);
+      throw new NotFoundException(`UserRole '${userId}' не сохранён`);
+    }
+    this.logger.debug(`+ UserRole.ID '${savedUserRole.id}'`);
+  }
 
   // ~~ получить level из user_roles
   // async getUserRolesLevel(userId: number): Promise<number[]> {
