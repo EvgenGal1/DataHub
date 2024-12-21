@@ -1,5 +1,6 @@
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 
+import { AuthEntity } from '../../modules/auth/entities/auth.entity';
 import { UserEntity } from '../../modules/users/entities/user.entity';
 import { RoleEntity } from '../../modules/roles/entities/role.entity';
 import { UserRolesEntity } from '../../modules/roles/entities/user-roles.entity';
@@ -12,11 +13,12 @@ export const DBLocalhostConfig = (): TypeOrmModuleOptions => ({
   name: process.env.DB_NAM,
   type: 'postgres',
   host: process.env.DB_HOST,
-  port: parseInt(process.env.DB_PORT, 10) || 5432,
+  port: +process.env.DB_PORT,
   database: process.env.DB_NAME,
   username: process.env.DB_USER,
   password: process.env.DB_PSW,
   entities: [
+    AuthEntity,
     UserEntity,
     RoleEntity,
     UserRolesEntity,
@@ -26,6 +28,5 @@ export const DBLocalhostConfig = (): TypeOrmModuleOptions => ({
     ReactionEntity,
   ],
   synchronize: true,
-  // logging: true,
   logging: ['error', 'warn'],
 });

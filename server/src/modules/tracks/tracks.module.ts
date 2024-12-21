@@ -1,8 +1,10 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
+import { AuthEntity } from '../auth/entities/auth.entity';
 import { UserEntity } from '../users/entities/user.entity';
 import { RoleEntity } from '../roles/entities/role.entity';
+import { UserRolesEntity } from '../roles/entities/user-roles.entity';
 import { FileEntity } from '../files/entities/file.entity';
 import { FilesService } from '../files/files.service';
 import { TrackEntity } from './entities/track.entity';
@@ -23,8 +25,10 @@ import { LoggingWinston } from '../../config/logging/log_winston.config';
     // ^ подкл.неск.БД от NODE_ENV. PROD или DEV
     TypeOrmModule.forFeature(
       [
+        AuthEntity,
         UserEntity,
         RoleEntity,
+        UserRolesEntity,
         FileEntity,
         TrackEntity,
         AlbumEntity,

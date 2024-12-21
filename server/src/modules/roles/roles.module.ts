@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
+import { AuthEntity } from '../auth/entities/auth.entity';
 import { UserEntity } from '../users/entities/user.entity';
 import { UsersService } from '../users/users.service';
 import { RoleEntity } from './entities/role.entity';
@@ -19,6 +20,7 @@ import { LoggingWinston } from '../../config/logging/log_winston.config';
   imports: [
     TypeOrmModule.forFeature(
       [
+        AuthEntity,
         UserEntity,
         RoleEntity,
         UserRolesEntity,
@@ -32,6 +34,7 @@ import { LoggingWinston } from '../../config/logging/log_winston.config';
   ],
   controllers: [RolesController],
   providers: [
+    // AuthService,
     UsersService,
     RolesService,
     BasicUtils,

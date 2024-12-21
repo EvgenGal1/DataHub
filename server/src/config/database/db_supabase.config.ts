@@ -1,5 +1,6 @@
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 
+import { AuthEntity } from '../../modules/auth/entities/auth.entity';
 import { UserEntity } from '../../modules/users/entities/user.entity';
 import { RoleEntity } from '../../modules/roles/entities/role.entity';
 import { UserRolesEntity } from '../../modules/roles/entities/user-roles.entity';
@@ -9,7 +10,7 @@ import { AlbumEntity } from '../../modules/albums/entities/album.entity';
 import { ReactionEntity } from '../../modules/reactions/entities/reaction.entity';
 
 export const DBSupabaseConfig = (): TypeOrmModuleOptions => ({
-  name: 'supabase',
+  name: process.env.DB_NAM,
   type: 'postgres',
   host: process.env.DB_HOST,
   port: Number(process.env.DB_PORT),
@@ -17,6 +18,7 @@ export const DBSupabaseConfig = (): TypeOrmModuleOptions => ({
   username: process.env.DB_USER,
   password: process.env.DB_PSW,
   entities: [
+    AuthEntity,
     UserEntity,
     RoleEntity,
     UserRolesEntity,

@@ -19,8 +19,6 @@ import { LoggingWinston } from './config/logging/log_winston.config.js';
 // константы > команды запуска process.env.NODE_ENV
 import { isProduction, isDocker } from './config/envs/env.consts.js';
 
-// глоб. > видим.везде
-@Global()
 // декор.модуль. (организ.структуры области действ.> cntrl и provider)
 @Module({
   // подкл.использ.модули

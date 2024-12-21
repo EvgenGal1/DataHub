@@ -1,6 +1,7 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
+import { AuthEntity } from '../auth/entities/auth.entity';
 import { UserEntity } from './entities/user.entity';
 import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
@@ -18,12 +19,14 @@ import { BasicUtils } from '../../common/utils/basic.utils';
 import { DatabaseUtils } from '../../common/utils/database.utils';
 // логгирование LH
 import { LoggingWinston } from '../../config/logging/log_winston.config';
+
 @Module({
   imports: [
     // ч/з TypeOrmModule.`для функции` подкл.UserEntity и пр. для раб.с табл.users и пр.
     // ^ подкл.неск.БД от NODE_ENV. PROD или DEV
     TypeOrmModule.forFeature(
       [
+        AuthEntity,
         UserEntity,
         RoleEntity,
         UserRolesEntity,
@@ -34,11 +37,12 @@ import { LoggingWinston } from '../../config/logging/log_winston.config';
       ],
       process.env.DB_NAM,
     ),
-    // подкл.использ.modul
+    // подкл.использ.modul // Используйте forwardRef, если AuthModule обращается к UsersModule и наоборот // Позволяет разрешить циклическую зависимость
     // forwardRef(() => AuthModule),
   ],
   controllers: [UsersController],
   providers: [
+    // AuthService,
     UsersService,
     RolesService,
     FilesService,
