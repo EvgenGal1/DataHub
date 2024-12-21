@@ -1,18 +1,18 @@
-// ^ `Объект передачи данных` разрещ.req front > dack. Отдел.кл.с опис.ожид.св-в/полей
-
 import { ApiProperty } from '@nestjs/swagger';
 import {
-  IsNotEmpty,
-  IsString,
   IsEmail,
-  Length,
-  Matches,
-  IsOptional,
-  IsIn,
+  IsNotEmpty,
   IsNumber,
+  IsOptional,
+  IsString,
+  Length,
 } from 'class-validator';
 
 export class UserDto {
+  @ApiProperty({
+    example: 1,
+    description: 'Уникальный ID Пользователя',
+  })
   id: number;
 
   @ApiProperty({
@@ -32,7 +32,6 @@ export class UserDto {
   })
   @IsNotEmpty({ message: 'Email не должен быть пустым' })
   @IsString({ message: 'Email должен быть строкой' })
-  @Length(2, 128, { message: 'Email должно быть от 2 до 128 символов' })
   @IsEmail({}, { message: 'Некорректный Email' })
   readonly email: string;
 
@@ -57,7 +56,5 @@ export class UserDto {
     description: 'ID Ролей Пользователя (может быть один или несколько)',
   })
   @IsOptional()
-  @IsIn([Number, Array], { message: 'Должно быть числом или массивом чисел' })
-  // ! ошб.в UPD users.service.ts:248:7 - error TS2322: Type 'UserEntity' is not assignable to type 'UserDto'.   Types of property 'roles' are incompatible.     Type 'RoleEntity[]' is not assignable to type 'string | string[]'.      Type 'RoleEntity[]' is not assignable to type 'string[]'.          Type 'RoleEntity' is not assignable to type 'string'.
-  readonly roles?: string | string[] | any;
+  readonly roles?: number[] | any;
 }

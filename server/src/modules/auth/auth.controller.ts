@@ -1,12 +1,16 @@
-import { Controller, Post, Body } from '@nestjs/common';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { Controller, Post, Body, UseGuards, Req } from '@nestjs/common';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 
-// Сервисы/DTO
+// DTO/Защита/Сервисы
+import { AuthDto } from './dto/auth.dto';
+import { TokenDto } from './dto/token.dto';
+import { LocalAuthGuard } from './guards/local-auth.guard';
 import { AuthService } from './auth.service';
-import { LoginAuthDto } from './dto/login-auth.dto';
-import { CreateUserDto } from '../users/dto/create-user.dto';
-// декор.получ. User.ID
-import { UserId } from '../../common/decorators/user-id.decorator';
 // логгирование LH
 import { LoggingWinston } from '../../config/logging/log_winston.config';
 
@@ -19,6 +23,7 @@ export class AuthController {
     private readonly logger: LoggingWinston,
   ) {}
 
+  // Регистрация
   @Post('/register')
   @ApiOperation({ summary: 'Регистрация Пользователя' })
   @ApiResponse({
@@ -26,20 +31,39 @@ export class AuthController {
     description: 'Пользователь успешно зарегистрирован.',
   })
   @ApiResponse({ status: 400, description: 'Некорректные данные.' })
-  async register(@Body() createUserDto: CreateUserDto) {
-    this.logger.debug(`req Auth register`);
-    return this.authService.register(createUserDto);
+  async register(@Body() authDto: AuthDto) {
+    this.logger.debug(`req register AuthDTO : '${JSON.stringify(authDto)}'`);
+    return this.authService.register(authDto);
   }
 
   @Post('/login')
-  @ApiOperation({ summary: 'Аутентификация пользователя' })
+  @UseGuards(LocalAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Аутентификация Пользователя' })
   @ApiResponse({
     status: 200,
     description: 'Пользователь успешно авторизован.',
   })
   @ApiResponse({ status: 401, description: 'Неверные учетные данные.' })
-  async login(@Body() loginDto: LoginAuthDto) {
-    this.logger.debug(`req Auth login`);
-    return this.authService.login(loginDto);
+  async login(@Body() authDto: AuthDto) {
+    this.logger.debug(`req login AuthDTO : '${JSON.stringify(authDto)}'`);
+    return this.authService.login(authDto);
+  }
+
+  @Post('refresh')
+  async refreshTokens(@Req() request): Promise<TokenDto> {
+    this.logger.debug(
+      `req refresh - User.ID '${request.user.id}', refreshToken '${request.body.refreshToken}'`,
+    );
+    const userId = request.user.id; // получ.userId из токена
+    const refreshToken = request.body.refreshToken; // получ.refreshToken из тела запроса
+    return this.authService.refreshTokens(userId, refreshToken);
+  }
+
+  @Post('logout')
+  async logout(@Req() request): Promise<void> {
+    this.logger.debug(`req logout User.ID '${request.user.id}'`);
+    const userId = request.user.id;
+    return this.authService.logout(userId);
   }
 }
