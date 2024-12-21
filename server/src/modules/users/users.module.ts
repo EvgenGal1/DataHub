@@ -1,7 +1,10 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
+import { JwtService } from '@nestjs/jwt';
 import { AuthEntity } from '../auth/entities/auth.entity';
+// import { AuthModule } from '../auth/auth.module';
+import { AuthService } from '../auth/auth.service';
 import { UserEntity } from './entities/user.entity';
 import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
@@ -37,12 +40,14 @@ import { LoggingWinston } from '../../config/logging/log_winston.config';
       ],
       process.env.DB_NAM,
     ),
+    // AuthModule,
     // подкл.использ.modul // Используйте forwardRef, если AuthModule обращается к UsersModule и наоборот // Позволяет разрешить циклическую зависимость
     // forwardRef(() => AuthModule),
   ],
   controllers: [UsersController],
   providers: [
-    // AuthService,
+    AuthService,
+    JwtService,
     UsersService,
     RolesService,
     FilesService,
