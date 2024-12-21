@@ -85,7 +85,6 @@ webpack*
 **/src/config/**
 **/src/common/**
 **/src/services/**
-**/guards/**
 **/src/common/helpers/**
 **/src/modules/model/**
 **/src/shared/**
