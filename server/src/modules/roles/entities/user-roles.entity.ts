@@ -1,9 +1,9 @@
-import { Entity, PrimaryGeneratedColumn, PrimaryColumn, Column } from 'typeorm';
+import { Entity, PrimaryColumn, Column } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 
 @Entity({ name: 'user_roles', schema: 'public' })
 export class UserRolesEntity {
-  @PrimaryGeneratedColumn()
+  @PrimaryColumn()
   public id: number;
 
   @Column({ default: 1, nullable: true })

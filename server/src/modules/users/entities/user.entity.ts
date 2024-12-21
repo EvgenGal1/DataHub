@@ -58,29 +58,6 @@ export class UserEntity {
   })
   email: string;
 
-  // psw (скрыт, тип, имя, длина, с обязат.указ. users.password)
-  @Column({
-    select: false,
-    type: 'varchar',
-    name: 'password',
-    length: 128,
-    nullable: false,
-  })
-  @ApiProperty({
-    example: '123-Test',
-    description: 'Пароль Пользователя',
-    writeOnly: true,
-  })
-  password: string;
-
-  // Подтвержд./ссылка актив.ч/з почту по ссылке (с опцион.указ. users.activatedLink)
-  @Column({ type: 'varchar', unique: true, nullable: true })
-  @ApiProperty({
-    example: 'qdfvg.reth6k-fe3b',
-    description: 'Ссылка активации акка ч/з Почту',
-  })
-  activatedLink: string;
-
   // у Мн.Пользователей Один Аватар (заглушка). Общ.связь coverArt в user,track,album > - лишн.столбца в file
   @ManyToOne(() => FileEntity, (file: FileEntity) => file.userAvatar)
   @ApiProperty({
@@ -109,14 +86,6 @@ export class UserEntity {
     description: 'Роли Пользователя',
   })
   roles: RoleEntity[];
-
-  // ^ нужн.по док.
-  // @OneToMany(() => UserRolesEntity, (userRoles) => userRoles.user)
-  // public userRoles: UserRolesEntity[];
-  //
-  // ^ раб, но запись странная
-  // @OneToMany(() => UserRolesEntity, (userRoles) => userRoles.user)
-  // userRoles: UserRolesEntity[];
 
   // у Польз.Мн.загр.Файлов. Связь 1го ко Мн. Аноним.fn(табл.обращ.(TrackEntity), получ.данн.по обрат.связи(track.user))
   @OneToMany(() => FileEntity, (file: FileEntity) => file.user)
