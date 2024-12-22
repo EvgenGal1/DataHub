@@ -5,6 +5,7 @@ import {
   Entity,
   PrimaryColumn,
   Column,
+  OneToOne,
   OneToMany,
   ManyToOne,
   ManyToMany,
@@ -14,6 +15,7 @@ import {
 import { ApiProperty } from '@nestjs/swagger';
 
 // подкл.Сущности
+import { AuthEntity } from 'src/modules/auth/entities/auth.entity';
 import { RoleEntity } from '../../roles/entities/role.entity';
 import { FileEntity } from '../../files/entities/file.entity';
 import { TrackEntity } from '../../tracks/entities/track.entity';
@@ -65,6 +67,16 @@ export class UserEntity {
     description: 'Аватар Пользователей',
   })
   coverArt: FileEntity | null;
+
+  // связь табл. 1 к 1. Один Файл указ.на Один Трек (с опцион.указ. files.track)
+  @OneToOne(() => AuthEntity, (auth: AuthEntity) => auth.userId, {
+    nullable: false,
+  })
+  @ApiProperty({
+    type: () => AuthEntity,
+    description: 'ID Auth',
+  })
+  authId: AuthEntity;
 
   // связь Мн.ко Мн. У users/userId и roles/roleId ч/з доп.табл.user_roles
   @ManyToMany(() => RoleEntity, (role: RoleEntity) => role.users, {

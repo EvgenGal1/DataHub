@@ -5,10 +5,14 @@ import {
   Entity,
   PrimaryColumn,
   Column,
+  OneToOne,
+  JoinColumn,
   CreateDateColumn,
   DeleteDateColumn,
 } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
+
+import { UserEntity } from '../../users/entities/user.entity';
 
 // декоратор для соед.с БД
 @Entity({ name: 'auth', schema: 'public' })
@@ -20,16 +24,21 @@ export class AuthEntity {
   })
   id: number;
 
-  @Column()
-  userId: number;
+  // связь 1 к 1. У Одного Трека Один Файл
+  @OneToOne(() => UserEntity, (user: UserEntity) => user.authId)
+  @JoinColumn({ name: 'userId' }) // Указываем имя столбца для связи
+  @ApiProperty({
+    type: () => UserEntity,
+    description: 'ID Пользователя',
+  })
+  userId: UserEntity | number;
 
-  // psw (скрыт, тип, имя, длина, с обязат.указ. users.password)
+  // psw (тип, имя, длина, с обязат.указ. users.password)
   @Column({
-    select: false,
     type: 'varchar',
     name: 'password',
     length: 128,
-    nullable: true,
+    nullable: false,
   })
   @ApiProperty({
     example: '123-Test',
@@ -39,11 +48,17 @@ export class AuthEntity {
   password: string;
 
   // refresh Токен (долгий)
-  @Column({ nullable: true })
+  @Column({ nullable: false })
+  @ApiProperty({
+    example: 'Jqdfvg.rWeth6k-feT3b',
+    description: 'Refresh Токен',
+  })
   refreshToken: string;
 
+  // ? REF_T_EXPIRES
+
   // `ссылка активации` ч/з почту
-  @Column({ type: 'varchar', unique: true, nullable: true })
+  @Column({ type: 'varchar', unique: true, nullable: false })
   @ApiProperty({
     example: 'qdfvg.reth6k-fe3b',
     description: 'Ссылка активации акка ч/з Почту',
@@ -51,12 +66,16 @@ export class AuthEntity {
   activationLink: string;
 
   // `активирован` акка User ч/з почту
-  @Column({ type: 'boolean', nullable: true })
+  @Column({ type: 'boolean', nullable: false })
   @ApiProperty({
     example: false,
     description: 'Акка активирован ч/з Почту',
   })
   activated: false;
+
+  // корзина врем.false
+  @Column({ nullable: true })
+  basketId: number;
 
   // декор.созд.
   @CreateDateColumn({ name: 'createdAt' })
