@@ -15,7 +15,7 @@ import {
 import { ApiProperty } from '@nestjs/swagger';
 
 // подкл.Сущности
-import { AuthEntity } from 'src/modules/auth/entities/auth.entity';
+import { AuthEntity } from '../../auth/entities/auth.entity';
 import { RoleEntity } from '../../roles/entities/role.entity';
 import { FileEntity } from '../../files/entities/file.entity';
 import { TrackEntity } from '../../tracks/entities/track.entity';
