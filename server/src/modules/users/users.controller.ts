@@ -15,12 +15,14 @@ import {
   Query,
   UsePipes,
   ValidationPipe,
+  UseGuards,
 } from '@nestjs/common';
 import {
+  ApiTags,
   ApiBody,
   ApiConsumes,
   ApiOperation,
-  ApiTags,
+  ApiBearerAuth,
   // ApiBearerAuth,
   // ApiResponse,
 } from '@nestjs/swagger';
@@ -38,6 +40,8 @@ import { UserId } from '../../common/decorators/user-id.decorator';
 import { fileStorage } from '../../services/storage/storage';
 // логгирование LH
 import { LoggingWinston } from '../../config/logging/log_winston.config';
+// JWT защита маршрутов
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
 @Controller('/users')
 // групп.мтд.cntrl users > swagger
@@ -47,7 +51,6 @@ import { LoggingWinston } from '../../config/logging/log_winston.config';
 export class UsersController {
   // ч/з внедр.завис. + UsersService > раб.ч/з this с serv.users
   constructor(
-    private readonly authService: AuthService,
     private readonly usersService: UsersService,
     // логгер
     private readonly logger: LoggingWinston,
@@ -74,7 +77,10 @@ export class UsersController {
   @Get()
   @ApiOperation({ summary: 'Получить Всех Пользователей' })
   // @Roles('ADMIN')
-  // @UseGuards(RolesGuard)
+  // оборач.в`охранник`(как MW) > защищ.Авториз.
+  @UseGuards(JwtAuthGuard)
+  // оборач.swg > защищены jwt Токеном
+  @ApiBearerAuth()
   async findAllUsers() {
     this.logger.debug(`req << Users All`);
     return this.usersService.findAllUsers();
@@ -83,6 +89,8 @@ export class UsersController {
   // ОДИН user.по id
   @Get(':id')
   @ApiOperation({ summary: 'Получить Пользователя' })
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
   async findOneUser(@Param('id') id: number) {
     this.logger.debug(`req < User.ID '${id}'`);
     return this.usersService.findOneUser(+id);

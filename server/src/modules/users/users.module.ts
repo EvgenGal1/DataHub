@@ -1,7 +1,6 @@
 import { forwardRef, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
-import { JwtService } from '@nestjs/jwt';
 import { AuthEntity } from '../auth/entities/auth.entity';
 // import { AuthModule } from '../auth/auth.module';
 import { AuthService } from '../auth/auth.service';
@@ -16,6 +15,8 @@ import { FilesService } from '../files/files.service';
 import { TrackEntity } from '../tracks/entities/track.entity';
 import { AlbumEntity } from '../albums/entities/album.entity';
 import { ReactionEntity } from '../reactions/entities/reaction.entity';
+// JWT
+import { JwtService } from '@nestjs/jwt';
 // утилиты общ.
 import { BasicUtils } from '../../common/utils/basic.utils';
 // утилиты БД
@@ -40,17 +41,13 @@ import { LoggingWinston } from '../../config/logging/log_winston.config';
       ],
       process.env.DB_NAM,
     ),
-    // AuthModule,
-    // подкл.использ.modul // Используйте forwardRef, если AuthModule обращается к UsersModule и наоборот // Позволяет разрешить циклическую зависимость
-    // forwardRef(() => AuthModule),
   ],
   controllers: [UsersController],
   providers: [
-    AuthService,
-    JwtService,
     UsersService,
     RolesService,
     FilesService,
+    JwtService,
     BasicUtils,
     DatabaseUtils,
     LoggingWinston,

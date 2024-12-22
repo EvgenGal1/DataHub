@@ -40,17 +40,14 @@ export class AuthController {
   @UseGuards(LocalAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Аутентификация Пользователя' })
-  @ApiResponse({
-    status: 200,
-    description: 'Пользователь успешно авторизован.',
-  })
+  @ApiResponse({ status: 200, description: 'Пользователь авторизован.' })
   @ApiResponse({ status: 401, description: 'Неверные учетные данные.' })
   async login(@Body() authDto: AuthDto) {
     this.logger.debug(`req login AuthDTO : '${JSON.stringify(authDto)}'`);
     return this.authService.login(authDto);
   }
 
-  @Post('refresh')
+  @Post('/refresh')
   async refreshTokens(@Req() request): Promise<TokenDto> {
     this.logger.debug(
       `req refresh - User.ID '${request.user.id}', refreshToken '${request.body.refreshToken}'`,
@@ -60,10 +57,16 @@ export class AuthController {
     return this.authService.refreshTokens(userId, refreshToken);
   }
 
-  @Post('logout')
-  async logout(@Req() request): Promise<void> {
+  @Post('/logout')
+  async logout(
+    @Req() request,
+    @Body('refreshToken') refreshToken: string,
+  ): Promise<void | { message: string }> {
     this.logger.debug(`req logout User.ID '${request.user.id}'`);
     const userId = request.user.id;
-    return this.authService.logout(userId);
+    /* return */ await this.authService.logout(userId, refreshToken);
+    return {
+      message: 'Успешно вышел из системы',
+    };
   }
 }

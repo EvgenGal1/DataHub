@@ -5,6 +5,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 
 import { JwtStrategy } from './strategies/jwt.strategy';
+import { TokenService } from './token.service';
 import { AuthEntity } from './entities/auth.entity';
 import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
@@ -41,8 +42,10 @@ import { LoggingWinston } from '../../config/logging/log_winston.config';
     JwtModule.registerAsync({
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({
-        secret: configService.get('JWT_SECRET'), // секрет.ключ > подписи JWT
-        signOptions: { expiresIn: configService.get('EXPIRES_ACST_IN') }, // срок действия Токена
+        secret: configService.get('REF_T_SECRET'), // секрет.ключ > подписи JWT
+        signOptions: {
+          expiresIn: configService.get('REF_T_EXPIRES'),
+        }, // срок действия Токена
       }),
     }),
     // раб.с аутентификацией
@@ -51,6 +54,7 @@ import { LoggingWinston } from '../../config/logging/log_winston.config';
   controllers: [AuthController],
   providers: [
     AuthService,
+    TokenService,
     JwtStrategy,
     LocalStrategy,
     UsersService,

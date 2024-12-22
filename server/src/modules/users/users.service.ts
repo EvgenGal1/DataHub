@@ -1,22 +1,24 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */ // ^^ от ошб. - Св-во объяв., но знач.не прочитано.
 
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
 import { In, Repository } from 'typeorm';
-// хеширование паролей
-import bcrypt from 'bcrypt';
+import {
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
 
 import { UserDto } from './dto/user.dto';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { EmlTrueIDDto } from './dto/emlTrueIDDto.dto';
+import { AddingRolesToUsersDto } from '../roles/dto/add-roles-to-users.dto';
 import { UserEntity } from './entities/user.entity';
 import { RoleEntity } from '../roles/entities/role.entity';
 import { UserRolesEntity } from '../roles/entities/user-roles.entity';
 import { FileEntity } from '../files/entities/file.entity';
-import { AddingRolesToUsersDto } from '../roles/dto/add-roles-to-users.dto';
-// утилиты Общие
+// утилиты Общие / БД
 import { BasicUtils } from '../../common/utils/basic.utils';
-// утилиты БД
 import { DatabaseUtils } from '../../common/utils/database.utils';
 // логгирование LH
 import { LoggingWinston } from '../../config/logging/log_winston.config';
@@ -154,7 +156,7 @@ export class UsersService {
 
   // ОДИН user.по параметрам ID <> Email <> FullName
   // ! переделать под получ roles tracks user_roles в завис.от парам. и пр.
-  async findUserByParam(param: string, NoExisting?: string): Promise<UserDto> {
+  async findUserByParam(param: string): Promise<UserDto> {
     try {
       if (isDevelopment) this.logger.info(`db <? User Param '${param}'`);
 
@@ -194,12 +196,12 @@ export class UsersService {
       }
 
       const user = await this.userRepository.findOne({ where: whereCondition });
-      if (!user && !NoExisting) {
+      if (!user) {
         this.logger.warn(`User Param '${param}' не найден`);
         throw new NotFoundException(`User Param '${param}' не найден`);
-      } else if (NoExisting === 'NoExisting') return null;
-
+      }
       this.logger.debug(`<? User.ID '${user.id}' Param '${param}'`);
+
       return user;
     } catch (error) {
       this.logger.error(
@@ -208,8 +210,19 @@ export class UsersService {
       throw error;
     }
   }
-  async findByEmail(email: string): Promise<UserDto> {
-    return this.userRepository.findOne({ where: { email } });
+
+  // получ по eml
+  async findByEmail(emlTrueIDDto: EmlTrueIDDto): Promise<EmlTrueIDDto | null> {
+    const usrEml = await this.userRepository.findOne({
+      where: { email: emlTrueIDDto.email },
+    });
+    if (usrEml && !emlTrueIDDto.flag) {
+      this.logger.warn(`User.EML '${usrEml.email}' уже существует`);
+      throw new UnauthorizedException(
+        `User.EML '${usrEml.email}' уже существует`,
+      );
+    } else if (emlTrueIDDto.flag === 'N') return null;
+    return;
   }
 
   // мтд.обновить
