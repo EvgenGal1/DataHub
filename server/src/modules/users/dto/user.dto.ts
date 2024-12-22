@@ -13,7 +13,7 @@ export class UserDto {
     example: 1,
     description: 'Уникальный ID Пользователя',
   })
-  id: number;
+  readonly id: number;
 
   @ApiProperty({
     example: 'Тест Тестович',
