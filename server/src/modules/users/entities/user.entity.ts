@@ -68,16 +68,6 @@ export class UserEntity {
   })
   coverArt: FileEntity | null;
 
-  // связь табл. 1 к 1. Один Файл указ.на Один Трек (с опцион.указ. files.track)
-  @OneToOne(() => AuthEntity, (auth: AuthEntity) => auth.userId, {
-    nullable: false,
-  })
-  @ApiProperty({
-    type: () => AuthEntity,
-    description: 'ID Auth',
-  })
-  authId: AuthEntity;
-
   // связь Мн.ко Мн. У users/userId и roles/roleId ч/з доп.табл.user_roles
   @ManyToMany(() => RoleEntity, (role: RoleEntity) => role.users, {
     // Ничего не делать при обновлении/удалении Ролей

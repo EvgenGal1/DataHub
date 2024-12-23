@@ -25,7 +25,7 @@ export class AuthEntity {
   id: number;
 
   // связь 1 к 1. У Одного Трека Один Файл
-  @OneToOne(() => UserEntity, (user: UserEntity) => user.authId)
+  @OneToOne(() => UserEntity, (user: UserEntity) => user.id)
   @JoinColumn({ name: 'userId' }) // Указываем имя столбца для связи
   @ApiProperty({
     type: () => UserEntity,
