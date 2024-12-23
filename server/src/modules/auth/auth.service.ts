@@ -113,22 +113,26 @@ export class AuthService {
     }
   }
 
-  // Вход Пользователя и выдача Токена
+  // вход Пользователя и выдача Токена
   async login(authDto: AuthDto): Promise<{ accessToken: string }> {
     try {
       if (isDevelopment)
         this.logger.info(`db login AuthDTO '${JSON.stringify(authDto)}'`);
-
+      // проверка User по eml/hash.psw
       const user = await this.validateUser(authDto);
-
-      const userPsw = await this.authRepository
+      // получ.Auth.ID
+      const auth = await this.authRepository
         .createQueryBuilder('auth')
-        .select(['auth.password'])
-        .where('auth.userId = :userId', { userId: user.id })
+        // .leftJoinAndSelect('auth.userId', 'user') // загр.данн.User
+        .select(['auth.id']) // загр.только ID
+        .where('auth.userId = :userId', { userId: user.id }) // поиск по связи с User
         .getOne();
-
-      const token = this.tokenService.generateTokens(userPsw.id, user);
-
+      // const auth = await this.authRepository.findOne({
+      //   where: { userId: { id: user.id } }, // поиск по связи с User
+      //   // relations: ['user'], // загр.связи (User)
+      // });
+      // генер./возврат нов.Токенов
+      const token = this.tokenService.generateTokens(auth.id, user);
       return token;
     } catch (error) {
       this.logger.error(
@@ -138,14 +142,7 @@ export class AuthService {
     }
   }
 
-  private generateActivationLink(userId: number): string {
-    // генер.уник.ссылку активации ч/з fn v4
-    let activationLink = uuidv4();
-    let activationLinkPath = `${process.env.CLT_URL}/users/activate/${activationLink}`;
-    return activationLinkPath;
-  }
-
-  // созд.данн.auth
+  // созд./сохр.данн.auth
   async createAuth(
     id: number,
     userId: number,
@@ -155,8 +152,7 @@ export class AuthService {
   ): Promise<void> {
     // универс.мтд. > транз.manager или Repository
     const repository = manager ? manager : this.authRepository;
-
-    // указ.сущн. > manager
+    // созд.объ.auth с указ.сущн. > manager
     const auth = repository.create(AuthEntity, {
       id,
       userId,
@@ -165,7 +161,7 @@ export class AuthService {
       activationLink,
       activated: false,
     });
-
+    // сохр.auth
     await repository.save(auth);
   }
 
@@ -174,40 +170,44 @@ export class AuthService {
     try {
       if (isDevelopment)
         this.logger.info(`db valid.U AuthDTO '${JSON.stringify(authDto)}'`);
-
-      const { email, password } = authDto;
       // получ.Польз.по eml
-      const user = await this.usersService.findUserByParam(email);
+      const user = await this.usersService.findUserByParam(authDto.email);
       // получ.psw по User.ID
-      const userPsw = await this.authRepository
+      const auth = await this.authRepository
         .createQueryBuilder('auth')
-        .select(['auth.password'])
+        .select(['auth.password']) // загр.только psw
         .where('auth.userId = :userId', { userId: user.id })
         .getOne();
-
       // проверка user и сравнение паролей
-      if (!user || !(await bcrypt.compare(password, userPsw.password))) {
+      if (!user || !(await bcrypt.compare(authDto.password, auth.password))) {
         this.logger.warn(`Неверные учетные данные: '${authDto}'`);
         throw new UnauthorizedException(
           `Неверные учетные данные: '${authDto}'`,
         );
       }
+      // возврат User
       return user;
     } catch (error) {
       this.logger.error(
         `!Ошб. < valid.U authDto '${authDto}': '${await this.basicUtils.hendlerTypesErrors(error)}'`,
       );
-      throw error;
     }
   }
 
+  // генер.уник.актив-ной ссылки > подтвержд.почты
+  private generateActivationLink(userId: number): string {
+    // генер.уник.str ч/з fn v4
+    let activationLink = uuidv4();
+    let activationLinkPath = `${process.env.CLT_URL}/users/activate/${activationLink}`;
+    return activationLinkPath;
+  }
   async refreshTokens(userId: string, refreshToken: string): Promise<TokenDto> {
     if (isDevelopment) {
       this.logger.info(`refreshT User.ID '${userId}', ref_T '${refreshToken}'`);
     }
 
     const auth = null; /* await this.authRepository.findOne({
-      where: { userId, refreshToken },
+    where: { userId, refreshToken },
     }); */
     if (!auth) {
       this.logger.warn(`Неверный токен обновления '${refreshToken}'`);
@@ -226,11 +226,11 @@ export class AuthService {
     return newTokens;
   }
 
+  // удал.REF Токен из БД
   async logout(userId?: string, refreshToken?: string): Promise<void> {
     if (isDevelopment) {
       this.logger.info(`logout ref_T User.ID '${userId}'`);
     }
-    // Удаляем refresh token из базы данных
-    // await this.authRepository.delete({ userId });
+    await this.tokenService.removeToken(refreshToken);
   }
 }

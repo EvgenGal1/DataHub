@@ -23,7 +23,7 @@ export class TokenService {
     private readonly logger: LoggingWinston,
   ) {}
 
-  // проверка ACS Токен и возврат user
+  // проверка ACS Токен и возврат.user
   async validateAccessToken(token: string): Promise<UserDto | null> {
     try {
       const decoded = this.jwtService.verify(token, {
@@ -35,7 +35,7 @@ export class TokenService {
     }
   }
 
-  // проверка REF Токен и возврат user
+  // проверка REF Токен и возврат.user
   async validateRefreshToken(token: string): Promise<UserDto | null> {
     try {
       const decoded = this.jwtService.verify(token, {
@@ -47,6 +47,7 @@ export class TokenService {
     }
   }
 
+  // генерация Токенов
   async generateTokens(
     idAuth: number,
     user: JwtPayloadDto,
@@ -62,16 +63,16 @@ export class TokenService {
       secret: process.env.REF_T_SECRET,
       expiresIn: process.env.REF_T_EXPIRES,
     });
-
     // сохр./лог. Refresh Токен
     await this.saveToken(idAuth, +user.id, refreshToken, manager);
     this.logger.debug(
       `generate - acs_T '${accessToken}', ref_T '${refreshToken}'`,
     );
-
+    // возврат 2х Токенов
     return { accessToken, refreshToken };
   }
 
+  // сохр.Токенов
   async saveToken(
     id: number,
     userId: number,
@@ -94,6 +95,7 @@ export class TokenService {
     }
   }
 
+  // удал.Токенов
   async removeToken(refreshToken: string): Promise<number> {
     const deleteResult = await this.authRepository.delete({ refreshToken });
     return deleteResult.affected ?? 0;

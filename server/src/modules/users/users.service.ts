@@ -3,6 +3,7 @@
 import { In, Repository } from 'typeorm';
 import {
   Injectable,
+  InternalServerErrorException,
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
@@ -98,15 +99,15 @@ export class UsersService {
     } catch (error) {
       this.logger.error(
         `!Ошб. + User: '${await this.basicUtils.hendlerTypesErrors(error)}'`,
-        // `!Ошб. + User: ERR '${error}', detail '${error?.detail}', cod '${error?.code}'`, // ^ есть в AllExceptionsFilter
       );
-
       // DEV лог.debug
-      if (!isProduction && isDevelopment)
+      if (isDevelopment)
         this.basicUtils.logDebugDev(
           `'usr.s. CRE : DTO '${JSON.stringify(createUserDto)}'`,
         );
-      throw error;
+      throw new InternalServerErrorException(
+        'Не удалось создать пользователя.',
+      );
     }
   }
 
@@ -116,9 +117,9 @@ export class UsersService {
       if (isDevelopment) this.logger.info(`db << Users All`);
 
       const allUsers = await this.userRepository.find();
-      if (!allUsers) {
-        this.logger.warn(`Users All не найден`);
-        throw new NotFoundException(`Users All не найден`);
+      if (!allUsers || allUsers.length === 0) {
+        this.logger.warn(`Users All не найдены`);
+        throw new NotFoundException(`Пользователи не найдены`);
       }
       this.logger.debug(
         `<< Users All length '${allUsers?.length}' < БД '${
