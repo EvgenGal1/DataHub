@@ -41,7 +41,6 @@ export class AllExceptionsFilter implements ExceptionFilter {
         : HttpStatus.INTERNAL_SERVER_ERROR;
 
     // Получаем сообщение об ошибке
-    console.log('alEr exception : ', exception);
     const message = this.getErrorMessage(exception, status);
 
     // объ.ошб.res

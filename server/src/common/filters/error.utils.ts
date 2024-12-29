@@ -12,16 +12,48 @@ import {
   InternalServerErrorException,
 } from '@nestjs/common';
 
-const statusMessages = {
-  [HttpStatus.NOT_FOUND]: 'Ресурс не найден',
-  [HttpStatus.BAD_REQUEST]: 'Ошибка запроса, некорректные данные',
-  [HttpStatus.UNAUTHORIZED]: 'Доступ к ресурсу запрещён',
-  [HttpStatus.FORBIDDEN]: 'У вас нет прав для доступа',
-  [HttpStatus.NOT_ACCEPTABLE]: 'Запрос не обработан, формат данных неприемлем',
-  [HttpStatus.CONFLICT]: 'Конфликт данных',
-  [HttpStatus.GONE]: 'Запрашиваемый ресурс больше не доступен',
-  [HttpStatus.INTERNAL_SERVER_ERROR]: 'Внутренняя ошибка сервера',
-};
+const errorConfig = [
+  {
+    status: HttpStatus.NOT_FOUND,
+    message: 'Ресурс не найден',
+    exception: NotFoundException,
+  },
+  {
+    status: HttpStatus.BAD_REQUEST,
+    message: 'Ошибка запроса, некорректные данные',
+    exception: BadRequestException,
+  },
+  {
+    status: HttpStatus.UNAUTHORIZED,
+    message: 'Доступ к ресурсу запрещён',
+    exception: UnauthorizedException,
+  },
+  {
+    status: HttpStatus.FORBIDDEN,
+    message: 'У вас нет прав для доступа',
+    exception: ForbiddenException,
+  },
+  {
+    status: HttpStatus.NOT_ACCEPTABLE,
+    message: 'Запрос не обработан, формат данных неприемлем',
+    exception: NotAcceptableException,
+  },
+  {
+    status: HttpStatus.CONFLICT,
+    message: 'Конфликт данных',
+    exception: ConflictException,
+  },
+  {
+    status: HttpStatus.GONE,
+    message: 'Запрашиваемый ресурс больше не доступен',
+    exception: GoneException,
+  },
+  {
+    status: HttpStatus.INTERNAL_SERVER_ERROR,
+    message: 'Внутренняя ошибка сервера',
+    exception: InternalServerErrorException,
+  },
+];
 
 /**
  * Функция для выбрасывания HTTP ошибок
@@ -29,27 +61,12 @@ const statusMessages = {
  * @param customMessage Пользовательское сообщение об ошибке
  */
 export function ThrowError(status: HttpStatus, customMessage?: string) {
+  const config = errorConfig.find((config) => config.status === status);
   const message =
-    customMessage || statusMessages[status] || 'Неизвестная ошибка';
+    customMessage || (config ? config.message : 'Неизвестная ошибка');
+  const ExceptionClass = config
+    ? config.exception
+    : InternalServerErrorException;
 
-  switch (status) {
-    case HttpStatus.NOT_FOUND:
-      throw new NotFoundException(message);
-    case HttpStatus.BAD_REQUEST:
-      throw new BadRequestException(message);
-    case HttpStatus.UNAUTHORIZED:
-      throw new UnauthorizedException(message);
-    case HttpStatus.FORBIDDEN:
-      throw new ForbiddenException(message);
-    case HttpStatus.NOT_ACCEPTABLE:
-      throw new NotAcceptableException(message);
-    case HttpStatus.CONFLICT:
-      throw new ConflictException(message);
-    case HttpStatus.GONE:
-      throw new GoneException(message);
-    case HttpStatus.INTERNAL_SERVER_ERROR:
-      throw new InternalServerErrorException(message);
-    default:
-      throw new InternalServerErrorException(message);
-  }
+  throw new ExceptionClass(message);
 }
