@@ -1,14 +1,12 @@
 import { DataSource, Repository } from 'typeorm';
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, HttpStatus, HttpException } from '@nestjs/common';
 import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
-import { JwtService } from '@nestjs/jwt';
 import bcrypt from 'bcrypt';
 import { v4 as uuidv4 } from 'uuid';
 
 // DTO
 import { AuthDto } from './dto/auth.dto';
 import { TokenDto } from './dto/token.dto';
-import { JwtPayloadDto } from './dto/jwt-payload.dto';
 import { UserDto } from '../users/dto/user.dto';
 // окруж.табл.
 import { AuthEntity } from './entities/auth.entity';
@@ -17,6 +15,8 @@ import { TokenService } from './token.service';
 // утилиты Общие / БД
 import { BasicUtils } from '../../common/utils/basic.utils';
 import { DatabaseUtils } from '../../common/utils/database.utils';
+// обраб.ошб.
+import { ThrowError } from '../../common/filters/error.utils';
 // логгирование LH
 import { LoggingWinston } from '../../config/logging/log_winston.config';
 // константы > команды запуска process.env.NODE_ENV
@@ -57,12 +57,14 @@ export class AuthService {
       // проверка уникальности eml
       const existingUser = await this.usersService.findByEmail({
         email: authDto.email,
-        flag: 'N',
       });
       if (existingUser) {
-        this.logger.warn(`User.EML '${existingUser.email}' уже существует`);
-        throw new UnauthorizedException(
-          `User.EML '${existingUser.email}' уже существует`,
+        this.logger.warn(
+          `register User.EML '${existingUser.email}' уже существует`,
+        );
+        ThrowError(
+          HttpStatus.CONFLICT,
+          `Пользователь с email '${existingUser.email}' уже существует.`,
         );
       }
 
@@ -96,16 +98,24 @@ export class AuthService {
         queryRunner.manager,
       );
 
-      // фиксация успешной транзакции > сохр.данн.в БД
+      // сохр.успеш.транз. > сохр.данн.в БД
       await queryRunner.commitTransaction();
 
       return token;
     } catch (error) {
-      // откат транзакции в случае ошибки
+      // откат транз.при ошб.
       await queryRunner.rollbackTransaction();
       this.logger.error(
-        `!Ошб. register authDto '${authDto}': '${await this.basicUtils.hendlerTypesErrors(error)}'`,
+        `!Ошб. register authDto '${JSON.stringify(authDto)}': '${await this.basicUtils.hendlerTypesErrors(error)}'`,
       );
+      // не обработанная ошб.
+      if (!(error instanceof HttpException)) {
+        ThrowError(
+          HttpStatus.INTERNAL_SERVER_ERROR,
+          'Произошла ошибка при регистрации пользователя.',
+        );
+      }
+      // проброс ошб. HttpException
       throw error;
     } finally {
       // откл.соед.с БД > др.req/app/serv
@@ -181,8 +191,9 @@ export class AuthService {
       // проверка user и сравнение паролей
       if (!user || !(await bcrypt.compare(authDto.password, auth.password))) {
         this.logger.warn(`Неверные учетные данные: '${authDto}'`);
-        throw new UnauthorizedException(
-          `Неверные учетные данные: '${authDto}'`,
+        ThrowError(
+          HttpStatus.UNAUTHORIZED,
+          `Неверные учетные данные: '${JSON.stringify(authDto)}'`,
         );
       }
       // возврат User
@@ -190,6 +201,10 @@ export class AuthService {
     } catch (error) {
       this.logger.error(
         `!Ошб. < valid.U authDto '${authDto}': '${await this.basicUtils.hendlerTypesErrors(error)}'`,
+      );
+      ThrowError(
+        HttpStatus.INTERNAL_SERVER_ERROR,
+        'Ошибка валидации пользователя.',
       );
     }
   }
@@ -211,7 +226,8 @@ export class AuthService {
     }); */
     if (!auth) {
       this.logger.warn(`Неверный токен обновления '${refreshToken}'`);
-      throw new UnauthorizedException(
+      ThrowError(
+        HttpStatus.UNAUTHORIZED,
         `Неверный токен обновления '${refreshToken}'`,
       );
     }

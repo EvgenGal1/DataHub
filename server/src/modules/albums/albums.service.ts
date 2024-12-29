@@ -15,6 +15,7 @@ import { ReactionEntity } from '../reactions/entities/reaction.entity';
 import { FileEntity } from '../files/entities/file.entity';
 import { FilesService } from '../files/files.service';
 import { TotalAlbumDto } from './dto/total-album.dto';
+import { ThrowError } from '../../common/filters/error.utils';
 import { BasicUtils } from '../../common/utils/basic.utils';
 import { DatabaseUtils } from '../../common/utils/database.utils';
 import { LoggingWinston } from '../../config/logging/log_winston.config';
@@ -528,10 +529,8 @@ export class AlbumsService {
     const albums = await this.albumsRepository.findBy({ id: In(ids) });
 
     if (albums.length !== ids.length) {
-      throw new HttpException(
-        'Некоторые альбомы не найдены',
-        HttpStatus.NOT_FOUND,
-      );
+      this.logger.warn(`Некоторые альбомы не найдены`);
+      ThrowError(HttpStatus.NOT_FOUND, 'Некоторые альбомы не найдены');
     }
 
     for (const album of albums) {
