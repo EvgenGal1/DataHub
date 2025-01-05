@@ -36,8 +36,8 @@ export class LoggingWinston {
         format: combine(
           colorize(),
           timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
-          printf(({ timestamp, level, message, context }) => {
-            return `${timestamp} | ${level} | ${context ? context + ' | ' : ''}${message}`;
+          printf(({ timestamp, level, message, context, stack }) => {
+            return `${timestamp} ${level}: ${message}${context ? ' | ' + context : ''}${stack ? '\nStack' + stack : ''}`;
           }),
           errors({ stack: true }),
           json(),
