@@ -95,4 +95,4 @@ async function bootstrap(): Promise<any> {
 bootstrap();
 // }
 // экспорт приложения > тестов
-export default bootstrap;
+// export default bootstrap;

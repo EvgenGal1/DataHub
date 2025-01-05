@@ -11,7 +11,7 @@ module.exports = {
       tsconfig: 'tsconfig.json', // конфиг
     },
     // перем.окруж.
-    // NODE_ENV: 'test',
+    NODE_ENV: 'test',
   },
   testRegex: '(/__tests__/.*|(\\.|/)(test|spec))\\.ts$', //  регул.выраж. > нахождения тестов
   moduleFileExtensions: ['ts', 'js', 'json', 'node'], // поддержка расширений
