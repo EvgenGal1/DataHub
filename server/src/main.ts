@@ -87,8 +87,14 @@ async function bootstrap(): Promise<any> {
   }
 }
 
-bootstrap();
-// // bootstrap() при прямом запуске > изоляции сервера при тестах
-// if (process.env.NODE_ENV !== 'test') bootstrap();
-// // экспорт приложения > тестов
-// export default bootstrap;
+// bootstrap();
+// bootstrap() при прямом запуске > изоляции сервера при тестах
+if (
+  // process.env.NODE_ENV !== 'test'
+  process.env.NODE_ENV !== 'test' &&
+  (!process.env.VERCEL || require.main === module)
+) {
+  bootstrap();
+}
+// экспорт приложения > тестов
+export default bootstrap;
