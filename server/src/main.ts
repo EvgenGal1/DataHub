@@ -50,7 +50,7 @@ async function bootstrap(): Promise<any> {
     app.useGlobalFilters(new AllExceptionsFilter());
 
     // логгирование (Winston)
-    let logger;
+    let logger: LoggingWinston;
     if (isProduction) app.useLogger(new ConsoleLogger());
     else if (isDevelopment) {
       logger = app.get(LoggingWinston);
@@ -67,9 +67,11 @@ async function bootstrap(): Promise<any> {
 
     // прослуш.PORT и fn()callback с log на Запуск
     await app.listen(PORT, () => {
-      // вывод подкл.к БД от NODE_ENV. PROD(SB) <> DEV(LH)
+      // цвета запуска: DEV - зелённый, PROD - синий
+      const mainColor = isDevelopment ? '\x1b[32m' : '\x1b[34m';
+      // вывод с цветом подкл.к БД от NODE_ENV. PROD(SB) <> DEV(LH)
       console.log(
-        `${isProduction ? 'PROD' : 'DEV'}   MAIN   SRV: ${process.env.SRV_URL}   DB: ${process.env.DB_NAME}:${process.env.DB_PORT}`,
+        `\x1b[41m${process.env.NODE_ENV.toUpperCase()}\x1b[0m   MAIN   SRV: ${mainColor}${process.env.SRV_URL}\x1b[0m   DB: \x1b[33m${process.env.DB_NAME}:${process.env.DB_PORT}\x1b[0m`,
       );
     });
     if (logger && isDevelopment)
@@ -81,8 +83,11 @@ async function bootstrap(): Promise<any> {
       const logger = new LoggingWinston();
       logger.error(`DEV   MAIN.error '${error}'`);
     }
-    console.log('m.err : ' + error);
+    console.log('m.err : ', error);
   }
 }
 
-bootstrap();
+// bootstrap() при прямом запуске > изоляции сервера при тестах
+if (require.main === module) bootstrap();
+// экспорт приложения > тестов
+export default bootstrap;
