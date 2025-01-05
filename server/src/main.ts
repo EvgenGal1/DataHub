@@ -87,8 +87,7 @@ async function bootstrap(): Promise<any> {
   }
 }
 
-bootstrap();
-// // bootstrap() при прямом запуске > изоляции сервера при тестах
-// if (require.main === module) bootstrap();
-// // экспорт приложения > тестов
-// export default bootstrap;
+// bootstrap() при прямом запуске > изоляции сервера при тестах
+if (process.env.NODE_ENV !== 'test') bootstrap();
+// экспорт приложения > тестов
+export default bootstrap;
