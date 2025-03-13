@@ -41,7 +41,7 @@ export class RolesService {
       }
 
       // сохр.,ошб.,лог.,возврат
-      const savedRole: RoleEntity = await this.roleRepository.save(roleCre);
+      const savedRole = await this.roleRepository.save(roleCre);
       if (!savedRole) {
         this.logger.warn(`Role '${JSON.stringify(createRoleDto)}' не сохранён`);
         throw new NotFoundException(
